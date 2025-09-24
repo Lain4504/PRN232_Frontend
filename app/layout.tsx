@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import {Livvic} from "next/font/google";
 import "./globals.css";
-import { QueryProvider } from "@/components/providers/query-provider";
+import ClientProviders from "@/lib/provider/client-providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const livvic = Livvic({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-livvic",
+  display: "swap",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "900"],
 });
 
 export const metadata: Metadata = {
@@ -19,19 +16,19 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
-}: Readonly<{
+                                     children,
+                                   }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+      <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${livvic.className} ${livvic.variable}  antialiased`}
       >
-        <QueryProvider>
-          {children}
-        </QueryProvider>
+      <ClientProviders>
+        {children}
+      </ClientProviders>
       </body>
-    </html>
+      </html>
   );
 }
