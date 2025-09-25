@@ -51,3 +51,31 @@ export interface UnlinkResponse {
   success: boolean;
   message: string;
 }
+
+// Available targets (opt-in) response
+export interface AvailableTargetsResponse {
+  success: boolean;
+  data: {
+    targets: Array<{
+      id?: string; // not set in available list
+      providerTargetId: string;
+      name: string;
+      type: 'page' | 'group' | 'profile';
+      category?: string;
+      profilePictureUrl?: string;
+      isActive: boolean;
+    }>;
+  };
+}
+
+// Link selected targets request/response
+export interface LinkSelectedRequestBody {
+  userId: string;
+  provider: 'facebook';
+  providerTargetIds: string[];
+}
+
+export interface LinkSelectedResponse {
+  success: boolean;
+  data: SocialAccount;
+}

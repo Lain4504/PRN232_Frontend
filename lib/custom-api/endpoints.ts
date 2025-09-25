@@ -8,8 +8,12 @@ export const endpoints = {
 
   // Facebook social auth
   facebookAuth: (state?: string) => `/social-auth/facebook${state ? `?state=${encodeURIComponent(state)}` : ''}`,
-  facebookCallback: (code: string, state?: string) => `/social-auth/facebook/callback?code=${encodeURIComponent(code)}${state ? `&state=${encodeURIComponent(state)}` : ''}`,
+  facebookCallback: (code: string, userId: string, state?: string) => `/social-auth/facebook/callback?code=${encodeURIComponent(code)}&userId=${encodeURIComponent(userId)}${state ? `&state=${encodeURIComponent(state)}` : ''}`,
   facebookLinkPageToken: () => `/social-auth/link-page-token`,
+
+  // Opt-in available targets and linking
+  availableTargets: (provider: 'facebook') => `/social-auth/${provider}/available-targets`,
+  linkSelectedTargets: () => `/social-auth/link-selected`,
 }
 
 export type Endpoints = typeof endpoints

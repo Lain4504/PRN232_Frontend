@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2, CheckCircle, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,6 +11,7 @@ import { SocialLinkResponse } from '@/lib/provider/social-types'
 
 export default function FacebookCallbackPage() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
   const [data, setData] = useState<SocialLinkResponse['data'] | null>(null)
@@ -20,12 +21,13 @@ export default function FacebookCallbackPage() {
       try {
         const code = searchParams.get('code')
         const state = searchParams.get('state')
+        const userId = searchParams.get('userId')
 
         if (!code) {
           throw new Error('Authorization code is missing')
         }
 
-        const { data, error } = await fetchRest<SocialLinkResponse>(endpoints.facebookCallback(code, state || undefined), {
+        const { data, error } = await fetchRest<SocialLinkResponse>(endpoints.facebookCallback(code, userId || '', state || undefined), {
           method: 'GET',
           requireAuth: true
         })
@@ -46,6 +48,9 @@ export default function FacebookCallbackPage() {
               type: 'FACEBOOK_AUTH_SUCCESS',
               data: result.data
             }, window.location.origin)
+          } else {
+            // Navigate to Select Pages screen
+            router.replace(`/social-accounts/select-pages?provider=facebook`)
           }
         } else {
           throw new Error('Failed to link Facebook account')

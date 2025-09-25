@@ -9,14 +9,16 @@ import { FacebookPageTokenLink } from '@/components/auth/facebook-page-token-lin
 import { SocialAccountsList } from '@/components/social/social-accounts-list'
 import { FacebookOAuthDebug } from '@/components/debug/facebook-oauth-debug'
 import { Facebook, Plus } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function SocialAccountsPage() {
+  const router = useRouter()
   const { user, isAuthenticated } = useAuth()
   const [refreshKey, setRefreshKey] = useState(0)
 
   const handleAccountLinked = () => {
-    // Trigger refresh of social accounts list
-    setRefreshKey(prev => prev + 1)
+    // Navigate user to Select Pages screen after successful account link
+    router.push('/social-accounts/select-pages?provider=facebook')
   }
 
   const handleAccountUnlinked = () => {
@@ -108,7 +110,7 @@ export default function SocialAccountsPage() {
         </div>
 
         {/* Debug Section */}
-        <FacebookOAuthDebug />
+          <FacebookOAuthDebug />
 
         {/* Help Section */}
         <Card className="mt-8">
