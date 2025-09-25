@@ -1,3 +1,5 @@
+import { SocialAccount } from './social-types';
+
 export interface User {
   id: string;
   email: string;
@@ -7,4 +9,5 @@ export interface User {
   backgroundUrl?: string | null;
   roles: string[];
   isVerified?: boolean;
+  socialAccounts?: SocialAccount[];
 }

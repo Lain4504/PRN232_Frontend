@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { jwtDecode } from 'jwt-decode'
 import { User } from '@/lib/provider/user-types'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5283/api'
 
 interface TokenPayload {
   exp: number
@@ -46,8 +46,8 @@ export async function clearAuthTokens() {
 
 export async function logoutUser() {
   try {
-    // Get current access token
-    const { accessToken } = await getAuthTokens();
+    // Get current tokens
+    const { accessToken, refreshToken } = await getAuthTokens();
     
     if (!accessToken) {
       console.log('No access token found for logout');
@@ -55,14 +55,16 @@ export async function logoutUser() {
       return { success: true };
     }
 
-    // Call the Spring Boot logout API with Authorization header
+    // Call the Spring Boot logout API with Authorization header and refresh token
     await fetch(`${API_URL}/auth/logout`, {
       method: 'POST',
-      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`,
       },
+      body: JSON.stringify({ 
+        refreshToken: refreshToken || 'string' 
+      }),
     });
 
     // Clear local tokens
@@ -78,7 +80,7 @@ export async function logoutUser() {
 }
 
 export async function refreshAccessToken() {
-  const { refreshToken } = await getAuthTokens()
+  const { accessToken, refreshToken } = await getAuthTokens()
   if (!refreshToken) {
     console.log('No refresh token found')
     return null
@@ -86,10 +88,11 @@ export async function refreshAccessToken() {
 
   try {
     console.log('Attempting to refresh token...')
-    const response = await fetch(`${API_URL}/auth/refresh-token`, {
+    const response = await fetch(`${API_URL}/auth/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
       },
       body: JSON.stringify({ refreshToken }),
     })
@@ -104,8 +107,14 @@ export async function refreshAccessToken() {
 
     const data = await response.json()
     console.log('Token refresh successful')
-    await setAuthTokens(data.accessToken, data.refreshToken)
-    return data.accessToken
+    
+    // Handle the new response format
+    if (data.success && data.data) {
+      await setAuthTokens(data.data.accessToken, data.data.refreshToken)
+      return data.data.accessToken
+    } else {
+      throw new Error('Invalid refresh response format')
+    }
   } catch (error) {
     console.error('Error refreshing token:', error)
     await clearAuthTokens()
@@ -165,22 +174,24 @@ export async function getCurrentUser(): Promise<User | null> {
       throw new Error(`Failed to fetch user: ${response.status} ${response.statusText}`)
     }
 
-    const userData = await response.json()
-    console.log('User data received:', userData)
+    const responseData = await response.json()
+    console.log('User data received:', responseData)
 
-    if (!userData || !userData.id || !userData.email || !userData.username) {
-      console.error('Invalid user data received:', userData)
+    // Extract user data from the nested structure
+    const userData = responseData.data
+    if (!userData || !userData.id || !userData.email) {
+      console.error('Invalid user data received:', responseData)
       throw new Error('Invalid user data received from server')
     }
-
+      
     return {
       id: userData.id,
       email: userData.email,
-      username: userData.username,
+      username: userData.email, // Using email as username since it's not provided by API
       displayName: userData.displayName ?? null,
-      avatarUrl: userData.avatarUrl,
-      backgroundUrl: userData.backgroundUrl,
-      roles: userData.roles || [],
+      avatarUrl: userData.avatarUrl ?? null,
+      backgroundUrl: userData.backgroundUrl ?? null,
+      roles: userData.roles || ['user'], // Default role since it's not provided in the response
       isVerified: true,
     }
   } catch (error) {
@@ -200,6 +211,7 @@ export async function checkAuth() {
 
 export async function login(email: string, password: string) {
   try {
+    console.log('Attempting to url:', `${API_URL}/auth/login`);
     const response = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
@@ -216,21 +228,20 @@ export async function login(email: string, password: string) {
     const data = await response.json()
     console.log('Login response:', data)
 
-    if (!data.accessToken || !data.refreshToken) {
+    if (!data.data?.accessToken || !data.data?.refreshToken) {
       throw new Error('Invalid response: missing tokens')
     }
 
-    await setAuthTokens(data.accessToken, data.refreshToken)
+    await setAuthTokens(data.data.accessToken, data.data.refreshToken)
 
-    // For initial login, use the user data from the login response
-    // instead of making another API call
+    // Use the user data from the login response
     const user = {
-      id: data.userId,
-      email: data.email,
-      username: data.username,
-      displayName: data.displayName ?? null,
+      id: data.data.user.id,
+      email: data.data.user.email,
+      username: data.data.user.email, // Using email as username since it's not provided
+      displayName: null,
       avatarUrl: null,
-      roles: data.roles || [],
+      roles: ['user'], // Default role since it's not provided in the response
       isVerified: true,
     }
 

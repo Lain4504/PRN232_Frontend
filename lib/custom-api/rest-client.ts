@@ -33,7 +33,7 @@ export async function fetchRest<T = unknown>(
   }: RestRequestOptions = {}
 ): Promise<RestResponse<T>> {
   const isServer = typeof window === 'undefined'
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api'
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5283/api'
   const fullUrl = `${apiUrl}${endpoint}`
 
   // Prepare headers
