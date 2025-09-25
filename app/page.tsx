@@ -1,105 +1,62 @@
-'use client'
+"use client"
 
-import { useAuthStore } from '@/lib/store/auth-store'
-import { LogoutButton } from '@/components/auth/logout-button'
-import { QuickSocialLink } from '@/components/social/quick-social-link'
-import { SocialAccountsBadge } from '@/components/social/social-accounts-badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useRouter } from "next/navigation"
 
 export default function Home() {
-  const { user, isAuthenticated } = useAuthStore()
+  const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome to Your Dashboard
+    <div className="min-h-screen bg-gray-50 py-16 px-6">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-3">
+            AISAM — Ứng dụng quản lý quảng cáo mạng xã hội thông minh ứng dụng AI
           </h1>
-          <p className="text-gray-600">
-            You are successfully logged in!
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Quản lý chiến dịch quảng cáo đa nền tảng (TikTok, Facebook, Instagram) trong một nơi duy nhất. Tự động hoá tạo nội dung, quản lý tài sản thương hiệu, đăng lịch và phân tích hiệu quả bằng AI.
           </p>
         </div>
 
-        {isAuthenticated && user && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  User Information
-                  <SocialAccountsBadge />
-                </CardTitle>
-                <CardDescription>Your account details</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div>
-                  <span className="font-medium">Email:</span>
-                  <p className="text-sm text-gray-600">{user.email}</p>
-                </div>
-                <div>
-                  <span className="font-medium">User ID:</span>
-                  <p className="text-sm text-gray-600 font-mono">{user.id}</p>
-                </div>
-                <div>
-                  <span className="font-medium">Roles:</span>
-                  <p className="text-sm text-gray-600">{user.roles.join(', ')}</p>
-                </div>
-                <div>
-                  <span className="font-medium">Status:</span>
-                  <p className="text-sm text-green-600">
-                    {user.isVerified ? 'Verified' : 'Not Verified'}
-                  </p>
-                </div>
-                {user.socialAccounts && user.socialAccounts.length > 0 && (
-                  <div>
-                    <span className="font-medium">Social Accounts:</span>
-                    <p className="text-sm text-gray-600">
-                      {user.socialAccounts.length} connected account(s)
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+        <div className="grid gap-6 md:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardTitle>Tạo nội dung bằng AI</CardTitle>
+              <CardDescription>Ảnh, video và văn bản theo nhận diện thương hiệu</CardDescription>
+            </CardHeader>
+            <CardContent>
+              Tự động sinh ý tưởng, visual và copywriting bám sát sản phẩm, USP và đối tượng mục tiêu.
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Manage your account</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <LogoutButton />
-                <div className="text-sm text-gray-500">
-                  Click logout to sign out of your account
-                </div>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Quản lý thương hiệu</CardTitle>
+              <CardDescription>Logo, slogan, tông giọng, persona đại diện</CardDescription>
+            </CardHeader>
+            <CardContent>
+              Duy trì tính nhất quán thông điệp và hình ảnh trên mọi kênh.
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>System Status</CardTitle>
-                <CardDescription>Application information</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div>
-                  <span className="font-medium">Authentication:</span>
-                  <p className="text-sm text-green-600">Active</p>
-                </div>
-                <div>
-                  <span className="font-medium">Session:</span>
-                  <p className="text-sm text-green-600">Valid</p>
-                </div>
-                <div>
-                  <span className="font-medium">API Connection:</span>
-                  <p className="text-sm text-green-600">Connected</p>
-                </div>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Lập lịch & đăng tự động</CardTitle>
+              <CardDescription>Đa nền tảng, phê duyệt trước khi đăng</CardDescription>
+            </CardHeader>
+            <CardContent>
+              Trung tâm hoá đăng bài trên TikTok, Facebook, Instagram với quy trình phê duyệt rõ ràng.
+            </CardContent>
+          </Card>
+        </div>
 
-            <div className="md:col-span-2 lg:col-span-3">
-              <QuickSocialLink />
-            </div>
-          </div>
-        )}
+        <div className="mt-12 flex items-center justify-center gap-4">
+          <Button onClick={() => router.push("/login")} size="lg">
+            Bắt đầu ngay
+          </Button>
+          <Button variant="outline" onClick={() => router.push("/dashboard")}>Xem bảng điều khiển</Button>
+        </div>
       </div>
     </div>
   )

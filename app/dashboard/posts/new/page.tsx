@@ -103,7 +103,7 @@ export default function NewPostPage() {
       })
       if (error) throw new Error(error.message || 'Failed to create post')
       if ((data as unknown as { success?: boolean })?.success !== false) {
-        router.replace('/social-accounts')
+        router.replace('/dashboard')
       } else {
         throw new Error((data as unknown as { message?: string })?.message || 'Failed to create post')
       }

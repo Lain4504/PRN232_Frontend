@@ -13,18 +13,39 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Bell, Search, User, Settings, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { logoutUser } from "@/app/actions/auth";
+import { useAuthStore } from "@/lib/store/auth-store";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export function AdminHeader() {
+  const router = useRouter();
+  const { logout } = useAuthStore();
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      await logoutUser();
+      logout();
+      router.push("/login");
+    } catch (e) {
+      console.error("Logout error:", e);
+      logout();
+      router.push("/login");
+    } finally {
+      setLoggingOut(false);
+    }
+  };
+
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-      <div className="flex items-center gap-2 px-4">
-        <SidebarTrigger className="-ml-1" />
+    <header className="flex h-14 sm:h-16 w-full shrink-0 items-center gap-2 px-1 sm:px-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+      <div className="flex items-center gap-2 px-1 sm:px-2 md:px-4 min-w-0 w-full">
+        <SidebarTrigger className="-ml-1 shrink-0" />
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-          <Input
-            placeholder="Tìm kiếm..."
-            className="w-80 pl-10"
-          />
+          <Input placeholder="Tìm kiếm..." className="w-48 sm:w-64 md:w-80 pl-10" />
         </div>
       </div>
 
@@ -63,9 +84,9 @@ export function AdminHeader() {
               <span>Cài đặt</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600">
+            <DropdownMenuItem className="text-red-600" onClick={handleLogout} disabled={loggingOut}>
               <LogOut className="mr-2 h-4 w-4" />
-              <span>Đăng xuất</span>
+              <span>{loggingOut ? 'Đang đăng xuất...' : 'Đăng xuất'}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

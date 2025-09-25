@@ -12,7 +12,7 @@ export default function AdminLayout({
       <AdminSidebar />
       <SidebarInset>
         <AdminHeader />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-2 sm:p-6">
           {children}
         </main>
       </SidebarInset>

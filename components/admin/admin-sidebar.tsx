@@ -29,32 +29,32 @@ import {
 const navigation = [
   {
     name: "Dashboard",
-    href: "/admin",
+    href: "/dashboard",
     icon: LayoutDashboard,
   },
   {
     name: "Người dùng",
-    href: "/admin/users",
+    href: "/dashboard/users",
     icon: Users,
   },
   {
     name: "Sách",
-    href: "/admin/books",
+    href: "/dashboard/books",
     icon: BookOpen,
   },
   {
     name: "Đơn hàng",
-    href: "/admin/orders",
+    href: "/dashboard/orders",
     icon: ShoppingCart,
   },
   {
     name: "Báo cáo",
-    href: "/admin/reports",
+    href: "/dashboard/reports",
     icon: BarChart3,
   },
   {
     name: "Tài liệu",
-    href: "/admin/documents",
+    href: "/dashboard/documents",
     icon: FileText,
   },
 ];
@@ -62,7 +62,7 @@ const navigation = [
 const settings = [
   {
     name: "Cài đặt",
-    href: "/admin/settings",
+    href: "/dashboard/settings",
     icon: Settings,
   },
 ];
@@ -73,11 +73,11 @@ export function AdminSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-4 py-2">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+        <div className="flex items-center gap-2 px-4 py-2 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center">
+          <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
             <LayoutDashboard className="size-4" />
           </div>
-          <div className="grid flex-1 text-left text-sm leading-tight">
+          <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
             <span className="truncate font-semibold">Admin Panel</span>
             <span className="truncate text-xs">Quản lý hệ thống</span>
           </div>
