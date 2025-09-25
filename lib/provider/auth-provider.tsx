@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuthStore } from "@/lib/store/auth-store"
 import { getCurrentUser } from "@/app/actions/auth"
 import { SocialAccount, SocialAccountsResponse } from '@/lib/provider/social-types'
+import { fetchRest } from '@/lib/custom-api/rest-client'
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { setUser, setIsAuthenticated, isAuthenticated, updateUserSocialAccounts } = useAuthStore()
@@ -21,18 +22,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             
             // Load social accounts for the user
             try {
-              const response = await fetch(`/api/social/accounts/user/${user.id}`, {
+              const { data, error } = await fetchRest<SocialAccountsResponse>(`/social/accounts/user/${user.id}`, {
                 method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
+                requireAuth: true
               })
 
-              if (response.ok) {
-                const data: SocialAccountsResponse = await response.json()
-                if (data.success) {
-                  updateUserSocialAccounts(data.data)
-                }
+              if (!error && data && (data as any).success) {
+                updateUserSocialAccounts((data as any).data)
               }
             } catch (error) {
               console.error('Error loading social accounts:', error)
