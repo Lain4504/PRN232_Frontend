@@ -14,6 +14,9 @@ export const endpoints = {
   // Opt-in available targets and linking
   availableTargets: (provider: 'facebook') => `/social-auth/${provider}/available-targets`,
   linkSelectedTargets: () => `/social-auth/link-selected`,
+
+  // Posts
+  createPost: () => `/posts`,
 }
 
 export type Endpoints = typeof endpoints
