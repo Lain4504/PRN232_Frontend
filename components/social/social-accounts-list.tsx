@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -8,7 +8,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Facebook, Instagram, Twitter, Trash2, ExternalLink, Loader2 } from 'lucide-react'
 import { SocialAccount, SocialAccountsResponse } from '@/lib/provider/social-types'
-import { useAuth } from '@/hooks/use-auth'
 import { fetchRest } from '@/lib/custom-api/rest-client'
 import { endpoints } from '@/lib/custom-api/endpoints'
 
@@ -23,9 +22,7 @@ export function SocialAccountsList({ userId, onAccountUnlinked, className }: Soc
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [unlinkingId, setUnlinkingId] = useState<string | null>(null)
-  const { user } = useAuth()
-
-  const loadSocialAccounts = async () => {
+  const loadSocialAccounts = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
@@ -39,10 +36,10 @@ export function SocialAccountsList({ userId, onAccountUnlinked, className }: Soc
         throw new Error(error.message || 'Failed to load social accounts')
       }
 
-      if (data && (data as any).success) {
-        setAccounts((data as any).data)
+      if (data && data.success) {
+        setAccounts(data.data)
       } else {
-        throw new Error((data as any)?.message || 'Failed to load social accounts')
+        throw new Error('Failed to load social accounts')
       }
 
     } catch (error) {
@@ -51,7 +48,7 @@ export function SocialAccountsList({ userId, onAccountUnlinked, className }: Soc
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [userId])
 
   const handleUnlinkAccount = async (socialAccountId: string) => {
     if (!confirm('Are you sure you want to unlink this account? This action cannot be undone.')) {
@@ -70,11 +67,11 @@ export function SocialAccountsList({ userId, onAccountUnlinked, className }: Soc
         throw new Error(error.message || 'Failed to unlink account')
       }
 
-      if ((data as any)?.success) {
-        setAccounts(prev => prev.filter(account => account.id !== socialAccountId))
+      if ((data as unknown as { success?: boolean })?.success) {
+        setAccounts((prev: SocialAccount[]) => prev.filter((account: SocialAccount) => account.id !== socialAccountId))
         onAccountUnlinked?.()
       } else {
-        throw new Error((data as any)?.message || 'Failed to unlink account')
+        throw new Error((data as unknown as { message?: string })?.message || 'Failed to unlink account')
       }
 
     } catch (error) {
@@ -115,7 +112,7 @@ export function SocialAccountsList({ userId, onAccountUnlinked, className }: Soc
     if (userId) {
       loadSocialAccounts()
     }
-  }, [userId])
+  }, [userId, loadSocialAccounts])
 
   if (isLoading) {
     return (

@@ -1,6 +1,5 @@
 import { DataTable } from "@/components/admin/data-table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
 // Mock data for the data table
 const mockUsers = [

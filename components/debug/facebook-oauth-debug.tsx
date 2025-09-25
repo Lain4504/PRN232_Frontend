@@ -3,12 +3,25 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { useAuthStore } from '@/lib/store/auth-store'
+import { FacebookAuthResponse, SocialLinkResponse } from '@/lib/provider/social-types'
+import { User } from '@/lib/provider/user-types'
 import { fetchRest } from '@/lib/custom-api/rest-client'
 
 export function FacebookOAuthDebug() {
-  const [debugInfo, setDebugInfo] = useState<any>(null)
+  const [debugInfo, setDebugInfo] = useState<{
+    authResponse?: FacebookAuthResponse
+    user?: User | null
+    testCallbackUrl?: string
+    callbackTest?: {
+      url: string
+      response?: SocialLinkResponse | unknown
+      status?: number | string | undefined
+      error?: string
+    }
+    error?: string
+    timestamp: string
+  } | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const { user } = useAuthStore()
 
@@ -18,7 +31,7 @@ export function FacebookOAuthDebug() {
       setDebugInfo(null)
 
       console.log('=== Testing Facebook Auth URL ===')
-      const { data: authData, error } = await fetchRest('/social-auth/facebook', {
+      const { data: authData, error } = await fetchRest<FacebookAuthResponse>('/social-auth/facebook', {
         method: 'GET',
         requireAuth: true
       })
@@ -54,11 +67,11 @@ export function FacebookOAuthDebug() {
   }
 
   const testCallback = async () => {
+    const testUrl = `/social-auth/facebook/callback?code=test_code&state=test_state`
     try {
       setIsLoading(true)
       
-      const testUrl = `/social-auth/facebook/callback?code=test_code&state=test_state`
-      const { data, error } = await fetchRest(testUrl, {
+      const { data } = await fetchRest<SocialLinkResponse>(testUrl, {
         method: 'GET',
         requireAuth: true
       })
@@ -66,22 +79,25 @@ export function FacebookOAuthDebug() {
       const result = data
       console.log('Callback test result:', result)
       
-      setDebugInfo((prev: any) => ({
+      setDebugInfo((prev) => ({
         ...prev,
         callbackTest: {
           url: testUrl,
           response: result,
-          status: (result as any)?.status
-        }
+          status: (result as unknown as { status?: number | string })?.status
+        },
+        timestamp: prev?.timestamp ?? new Date().toISOString()
       }))
 
     } catch (error) {
       console.error('Callback test failed:', error)
-      setDebugInfo((prev: any) => ({
+      setDebugInfo((prev) => ({
         ...prev,
         callbackTest: {
+          url: testUrl,
           error: error instanceof Error ? error.message : 'Unknown error'
-        }
+        },
+        timestamp: prev?.timestamp ?? new Date().toISOString()
       }))
     } finally {
       setIsLoading(false)

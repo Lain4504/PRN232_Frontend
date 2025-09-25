@@ -8,7 +8,7 @@ import { FacebookLinkButton } from '@/components/auth/facebook-link-button'
 import { FacebookPageTokenLink } from '@/components/auth/facebook-page-token-link'
 import { SocialAccountsList } from '@/components/social/social-accounts-list'
 import { FacebookOAuthDebug } from '@/components/debug/facebook-oauth-debug'
-import { Facebook, Plus, RefreshCw } from 'lucide-react'
+import { Facebook, Plus } from 'lucide-react'
 
 export default function SocialAccountsPage() {
   const { user, isAuthenticated } = useAuth()

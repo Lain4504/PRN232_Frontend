@@ -7,12 +7,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { fetchRest } from '@/lib/custom-api/rest-client'
 import { endpoints } from '@/lib/custom-api/endpoints'
+import { SocialLinkResponse } from '@/lib/provider/social-types'
 
 export default function FacebookCallbackPage() {
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<SocialLinkResponse['data'] | null>(null)
 
   useEffect(() => {
     const processCallback = async () => {
@@ -24,7 +25,7 @@ export default function FacebookCallbackPage() {
           throw new Error('Authorization code is missing')
         }
 
-        const { data, error } = await fetchRest(endpoints.facebookCallback(code, state || undefined), {
+        const { data, error } = await fetchRest<SocialLinkResponse>(endpoints.facebookCallback(code, state || undefined), {
           method: 'GET',
           requireAuth: true
         })
@@ -33,7 +34,7 @@ export default function FacebookCallbackPage() {
           throw new Error(error.message || 'Failed to link Facebook account')
         }
 
-        const result: any = data
+        const result = data
 
         if (result?.success) {
           setStatus('success')
@@ -47,7 +48,7 @@ export default function FacebookCallbackPage() {
             }, window.location.origin)
           }
         } else {
-          throw new Error(result?.message || 'Failed to link Facebook account')
+          throw new Error('Failed to link Facebook account')
         }
 
       } catch (error) {

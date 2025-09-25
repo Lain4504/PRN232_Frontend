@@ -8,9 +8,10 @@ import { Facebook, Loader2, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { fetchRest } from '@/lib/custom-api/rest-client'
 import { endpoints } from '@/lib/custom-api/endpoints'
+import { SocialLinkResponse } from '@/lib/provider/social-types'
 
 interface FacebookPageTokenLinkProps {
-  onSuccess?: (data: any) => void
+  onSuccess?: (data: SocialLinkResponse['data']) => void
   onError?: (error: string) => void
   className?: string
 }
@@ -39,7 +40,7 @@ export function FacebookPageTokenLink({
     try {
       setIsLoading(true)
 
-      const { data, error } = await fetchRest(endpoints.facebookLinkPageToken(), {
+      const { data, error } = await fetchRest<SocialLinkResponse>(endpoints.facebookLinkPageToken(), {
         method: 'POST',
         requireAuth: true,
         body: {
@@ -53,14 +54,14 @@ export function FacebookPageTokenLink({
         throw new Error(error.message || 'Failed to link Facebook page')
       }
 
-      const result: any = data
+      const result = data
       
       if (result?.success) {
         onSuccess?.(result.data)
         setPageAccessToken('')
         setUserAccessToken('')
       } else {
-        throw new Error(result?.message || 'Failed to link Facebook page')
+        throw new Error((result as unknown as { message?: string })?.message || 'Failed to link Facebook page')
       }
 
     } catch (error) {

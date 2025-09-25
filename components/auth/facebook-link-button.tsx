@@ -3,13 +3,12 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Facebook, Loader2 } from 'lucide-react'
-import { FacebookAuthResponse } from '@/lib/provider/social-types'
-import { useAuthStore } from '@/lib/store/auth-store'
+import { FacebookAuthResponse, SocialLinkResponse } from '@/lib/provider/social-types'
 import { fetchRest } from '@/lib/custom-api/rest-client'
 import { endpoints } from '@/lib/custom-api/endpoints'
 
 interface FacebookLinkButtonProps {
-  onSuccess?: (data: any) => void
+  onSuccess?: (data: SocialLinkResponse['data']) => void
   onError?: (error: string) => void
   className?: string
   variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link' | 'destructive'
@@ -38,10 +37,10 @@ export function FacebookLinkButton({
         throw new Error(error.message || 'Failed to get Facebook authorization URL')
       }
 
-      const apiData: any = data
+      const apiData = data
 
       if (apiData?.success) {
-        let authUrl = apiData.data.authUrl as string
+        let authUrl = apiData.data.authUrl
 
         if (authUrl.includes('https://www.facebook.com?') && !authUrl.includes('/dialog/oauth')) {
           const url = new URL(authUrl)
@@ -59,7 +58,7 @@ export function FacebookLinkButton({
           if (event.origin !== window.location.origin) return
 
           if (event.data.type === 'FACEBOOK_AUTH_SUCCESS') {
-            onSuccess?.(event.data.data)
+            onSuccess?.(event.data.data as SocialLinkResponse['data'])
             popup?.close()
             window.removeEventListener('message', messageListener)
           } else if (event.data.type === 'FACEBOOK_AUTH_ERROR') {

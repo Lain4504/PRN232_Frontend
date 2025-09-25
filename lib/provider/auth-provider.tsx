@@ -3,11 +3,9 @@
 import { useEffect, useState } from 'react'
 import { useAuthStore } from "@/lib/store/auth-store"
 import { getCurrentUser } from "@/app/actions/auth"
-import { SocialAccount, SocialAccountsResponse } from '@/lib/provider/social-types'
-import { fetchRest } from '@/lib/custom-api/rest-client'
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { setUser, setIsAuthenticated, isAuthenticated, updateUserSocialAccounts } = useAuthStore()
+  const { setUser, setIsAuthenticated, isAuthenticated } = useAuthStore()
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -19,21 +17,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (user) {
             setUser(user)
             setIsAuthenticated(true)
-            
-            // Load social accounts for the user
-            try {
-              const { data, error } = await fetchRest<SocialAccountsResponse>(`/social/accounts/user/${user.id}`, {
-                method: 'GET',
-                requireAuth: true
-              })
-
-              if (!error && data && (data as any).success) {
-                updateUserSocialAccounts((data as any).data)
-              }
-            } catch (error) {
-              console.error('Error loading social accounts:', error)
-              // Don't fail the entire auth process if social accounts fail to load
-            }
           } else {
             setUser(null)
             setIsAuthenticated(false)
@@ -49,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     fetchUser()
-  }, [setUser, setIsAuthenticated, isAuthenticated, updateUserSocialAccounts])
+  }, [setUser, setIsAuthenticated, isAuthenticated])
 
   // Show loading state while checking authentication
   if (isLoading) {
