@@ -15,9 +15,11 @@ interface SocialAccountsListProps {
   userId: string
   onAccountUnlinked?: () => void
   className?: string
+  onAccountClick?: (account: SocialAccount) => void
+  onTargetClick?: (target: SocialAccount['targets'][number], account: SocialAccount) => void
 }
 
-export function SocialAccountsList({ userId, onAccountUnlinked, className }: SocialAccountsListProps) {
+export function SocialAccountsList({ userId, onAccountUnlinked, className, onAccountClick, onTargetClick }: SocialAccountsListProps) {
   const [accounts, setAccounts] = useState<SocialAccount[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -164,14 +166,25 @@ export function SocialAccountsList({ userId, onAccountUnlinked, className }: Soc
         ) : (
           <div className="space-y-4">
             {accounts.map((account) => (
-              <div key={account.id} className="border rounded-lg p-4">
+              <div
+                key={account.id}
+                className={`border rounded-lg p-4`}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className={`p-2 rounded-full ${getProviderColor(account.provider)} text-white`}>
                       {getProviderIcon(account.provider)}
                     </div>
                     <div>
-                      <h3 className="font-medium capitalize">{account.provider}</h3>
+                      <h3
+                        className={`font-medium capitalize ${onAccountClick ? 'cursor-pointer hover:underline underline-offset-2' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onAccountClick?.(account)
+                        }}
+                      >
+                        {account.provider}
+                      </h3>
                       <p className="text-sm text-gray-500">ID: {account.providerUserId}</p>
                     </div>
                   </div>
@@ -182,7 +195,7 @@ export function SocialAccountsList({ userId, onAccountUnlinked, className }: Soc
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleUnlinkAccount(account.id)}
+                      onClick={(e) => { e.stopPropagation(); handleUnlinkAccount(account.id) }}
                       disabled={unlinkingId === account.id}
                     >
                       {unlinkingId === account.id ? (
@@ -201,7 +214,11 @@ export function SocialAccountsList({ userId, onAccountUnlinked, className }: Soc
                       <h4 className="text-sm font-medium mb-2">Pages & Groups ({account.targets.length})</h4>
                       <div className="space-y-2">
                         {account.targets.map((target) => (
-                          <div key={target.id} className="flex items-center space-x-3 p-2 bg-gray-50 rounded">
+                          <div
+                            key={target.id}
+                            className={`flex items-center space-x-3 p-2 rounded ${onTargetClick ? 'bg-white hover:bg-gray-50 border cursor-pointer transition-colors' : 'bg-gray-50'}`}
+                            onClick={() => onTargetClick?.(target, account)}
+                          >
                             <Avatar className="h-8 w-8">
                               <AvatarImage src={target.profilePictureUrl} />
                               <AvatarFallback>

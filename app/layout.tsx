@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {Livvic} from "next/font/google";
 import "./globals.css";
 import ClientProviders from "@/lib/provider/client-providers";
+import { Toaster } from "sonner";
 
 const livvic = Livvic({
   subsets: ["latin"],
@@ -28,6 +29,7 @@ export default function RootLayout({
       <ClientProviders>
         {children}
       </ClientProviders>
+      <Toaster richColors position="top-center" />
       </body>
       </html>
   );
