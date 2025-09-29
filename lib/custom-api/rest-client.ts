@@ -1,4 +1,4 @@
-import { getAuthTokens } from '@/app/actions/auth'
+import { createClient as createBrowserClient } from '@/lib/supabase/client'
 
 interface RestResponse<T = unknown> {
   data?: T
@@ -18,6 +18,7 @@ interface RestRequestOptions {
 /**
  * Utility function to make REST API requests
  * Works in both client and server environments
+ * Uses Supabase authentication
  * 
  * @param endpoint API endpoint path (without base URL)
  * @param options REST request options
@@ -50,20 +51,14 @@ export async function fetchRest<T = unknown>(
   if (requireAuth) {
     let accessToken: string | undefined
 
-    if (isServer) {
-      // Server-side: Get token from cookies using dynamic import
-      try {
-        const { cookies } = await import('next/headers')
-        const cookieStore = await cookies()
-        const token = cookieStore.get('accessToken')
-        accessToken = token?.value
-      } catch (error) {
-        console.error('Error getting token from cookies:', error)
-      }
-    } else {
-      // Client-side: Get token from auth store
-      const { accessToken: clientToken } = await getAuthTokens()
-      accessToken = clientToken
+    // Always use client-side Supabase for now
+    // Server-side API calls should be done through Server Actions or Route Handlers
+    try {
+      const supabase = createBrowserClient()
+      const { data } = await supabase.auth.getSession()
+      accessToken = data.session?.access_token
+    } catch (error) {
+      console.error('Error getting token from Supabase:', error)
     }
 
     if (!accessToken) {
