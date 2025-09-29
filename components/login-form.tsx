@@ -85,6 +85,26 @@ export function LoginForm({
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
             </Button>
+            <div className="flex flex-col gap-2 mt-4 text-center">
+              <a
+                href="/auth/forgot-password"
+                className="text-blue-600 hover:underline text-sm"
+              >
+                Quên mật khẩu?
+              </a>
+              <a
+                href="/auth/sign-up"
+                className="text-blue-600 hover:underline text-sm"
+              >
+                Chưa có tài khoản? Đăng ký
+              </a>
+              <a
+                href="/auth/update-password"
+                className="text-blue-600 hover:underline text-sm"
+              >
+                Đổi mật khẩu
+              </a>
+            </div>
           </form>
         </CardContent>
       </Card>
