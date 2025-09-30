@@ -11,17 +11,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Bell, Search, User, Settings, LogOut } from "lucide-react";
+import { Bell, Search, User, Settings, LogOut, KeyRound } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/lib/store/auth-store";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { UpdatePasswordForm } from "@/components/update-password-form";
 
 export function AdminHeader() {
   const router = useRouter();
   const { logout } = useAuthStore();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [openChangePassword, setOpenChangePassword] = useState(false);
   const supabase = createClient();
 
   const handleLogout = async () => {
@@ -76,13 +79,17 @@ export function AdminHeader() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push("/dashboard/profile")}> 
               <User className="mr-2 h-4 w-4" />
               <span>Hồ sơ</span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push("/dashboard/settings")}> 
               <Settings className="mr-2 h-4 w-4" />
               <span>Cài đặt</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setOpenChangePassword(true)}>
+              <KeyRound className="mr-2 h-4 w-4" />
+              <span>Đổi mật khẩu</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-600" onClick={handleLogout} disabled={loggingOut}>
@@ -92,6 +99,18 @@ export function AdminHeader() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      {/* Change Password Dialog */}
+      <Dialog open={openChangePassword} onOpenChange={setOpenChangePassword}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Đổi mật khẩu</DialogTitle>
+          </DialogHeader>
+          <div className="pt-2">
+            <UpdatePasswordForm onSuccess={() => { setOpenChangePassword(false); window.location.href = "/dashboard"; }} />
+          </div>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }

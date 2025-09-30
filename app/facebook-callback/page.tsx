@@ -5,9 +5,9 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2, CheckCircle, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { fetchRest } from '@/lib/custom-api/rest-client'
 import { endpoints } from '@/lib/custom-api/endpoints'
 import { SocialLinkResponse } from '@/lib/provider/social-types'
+import { getWithAuth } from '@/lib/api/client'
 
 export default function FacebookCallbackPage() {
   const searchParams = useSearchParams()
@@ -27,16 +27,8 @@ export default function FacebookCallbackPage() {
           throw new Error('Authorization code is missing')
         }
 
-        const { data, error } = await fetchRest<SocialLinkResponse>(endpoints.facebookCallback(code, userId || '', state || undefined), {
-          method: 'GET',
-          requireAuth: true
-        })
-
-        if (error) {
-          throw new Error(error.message || 'Failed to link Facebook account')
-        }
-
-        const result = data
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5283/api'
+        const result = await getWithAuth<SocialLinkResponse>(`${apiUrl}${endpoints.facebookCallback(code, userId || '', state || undefined)}`)
 
         if (result?.success) {
           setStatus('success')

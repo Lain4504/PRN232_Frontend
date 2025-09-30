@@ -102,12 +102,6 @@ export function LoginForm({
               >
                 Chưa có tài khoản? Đăng ký
               </a>
-              <a
-                href="/auth/update-password"
-                className="text-blue-600 hover:underline text-sm"
-              >
-                Đổi mật khẩu
-              </a>
             </div>
           </form>
         </CardContent>

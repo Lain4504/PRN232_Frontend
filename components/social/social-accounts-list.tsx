@@ -8,8 +8,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Facebook, Instagram, Twitter, Trash2, ExternalLink, Loader2 } from 'lucide-react'
 import { SocialAccount, SocialAccountsResponse } from '@/lib/provider/social-types'
-import { fetchRest } from '@/lib/custom-api/rest-client'
 import { endpoints } from '@/lib/custom-api/endpoints'
+import { createClient } from '@/lib/supabase/client'
 
 interface SocialAccountsListProps {
   userId: string
@@ -29,20 +29,25 @@ export function SocialAccountsList({ userId, onAccountUnlinked, className, onAcc
       setIsLoading(true)
       setError(null)
 
-      const { data, error } = await fetchRest<SocialAccountsResponse>(endpoints.socialAccountsByUser(userId), {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (!token) throw new Error('Authentication required')
+      
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5283/api'
+      const response = await fetch(`${apiUrl}${endpoints.socialAccountsByUser(userId)}`, {
         method: 'GET',
-        requireAuth: true
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
       })
 
-      if (error) {
-        throw new Error(error.message || 'Failed to load social accounts')
-      }
-
-      if (data && data.success) {
-        setAccounts(data.data)
-      } else {
+      const data: SocialAccountsResponse = await response.json()
+      if (!response.ok || !data?.success) {
         throw new Error('Failed to load social accounts')
       }
+      setAccounts(data.data)
 
     } catch (error) {
       console.error('Error loading social accounts:', error)
@@ -60,21 +65,27 @@ export function SocialAccountsList({ userId, onAccountUnlinked, className, onAcc
     try {
       setUnlinkingId(socialAccountId)
 
-      const { data, error } = await fetchRest(endpoints.socialUnlink(userId, socialAccountId), {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (!token) throw new Error('Authentication required')
+      
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5283/api'
+      const response = await fetch(`${apiUrl}${endpoints.socialUnlink(userId, socialAccountId)}`, {
         method: 'DELETE',
-        requireAuth: true
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
       })
 
-      if (error) {
-        throw new Error(error.message || 'Failed to unlink account')
+      const data = await response.json()
+      if (!response.ok || !(data as { success?: boolean })?.success) {
+        throw new Error((data as { message?: string })?.message || 'Failed to unlink account')
       }
-
-      if ((data as unknown as { success?: boolean })?.success) {
-        setAccounts((prev: SocialAccount[]) => prev.filter((account: SocialAccount) => account.id !== socialAccountId))
-        onAccountUnlinked?.()
-      } else {
-        throw new Error((data as unknown as { message?: string })?.message || 'Failed to unlink account')
-      }
+      
+      setAccounts((prev: SocialAccount[]) => prev.filter((account: SocialAccount) => account.id !== socialAccountId))
+      onAccountUnlinked?.()
 
     } catch (error) {
       console.error('Error unlinking account:', error)

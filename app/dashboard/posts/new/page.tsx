@@ -10,9 +10,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Loader2, ChevronDown, Check } from 'lucide-react'
 import { useAuthStore } from '@/lib/store/auth-store'
-import { fetchRest } from '@/lib/custom-api/rest-client'
 import { endpoints } from '@/lib/custom-api/endpoints'
 import { SocialAccount, SocialAccountsResponse } from '@/lib/provider/social-types'
+import { getWithAuth, postWithAuth } from '@/lib/api/client'
 
 type CreatePostBody = {
   userId: string
@@ -41,11 +41,8 @@ export default function NewPostPage() {
       try {
         setLoading(true)
         setError(null)
-        const { data, error } = await fetchRest<SocialAccountsResponse>(endpoints.socialAccountsByUser(user.id), {
-          method: 'GET',
-          requireAuth: true
-        })
-        if (error) throw new Error(error.message || 'Failed to load social accounts')
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5283/api'
+        const data = await getWithAuth<SocialAccountsResponse>(`${apiUrl}${endpoints.socialAccountsByUser(user.id)}`)
         if (data?.success) {
           setAccounts(data.data)
         } else {
@@ -96,12 +93,8 @@ export default function NewPostPage() {
     }
     try {
       setSubmitting(true)
-      const { data, error } = await fetchRest<{ success?: boolean; message?: string }>(endpoints.createPost(), {
-        method: 'POST',
-        body,
-        requireAuth: true
-      })
-      if (error) throw new Error(error.message || 'Failed to create post')
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5283/api'
+      const data = await postWithAuth<{ success?: boolean; message?: string }>(`${apiUrl}${endpoints.createPost()}` , body)
       if ((data as unknown as { success?: boolean })?.success !== false) {
         router.replace('/dashboard')
       } else {
