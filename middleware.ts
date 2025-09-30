@@ -7,8 +7,11 @@ export async function middleware(request: NextRequest) {
   const { accessToken } = await getAuthTokens()
 
   // Public routes that don't require authentication
-  const publicRoutes = ['/login', '/facebook-callback']
-  const isPublicRoute = publicRoutes.includes(pathname)
+  const publicRoutes = ['/', '/login', '/facebook-callback']
+  const publicPatterns = ['/dashboard', '/organizations']
+
+  const isPublicRoute = publicRoutes.includes(pathname) ||
+    publicPatterns.some(pattern => pathname.startsWith(pattern))
 
   // If user is on login page and already authenticated, redirect to home
   if (pathname === '/login' && accessToken) {

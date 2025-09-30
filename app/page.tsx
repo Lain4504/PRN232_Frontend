@@ -56,6 +56,7 @@ export default function Home() {
             Bắt đầu ngay
           </Button>
           <Button variant="outline" onClick={() => router.push("/dashboard")}>Xem bảng điều khiển</Button>
+          <Button variant="outline" onClick={() => router.push("/organizations")}>Xem tổ chức</Button>
         </div>
       </div>
     </div>

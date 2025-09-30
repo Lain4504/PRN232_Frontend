@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Enable hot reload and React strict mode
+  reactStrictMode: true,
 };
 
 export default nextConfig;
