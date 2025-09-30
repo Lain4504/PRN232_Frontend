@@ -1,5 +1,5 @@
 {
-  "name": "bookstore-frontend",
+  "name": "aisam-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -24,7 +24,7 @@
     "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "jwt-decode": "^4.0.0",
+    "cmdk": "^1.1.1",
     "lucide-react": "^0.544.0",
     "next": "^15.5.3",
     "next-themes": "^0.4.6",
@@ -33,8 +33,7 @@
     "react-dom": "^19.1.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
-    "vaul": "^1.1.2",
-    "zustand": "^5.0.8"
+    "vaul": "^1.1.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

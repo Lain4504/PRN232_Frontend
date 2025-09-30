@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { Livvic } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import ClientProviders from "@/lib/provider/client-providers";
 import { Toaster } from "sonner";
-import { LayoutWrapper } from "@/components/layout-wrapper";
 
-const livvic = Livvic({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-livvic",
+  variable: "--font-inter",
   display: "swap",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "900"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -25,15 +24,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${livvic.className} ${livvic.variable}  antialiased`}
+        className={`${inter.className} ${inter.variable} antialiased`}
         suppressHydrationWarning
       >
         <ClientProviders>
-            <LayoutWrapper>
-              {children}
-            </LayoutWrapper>
+            {children}
+            <Toaster />
         </ClientProviders>
-        <Toaster richColors position="top-center" />
       </body>
     </html>
   );

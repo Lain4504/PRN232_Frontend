@@ -9,6 +9,9 @@ export async function updateSession(request: NextRequest) {
 
   // If env vars are not set, skip middleware (mirrors demo repo behavior)
   if (!hasEnvVars) {
+    console.warn(
+      "Skipping auth middleware as NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY is not set",
+    );
     return supabaseResponse;
   }
 

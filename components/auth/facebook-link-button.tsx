@@ -3,9 +3,13 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Facebook, Loader2 } from 'lucide-react'
-import { FacebookAuthResponse, SocialLinkResponse } from '@/lib/provider/social-types'
-import { endpoints } from '@/lib/custom-api/endpoints'
-import { getWithAuth } from '@/lib/api/client'
+import { SocialLinkResponse } from '@/lib/provider/social-types'
+import { api, endpoints } from '@/lib/api'
+
+interface FacebookAuthData {
+  authUrl: string;
+  state: string;
+}
 
 interface FacebookLinkButtonProps {
   onSuccess?: (data: SocialLinkResponse['data']) => void
@@ -28,8 +32,7 @@ export function FacebookLinkButton({
     try {
       setIsLoading(true)
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5283/api'
-      const apiData = await getWithAuth<FacebookAuthResponse>(`${apiUrl}${endpoints.facebookAuth()}`)
+      const apiData = await api.get<FacebookAuthData>(endpoints.facebookAuth())
 
       if (apiData?.success) {
         let authUrl = apiData.data.authUrl
