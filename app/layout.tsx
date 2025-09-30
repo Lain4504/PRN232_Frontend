@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import {Livvic} from "next/font/google";
+import { Livvic } from "next/font/google";
 import "./globals.css";
 import ClientProviders from "@/lib/provider/client-providers";
 import { Toaster } from "sonner";
+import { LayoutWrapper } from "@/components/layout-wrapper";
 
 const livvic = Livvic({
   subsets: ["latin"],
@@ -17,20 +18,23 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-                                     children,
-                                   }: Readonly<{
+  children,
+}: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-      <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-          className={`${livvic.className} ${livvic.variable}  antialiased`}
+        className={`${livvic.className} ${livvic.variable}  antialiased`}
+        suppressHydrationWarning
       >
-      <ClientProviders>
-        {children}
-      </ClientProviders>
-      <Toaster richColors position="top-center" />
+        <ClientProviders>
+            <LayoutWrapper>
+              {children}
+            </LayoutWrapper>
+        </ClientProviders>
+        <Toaster richColors position="top-center" />
       </body>
-      </html>
+    </html>
   );
 }

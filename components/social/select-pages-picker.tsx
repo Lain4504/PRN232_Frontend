@@ -13,7 +13,7 @@ import { AvailableTargetsResponse, LinkSelectedResponse } from "@/lib/provider/s
 import { useAuthStore } from "@/lib/store/auth-store"
 import { getWithAuth, postWithAuth } from '@/lib/api/client'
 import { useIsMobile } from "@/hooks/use-mobile"
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "@/components/ui/drawer"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 type Provider = 'facebook'
