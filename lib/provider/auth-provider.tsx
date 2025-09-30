@@ -2,25 +2,34 @@
 
 import { useEffect, useState } from 'react'
 import { useAuthStore } from "@/lib/store/auth-store"
-import { getCurrentUser } from "@/app/actions/auth"
+import { createClient } from "@/lib/supabase/client"
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { setUser, setIsAuthenticated, isAuthenticated } = useAuthStore()
+  const { setUser, setIsAuthenticated } = useAuthStore()
   const [isLoading, setIsLoading] = useState(true)
+  const supabase = createClient()
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        // Only fetch user if not already authenticated or user data is missing
-        if (!isAuthenticated || !useAuthStore.getState().user) {
-          const user = await getCurrentUser()
-          if (user) {
-            setUser(user)
-            setIsAuthenticated(true)
-          } else {
-            setUser(null)
-            setIsAuthenticated(false)
-          }
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (session?.user) {
+          const supabaseUser = session.user
+          setUser({
+            id: supabaseUser.id,
+            email: supabaseUser.email!,
+            username: supabaseUser.email || '',
+            displayName: supabaseUser.user_metadata?.display_name || null,
+            avatarUrl: supabaseUser.user_metadata?.avatar_url || null,
+            backgroundUrl: supabaseUser.user_metadata?.background_url || null,
+            roles: supabaseUser.user_metadata?.roles || ['user'],
+            isVerified: supabaseUser.email_confirmed_at != null,
+          })
+          setIsAuthenticated(true)
+        } else {
+          setUser(null)
+          setIsAuthenticated(false)
         }
       } catch (error) {
         console.error('Error fetching user:', error)
@@ -32,7 +41,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     fetchUser()
-  }, [setUser, setIsAuthenticated, isAuthenticated])
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event)
+        
+        if (session?.user) {
+          const supabaseUser = session.user
+          setUser({
+            id: supabaseUser.id,
+            email: supabaseUser.email!,
+            username: supabaseUser.email || '',
+            displayName: supabaseUser.user_metadata?.display_name || null,
+            avatarUrl: supabaseUser.user_metadata?.avatar_url || null,
+            backgroundUrl: supabaseUser.user_metadata?.background_url || null,
+            roles: supabaseUser.user_metadata?.roles || ['user'],
+            isVerified: supabaseUser.email_confirmed_at != null,
+          })
+          setIsAuthenticated(true)
+        } else {
+          setUser(null)
+          setIsAuthenticated(false)
+        }
+      }
+    )
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [setUser, setIsAuthenticated, supabase])
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -44,4 +82,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return children
-} 
+}

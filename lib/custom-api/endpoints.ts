@@ -15,8 +15,8 @@ export const endpoints = {
   availableTargets: (provider: 'facebook') => `/social-auth/${provider}/available-targets`,
   linkSelectedTargets: () => `/social-auth/link-selected`,
 
-  // Posts
-  createPost: () => `/posts`,
+  // Content/Posts
+  createPost: () => `/content`,
 }
 
 export type Endpoints = typeof endpoints

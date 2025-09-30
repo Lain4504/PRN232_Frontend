@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Loader2, ChevronDown, Check } from 'lucide-react'
-import { useAuth } from '@/hooks/use-auth'
+import { useAuthStore } from '@/lib/store/auth-store'
 import { fetchRest } from '@/lib/custom-api/rest-client'
 import { endpoints } from '@/lib/custom-api/endpoints'
 import { SocialAccount, SocialAccountsResponse } from '@/lib/provider/social-types'
@@ -24,7 +24,7 @@ type CreatePostBody = {
 
 export default function NewPostPage() {
   const router = useRouter()
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated } = useAuthStore()
 
   const [accounts, setAccounts] = useState<SocialAccount[]>([])
   const [selectedAccountId, setSelectedAccountId] = useState<string>('')

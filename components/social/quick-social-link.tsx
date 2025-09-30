@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/hooks/use-auth'
+import { useAuthStore } from '@/lib/store/auth-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { FacebookLinkButton } from '@/components/auth/facebook-link-button'
@@ -8,7 +8,7 @@ import { Facebook, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 
 export function QuickSocialLink() {
-  const { user } = useAuth()
+  const { user } = useAuthStore()
 
   const hasFacebookAccount = user?.socialAccounts?.some(account => account.provider === 'facebook')
 

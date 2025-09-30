@@ -11,7 +11,7 @@ import { Loader2, Search, CheckCircle2 } from "lucide-react"
 import { fetchRest } from "@/lib/custom-api/rest-client"
 import { endpoints } from "@/lib/custom-api/endpoints"
 import { AvailableTargetsResponse, LinkSelectedResponse } from "@/lib/provider/social-types"
-import { useAuth } from "@/hooks/use-auth"
+import { useAuthStore } from "@/lib/store/auth-store"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "@/components/ui/drawer"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -30,7 +30,7 @@ export function SelectPagesPicker({
   onLinked?: () => void
 }) {
   const isMobile = useIsMobile()
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated } = useAuthStore()
 
   const [targets, setTargets] = useState<AvailableTargetsResponse['data']['targets']>([])
   const [selected, setSelected] = useState<Record<string, boolean>>({})

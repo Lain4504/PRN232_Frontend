@@ -31,12 +31,16 @@ export function LoginForm({
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (error) throw error;
+      if (error) throw error
+      else {
       router.push("/dashboard");
+      const accessToken = data.session?.access_token
+      console.log('🎟️ Access Token:', accessToken);
+      }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Facebook, Loader2, AlertCircle } from 'lucide-react'
-import { useAuth } from '@/hooks/use-auth'
+import { useAuthStore } from '@/lib/store/auth-store'
 import { fetchRest } from '@/lib/custom-api/rest-client'
 import { endpoints } from '@/lib/custom-api/endpoints'
 import { SocialLinkResponse } from '@/lib/provider/social-types'
@@ -24,7 +24,7 @@ export function FacebookPageTokenLink({
   const [pageAccessToken, setPageAccessToken] = useState('')
   const [userAccessToken, setUserAccessToken] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const { user } = useAuth()
+  const { user } = useAuthStore()
 
   const handleLinkPage = async () => {
     if (!pageAccessToken.trim()) {

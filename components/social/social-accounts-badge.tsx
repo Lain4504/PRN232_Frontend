@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/hooks/use-auth'
+import { useAuthStore } from '@/lib/store/auth-store'
 import { Badge } from '@/components/ui/badge'
 import { Facebook, Instagram, Twitter } from 'lucide-react'
 import Link from 'next/link'
@@ -11,7 +11,7 @@ interface SocialAccountsBadgeProps {
 }
 
 export function SocialAccountsBadge({ className, showCount = true }: SocialAccountsBadgeProps) {
-  const { user } = useAuth()
+  const { user } = useAuthStore()
 
   if (!user?.socialAccounts || user.socialAccounts.length === 0) {
     return null

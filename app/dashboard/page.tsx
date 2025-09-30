@@ -2,16 +2,17 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuthStore } from "@/lib/store/auth-store";
 import { SocialAccountsList } from "@/components/social/social-accounts-list";
 import { SelectPagesPicker } from "@/components/social/select-pages-picker";
 import { FacebookLinkButton } from "@/components/auth/facebook-link-button";
+import { ApiTestPanel } from "@/components/debug/api-test-panel";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Facebook, Link as LinkIcon, Plus } from "lucide-react";
 
 export default function AdminDashboard() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuthStore();
   const [openPicker, setOpenPicker] = useState(false);
   const router = useRouter();
 
@@ -42,6 +43,9 @@ export default function AdminDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Debug Panel - Remove in production */}
+      <ApiTestPanel />
 
       {isAuthenticated && user && (
         <Card>

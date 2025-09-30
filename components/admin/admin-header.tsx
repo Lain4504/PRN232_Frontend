@@ -13,7 +13,7 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Bell, Search, User, Settings, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { logoutUser } from "@/app/actions/auth";
+import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/lib/store/auth-store";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -22,12 +22,13 @@ export function AdminHeader() {
   const router = useRouter();
   const { logout } = useAuthStore();
   const [loggingOut, setLoggingOut] = useState(false);
+  const supabase = createClient();
 
   const handleLogout = async () => {
     if (loggingOut) return;
     setLoggingOut(true);
     try {
-      await logoutUser();
+      await supabase.auth.signOut();
       logout();
       router.push("/login");
     } catch (e) {
