@@ -8,10 +8,10 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Loader2, Search, CheckCircle2 } from "lucide-react"
-import { fetchRest } from "@/lib/custom-api/rest-client"
 import { endpoints } from "@/lib/custom-api/endpoints"
 import { AvailableTargetsResponse, LinkSelectedResponse } from "@/lib/provider/social-types"
-import { useAuth } from "@/hooks/use-auth"
+import { useAuthStore } from "@/lib/store/auth-store"
+import { getWithAuth, postWithAuth } from '@/lib/api/client'
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -30,7 +30,7 @@ export function SelectPagesPicker({
   onLinked?: () => void
 }) {
   const isMobile = useIsMobile()
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated } = useAuthStore()
 
   const [targets, setTargets] = useState<AvailableTargetsResponse['data']['targets']>([])
   const [selected, setSelected] = useState<Record<string, boolean>>({})
@@ -61,16 +61,12 @@ export function SelectPagesPicker({
       try {
         setIsLoading(true)
         setError(null)
-        const { data, error } = await fetchRest<AvailableTargetsResponse>(endpoints.availableTargets(provider), {
-          method: 'GET',
-          requireAuth: true,
-        })
-        if (error) throw new Error(error.message || 'Failed to load available targets')
-        if (data?.success) {
-          setTargets(data.data.targets || [])
-        } else {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5283/api'
+        const data = await getWithAuth<AvailableTargetsResponse>(`${apiUrl}${endpoints.availableTargets(provider)}`)
+        if (!data?.success) {
           throw new Error('Failed to load available targets')
         }
+        setTargets(data.data.targets || [])
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error')
       } finally {
@@ -109,22 +105,17 @@ export function SelectPagesPicker({
     }
     try {
       setIsLinking(true)
-      const { data, error } = await fetchRest<LinkSelectedResponse>(endpoints.linkSelectedTargets(), {
-        method: 'POST',
-        body: {
-          userId: user.id,
-          provider,
-          providerTargetIds,
-        },
-        requireAuth: true,
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5283/api'
+      const data = await postWithAuth<LinkSelectedResponse>(`${apiUrl}${endpoints.linkSelectedTargets()}`, {
+        userId: user.id,
+        provider,
+        providerTargetIds,
       })
-      if (error) throw new Error(error.message || 'Liên kết thất bại')
-      if (data?.success) {
-        onLinked?.()
-        onOpenChange(false)
-      } else {
+      if (!data?.success) {
         throw new Error('Liên kết thất bại')
       }
+      onLinked?.()
+      onOpenChange(false)
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Lỗi không xác định')
     } finally {

@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Facebook, Loader2 } from 'lucide-react'
 import { FacebookAuthResponse, SocialLinkResponse } from '@/lib/provider/social-types'
-import { fetchRest } from '@/lib/custom-api/rest-client'
 import { endpoints } from '@/lib/custom-api/endpoints'
+import { getWithAuth } from '@/lib/api/client'
 
 interface FacebookLinkButtonProps {
   onSuccess?: (data: SocialLinkResponse['data']) => void
@@ -28,16 +28,8 @@ export function FacebookLinkButton({
     try {
       setIsLoading(true)
 
-      const { data, error } = await fetchRest<FacebookAuthResponse>(endpoints.facebookAuth(), {
-        method: 'GET',
-        requireAuth: true
-      })
-
-      if (error) {
-        throw new Error(error.message || 'Failed to get Facebook authorization URL')
-      }
-
-      const apiData = data
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5283/api'
+      const apiData = await getWithAuth<FacebookAuthResponse>(`${apiUrl}${endpoints.facebookAuth()}`)
 
       if (apiData?.success) {
         let authUrl = apiData.data.authUrl

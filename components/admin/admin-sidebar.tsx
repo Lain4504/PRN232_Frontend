@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
@@ -25,6 +25,8 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { createClient } from "@/lib/supabase/client";
+import { useAuthStore } from "@/lib/store/auth-store";
 
 const navigation = [
   {
@@ -69,6 +71,21 @@ const settings = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuthStore();
+  const supabase = createClient();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      logout();
+      router.push("/login");
+    } catch (e) {
+      console.error("Logout error:", e);
+      logout();
+      router.push("/login");
+    }
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -132,6 +149,7 @@ export function AdminSidebar() {
           })}
           <SidebarMenuItem>
             <SidebarMenuButton 
+              onClick={handleLogout}
               tooltip="Đăng xuất"
               className="text-red-600 hover:text-red-700 hover:bg-red-50"
             >
