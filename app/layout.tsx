@@ -4,7 +4,6 @@ import "./globals.css";
 import ClientProviders from "@/lib/provider/client-providers";
 import { Toaster } from "sonner";
 import { LayoutWrapper } from "@/components/layout-wrapper";
-import { MUIThemeProvider } from "@/components/mui-theme-provider";
 
 const livvic = Livvic({
   subsets: ["latin"],
@@ -30,11 +29,9 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ClientProviders>
-          <MUIThemeProvider>
             <LayoutWrapper>
               {children}
             </LayoutWrapper>
-          </MUIThemeProvider>
         </ClientProviders>
         <Toaster richColors position="top-center" />
       </body>

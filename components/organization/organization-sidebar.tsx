@@ -1,22 +1,17 @@
 "use client";
 
 import {
-    Home,
     Users,
     Settings,
     Building2,
     BarChart3,
     CreditCard,
     Shield,
-    HelpCircle,
-    FileText,
-    ChevronLeft,
-    ChevronRight,
     MoreHorizontal
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
 
 interface SidebarItem {
     icon: React.ReactNode;
@@ -37,8 +32,6 @@ export function OrganizationSidebar({
     organizationName = "Organization"
 }: OrganizationSidebarProps) {
     // Prevent hydration mismatch by using a safe default
-    const displayName = organizationName || "O";
-    const avatarLetter = displayName.charAt(0).toUpperCase() || "O";
     const [sidebarMode, setSidebarMode] = useState<SidebarMode>('expandOnHover');
 
     const sidebarItems: SidebarItem[] = [

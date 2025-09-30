@@ -13,7 +13,7 @@ import { endpoints } from "@/lib/custom-api/endpoints"
 import { AvailableTargetsResponse, LinkSelectedResponse } from "@/lib/provider/social-types"
 import { useAuth } from "@/hooks/use-auth"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "@/components/ui/drawer"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 type Provider = 'facebook'
