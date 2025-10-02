@@ -1,11 +1,16 @@
+import type { Metadata } from "next";
 import { LoginForm } from "@/components/pages/login/login-form";
+import { AuthSplitLayout } from "@/components/pages/auth/auth-split-layout";
+
+export const metadata: Metadata = {
+  title: "Login | AISAM",
+  description: "Sign in to your account",
+};
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <LoginForm />
-      </div>
-    </div>
+    <AuthSplitLayout title="Welcome back" subtitle="Sign in to your account">
+      <LoginForm />
+    </AuthSplitLayout>
   );
 }

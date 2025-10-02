@@ -1,11 +1,16 @@
+import type { Metadata } from "next";
 import { SignUpForm } from "@/components/pages/sign-up/sign-up-form";
+import { AuthSplitLayout } from "@/components/pages/auth/auth-split-layout";
+
+export const metadata: Metadata = {
+  title: "Sign up | AISAM",
+  description: "Create a new account",
+};
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <SignUpForm />
-      </div>
-    </div>
+    <AuthSplitLayout title="Create your account" subtitle="Get started for free">
+      <SignUpForm />
+    </AuthSplitLayout>
   );
 }

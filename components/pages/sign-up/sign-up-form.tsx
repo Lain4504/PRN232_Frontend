@@ -13,7 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { useState } from "react";
 
 export function SignUpForm({
@@ -25,7 +26,7 @@ export function SignUpForm({
   const [repeatPassword, setRepeatPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [successOpen, setSuccessOpen] = useState(false);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +49,7 @@ export function SignUpForm({
         },
       });
       if (error) throw error;
-      router.push("/auth/sign-up-success");
+      setSuccessOpen(true);
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -58,7 +59,48 @@ export function SignUpForm({
 
   return (
       <div className={cn("flex flex-col gap-6", className)} {...props}>
-        <Card>
+        {/* Desktop Dialog */}
+        <div className="hidden md:block">
+          <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Đăng ký thành công</DialogTitle>
+                <DialogDescription>
+                  Vui lòng kiểm tra email để xác nhận tài khoản của bạn.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button onClick={() => setSuccessOpen(false)}>Đã hiểu</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+        {/* Mobile Drawer */}
+        <div className="md:hidden">
+          <Drawer open={successOpen} onOpenChange={setSuccessOpen}>
+            <DrawerContent>
+              <DrawerHeader>
+                <DrawerTitle>Đăng ký thành công</DrawerTitle>
+                <DrawerDescription>
+                  Vui lòng kiểm tra email để xác nhận tài khoản của bạn.
+                </DrawerDescription>
+              </DrawerHeader>
+              <DrawerFooter>
+                <Button onClick={() => setSuccessOpen(false)}>Đóng</Button>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
+        </div>
+        <div className="space-y-3">
+          <Button variant="outline" className="w-full justify-start">
+            Continue with Google
+          </Button>
+          <div className="relative py-2 text-center text-sm text-muted-foreground">
+            <span className="px-2 bg-background relative z-10">or</span>
+            <div className="absolute left-0 right-0 top-1/2 h-px bg-border" />
+          </div>
+        </div>
+        <Card className="bg-transparent border-0 shadow-none">
           <CardHeader>
             <CardTitle className="text-2xl">Sign up</CardTitle>
             <CardDescription>Create a new account</CardDescription>

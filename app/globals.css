@@ -119,6 +119,31 @@
   }
 }
 
+/* Enable View Transitions API ripple for theme changes */
+@supports (view-transition-name: root) {
+  :root {
+    view-transition-name: root;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  /* Circular reveal from click position */
+  ::view-transition-new(root) {
+    clip-path: circle(0px at var(--x, 50%) var(--y, 50%));
+    animation: reveal 400ms ease-out forwards;
+  }
+
+  @keyframes reveal {
+    to {
+      clip-path: circle(150% at var(--x, 50%) var(--y, 50%));
+    }
+  }
+}
+
 /* Custom Scrollbar - thin and subtle */
 * {
   scrollbar-width: thin;

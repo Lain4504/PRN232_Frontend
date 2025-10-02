@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ClientProviders from "@/lib/provider/client-providers";
-import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,7 +28,6 @@ export default function RootLayout({
       >
         <ClientProviders>
             {children}
-            <Toaster />
         </ClientProviders>
       </body>
     </html>

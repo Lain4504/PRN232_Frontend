@@ -10,15 +10,12 @@ import {
   FileText,
   Calendar,
   Mail,
-  Bell,
   User,
   Building2,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-// Custom sidebar không cần import Sidebar components
 import {
   Tooltip,
   TooltipContent,
@@ -33,8 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LogoutButton } from "@/components/auth/logout-button"
-// Tab system đã được loại bỏ
+import { Settings as CogIcon } from "lucide-react"
 
 // Dữ liệu menu chính - đơn giản hóa không có sub items
 interface NavItem {
@@ -97,16 +93,24 @@ const secondaryNavItems: NavItem[] = [
   },
 ]
 
-interface DashboardSidebarProps {
-  user?: {
-    name?: string
-    email?: string
-    avatar?: string
-  }
-}
 
-export function DashboardSidebar({ user }: DashboardSidebarProps) {
+
+export function DashboardSidebar() {
   const pathname = usePathname()
+  const [sidebarModeState, setSidebarModeState] = React.useState<'expanded'|'collapsed'|'hover'>('hover')
+
+  React.useEffect(() => {
+    const stored = typeof window !== 'undefined' ? (localStorage.getItem('sidebarMode') as 'expanded' | 'collapsed' | 'hover' | null) : null
+    if (stored === 'expanded' || stored === 'collapsed' || stored === 'hover') {
+      setSidebarModeState(stored)
+    }
+    const onModeChange = (e: CustomEvent<'expanded' | 'collapsed' | 'hover'>) => {
+      const mode = e.detail
+      if (mode === 'expanded' || mode === 'collapsed' || mode === 'hover') setSidebarModeState(mode)
+    }
+    window.addEventListener('sidebar-mode-change', onModeChange as unknown as EventListener)
+    return () => window.removeEventListener('sidebar-mode-change', onModeChange as unknown as EventListener)
+  }, [])
 
   const handleMenuClick = (item: NavItem) => {
     // Đơn giản hóa - chỉ cần navigate đến route
@@ -115,6 +119,13 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
   }
 
   // Custom sidebar với hover expand effect
+
+  const setSidebarMode = (mode: 'expanded' | 'collapsed' | 'hover') => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sidebarMode', mode)
+      window.dispatchEvent(new CustomEvent('sidebar-mode-change', { detail: mode }))
+    }
+  }
 
   return (
     <TooltipProvider>
@@ -147,22 +158,53 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
                         variant="ghost"
                         onClick={() => handleMenuClick(item)}
                         className={cn(
-                          "w-full h-8 lg:h-8 px-2 lg:justify-center lg:group-hover:justify-start",
+                          "relative w-full h-8 lg:h-8 px-2",
+                          sidebarModeState === 'expanded' && "justify-start",
+                          sidebarModeState === 'collapsed' && "lg:justify-center",
+                          sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start",
                           pathname === item.url && "bg-accent"
                         )}
                       >
-                        <item.icon className="size-4 lg:mr-0 lg:group-hover:mr-2" />
-                        <span className="hidden lg:group-hover:inline transition-opacity duration-300 whitespace-nowrap">
+                        <item.icon className={cn(
+                          "size-4",
+                          sidebarModeState === 'expanded' && "mr-2",
+                          sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-2"
+                        )} />
+                        <span className={cn(
+                          "transition-opacity duration-300 whitespace-nowrap",
+                          sidebarModeState === 'expanded' && "inline",
+                          sidebarModeState === 'collapsed' && "hidden",
+                          sidebarModeState === 'hover' && "hidden lg:group-hover:inline"
+                        )}>
                           {item.title}
                         </span>
                         {item.badge && (
-                          <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300">
-                            {item.badge}
-                          </span>
+                          <>
+                            {sidebarModeState === 'collapsed' && (
+                              <span className="absolute right-0 top-1 hidden lg:inline-flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] leading-none text-primary-foreground">
+                                {item.badge}
+                              </span>
+                            )}
+                            {sidebarModeState === 'hover' && (
+                              <>
+                                <span className="absolute right-0 top-1 hidden lg:inline-flex lg:group-hover:hidden h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] leading-none text-primary-foreground">
+                                  {item.badge}
+                                </span>
+                                <span className="ml-auto hidden lg:group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                                  {item.badge}
+                                </span>
+                              </>
+                            )}
+                            {sidebarModeState === 'expanded' && (
+                              <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                                {item.badge}
+                              </span>
+                            )}
+                          </>
                         )}
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent side="right" className="lg:block hidden lg:group-hover:hidden">
+                    <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden") }>
                       <p>{item.title}</p>
                     </TooltipContent>
                   </Tooltip>
@@ -186,17 +228,29 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
                         variant="ghost"
                         onClick={() => handleMenuClick(item)}
                         className={cn(
-                          "w-full h-8 lg:h-8 px-2 lg:justify-center lg:group-hover:justify-start",
+                          "relative w-full h-8 lg:h-8 px-2",
+                          sidebarModeState === 'expanded' && "justify-start",
+                          sidebarModeState === 'collapsed' && "lg:justify-center",
+                          sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start",
                           pathname === item.url && "bg-accent"
                         )}
                       >
-                        <item.icon className="size-4 lg:mr-0 lg:group-hover:mr-2" />
-                        <span className="hidden lg:group-hover:inline transition-opacity duration-300 whitespace-nowrap">
+                        <item.icon className={cn(
+                          "size-4",
+                          sidebarModeState === 'expanded' && "mr-2",
+                          sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-2"
+                        )} />
+                        <span className={cn(
+                          "transition-opacity duration-300 whitespace-nowrap",
+                          sidebarModeState === 'expanded' && "inline",
+                          sidebarModeState === 'collapsed' && "hidden",
+                          sidebarModeState === 'hover' && "hidden lg:group-hover:inline"
+                        )}>
                           {item.title}
                         </span>
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent side="right" className="lg:block hidden lg:group-hover:hidden">
+                    <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden") }>
                       <p>{item.title}</p>
                     </TooltipContent>
                   </Tooltip>
@@ -206,70 +260,21 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
           </div>
         </div>
 
-        {/* User Footer */}
+        {/* Footer with mode switcher icon */}
         <div className="p-2 border-t border-sidebar-border">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="w-full h-10 lg:h-10 px-2 lg:justify-center lg:group-hover:justify-start data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  >
-                    <Avatar className="h-6 w-6 rounded-lg lg:mr-0 lg:group-hover:mr-2">
-                      <AvatarImage src={user?.avatar} alt={user?.name} />
-                      <AvatarFallback className="rounded-lg">
-                        {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="hidden lg:group-hover:grid flex-1 text-left text-sm leading-tight transition-opacity duration-300">
-                      <span className="truncate font-semibold">{user?.name || 'User'}</span>
-                      <span className="truncate text-xs">{user?.email || 'user@example.com'}</span>
-                    </div>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="lg:block hidden lg:group-hover:hidden">
-                  <p>{user?.name || 'User'}</p>
-                </TooltipContent>
-              </Tooltip>
+              <Button variant="ghost" className="w-full h-10 lg:h-10 px-2 lg:justify-center">
+                <CogIcon className="h-5 w-5" />
+              </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-              side="bottom"
-              align="end"
-              sideOffset={4}
-            >
-              <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={user?.avatar} alt={user?.name} />
-                    <AvatarFallback className="rounded-lg">
-                      {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{user?.name || 'User'}</span>
-                    <span className="truncate text-xs">{user?.email || 'user@example.com'}</span>
-                  </div>
-                </div>
-              </DropdownMenuLabel>
+            <DropdownMenuContent side="top" align="center" className="min-w-48">
+              <DropdownMenuLabel>Sidebar mode</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell className="mr-2 h-4 w-4" />
-                <span>Notifications</span>
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSidebarMode('expanded')}>Expanded</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSidebarMode('collapsed')}>Collapsed</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSidebarMode('hover')}>Expand on hover</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <LogoutButton />
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

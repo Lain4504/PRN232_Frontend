@@ -49,7 +49,16 @@ export function LoginForm({
 
   return (
       <div className={cn("flex flex-col gap-6", className)} {...props}>
-        <Card>
+        <div className="space-y-3">
+          <Button variant="outline" className="w-full justify-start">
+            Continue with Google
+          </Button>
+          <div className="relative py-2 text-center text-sm text-muted-foreground">
+            <span className="px-2 bg-background relative z-10">or</span>
+            <div className="absolute left-0 right-0 top-1/2 h-px bg-border" />
+          </div>
+        </div>
+        <Card className="bg-transparent border-0 shadow-none">
           <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
             <CardDescription>

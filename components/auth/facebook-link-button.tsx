@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Facebook, Loader2 } from 'lucide-react'
-import { SocialLinkResponse } from '@/lib/provider/social-types'
+import { SocialLinkResponse } from '@/lib/types/social-types'
 import { api, endpoints } from '@/lib/api'
 
 interface FacebookAuthData {
