@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { 
@@ -148,13 +149,17 @@ const DashboardContent = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/dashboard?filter=open">
             <Filter className="mr-2 h-4 w-4" />
             Filter
+            </Link>
           </Button>
-          <Button size="sm">
+          <Button asChild size="sm">
+            <Link href="/dashboard/organizations/new">
             <Plus className="mr-2 h-4 w-4" />
             New Organization
+            </Link>
           </Button>
         </div>
       </div>
@@ -200,8 +205,8 @@ const DashboardContent = () => {
                   Latest actions in your organization
                 </CardDescription>
               </div>
-              <Button variant="outline" size="sm">
-                View All
+              <Button asChild variant="outline" size="sm">
+                <Link href="/dashboard/activity">View All</Link>
               </Button>
             </div>
           </CardHeader>
@@ -248,21 +253,29 @@ const DashboardContent = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button className="w-full justify-start" variant="outline">
-                <Plus className="mr-2 h-4 w-4" />
-                Create Organization
+              <Button asChild className="w-full justify-start" variant="outline">
+                <Link href="/dashboard/organizations/new">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Organization
+                </Link>
               </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Users className="mr-2 h-4 w-4" />
-                Manage Users
+              <Button asChild className="w-full justify-start" variant="outline">
+                <Link href="/dashboard/users">
+                  <Users className="mr-2 h-4 w-4" />
+                  Manage Users
+                </Link>
               </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <BarChart3 className="mr-2 h-4 w-4" />
-                View Reports
+              <Button asChild className="w-full justify-start" variant="outline">
+                <Link href="/dashboard/reports">
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  View Reports
+                </Link>
               </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Calendar className="mr-2 h-4 w-4" />
-                Schedule Meeting
+              <Button asChild className="w-full justify-start" variant="outline">
+                <Link href="/dashboard/calendar">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Schedule Meeting
+                </Link>
               </Button>
             </CardContent>
           </Card>

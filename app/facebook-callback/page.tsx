@@ -6,7 +6,7 @@ import { Loader2, CheckCircle, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { api, endpoints } from '@/lib/api'
-import { SocialLinkResponse } from '@/lib/provider/social-types'
+import { SocialLinkResponse } from '@/lib/types/social-types'
 
 // Component sử dụng useSearchParams
 function FacebookCallbackContent() {
