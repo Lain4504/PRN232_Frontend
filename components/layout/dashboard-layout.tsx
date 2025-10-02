@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { ModeToggle } from "@/components/ui/mode-toggle"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -152,7 +153,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ user }) => {
         {/* Spacer */}
         <div className="flex-1"></div>
 
-        {/* Right side - Search, Notifications, User */}
+        {/* Right side - Search, Theme, Notifications, User */}
         <div className="flex items-center gap-1 lg:gap-2 px-2 lg:px-3">
           {/* Desktop Search */}
           <div className="hidden lg:block">
@@ -162,6 +163,11 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ user }) => {
           {/* Mobile Search Button */}
           <div className="lg:hidden">
             <MobileSearchCommand />
+          </div>
+
+          {/* Theme Toggle */}
+          <div className="mx-1">
+            <ModeToggle />
           </div>
 
           {/* Notifications - ẩn trên mobile nhỏ */}
