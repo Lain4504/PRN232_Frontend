@@ -20,9 +20,9 @@ export function LogoutButton() {
   };
 
   return (
-    <Button onClick={handleLogout} variant="link" size="sm">
-      <LogOut className="h-4 w-4 mr-2" />
-      Đăng xuất
-    </Button>
+      <Button onClick={handleLogout} variant="link" size="sm">
+        <LogOut className="h-4 w-4 mr-2" />
+        Đăng xuất
+      </Button>
   );
 }

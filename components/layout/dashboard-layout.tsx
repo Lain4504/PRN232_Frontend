@@ -3,12 +3,8 @@
 import React, { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { User } from "@supabase/supabase-js"
-// Custom sidebar không cần SidebarProvider
-// Tab system đã được loại bỏ
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar"
 import { DashboardHeader } from "@/components/layout/dashboard-header"
-
-// Header component moved to separate file
 
 // Main layout component
 interface DashboardLayoutProps {
@@ -40,9 +36,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     getUser()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null)
-      }
+        (event, session) => {
+          setUser(session?.user ?? null)
+        }
     )
 
     return () => {
@@ -52,27 +48,27 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }, [supabase.auth])
 
   return (
-    <div>
-      <div className="flex h-screen w-full">
-        {/* Custom Sidebar với hover expand - chỉ hiện trên desktop */}
-        <div className="group relative hidden lg:block">
-          <div className={"fixed left-0 top-12 h-[calc(100vh-3rem)] bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out z-40 overflow-hidden " + (sidebarMode === 'expanded' ? 'w-64' : sidebarMode === 'collapsed' ? 'w-12' : 'w-12 hover:w-64')}>
-            <DashboardSidebar/>
+      <div>
+        <div className="flex h-screen w-full">
+          {/* Custom Sidebar với hover expand - chỉ hiện trên desktop */}
+          <div className="group relative hidden lg:block">
+            <div className={"fixed left-0 top-12 h-[calc(100vh-3rem)] bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out z-40 overflow-hidden " + (sidebarMode === 'expanded' ? 'w-64' : sidebarMode === 'collapsed' ? 'w-12' : 'w-12 hover:w-64')}>
+              <DashboardSidebar/>
+            </div>
+          </div>
+
+          {/* Main Content Area */}
+          <div className={"flex flex-col flex-1 pt-12 min-h-0 " + (sidebarMode === 'expanded' ? 'lg:ml-64' : 'lg:ml-12')}>
+            <main className="flex-1 overflow-y-auto">
+              {children}
+            </main>
           </div>
         </div>
-        
-        {/* Main Content Area */}
-        <div className={"flex flex-col flex-1 pt-12 min-h-0 " + (sidebarMode === 'expanded' ? 'lg:ml-64' : 'lg:ml-12')}>
-          <main className="flex-1 overflow-y-auto">
-            {children}
-          </main>
+
+        {/* Header được đặt ngoài sidebar để trải dài hết màn hình */}
+        <div className="fixed top-0 left-0 right-0 z-50">
+          <DashboardHeader user={user} />
         </div>
       </div>
-      
-      {/* Header được đặt ngoài sidebar để trải dài hết màn hình */}
-      <div className="fixed top-0 left-0 right-0 z-50">
-        <DashboardHeader user={user} />
-      </div>
-    </div>
   )
 }
