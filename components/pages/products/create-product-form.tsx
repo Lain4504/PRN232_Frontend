@@ -94,7 +94,7 @@ export function CreateProductForm() {
         price: priceValue,
         category: category || undefined,
         tags: tags ? tags.split(',').map(tag => tag.trim()) : undefined,
-        images: imagePreviews, // In a real app, upload images and get URLs
+        images: imageFiles, // File objects for upload
       };
 
       const response = await productApi.createProduct(newProduct);

@@ -83,7 +83,7 @@ export function CreateProfileForm() {
       return;
     }
 
-    if (formData.profile_type === 'business' && !formData.company_name.trim()) {
+    if (formData.profile_type === 'business' && !formData.company_name?.trim()) {
       toast.error('Company name is required for business profiles');
       return;
     }

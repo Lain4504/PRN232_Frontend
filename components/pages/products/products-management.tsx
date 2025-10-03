@@ -270,7 +270,7 @@ export function ProductsManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${products.length > 0 ? (products.reduce((sum, p) => sum + p.price, 0) / products.length).toFixed(2) : '0.00'}
+              ${products.length > 0 ? (products.reduce((sum, p) => sum + (p.price || 0), 0) / products.length).toFixed(2) : '0.00'}
             </div>
             <p className="text-xs text-muted-foreground">
               Across all products

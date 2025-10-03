@@ -40,16 +40,21 @@ export function EditProductForm() {
         setLoading(true);
         
         // Load product data
-        const productResponse = await productApi.getProduct(productId);
-        if (productResponse.success) {
-          const productData = productResponse.data;
+        const productsResponse = await productApi.getProducts();
+        if (productsResponse.success) {
+          const productData = productsResponse.data.find(p => p.id === productId);
+          if (!productData) {
+            toast.error('Product not found');
+            router.push('/dashboard/products');
+            return;
+          }
           setProduct(productData);
           setSelectedBrandId(productData.brand_id);
           setName(productData.name);
           setDescription(productData.description || "");
-          setPrice(productData.price.toString());
-          setCategory(productData.category || "");
-          setTags(productData.tags?.join(", ") || "");
+          setPrice(productData.price?.toString() || "");
+          setCategory(""); // Category not available in Product type
+          setTags(""); // Tags not available in Product type
           setImagePreviews(productData.images || []);
         } else {
           toast.error("Product not found.");
@@ -118,9 +123,7 @@ export function EditProductForm() {
         name,
         description,
         price: priceValue,
-        category: category || undefined,
-        tags: tags ? tags.split(',').map(tag => tag.trim()) : undefined,
-        images: imagePreviews,
+        images: imageFiles, // Use File objects for update
       };
 
       const response = await productApi.updateProduct(productId, updatedProduct);
@@ -162,7 +165,7 @@ export function EditProductForm() {
               <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Product Not Found</h3>
               <p className="text-muted-foreground mb-4">
-                The product you're looking for doesn't exist or has been deleted.
+                The product you&apos;re looking for doesn&apos;t exist or has been deleted.
               </p>
               <Button asChild>
                 <Link href="/dashboard/products">

@@ -90,7 +90,11 @@ export const authApi = {
       return createSuccessResponse({ user, token }, 'Login successful');
     }
     
-    return createErrorResponse('Invalid email or password');
+    return {
+      data: null as unknown as { user: User; token: string },
+      message: 'Invalid email or password',
+      success: false
+    };
   },
 
   async register(userData: {
@@ -122,7 +126,11 @@ export const authApi = {
       return createSuccessResponse({ user, token }, 'Account created successfully');
     }
     
-    return createErrorResponse('Missing required fields');
+    return {
+      data: null as unknown as { user: User; token: string },
+      message: 'Missing required fields',
+      success: false
+    };
   },
 
   async logout(): Promise<ApiResponse<null>> {
@@ -176,7 +184,11 @@ export const profileApi = {
     const index = profiles.findIndex(p => p.id === id);
     
     if (index === -1) {
-      return createErrorResponse('Profile not found');
+      return {
+        data: null as unknown as Profile,
+        message: 'Profile not found',
+        success: false
+      };
     }
     
     profiles[index] = {
@@ -229,7 +241,11 @@ export const brandApi = {
     const index = brands.findIndex(b => b.id === id);
     
     if (index === -1) {
-      return createErrorResponse('Brand not found');
+      return {
+        data: null as unknown as Brand,
+        message: 'Brand not found',
+        success: false
+      };
     }
     
     brands[index] = {
@@ -302,13 +318,28 @@ export const productApi = {
     const index = products.findIndex(p => p.id === id);
     
     if (index === -1) {
-      return createErrorResponse('Product not found');
+      return {
+        data: null as unknown as Product,
+        message: 'Product not found',
+        success: false
+      };
+    }
+    
+    const { images, ...formDataWithoutImages } = formData;
+    
+    const updateData: Partial<Product> = {
+      ...formDataWithoutImages,
+      updated_at: new Date().toISOString()
+    };
+    
+    // Convert File[] to string[] if images are provided
+    if (images) {
+      updateData.images = images.map(img => URL.createObjectURL(img));
     }
     
     products[index] = {
       ...products[index],
-      ...formData,
-      updated_at: new Date().toISOString()
+      ...updateData
     };
     
     saveToStorage('products', products);
@@ -391,7 +422,11 @@ export const contentApi = {
     const index = contents.findIndex(c => c.id === id);
     
     if (index === -1) {
-      return createErrorResponse('Content not found');
+      return {
+        data: null as unknown as Content,
+        message: 'Content not found',
+        success: false
+      };
     }
     
     contents[index] = {
@@ -411,7 +446,11 @@ export const contentApi = {
     const index = contents.findIndex(c => c.id === id);
     
     if (index === -1) {
-      return createErrorResponse('Content not found');
+      return {
+        data: null as unknown as Content,
+        message: 'Content not found',
+        success: false
+      };
     }
     
     contents[index].status = 'pending_approval';
@@ -457,16 +496,16 @@ export const socialAccountApi = {
     return createSuccessResponse(userAccounts);
   },
 
-  async connectAccount(platform: string, accountData: any): Promise<ApiResponse<SocialAccount>> {
+  async connectAccount(platform: string, accountData: Record<string, unknown>): Promise<ApiResponse<SocialAccount>> {
     await delay(1500); // Simulate OAuth flow
     
     const account: SocialAccount = {
       id: 'social-' + Date.now(),
-      user_id: accountData.user_id,
-      platform: platform as any,
-      account_id: accountData.account_id,
-      account_name: accountData.account_name,
-      access_token: accountData.access_token,
+      user_id: accountData.user_id as string,
+      platform: platform as 'facebook' | 'instagram' | 'tiktok' | 'twitter' | 'linkedin',
+      account_id: accountData.account_id as string,
+      account_name: accountData.account_name as string,
+      access_token: accountData.access_token as string,
       status: 'active',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -534,7 +573,11 @@ export const approvalApi = {
     const approvalIndex = approvals.findIndex(a => a.id === approvalId);
     
     if (approvalIndex === -1) {
-      return createErrorResponse('Approval not found');
+      return {
+        data: null as unknown as Content,
+        message: 'Approval not found',
+        success: false
+      };
     }
     
     approvals[approvalIndex].status = 'approved';
@@ -563,7 +606,11 @@ export const approvalApi = {
     const approvalIndex = approvals.findIndex(a => a.id === approvalId);
     
     if (approvalIndex === -1) {
-      return createErrorResponse('Approval not found');
+      return {
+        data: null as unknown as Content,
+        message: 'Approval not found',
+        success: false
+      };
     }
     
     approvals[approvalIndex].status = 'rejected';

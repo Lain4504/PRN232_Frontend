@@ -5,20 +5,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { 
   Target, 
   Package, 
   FileText, 
   Activity,
-  BarChart3,
   Calendar,
   Plus,
   Filter,
   ArrowUpIcon,
   ArrowDownIcon,
-  Users,
-  CheckCircle,
   Clock,
   Send,
 } from "lucide-react"

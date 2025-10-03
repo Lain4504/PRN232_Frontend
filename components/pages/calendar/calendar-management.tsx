@@ -9,21 +9,16 @@ import { Label } from "@/components/ui/label";
 import { 
   Calendar, 
   Plus, 
-  Clock,
   Send,
-  CheckCircle,
-  AlertCircle,
   ChevronLeft,
-  ChevronRight,
-  Target,
-  Share2
+  ChevronRight
 } from "lucide-react";
 import { authApi, calendarApi, contentApi, socialIntegrationApi } from "@/lib/mock-api";
-import { User, CalendarEvent, Content, SocialIntegration } from "@/lib/types/aisam-types";
+import { User as UserType, CalendarEvent, Content, SocialIntegration } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 
 export function CalendarManagement() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserType | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [contents, setContents] = useState<Content[]>([]);
   const [socialIntegrations, setSocialIntegrations] = useState<SocialIntegration[]>([]);

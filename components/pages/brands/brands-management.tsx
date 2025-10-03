@@ -18,12 +18,12 @@ import {
   FileText
 } from "lucide-react";
 import { authApi, brandApi, profileApi } from "@/lib/mock-api";
-import { User, Brand, Profile } from "@/lib/types/aisam-types";
+import { User as UserType, Brand, Profile } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import Link from "next/link";
 
 export function BrandsManagement() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserType | null>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
@@ -222,7 +222,7 @@ export function BrandsManagement() {
                   
                   {brand.slogan && (
                     <div className="p-3 bg-muted rounded-lg">
-                      <p className="text-sm font-medium italic">"{brand.slogan}"</p>
+                      <p className="text-sm font-medium italic">&ldquo;{brand.slogan}&rdquo;</p>
                     </div>
                   )}
                   

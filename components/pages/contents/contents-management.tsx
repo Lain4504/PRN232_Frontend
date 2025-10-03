@@ -5,30 +5,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   FileText, 
   Plus, 
   Search, 
   Edit, 
-  Trash2, 
   Eye,
   Calendar,
   Send,
   Clock,
-  CheckCircle,
-  Brain,
   Image,
   Video,
   Type
 } from "lucide-react";
-import { authApi, contentApi, brandApi } from "@/lib/mock-api";
-import { User, Content, Brand } from "@/lib/types/aisam-types";
+import { contentApi, brandApi } from "@/lib/mock-api";
+import { Content, Brand } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import Link from "next/link";
 
 export function ContentsManagement() {
-  const [user, setUser] = useState<User | null>(null);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [contents, setContents] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,11 +35,6 @@ export function ContentsManagement() {
       try {
         setLoading(true);
         
-        // Get current user
-        const userResponse = await authApi.getCurrentUser();
-        if (userResponse.success && userResponse.data) {
-          setUser(userResponse.data);
-        }
         
         // Get brands
         const brandsResponse = await brandApi.getBrands();

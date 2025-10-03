@@ -5,29 +5,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { 
   CheckCircle, 
-  XCircle, 
   Search, 
   Eye,
-  Calendar,
-  Clock,
-  User,
   MessageSquare,
   Check,
   X,
-  AlertCircle
+  Clock
 } from "lucide-react";
-import { authApi, approvalApi, contentApi, brandApi } from "@/lib/mock-api";
-import { User as UserType, Approval, Content, Brand } from "@/lib/types/aisam-types";
+import { approvalApi, contentApi, brandApi } from "@/lib/mock-api";
+import { Approval, Content, Brand } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
-import Link from "next/link";
 
 export function ApprovalsManagement() {
-  const [user, setUser] = useState<UserType | null>(null);
   const [approvals, setApprovals] = useState<Approval[]>([]);
   const [contents, setContents] = useState<Content[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -43,11 +36,6 @@ export function ApprovalsManagement() {
       try {
         setLoading(true);
         
-        // Get current user
-        const userResponse = await authApi.getCurrentUser();
-        if (userResponse.success && userResponse.data) {
-          setUser(userResponse.data);
-        }
         
         // Get approvals
         const approvalsResponse = await approvalApi.getApprovals();

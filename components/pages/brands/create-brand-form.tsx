@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { 
   Target, 
   ArrowLeft,
@@ -19,12 +18,12 @@ import {
   Users
 } from "lucide-react";
 import { authApi, brandApi, profileApi } from "@/lib/mock-api";
-import { User, Profile, CreateBrandForm as CreateBrandFormType } from "@/lib/types/aisam-types";
+import { User as UserType, Profile, CreateBrandForm as CreateBrandFormType } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export function CreateBrandForm() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserType | null>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -268,7 +267,7 @@ export function CreateBrandForm() {
                 Brand Identity
               </CardTitle>
               <CardDescription>
-                Define your brand's voice and visual identity
+                Define your brand&apos;s voice and visual identity
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
