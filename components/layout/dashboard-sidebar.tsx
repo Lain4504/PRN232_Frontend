@@ -2,16 +2,19 @@
 
 import React from "react"
 import { usePathname } from "next/navigation"
+import Link from "next/link"
 import {
   Home,
-  Users,
   Settings,
   BarChart3,
   FileText,
   Calendar,
   Mail,
   User,
-  Building2,
+  Target,
+  Package,
+  CheckCircle,
+  Share2,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -47,24 +50,24 @@ const mainNavItems: NavItem[] = [
     icon: Home,
   },
   {
-    title: "Organizations",
-    url: "/dashboard/organizations",
-    icon: Building2,
+    title: "Brands",
+    url: "/dashboard/brands",
+    icon: Target,
   },
   {
-    title: "Users",
-    url: "/dashboard/users",
-    icon: Users,
+    title: "Products",
+    url: "/dashboard/products",
+    icon: Package,
   },
   {
-    title: "Reports",
-    url: "/dashboard/reports",
-    icon: BarChart3,
-  },
-  {
-    title: "Documents",
-    url: "/dashboard/documents",
+    title: "Contents",
+    url: "/dashboard/contents",
     icon: FileText,
+  },
+  {
+    title: "Social Accounts",
+    url: "/dashboard/social-accounts",
+    icon: Share2,
   },
   {
     title: "Calendar",
@@ -72,10 +75,20 @@ const mainNavItems: NavItem[] = [
     icon: Calendar,
   },
   {
-    title: "Messages",
-    url: "/dashboard/messages", 
+    title: "Approvals",
+    url: "/dashboard/approvals", 
+    icon: CheckCircle,
+    badge: "1" as const,
+  },
+  {
+    title: "Posts",
+    url: "/dashboard/posts",
     icon: Mail,
-    badge: "3" as const,
+  },
+  {
+    title: "Reports",
+    url: "/dashboard/reports",
+    icon: BarChart3,
   },
 ]
 
@@ -112,11 +125,6 @@ export function DashboardSidebar() {
     return () => window.removeEventListener('sidebar-mode-change', onModeChange as unknown as EventListener)
   }, [])
 
-  const handleMenuClick = (item: NavItem) => {
-    // Đơn giản hóa - chỉ cần navigate đến route
-    console.log('Navigate to:', item.url)
-    // Có thể sử dụng router.push(item.url) nếu cần
-  }
 
   // Custom sidebar với hover expand effect
 
@@ -156,7 +164,7 @@ export function DashboardSidebar() {
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
-                        onClick={() => handleMenuClick(item)}
+                        asChild
                         className={cn(
                           "relative w-full h-8 lg:h-8 px-2",
                           sidebarModeState === 'expanded' && "justify-start",
@@ -165,6 +173,7 @@ export function DashboardSidebar() {
                           pathname === item.url && "bg-accent"
                         )}
                       >
+                        <Link href={item.url}>
                         <item.icon className={cn(
                           "size-4",
                           sidebarModeState === 'expanded' && "mr-2",
@@ -202,6 +211,7 @@ export function DashboardSidebar() {
                             )}
                           </>
                         )}
+                        </Link>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden") }>
@@ -226,7 +236,7 @@ export function DashboardSidebar() {
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
-                        onClick={() => handleMenuClick(item)}
+                        asChild
                         className={cn(
                           "relative w-full h-8 lg:h-8 px-2",
                           sidebarModeState === 'expanded' && "justify-start",
@@ -235,19 +245,21 @@ export function DashboardSidebar() {
                           pathname === item.url && "bg-accent"
                         )}
                       >
-                        <item.icon className={cn(
-                          "size-4",
-                          sidebarModeState === 'expanded' && "mr-2",
-                          sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-2"
-                        )} />
-                        <span className={cn(
-                          "transition-opacity duration-300 whitespace-nowrap",
-                          sidebarModeState === 'expanded' && "inline",
-                          sidebarModeState === 'collapsed' && "hidden",
-                          sidebarModeState === 'hover' && "hidden lg:group-hover:inline"
-                        )}>
-                          {item.title}
-                        </span>
+                        <Link href={item.url}>
+                          <item.icon className={cn(
+                            "size-4",
+                            sidebarModeState === 'expanded' && "mr-2",
+                            sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-2"
+                          )} />
+                          <span className={cn(
+                            "transition-opacity duration-300 whitespace-nowrap",
+                            sidebarModeState === 'expanded' && "inline",
+                            sidebarModeState === 'collapsed' && "hidden",
+                            sidebarModeState === 'hover' && "hidden lg:group-hover:inline"
+                          )}>
+                            {item.title}
+                          </span>
+                        </Link>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden") }>
