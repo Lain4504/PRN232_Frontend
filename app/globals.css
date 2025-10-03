@@ -116,6 +116,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-league-spartan), ui-sans-serif, system-ui, sans-serif;
   }
 }
 

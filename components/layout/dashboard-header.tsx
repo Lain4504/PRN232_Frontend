@@ -3,7 +3,7 @@
 import React, { useState } from "react"
 import { User } from "@supabase/supabase-js"
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar"
-import { Bell, Search, Building2, Plus, Check, Zap, Menu } from "lucide-react"
+import {  Search, Building2, Plus, Check, Zap, Menu } from "lucide-react"
 import { SearchCommand } from "@/components/search/search-command"
 import { MobileSearchCommand } from "@/components/search/mobile-search-command"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useTheme } from "next-themes"
 import { LogoutButton } from "@/components/auth/logout-button"
+import Link from "next/link"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
+import { NotificationsDropdown } from "@/components/ui/notifications-dropdown"
 
 interface DashboardHeaderProps {
   user?: User | null
@@ -126,22 +127,26 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
                 
                 <DropdownMenuSeparator />
                 
-                <DropdownMenuItem className="px-3 py-2">
-                  <div className="flex items-center gap-3">
-                    <div className="flex aspect-square size-6 items-center justify-center rounded bg-muted">
-                      <Building2 className="size-3" />
+                <DropdownMenuItem asChild className="px-3 py-2">
+                  <Link href="/dashboard/organizations">
+                    <div className="flex items-center gap-3">
+                      <div className="flex aspect-square size-6 items-center justify-center rounded bg-muted">
+                        <Building2 className="size-3" />
+                      </div>
+                      <span className="text-sm">All Organizations</span>
                     </div>
-                    <span className="text-sm">All Organizations</span>
-                  </div>
+                  </Link>
                 </DropdownMenuItem>
                 
-                <DropdownMenuItem className="px-3 py-2">
-                  <div className="flex items-center gap-3">
-                    <div className="flex aspect-square size-6 items-center justify-center rounded bg-muted">
-                      <Plus className="size-3" />
+                <DropdownMenuItem asChild className="px-3 py-2">
+                  <Link href="/dashboard/organizations/new">
+                    <div className="flex items-center gap-3">
+                      <div className="flex aspect-square size-6 items-center justify-center rounded bg-muted">
+                        <Plus className="size-3" />
+                      </div>
+                      <span className="text-sm">+ New organization</span>
                     </div>
-                    <span className="text-sm">+ New organization</span>
-                  </div>
+                  </Link>
                 </DropdownMenuItem>
               </div>
             </DropdownMenuContent>
@@ -159,15 +164,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             <MobileSearchCommand />
           </div>
 
-          <Button variant="ghost" size="icon" className="relative hidden sm:flex">
-            <Bell className="h-4 w-4" />
-            <Badge 
-              variant="destructive" 
-              className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs"
-            >
-              3
-            </Badge>
-          </Button>
+          <NotificationsDropdown />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -197,7 +194,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
               <DropdownMenuSeparator />
               <DropdownMenuItem>Account preferences</DropdownMenuItem>
               <DropdownMenuItem>Feature previews</DropdownMenuItem>
-              <DropdownMenuItem>Command menu</DropdownMenuItem>
+              <DropdownMenuItem>Center Help</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuLabel className="text-xs text-muted-foreground">Theme</DropdownMenuLabel>
               <DropdownMenuItem onClick={(e) => handleThemeChange(e, 'dark')} className="flex items-center gap-2">
