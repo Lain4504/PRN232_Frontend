@@ -1,18 +1,21 @@
 'use client'
 
 import { useEffect, useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Loader2, CheckCircle, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { api, endpoints } from '@/lib/api'
+import { createClient } from '@/lib/supabase/client'
 import { SocialLinkResponse } from '@/lib/types/social-types'
 
-// Component sử dụng useSearchParams
-function FacebookCallbackContent() {
+type LoadState = 'loading' | 'success' | 'error'
+
+function GenericCallbackContent() {
+  const { provider } = useParams<{ provider: string }>()
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
+  const [status, setStatus] = useState<LoadState>('loading')
   const [message, setMessage] = useState('')
   const [data, setData] = useState<SocialLinkResponse['data'] | null>(null)
 
@@ -20,49 +23,53 @@ function FacebookCallbackContent() {
     const processCallback = async () => {
       try {
         const code = searchParams.get('code')
-        const state = searchParams.get('state')
-        const userId = searchParams.get('userId')
+        const state = searchParams.get('state') || undefined
+        // Derive userId from Supabase session instead of query
+        const supabase = createClient()
+        const { data: { session } } = await supabase.auth.getSession()
+        const userId = session?.user?.id || ''
 
-        if (!code) {
-          throw new Error('Authorization code is missing')
-        }
+        if (!code) throw new Error('Authorization code is missing')
+        if (!userId) throw new Error('User is not authenticated')
 
-        const result = await api.get<SocialLinkResponse['data']>(endpoints.facebookCallback(code, userId || '', state || undefined))
+        // POST to generic callback endpoint with JSON body (no auth required)
+        const result = await api.post<SocialLinkResponse['data']>(
+          endpoints.socialCallback(provider),
+          { code, userId, state },
+          { requireAuth: true }
+        )
 
         if (result?.success) {
           setStatus('success')
-          setMessage('Facebook account linked successfully!')
+          setMessage(`${provider.charAt(0).toUpperCase() + provider.slice(1)} account linked successfully!`)
           setData(result.data)
 
           if (window.opener) {
             window.opener.postMessage({
-              type: 'FACEBOOK_AUTH_SUCCESS',
-              data: result.data
+              type: `${provider.toUpperCase()}_AUTH_SUCCESS`,
+              data: result.data,
             }, window.location.origin)
-          } else {
-            // Navigate to Select Pages screen
-            router.replace(`/social-accounts/select-pages?provider=facebook`)
           }
         } else {
-          throw new Error('Failed to link Facebook account')
+          throw new Error('Failed to link account')
         }
-
       } catch (error) {
-        console.error('Error processing Facebook callback:', error)
+        console.error('Error processing social callback:', error)
         setStatus('error')
         const errMsg = error instanceof Error ? error.message : 'An error occurred'
         setMessage(errMsg)
         if (window.opener) {
           window.opener.postMessage({
-            type: 'FACEBOOK_AUTH_ERROR',
-            error: errMsg
+            type: `${String(provider).toUpperCase()}_AUTH_ERROR`,
+            error: errMsg,
           }, window.location.origin)
         }
       }
     }
 
     processCallback()
-  }, [searchParams, router])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, router, provider])
 
   const handleClose = () => {
     if (window.opener) {
@@ -72,6 +79,8 @@ function FacebookCallbackContent() {
     }
   }
 
+  const title = `${provider?.toString().charAt(0).toUpperCase()}${provider?.toString().slice(1)} Account Linking`
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
@@ -80,12 +89,12 @@ function FacebookCallbackContent() {
             {status === 'loading' && <Loader2 className="h-6 w-6 animate-spin" />}
             {status === 'success' && <CheckCircle className="h-6 w-6 text-green-500" />}
             {status === 'error' && <XCircle className="h-6 w-6 text-red-500" />}
-            Facebook Account Linking
+            {title}
           </CardTitle>
           <CardDescription>
-            {status === 'loading' && 'Processing your Facebook authorization...'}
-            {status === 'success' && 'Your Facebook account has been successfully linked!'}
-            {status === 'error' && 'There was an error linking your Facebook account.'}
+            {status === 'loading' && `Processing your ${provider} authorization...`}
+            {status === 'success' && `Your ${provider} account has been successfully linked!`}
+            {status === 'error' && `There was an error linking your ${provider} account.`}
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center">
@@ -97,7 +106,7 @@ function FacebookCallbackContent() {
               </div>
             </div>
           )}
-          
+
           {status === 'success' && (
             <div className="space-y-4">
               <p className="text-green-600 font-medium">{message}</p>
@@ -109,16 +118,16 @@ function FacebookCallbackContent() {
               )}
             </div>
           )}
-          
+
           {status === 'error' && (
             <div className="space-y-4">
               <p className="text-red-600 font-medium">{message}</p>
             </div>
           )}
-          
+
           <div className="mt-6">
             <Button onClick={handleClose} className="w-full">
-              {window.opener ? 'Close Window' : 'Go Home'}
+              {typeof window !== 'undefined' && window.opener ? 'Close Window' : 'Go Home'}
             </Button>
           </div>
         </CardContent>
@@ -127,15 +136,14 @@ function FacebookCallbackContent() {
   )
 }
 
-// Loading component cho Suspense fallback
-function FacebookCallbackLoading() {
+function GenericCallbackLoading() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="flex items-center justify-center gap-2">
             <Loader2 className="h-6 w-6 animate-spin" />
-            Facebook Account Linking
+            Social Account Linking
           </CardTitle>
           <CardDescription>
             Loading...
@@ -154,11 +162,12 @@ function FacebookCallbackLoading() {
   )
 }
 
-// Main component với Suspense boundary
-export default function FacebookCallbackPage() {
+export default function SocialCallbackPage() {
   return (
-    <Suspense fallback={<FacebookCallbackLoading />}>
-      <FacebookCallbackContent />
+    <Suspense fallback={<GenericCallbackLoading />}>
+      <GenericCallbackContent />
     </Suspense>
   )
 }
+
+

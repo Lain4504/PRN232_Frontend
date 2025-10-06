@@ -113,16 +113,45 @@ export function DashboardSidebar() {
   const [sidebarModeState, setSidebarModeState] = React.useState<'expanded'|'collapsed'|'hover'>('hover')
 
   React.useEffect(() => {
-    const stored = typeof window !== 'undefined' ? (localStorage.getItem('sidebarMode') as 'expanded' | 'collapsed' | 'hover' | null) : null
-    if (stored === 'expanded' || stored === 'collapsed' || stored === 'hover') {
-      setSidebarModeState(stored)
+    if (typeof window === 'undefined') return
+    const isMobile = window.matchMedia('(max-width: 1023px)').matches
+    if (isMobile) {
+      // Force expanded on mobile
+      setSidebarModeState('expanded')
+    } else {
+      const stored = localStorage.getItem('sidebarMode') as 'expanded' | 'collapsed' | 'hover' | null
+      if (stored === 'expanded' || stored === 'collapsed' || stored === 'hover') {
+        setSidebarModeState(stored)
+      }
     }
+
     const onModeChange = (e: CustomEvent<'expanded' | 'collapsed' | 'hover'>) => {
       const mode = e.detail
+      const nowMobile = window.matchMedia('(max-width: 1023px)').matches
+      if (nowMobile) {
+        // Ignore external mode changes on mobile; keep expanded
+        setSidebarModeState('expanded')
+        return
+      }
       if (mode === 'expanded' || mode === 'collapsed' || mode === 'hover') setSidebarModeState(mode)
     }
+
+    const mq = window.matchMedia('(max-width: 1023px)')
+    const onMqChange = () => {
+      if (mq.matches) {
+        setSidebarModeState('expanded')
+      } else {
+        const stored = localStorage.getItem('sidebarMode') as 'expanded' | 'collapsed' | 'hover' | null
+        setSidebarModeState(stored || 'hover')
+      }
+    }
+
+    mq.addEventListener?.('change', onMqChange)
     window.addEventListener('sidebar-mode-change', onModeChange as unknown as EventListener)
-    return () => window.removeEventListener('sidebar-mode-change', onModeChange as unknown as EventListener)
+    return () => {
+      mq.removeEventListener?.('change', onMqChange)
+      window.removeEventListener('sidebar-mode-change', onModeChange as unknown as EventListener)
+    }
   }, [])
 
 
@@ -130,6 +159,8 @@ export function DashboardSidebar() {
 
   const setSidebarMode = (mode: 'expanded' | 'collapsed' | 'hover') => {
     if (typeof window !== 'undefined') {
+      const isMobile = window.matchMedia('(max-width: 1023px)').matches
+      if (isMobile) return // Do not allow changing mode on mobile
       localStorage.setItem('sidebarMode', mode)
       window.dispatchEvent(new CustomEvent('sidebar-mode-change', { detail: mode }))
     }
@@ -154,7 +185,10 @@ export function DashboardSidebar() {
         >
           <div className="p-2 lg:p-2">
             <div className="mb-4">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300">
+              <h3 className={cn(
+                "text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
+                sidebarModeState === 'collapsed' && "hidden"
+              )}>
                 Main Navigation
               </h3>
               {/* Main Navigation Items */}
@@ -223,11 +257,17 @@ export function DashboardSidebar() {
             </div>
 
             {/* Separator */}
-            <div className="border-t border-sidebar-border my-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300" />
+            <div className={cn(
+              "border-t border-sidebar-border my-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
+              sidebarModeState === 'collapsed' && "hidden"
+            )} />
 
             {/* System Navigation */}
             <div className="mb-4">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300">
+              <h3 className={cn(
+                "text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
+                sidebarModeState === 'collapsed' && "hidden"
+              )}>
                 System
               </h3>
               <div className="space-y-1">
@@ -272,8 +312,8 @@ export function DashboardSidebar() {
           </div>
         </div>
 
-        {/* Footer with mode switcher icon */}
-        <div className="p-2 border-t border-sidebar-border">
+        {/* Footer with mode switcher icon - hidden on mobile */}
+        <div className="p-2 border-t border-sidebar-border hidden lg:block">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="w-full h-10 lg:h-10 px-2 lg:justify-center">

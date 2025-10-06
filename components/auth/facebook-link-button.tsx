@@ -32,7 +32,7 @@ export function FacebookLinkButton({
     try {
       setIsLoading(true)
 
-      const apiData = await api.get<FacebookAuthData>(endpoints.facebookAuth())
+      const apiData = await api.get<FacebookAuthData>(endpoints.socialAuth('facebook'), { requireAuth: false })
 
       if (apiData?.success) {
         let authUrl = apiData.data.authUrl
