@@ -91,16 +91,16 @@ export function SocialAccountsManagement() {
       case 'youtube':
         return 'text-[#FF0000]';
       case 'tiktok':
-        return 'text-black';
+        return 'text-foreground';
       default:
-        return 'text-gray-600';
+        return 'text-muted-foreground';
     }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge variant="default" className="bg-green-600">Connected</Badge>;
+        return <Badge variant="default" className="bg-chart-2">Connected</Badge>;
       case 'inactive':
         return <Badge variant="secondary">Inactive</Badge>;
       case 'expired':
@@ -202,7 +202,7 @@ export function SocialAccountsManagement() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+              <CheckCircle className="h-5 w-5 text-chart-2" />
               Connected Accounts
             </CardTitle>
             <CardDescription>
@@ -235,7 +235,7 @@ export function SocialAccountsManagement() {
                           variant="ghost" 
                           size="sm"
                           onClick={() => handleDisconnectAccount(account.id)}
-                          className="text-red-600 hover:text-red-700"
+                          className="text-destructive hover:text-destructive/80"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -289,7 +289,7 @@ export function SocialAccountsManagement() {
                     </div>
                     
                     {isConnected ? (
-                      <div className="flex items-center gap-2 text-green-600">
+                      <div className="flex items-center gap-2 text-chart-2">
                         <CheckCircle className="h-4 w-4" />
                         <span className="text-sm font-medium">Connected</span>
                       </div>
@@ -301,7 +301,7 @@ export function SocialAccountsManagement() {
                       >
                         {isConnecting ? (
                           <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>
                             Connecting...
                           </>
                         ) : (
@@ -324,7 +324,7 @@ export function SocialAccountsManagement() {
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+            <AlertCircle className="h-5 w-5 text-chart-1 mt-0.5" />
             <div>
               <h3 className="font-medium mb-1">About Social Account Connections</h3>
               <p className="text-sm text-muted-foreground">

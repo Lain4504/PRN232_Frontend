@@ -70,13 +70,13 @@ export function ContentsManagement() {
       case 'draft':
         return <Badge variant="secondary">Draft</Badge>;
       case 'pending_approval':
-        return <Badge variant="outline" className="border-orange-500 text-orange-600">Pending</Badge>;
+        return <Badge variant="outline" className="border-chart-4 text-chart-4">Pending</Badge>;
       case 'approved':
-        return <Badge variant="default" className="bg-green-600">Approved</Badge>;
+        return <Badge variant="default" className="bg-chart-2">Approved</Badge>;
       case 'rejected':
         return <Badge variant="destructive">Rejected</Badge>;
       case 'published':
-        return <Badge variant="default" className="bg-blue-600">Published</Badge>;
+        return <Badge variant="default" className="bg-chart-1">Published</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -284,7 +284,7 @@ export function ContentsManagement() {
                       </Button>
                     )}
                     {content.status === 'pending_approval' && (
-                      <div className="flex items-center gap-2 text-sm text-orange-600">
+                      <div className="flex items-center gap-2 text-sm text-chart-4">
                         <Clock className="h-4 w-4" />
                         <span>Awaiting approval</span>
                       </div>

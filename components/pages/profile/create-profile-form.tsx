@@ -279,7 +279,7 @@ export function CreateProfileForm() {
                 >
                   {submitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>
                       Creating Profile...
                     </>
                   ) : (
@@ -307,7 +307,7 @@ export function CreateProfileForm() {
         <Card className="mt-6">
           <CardContent className="pt-6">
             <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-chart-2 mt-0.5" />
               <div>
                 <h3 className="font-medium mb-1">Why create a profile?</h3>
                 <p className="text-sm text-muted-foreground">

@@ -104,13 +104,13 @@ export function CalendarManagement() {
   const getEventBadgeColor = (type: string) => {
     switch (type) {
       case 'scheduled_post':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-chart-1/10 text-chart-1';
       case 'approval_due':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-chart-4/10 text-chart-4';
       case 'campaign_launch':
-        return 'bg-green-100 text-green-800';
+        return 'bg-chart-2/10 text-chart-2';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -297,13 +297,13 @@ export function CalendarManagement() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Pending Approvals</span>
-                <Badge variant="outline" className="border-orange-500 text-orange-600">
+                <Badge variant="outline" className="border-chart-4 text-chart-4">
                   {events.filter(e => e.type === 'approval_due').length}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Campaigns</span>
-                <Badge variant="default" className="bg-green-600">
+                <Badge variant="default" className="bg-chart-2">
                   {events.filter(e => e.type === 'campaign_launch').length}
                 </Badge>
               </div>

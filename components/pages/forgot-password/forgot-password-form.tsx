@@ -79,13 +79,13 @@ export function ForgotPasswordForm({
                         required
                     />
                   </div>
-                  {error && <div className="text-red-500 text-sm">{error}</div>}
+                  {error && <div className="text-destructive text-sm">{error}</div>}
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? "Sending..." : "Send Reset Link"}
                   </Button>
                 </form>
                 <div className="mt-4 text-center">
-                  <Link href="/auth/login" className="text-blue-600 hover:underline text-sm">
+                  <Link href="/auth/login" className="text-primary hover:underline text-sm">
                     Back to Login
                   </Link>
                 </div>

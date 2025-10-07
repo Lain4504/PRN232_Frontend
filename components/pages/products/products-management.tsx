@@ -60,7 +60,7 @@ const columns: ColumnDef<Product>[] = [
       const price = row.getValue("price") as number;
       return (
         <div className="flex items-center gap-1">
-          <DollarSign className="h-4 w-4 text-green-600" />
+          <DollarSign className="h-4 w-4 text-chart-2" />
           <span className="font-medium">{price.toFixed(2)}</span>
         </div>
       );

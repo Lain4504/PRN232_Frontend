@@ -94,7 +94,7 @@ export function PostsManagement() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'published':
-        return <Badge variant="default" className="bg-green-600">Published</Badge>;
+        return <Badge variant="default" className="bg-chart-2">Published</Badge>;
       case 'failed':
         return <Badge variant="destructive">Failed</Badge>;
       case 'deleted':
@@ -265,7 +265,7 @@ export function PostsManagement() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                     <div className="text-center p-3 bg-muted rounded-lg">
                       <div className="flex items-center justify-center gap-1 mb-1">
-                        <Eye className="h-4 w-4 text-blue-600" />
+                        <Eye className="h-4 w-4 text-chart-1" />
                         <span className="text-sm font-medium">Impressions</span>
                       </div>
                       <div className="text-lg font-bold">{performance.impressions.toLocaleString()}</div>
@@ -273,7 +273,7 @@ export function PostsManagement() {
                     
                     <div className="text-center p-3 bg-muted rounded-lg">
                       <div className="flex items-center justify-center gap-1 mb-1">
-                        <Heart className="h-4 w-4 text-red-600" />
+                        <Heart className="h-4 w-4 text-destructive" />
                         <span className="text-sm font-medium">Engagement</span>
                       </div>
                       <div className="text-lg font-bold">{performance.engagement.toLocaleString()}</div>
@@ -281,7 +281,7 @@ export function PostsManagement() {
                     
                     <div className="text-center p-3 bg-muted rounded-lg">
                       <div className="flex items-center justify-center gap-1 mb-1">
-                        <TrendingUp className="h-4 w-4 text-green-600" />
+                        <TrendingUp className="h-4 w-4 text-chart-2" />
                         <span className="text-sm font-medium">Clicks</span>
                       </div>
                       <div className="text-lg font-bold">{performance.clicks.toLocaleString()}</div>
@@ -289,7 +289,7 @@ export function PostsManagement() {
                     
                     <div className="text-center p-3 bg-muted rounded-lg">
                       <div className="flex items-center justify-center gap-1 mb-1">
-                        <BarChart3 className="h-4 w-4 text-purple-600" />
+                        <BarChart3 className="h-4 w-4 text-chart-3" />
                         <span className="text-sm font-medium">CTR</span>
                       </div>
                       <div className="text-lg font-bold">{performance.ctr}%</div>
