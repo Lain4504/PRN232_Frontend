@@ -5,9 +5,10 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Loader2, CheckCircle, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { api, endpoints } from '@/lib/api'
+import { useConnectSocialAccount } from '@/hooks/use-social-accounts'
 import { createClient } from '@/lib/supabase/client'
-import { SocialLinkResponse } from '@/lib/types/social-types'
+import { SocialCallbackResponse } from '@/lib/types/aisam-types'
+import { toast } from 'sonner'
 
 type LoadState = 'loading' | 'success' | 'error'
 
@@ -17,66 +18,71 @@ function GenericCallbackContent() {
   const router = useRouter()
   const [status, setStatus] = useState<LoadState>('loading')
   const [message, setMessage] = useState('')
-  const [data, setData] = useState<SocialLinkResponse['data'] | null>(null)
+  const [data, setData] = useState<SocialCallbackResponse | null>(null)
+  
+  const connectSocialAccountMutation = useConnectSocialAccount()
 
   useEffect(() => {
     const processCallback = async () => {
       try {
         const code = searchParams.get('code')
-        const state = searchParams.get('state') || undefined
-        // Derive userId from Supabase session instead of query
+        const state = searchParams.get('state') || ''
+        const error = searchParams.get('error')
+        
+        // Check for OAuth error
+        if (error) {
+          throw new Error(`OAuth error: ${error}`)
+        }
+
+        if (!code) {
+          throw new Error('Authorization code is missing')
+        }
+
+        // Get user ID from Supabase session
         const supabase = createClient()
         const { data: { session } } = await supabase.auth.getSession()
-        const userId = session?.user?.id || ''
+        const userId = session?.user?.id
 
-        if (!code) throw new Error('Authorization code is missing')
-        if (!userId) throw new Error('User is not authenticated')
-
-        // POST to generic callback endpoint with JSON body (no auth required)
-        const result = await api.post<SocialLinkResponse['data']>(
-          endpoints.socialCallback(provider),
-          { code, userId, state },
-          { requireAuth: true }
-        )
-
-        if (result?.success) {
-          setStatus('success')
-          setMessage(`${provider.charAt(0).toUpperCase() + provider.slice(1)} account linked successfully!`)
-          setData(result.data)
-
-          if (window.opener) {
-            window.opener.postMessage({
-              type: `${provider.toUpperCase()}_AUTH_SUCCESS`,
-              data: result.data,
-            }, window.location.origin)
-          }
-        } else {
-          throw new Error('Failed to link account')
+        if (!userId) {
+          throw new Error('User is not authenticated')
         }
+
+        // Call the connect social account mutation
+        const result = await connectSocialAccountMutation.mutateAsync({
+          provider: provider as 'facebook' | 'tiktok' | 'twitter',
+          data: {
+            userId,
+            code,
+            state
+          }
+        })
+
+        setStatus('success')
+        setMessage(`${provider.charAt(0).toUpperCase() + provider.slice(1)} account connected successfully!`)
+        setData(result)
+        
+        toast.success('Social account connected successfully!')
+
+        // Redirect to social accounts page after a short delay
+        setTimeout(() => {
+          router.push('/dashboard/social-accounts')
+        }, 2000)
+
       } catch (error) {
         console.error('Error processing social callback:', error)
         setStatus('error')
         const errMsg = error instanceof Error ? error.message : 'An error occurred'
         setMessage(errMsg)
-        if (window.opener) {
-          window.opener.postMessage({
-            type: `${String(provider).toUpperCase()}_AUTH_ERROR`,
-            error: errMsg,
-          }, window.location.origin)
-        }
+        toast.error(`Failed to connect account: ${errMsg}`)
       }
     }
 
     processCallback()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, router, provider])
+  }, [searchParams, provider])
 
   const handleClose = () => {
-    if (window.opener) {
-      window.close()
-    } else {
-      window.location.href = '/'
-    }
+    router.push('/dashboard/social-accounts')
   }
 
   const title = `${provider?.toString().charAt(0).toUpperCase()}${provider?.toString().slice(1)} Account Linking`
@@ -113,9 +119,12 @@ function GenericCallbackContent() {
               {data?.socialAccount && (
                 <div className="text-sm text-gray-600">
                   <p>Account ID: {data.socialAccount.providerUserId}</p>
-                  <p>Pages: {data.socialAccount.targets?.length || 0}</p>
+                  <p>Available Pages: {data.availableTargets?.length || 0}</p>
                 </div>
               )}
+              <p className="text-sm text-gray-500">
+                Redirecting to social accounts page...
+              </p>
             </div>
           )}
 
@@ -127,7 +136,7 @@ function GenericCallbackContent() {
 
           <div className="mt-6">
             <Button onClick={handleClose} className="w-full">
-              {typeof window !== 'undefined' && window.opener ? 'Close Window' : 'Go Home'}
+              Go to Social Accounts
             </Button>
           </div>
         </CardContent>

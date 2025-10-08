@@ -75,14 +75,14 @@ export function ReportsManagement() {
 
   const getTrendIcon = (value: number) => {
     return value > 0 ? (
-      <TrendingUp className="h-4 w-4 text-green-600" />
+      <TrendingUp className="h-4 w-4 text-chart-2" />
     ) : (
-      <TrendingDown className="h-4 w-4 text-red-600" />
+      <TrendingDown className="h-4 w-4 text-destructive" />
     );
   };
 
   const getTrendColor = (value: number) => {
-    return value > 0 ? 'text-green-600' : 'text-red-600';
+    return value > 0 ? 'text-chart-2' : 'text-destructive';
   };
 
   const getPlatformIcon = (platform: string) => {
@@ -341,42 +341,42 @@ export function ReportsManagement() {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="p-4 bg-chart-2/10 border border-chart-2/20 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="h-4 w-4 text-green-600" />
-                    <h4 className="font-medium text-green-800">Performance Boost</h4>
+                    <TrendingUp className="h-4 w-4 text-chart-2" />
+                    <h4 className="font-medium text-chart-2">Performance Boost</h4>
                   </div>
-                  <p className="text-sm text-green-700">
+                  <p className="text-sm text-chart-2">
                     Your Instagram posts are performing 40% better than average. Consider increasing your Instagram posting frequency.
                   </p>
                 </div>
                 
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="p-4 bg-chart-1/10 border border-chart-1/20 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <Target className="h-4 w-4 text-blue-600" />
-                    <h4 className="font-medium text-blue-800">Optimization Tip</h4>
+                    <Target className="h-4 w-4 text-chart-1" />
+                    <h4 className="font-medium text-chart-1">Optimization Tip</h4>
                   </div>
-                  <p className="text-sm text-blue-700">
+                  <p className="text-sm text-chart-1">
                     Posts with images perform 2.3x better than text-only posts. Consider adding visuals to your content.
                   </p>
                 </div>
                 
-                <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                <div className="p-4 bg-chart-4/10 border border-chart-4/20 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="h-4 w-4 text-orange-600" />
-                    <h4 className="font-medium text-orange-800">Timing Insight</h4>
+                    <Calendar className="h-4 w-4 text-chart-4" />
+                    <h4 className="font-medium text-chart-4">Timing Insight</h4>
                   </div>
-                  <p className="text-sm text-orange-700">
+                  <p className="text-sm text-chart-4">
                     Your audience is most active on weekdays between 2-4 PM. Schedule more posts during this time.
                   </p>
                 </div>
                 
-                <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                <div className="p-4 bg-chart-3/10 border border-chart-3/20 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <Users className="h-4 w-4 text-purple-600" />
-                    <h4 className="font-medium text-purple-800">Audience Growth</h4>
+                    <Users className="h-4 w-4 text-chart-3" />
+                    <h4 className="font-medium text-chart-3">Audience Growth</h4>
                   </div>
-                  <p className="text-sm text-purple-700">
+                  <p className="text-sm text-chart-3">
                     Your follower growth rate is 15% above industry average. Keep up the great content strategy!
                   </p>
                 </div>

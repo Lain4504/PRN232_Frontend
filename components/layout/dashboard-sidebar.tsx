@@ -104,6 +104,11 @@ const secondaryNavItems: NavItem[] = [
     url: "/dashboard/profile",
     icon: User,
   },
+  {
+    title: "Account",
+    url: "/account/me",
+    icon: User,
+  },
 ]
 
 
@@ -133,7 +138,11 @@ export function DashboardSidebar() {
         setSidebarModeState('expanded')
         return
       }
-      if (mode === 'expanded' || mode === 'collapsed' || mode === 'hover') setSidebarModeState(mode)
+      if (mode === 'expanded' || mode === 'collapsed' || mode === 'hover') {
+        setSidebarModeState(mode)
+        // Also update localStorage to keep it in sync
+        localStorage.setItem('sidebarMode', mode)
+      }
     }
 
     const mq = window.matchMedia('(max-width: 1023px)')
@@ -162,6 +171,7 @@ export function DashboardSidebar() {
       const isMobile = window.matchMedia('(max-width: 1023px)').matches
       if (isMobile) return // Do not allow changing mode on mobile
       localStorage.setItem('sidebarMode', mode)
+      setSidebarModeState(mode) // Update local state immediately
       window.dispatchEvent(new CustomEvent('sidebar-mode-change', { detail: mode }))
     }
   }
