@@ -86,21 +86,21 @@ export function SocialAccountsManagement() {
   const totalIntegrations = accountsWithTargets.reduce((sum, item) => sum + item.targets.length, 0);
 
   return (
-    <div className="flex-1 space-y-6 p-6 bg-background">
+    <div className="flex-1 space-y-6 p-4 sm:p-6 bg-background">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Social Accounts</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Social Accounts</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Connect and manage your social media accounts and integrations
           </p>
         </div>
-        <div className="flex items-center gap-4">
-          <Badge variant="secondary" className="text-lg px-3 py-1">
+        <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+          <Badge variant="secondary" className="text-base sm:text-lg px-3 py-1">
             <Users className="mr-2 h-4 w-4" />
             {socialAccounts.length} Accounts
           </Badge>
-          <Badge variant="outline" className="text-lg px-3 py-1">
+          <Badge variant="outline" className="text-base sm:text-lg px-3 py-1">
             {totalIntegrations} Integrations
           </Badge>
         </div>

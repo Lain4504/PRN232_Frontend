@@ -119,8 +119,8 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
 
         return (
           <Card key={account.id} className="overflow-hidden">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+            <CardHeader className="pb-3 px-4 sm:px-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
                   <Button
                     variant="ghost"
@@ -139,62 +139,66 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
                     <Icon className="h-5 w-5 text-white" />
                   </div>
                   
-                  <div>
-                    <CardTitle className="text-lg capitalize">
+                  <div className="min-w-0 flex-1">
+                    <CardTitle className="text-base sm:text-lg capitalize">
                       {account.provider} Account
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-xs sm:text-sm truncate">
                       ID: {account.providerUserId}
                     </CardDescription>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <Badge variant={account.isActive ? 'default' : 'secondary'}>
-                    {account.isActive ? 'Active' : 'Inactive'}
-                  </Badge>
-                  
-                  {isExpired && (
-                    <Badge variant="destructive">Expired</Badge>
-                  )}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2">
+                  <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                    <Badge variant={account.isActive ? 'default' : 'secondary'} className="text-xs">
+                      {account.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                    
+                    {isExpired && (
+                      <Badge variant="destructive" className="text-xs">Expired</Badge>
+                    )}
+                  </div>
 
-                  <ReAuthButton
-                    provider={account.provider}
-                    accountId={account.id}
-                    expiresAt={account.expiresAt}
-                    className="h-8"
-                  />
+                  <div className="flex items-center gap-1 sm:gap-2 flex-wrap w-full sm:w-auto">
+                    <ReAuthButton
+                      provider={account.provider}
+                      accountId={account.id}
+                      expiresAt={account.expiresAt}
+                      className="h-8 text-xs sm:text-sm"
+                    />
 
-                  <LinkIntegrationModal
-                    socialAccountId={account.id}
-                    provider={account.provider}
-                  />
+                    <LinkIntegrationModal
+                      socialAccountId={account.id}
+                      provider={account.provider}
+                    />
 
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() => setDeleteDialogOpen({ accountId: account.id })}
-                        className="text-destructive"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Unlink Account
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => setDeleteDialogOpen({ accountId: account.id })}
+                          className="text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Unlink Account
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
               </div>
             </CardHeader>
 
             {isExpanded && (
-              <CardContent className="pt-0">
+              <CardContent className="pt-0 px-4 sm:px-6">
                 <div className="space-y-4">
                   {/* Account Info */}
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="font-medium">Created:</span>
                       <p className="text-muted-foreground">
@@ -226,7 +230,7 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
                           {account.targets.map((target) => (
                             <div
                               key={target.id}
-                              className="flex items-center justify-between p-3 rounded-lg border bg-muted/30"
+                              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-lg border bg-muted/30"
                             >
                               <div className="flex items-center gap-3">
                                 <Avatar className="h-8 w-8">
@@ -237,8 +241,8 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
                                 </Avatar>
                                 <div>
                                   <p className="font-medium text-sm">{target.name}</p>
-                                  <div className="flex items-center gap-2">
-                                    <Badge variant="secondary" className="text-xs">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <Badge variant="secondary" className="text-[10px] sm:text-xs">
                                       {target.type}
                                     </Badge>
                                     {target.brandName && (
@@ -253,7 +257,7 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
                               
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="sm">
+                                  <Button variant="ghost" size="sm" className="w-full sm:w-auto">
                                     <MoreHorizontal className="h-4 w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
@@ -282,13 +286,15 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
                       <Separator />
                       <div className="text-center py-4">
                         <Users className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground mb-3">
+                        <p className="text-sm text-muted-foreground mb-3 px-4">
                           No pages linked to this account
                         </p>
-                        <LinkIntegrationModal
-                          socialAccountId={account.id}
-                          provider={account.provider}
-                        />
+                        <div className="flex justify-center">
+                          <LinkIntegrationModal
+                            socialAccountId={account.id}
+                            provider={account.provider}
+                          />
+                        </div>
                       </div>
                     </>
                   )}
