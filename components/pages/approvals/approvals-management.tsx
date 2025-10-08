@@ -76,9 +76,9 @@ export function ApprovalsManagement() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="outline" className="border-orange-500 text-orange-600">Pending</Badge>;
+        return <Badge variant="outline" className="border-chart-4 text-chart-4">Pending</Badge>;
       case 'approved':
-        return <Badge variant="default" className="bg-green-600">Approved</Badge>;
+        return <Badge variant="default" className="bg-chart-2">Approved</Badge>;
       case 'rejected':
         return <Badge variant="destructive">Rejected</Badge>;
       default:
@@ -270,7 +270,7 @@ export function ApprovalsManagement() {
                           size="sm"
                           onClick={() => handleApprove(approval.id)}
                           disabled={processing === approval.id}
-                          className="bg-green-600 hover:bg-green-700"
+                          className="bg-chart-2 hover:bg-chart-2/90"
                         >
                           <Check className="mr-2 h-4 w-4" />
                           Approve
@@ -358,7 +358,7 @@ export function ApprovalsManagement() {
                         <Button
                           onClick={() => handleApprove(selectedApproval.id)}
                           disabled={processing === selectedApproval.id}
-                          className="flex-1 bg-green-600 hover:bg-green-700"
+                          className="flex-1 bg-chart-2 hover:bg-chart-2/90"
                         >
                           <Check className="mr-2 h-4 w-4" />
                           Approve Content

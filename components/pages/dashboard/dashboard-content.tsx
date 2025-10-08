@@ -30,7 +30,7 @@ const getStatsData = (stats: DashboardStats) => [
     change: "+5.2%",
     trend: "up",
     icon: Target,
-    color: "text-blue-600",
+    color: "text-chart-1",
   },
   {
     title: "Total Products", 
@@ -38,7 +38,7 @@ const getStatsData = (stats: DashboardStats) => [
     change: "+12.8%",
     trend: "up",
     icon: Package,
-    color: "text-green-600",
+    color: "text-chart-2",
   },
   {
     title: "Total Contents",
@@ -46,7 +46,7 @@ const getStatsData = (stats: DashboardStats) => [
     change: "+8.4%", 
     trend: "up",
     icon: FileText,
-    color: "text-purple-600",
+    color: "text-chart-3",
   },
   {
     title: "Published Posts",
@@ -54,7 +54,7 @@ const getStatsData = (stats: DashboardStats) => [
     change: "+15.2%",
     trend: "up", 
     icon: Send,
-    color: "text-orange-600",
+    color: "text-chart-4",
   },
 ]
 
@@ -101,15 +101,15 @@ const DashboardContent = () => {
   const getActivityIcon = (type: string) => {
     switch (type) {
       case "content_created":
-        return <FileText className="h-4 w-4 text-green-600" />
+        return <FileText className="h-4 w-4 text-chart-2" />
       case "post_published":
-        return <Send className="h-4 w-4 text-blue-600" />
+        return <Send className="h-4 w-4 text-chart-1" />
       case "approval_requested":
-        return <Clock className="h-4 w-4 text-orange-600" />
+        return <Clock className="h-4 w-4 text-chart-4" />
       case "brand_created":
-        return <Target className="h-4 w-4 text-purple-600" />
+        return <Target className="h-4 w-4 text-chart-3" />
       default:
-        return <Activity className="h-4 w-4 text-gray-600" />
+        return <Activity className="h-4 w-4 text-muted-foreground" />
     }
   }
 
@@ -168,11 +168,11 @@ const DashboardContent = () => {
               <div className="text-2xl font-bold">{stat.value}</div>
               <div className="flex items-center text-xs text-muted-foreground">
                 {stat.trend === 'up' ? (
-                  <ArrowUpIcon className="mr-1 h-3 w-3 text-green-600" />
+                  <ArrowUpIcon className="mr-1 h-3 w-3 text-chart-2" />
                 ) : (
-                  <ArrowDownIcon className="mr-1 h-3 w-3 text-red-600" />
+                  <ArrowDownIcon className="mr-1 h-3 w-3 text-destructive" />
                 )}
-                <span className={stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}>
+                <span className={stat.trend === 'up' ? 'text-chart-2' : 'text-destructive'}>
                   {stat.change}
                 </span>
                 <span className="ml-1">from last month</span>
@@ -280,25 +280,25 @@ const DashboardContent = () => {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Pending Approvals</span>
-                <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+                <Badge variant="secondary" className="bg-chart-4/10 text-chart-4">
                   {stats?.pending_approvals || 0}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Scheduled Posts</span>
-                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                <Badge variant="secondary" className="bg-chart-1/10 text-chart-1">
                   {stats?.scheduled_posts || 0}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">AI Generation</span>
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <Badge variant="secondary" className="bg-chart-2/10 text-chart-2">
                   Active
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Social Accounts</span>
-                <Badge variant="secondary" className="bg-purple-100 text-purple-800">
+                <Badge variant="secondary" className="bg-chart-3/10 text-chart-3">
                   Connected
                 </Badge>
               </div>
@@ -321,22 +321,22 @@ const DashboardContent = () => {
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Content Created</p>
               <p className="text-2xl font-bold">5</p>
-              <p className="text-xs text-green-600">+2 from yesterday</p>
+              <p className="text-xs text-chart-2">+2 from yesterday</p>
             </div>
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Posts Published</p>
               <p className="text-2xl font-bold">12</p>
-              <p className="text-xs text-blue-600">Across all platforms</p>
+              <p className="text-xs text-chart-1">Across all platforms</p>
             </div>
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Engagement Rate</p>
               <p className="text-2xl font-bold">8.4%</p>
-              <p className="text-xs text-orange-600">Above average</p>
+              <p className="text-xs text-chart-4">Above average</p>
             </div>
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">AI Generations</p>
               <p className="text-2xl font-bold">23</p>
-              <p className="text-xs text-purple-600">Content & images</p>
+              <p className="text-xs text-chart-3">Content & images</p>
             </div>
           </div>
         </CardContent>
