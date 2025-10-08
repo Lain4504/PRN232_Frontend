@@ -4,8 +4,20 @@ import { createClient } from '@/lib/supabase/client'
 export interface ApiResponse<T> {
   success: boolean
   message: string
+  statusCode: number
   data: T
+  timestamp: string
   error?: string
+}
+
+export interface PaginatedResponse<T> {
+  data: T[]
+  totalCount: number
+  page: number
+  pageSize: number
+  totalPages: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
 }
 
 // Environment
@@ -82,13 +94,28 @@ export const api = {
 
 // Endpoints
 export const endpoints = {
+  // User & Profile
   userProfile: () => '/users/profile/me',
-  socialAccounts: (userId: string) => `/social/accounts/user/${userId}`,
-  socialUnlink: (userId: string, socialAccountId: string) => `/social-auth/unlink/${userId}/${socialAccountId}`,
-  // Generic social auth endpoints
+  
+  // Social Auth
   socialAuth: (provider: string) => `/social-auth/${provider}`,
   socialCallback: (provider: string) => `/social-auth/${provider}/callback`,
-  availableTargets: (provider: string) => `/social-auth/${provider}/available-targets`,
-  linkSelectedTargets: () => '/social-auth/link-selected',
+  
+  // Social Accounts
+  socialAccountsMe: () => '/social/accounts/me',
+  socialAccountsUser: (userId: string) => `/social/accounts/user/${userId}`,
+  socialAccountsWithTargets: () => '/social/accounts/me/accounts-with-targets',
+  socialUnlinkAccount: (userId: string, socialAccountId: string) => `/social/accounts/unlink/${userId}/${socialAccountId}`,
+  
+  // Social Targets
+  availableTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/available-targets`,
+  linkedTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/linked-targets`,
+  linkTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/link-targets`,
+  unlinkTarget: (userId: string, socialIntegrationId: string) => `/social/accounts/unlink-target/${userId}/${socialIntegrationId}`,
+  
+  // Brands
+  brands: () => '/brands',
+  
+  // Content & Posts
   createPost: () => '/content',
 }

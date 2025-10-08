@@ -84,6 +84,84 @@ export interface SocialIntegration {
   updated_at: string;
 }
 
+// Social Account & Integration API Types
+export interface SocialAccountDto {
+  id: string;
+  provider: 'facebook' | 'tiktok' | 'twitter';
+  providerUserId: string;
+  isActive: boolean;
+  expiresAt?: string;
+  createdAt: string;
+  targets?: SocialTargetDto[];
+}
+
+export interface SocialTargetDto {
+  id: string;
+  provider: string;
+  providerTargetId: string;
+  name: string;
+  type: string;
+  category?: string;
+  profilePictureUrl?: string;
+  isActive: boolean;
+  brandId?: string;
+  brandName?: string;
+}
+
+export interface AvailableTargetDto {
+  providerTargetId: string;
+  name: string;
+  type: string;
+  category?: string;
+  profilePictureUrl?: string;
+  isActive: boolean;
+}
+
+export interface SocialAuthUrlResponse {
+  authUrl: string;
+  state: string;
+}
+
+export interface SocialCallbackRequest {
+  userId: string;
+  code: string;
+  state: string;
+}
+
+export interface SocialCallbackResponse {
+  user: {
+    id: string;
+    email: string;
+  };
+  socialAccount: SocialAccountDto;
+  availableTargets: AvailableTargetDto[];
+}
+
+export interface LinkTargetsRequest {
+  userId: string;
+  provider: string;
+  providerTargetIds: string[];
+  brandId: string;
+}
+
+export interface LinkTargetsResponse {
+  id: string;
+  provider: string;
+  targets: SocialTargetDto[];
+}
+
+export interface AccountsWithTargetsResponse {
+  socialAccount: SocialAccountDto;
+  targets: SocialTargetDto[];
+}
+
+// Error Response Types
+export interface ApiErrorResponse {
+  success: false;
+  message: string;
+  errorCode: 'UNAUTHORIZED' | 'INVALID_REQUEST' | 'SOCIAL_ACCOUNT_NOT_FOUND' | 'FACEBOOK_OAUTH_ERROR' | 'FACEBOOK_CONNECTION_ERROR' | 'INTERNAL_SERVER_ERROR';
+}
+
 export interface Approval {
   id: string;
   content_id: string;
