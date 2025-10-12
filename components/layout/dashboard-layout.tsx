@@ -48,8 +48,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }, [supabase.auth])
 
   return (
-      <div>
-        <div className="flex h-screen w-full">
+      <div className="h-screen w-full overflow-hidden">
+        <div className="flex h-full w-full max-w-full">
           {/* Custom Sidebar với hover expand - chỉ hiện trên desktop */}
           <div className="group relative hidden lg:block">
             <div className={"fixed left-0 top-12 h-[calc(100vh-3rem)] bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out z-40 overflow-hidden " + (sidebarMode === 'expanded' ? 'w-64' : sidebarMode === 'collapsed' ? 'w-12' : 'w-12 hover:w-64')}>
@@ -58,8 +58,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
 
           {/* Main Content Area */}
-          <div className={"flex flex-col flex-1 pt-12 min-h-0 " + (sidebarMode === 'expanded' ? 'lg:ml-64' : 'lg:ml-12')}>
-            <main className="flex-1 overflow-y-auto">
+          <div className={"flex flex-col flex-1 pt-12 min-h-0 max-w-full overflow-hidden dashboard-content " + (sidebarMode === 'expanded' ? 'lg:ml-64' : 'lg:ml-12')}>
+            <main className="flex-1 overflow-y-auto overflow-x-hidden max-w-full">
               {children}
             </main>
           </div>

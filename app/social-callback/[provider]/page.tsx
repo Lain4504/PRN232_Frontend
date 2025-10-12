@@ -49,7 +49,7 @@ function GenericCallbackContent() {
 
         // Call the connect social account mutation
         const result = await connectSocialAccountMutation.mutateAsync({
-          provider: provider as 'facebook' | 'tiktok' | 'twitter',
+          provider: provider as 'facebook' | 'tiktok' | 'instagram',
           data: {
             userId,
             code,

@@ -83,7 +83,7 @@ export function useGetLinkedTargets(socialAccountId: string) {
 }
 
 // Get OAuth URL for provider
-export function useGetAuthUrl(provider: 'facebook' | 'tiktok' | 'twitter') {
+export function useGetAuthUrl(provider: 'facebook' | 'tiktok' | 'instagram') {
   return useQuery({
     queryKey: ['social-auth', provider, 'url'],
     queryFn: async (): Promise<SocialAuthUrlResponse> => {

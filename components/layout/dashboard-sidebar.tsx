@@ -15,6 +15,7 @@ import {
   Package,
   CheckCircle,
   Share2,
+  PanelLeftDashed,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -327,7 +328,7 @@ export function DashboardSidebar() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="w-full h-10 lg:h-10 px-2 lg:justify-center">
-                <CogIcon className="h-5 w-5" />
+                <PanelLeftDashed  className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="top" align="center" className="min-w-48">

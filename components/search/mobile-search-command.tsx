@@ -2,7 +2,8 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { Search, Users, Building2, BarChart3, FileText, Calendar, Mail, Settings, User } from "lucide-react"
+import { useTheme } from "next-themes"
+import { Search, Users, Building2, BarChart3, FileText, Calendar, Mail, Settings, User, Moon, Sun, Monitor } from "lucide-react"
 
 import {
   Command,
@@ -28,10 +29,10 @@ const searchData = [
     description: "Main dashboard overview"
   },
   {
-    title: "Organizations",
-    url: "/dashboard/organizations", 
-    icon: Building2,
-    description: "Manage organizations"
+    title: "Profile",
+    url: "/dashboard/profile", 
+    icon: User,
+    description: "Manage your profile"
   },
   {
     title: "Users",
@@ -69,21 +70,21 @@ const searchData = [
     icon: Settings,
     description: "Application settings"
   },
-  {
-    title: "Profile",
-    url: "/dashboard/profile",
-    icon: User,
-    description: "User profile management"
-  },
 ]
 
 export function MobileSearchCommand() {
   const [open, setOpen] = React.useState(false)
   const router = useRouter()
+  const { theme, setTheme } = useTheme()
 
   const handleSelect = (url: string) => {
     setOpen(false)
     router.push(url)
+  }
+
+  const handleThemeToggle = (newTheme: string) => {
+    setTheme(newTheme)
+    setOpen(false)
   }
 
   return (
@@ -114,6 +115,41 @@ export function MobileSearchCommand() {
                   </div>
                 </CommandItem>
               ))}
+            </CommandGroup>
+            <CommandGroup heading="Theme">
+              <CommandItem
+                value="light"
+                onSelect={() => handleThemeToggle("light")}
+                className="cursor-pointer"
+              >
+                <Sun className="mr-2 h-4 w-4" />
+                <div className="flex flex-col">
+                  <span>Light Mode</span>
+                  <span className="text-xs text-muted-foreground">Switch to light theme</span>
+                </div>
+              </CommandItem>
+              <CommandItem
+                value="dark"
+                onSelect={() => handleThemeToggle("dark")}
+                className="cursor-pointer"
+              >
+                <Moon className="mr-2 h-4 w-4" />
+                <div className="flex flex-col">
+                  <span>Dark Mode</span>
+                  <span className="text-xs text-muted-foreground">Switch to dark theme</span>
+                </div>
+              </CommandItem>
+              <CommandItem
+                value="system"
+                onSelect={() => handleThemeToggle("system")}
+                className="cursor-pointer"
+              >
+                <Monitor className="mr-2 h-4 w-4" />
+                <div className="flex flex-col">
+                  <span>System</span>
+                  <span className="text-xs text-muted-foreground">Use system theme</span>
+                </div>
+              </CommandItem>
             </CommandGroup>
           </CommandList>
         </Command>
