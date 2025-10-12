@@ -246,7 +246,7 @@ export function HomeContent() {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6">
-              <Link href="/dashboard/organizations">Xem tổ chức</Link>
+              <Link href="/dashboard/profile">Xem Profile</Link>
             </Button>
           </div>
 

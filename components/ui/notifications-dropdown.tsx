@@ -51,7 +51,7 @@ export function NotificationsDropdown() {
                 </div>
                 <h4 className="font-semibold text-lg mb-3">All caught up</h4>
                 <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-                  You will be notified here for any notices on your organizations and projects.
+                  You will be notified here for any notices on your projects and activities.
                 </p>
               </div>
             </TabsContent>
