@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,13 +16,16 @@ import {
   Save,
   CheckCircle
 } from "lucide-react";
-import { authApi, profileApi } from "@/lib/mock-api";
-import { User as UserType, CreateProfileForm as CreateProfileFormType } from "@/lib/types/aisam-types";
+import { CreateProfileForm as CreateProfileFormType } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { useCreateProfile } from "@/hooks/use-profiles";
+import { api, endpoints } from "@/lib/api";
 
 export function CreateProfileForm() {
-  const [user, setUser] = useState<UserType | null>(null);
+  const supabase = useMemo(() => createClient(), [])
+  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<CreateProfileFormType>({
@@ -32,14 +35,21 @@ export function CreateProfileForm() {
   });
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const router = useRouter();
+  const createMutation = useCreateProfile(userId || "")
 
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const response = await authApi.getCurrentUser();
-        if (response.success && response.data) {
-          setUser(response.data);
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) {
+          toast.error('Bạn cần đăng nhập');
+          router.push('/auth/login')
+          return
         }
+        setUserId(user.id)
+
+        // Ensure backend user exists (GetOrCreate)
+        await api.get(endpoints.userProfile())
       } catch (error) {
         console.error('Failed to load user:', error);
         toast.error('Failed to load user data');
@@ -49,7 +59,7 @@ export function CreateProfileForm() {
     };
 
     loadUser();
-  }, []);
+  }, [router, supabase.auth]);
 
   const handleInputChange = (field: keyof CreateProfileFormType, value: string) => {
     setFormData(prev => ({
@@ -78,7 +88,7 @@ export function CreateProfileForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!user) {
+    if (!userId) {
       toast.error('User not found');
       return;
     }
@@ -90,14 +100,9 @@ export function CreateProfileForm() {
 
     try {
       setSubmitting(true);
-      const response = await profileApi.createProfile(user.id, formData);
-      
-      if (response.success) {
-        toast.success('Profile created successfully!');
-        router.push('/dashboard/profile');
-      } else {
-        toast.error(response.message);
-      }
+      await createMutation.mutateAsync(formData)
+      toast.success('Profile created successfully!');
+      router.push('/dashboard/profile');
     } catch (error) {
       console.error('Failed to create profile:', error);
       toast.error('Failed to create profile');
@@ -218,12 +223,7 @@ export function CreateProfileForm() {
                     {avatarPreview ? (
                       <AvatarImage src={avatarPreview} alt="Profile preview" />
                     ) : (
-                      <AvatarFallback className="text-lg">
-                        {formData.profile_type === 'business' 
-                          ? formData.company_name?.[0] || 'B'
-                          : user?.first_name?.[0] || 'U'
-                        }
-                      </AvatarFallback>
+                      <AvatarFallback className="text-lg">{formData.profile_type === 'business' ? formData.company_name?.[0] || 'B' : 'U'}</AvatarFallback>
                     )}
                   </Avatar>
                   

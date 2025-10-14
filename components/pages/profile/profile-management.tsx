@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,92 +19,85 @@ import {
   Edit,
   Save,
   X,
-  Upload,
-  CheckCircle
+  Trash2,
+  RotateCcw
 } from "lucide-react";
-import { authApi, profileApi } from "@/lib/mock-api";
-import { User as UserType, Profile } from "@/lib/types/aisam-types";
+import { createClient } from "@/lib/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { useGetProfiles, useUpdateProfile, useDeleteProfile, useRestoreProfile } from "@/hooks/use-profiles";
 import { toast } from "sonner";
 
 export function ProfileManagement() {
-  const [user, setUser] = useState<UserType | null>(null);
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    profile_type: 'personal' as 'personal' | 'business',
-    company_name: '',
-    bio: '',
-  });
+  const supabase = useMemo(() => createClient(), [])
+  const [search, setSearch] = useState("")
+  const [showDeleted, setShowDeleted] = useState(false)
+  const { data: userResult } = useQuery({
+    queryKey: ['auth', 'user'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      return user
+    },
+  })
+  const userId = userResult?.id || ""
+  const { data: profiles = [], isLoading, refetch } = useGetProfiles(userId, search || undefined, showDeleted ? true : undefined)
+  const [editingProfileId, setEditingProfileId] = useState<string | null>(null)
+  const [formData, setFormData] = useState({ profile_type: 'personal' as 'personal' | 'business', company_name: '', bio: '' })
+  const updateMutation = useUpdateProfile(editingProfileId || "")
+  const deleteMutation = useDeleteProfile()
+  const restoreMutation = useRestoreProfile()
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        
-        // Get current user
-        const userResponse = await authApi.getCurrentUser();
-        if (userResponse.success && userResponse.data) {
-          setUser(userResponse.data);
-          
-          // Get user's profiles
-          const profilesResponse = await profileApi.getProfiles(userResponse.data.id);
-          if (profilesResponse.success) {
-            setProfiles(profilesResponse.data);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load profile data:', error);
-        toast.error('Failed to load profile data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, []);
-
-  const handleEditProfile = (profile: Profile) => {
-    setEditingProfile(profile);
+  const handleEditProfile = (profile: { id: string; profile_type: 'personal' | 'business'; company_name?: string; bio?: string }) => {
+    setEditingProfileId(profile.id)
     setFormData({
       profile_type: profile.profile_type,
       company_name: profile.company_name || '',
       bio: profile.bio || '',
-    });
-    setIsEditing(true);
-  };
+    })
+  }
 
   const handleSaveProfile = async () => {
-    if (!editingProfile) return;
-
+    if (!editingProfileId) return
     try {
-      const response = await profileApi.updateProfile(editingProfile.id, formData);
-      if (response.success) {
-        setProfiles(profiles.map(p => p.id === editingProfile.id ? response.data : p));
-        setEditingProfile(null);
-        setIsEditing(false);
-        toast.success('Profile updated successfully');
-      } else {
-        toast.error(response.message);
-      }
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-      toast.error('Failed to update profile');
+      await updateMutation.mutateAsync({
+        profile_type: formData.profile_type,
+        company_name: formData.company_name,
+        bio: formData.bio,
+      })
+      toast.success('Profile updated successfully')
+      setEditingProfileId(null)
+      refetch()
+    } catch (e) {
+      toast.error('Failed to update profile')
     }
-  };
+  }
 
   const handleCancelEdit = () => {
-    setEditingProfile(null);
-    setIsEditing(false);
-    setFormData({
-      profile_type: 'personal',
-      company_name: '',
-      bio: '',
-    });
-  };
+    setEditingProfileId(null)
+    setFormData({ profile_type: 'personal', company_name: '', bio: '' })
+  }
 
-  if (loading) {
+  const handleDeleteProfile = async (profileId: string) => {
+    if (!confirm('Bạn có chắc chắn muốn xóa hồ sơ này?')) return
+    try {
+      await deleteMutation.mutateAsync(profileId)
+      toast.success('Đã chuyển vào thùng rác')
+      refetch()
+    } catch (e) {
+      toast.error('Xóa thất bại')
+    }
+  }
+
+  const handleRestoreProfile = async (profileId: string) => {
+    try {
+      await restoreMutation.mutateAsync(profileId)
+      toast.success('Khôi phục thành công')
+      refetch()
+    } catch (e) {
+      toast.error('Khôi phục thất bại')
+    }
+  }
+
+  if (isLoading) {
     return (
       <div className="flex-1 space-y-6 p-6 bg-background">
         <div className="flex items-center justify-center h-64">
@@ -128,10 +122,10 @@ export function ProfileManagement() {
         </div>
         {profiles.length === 0 && (
           <Button asChild>
-            <a href="/dashboard/profile/create">
+            <Link href="/dashboard/profile/create">
               <User className="mr-2 h-4 w-4" />
               Create Profile
-            </a>
+            </Link>
           </Button>
         )}
       </div>
@@ -152,17 +146,14 @@ export function ProfileManagement() {
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16">
                 <AvatarFallback className="text-lg">
-                  {user?.first_name?.[0]}{user?.last_name?.[0]}
+                  {userResult?.email?.[0]?.toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <h3 className="font-semibold">
-                  {user?.first_name} {user?.last_name}
+                  {userResult?.email}
                 </h3>
-                <p className="text-sm text-muted-foreground">{user?.email}</p>
-                <Badge variant="secondary" className="mt-1">
-                  {user?.role}
-                </Badge>
+                <p className="text-sm text-muted-foreground">Supabase User</p>
               </div>
             </div>
             
@@ -173,26 +164,16 @@ export function ProfileManagement() {
                 <Mail className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Email</p>
-                  <p className="text-sm text-muted-foreground">{user?.email}</p>
+                  <p className="text-sm text-muted-foreground">{userResult?.email}</p>
                 </div>
               </div>
-              
-              {user?.phone && (
-                <div className="flex items-center gap-3">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">Phone</p>
-                    <p className="text-sm text-muted-foreground">{user.phone}</p>
-                  </div>
-                </div>
-              )}
               
               <div className="flex items-center gap-3">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Member since</p>
                   <p className="text-sm text-muted-foreground">
-                    {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
+                    N/A
                   </p>
                 </div>
               </div>
@@ -213,6 +194,17 @@ export function ProfileManagement() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {/* Filters */}
+              <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                <Input
+                  placeholder="Search profiles..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                <Button variant={showDeleted ? 'default' : 'outline'} onClick={() => setShowDeleted(v => !v)}>
+                  {showDeleted ? 'Showing Deleted' : 'Active Only'}
+                </Button>
+              </div>
               {profiles.length === 0 ? (
                 <div className="text-center py-8">
                   <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -221,17 +213,17 @@ export function ProfileManagement() {
                     Create your first profile to get started with AISAM
                   </p>
                   <Button asChild>
-                    <a href="/dashboard/profile/create">
+                    <Link href="/dashboard/profile/create">
                       <User className="mr-2 h-4 w-4" />
                       Create Profile
-                    </a>
+                    </Link>
                   </Button>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {profiles.map((profile) => (
                     <div key={profile.id} className="border rounded-lg p-4">
-                      {isEditing && editingProfile?.id === profile.id ? (
+                      {editingProfileId === profile.id ? (
                         <div className="space-y-4">
                           <div className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2">
@@ -315,14 +307,35 @@ export function ProfileManagement() {
                             </div>
                           </div>
                           
-                          <Button
-                            onClick={() => handleEditProfile(profile)}
-                            variant="outline"
-                            size="sm"
-                          >
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => handleEditProfile(profile)}
+                              variant="outline"
+                              size="sm"
+                            >
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit
+                            </Button>
+                            {!showDeleted ? (
+                              <Button
+                                onClick={() => handleDeleteProfile(profile.id)}
+                                variant="destructive"
+                                size="sm"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Xóa
+                              </Button>
+                            ) : (
+                              <Button
+                                onClick={() => handleRestoreProfile(profile.id)}
+                                variant="default"
+                                size="sm"
+                              >
+                                <RotateCcw className="mr-2 h-4 w-4" />
+                                Khôi phục
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>

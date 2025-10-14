@@ -21,6 +21,7 @@ import { authApi, brandApi, profileApi } from "@/lib/mock-api";
 import { User as UserType, Profile, CreateBrandForm as CreateBrandFormType } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function CreateBrandForm() {
   const [user, setUser] = useState<UserType | null>(null);
@@ -169,10 +170,10 @@ export function CreateBrandForm() {
                 You need to create a profile before you can create a brand
               </p>
               <Button asChild>
-                <a href="/dashboard/profile/create">
+                <Link href="/dashboard/profile/create">
                   <Building2 className="mr-2 h-4 w-4" />
                   Create Profile First
-                </a>
+                </Link>
               </Button>
             </div>
           </CardContent>
