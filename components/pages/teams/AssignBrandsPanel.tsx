@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useAssignBrands, useTeam } from '@/hooks/use-teams'
 import { getCurrentPermissions } from '@/lib/permissions'
 import { useGetBrands } from '@/hooks/use-social-accounts'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 
 export function AssignBrandsPanel({ teamId }: { teamId: string }) {
   const { data: team } = useTeam(teamId)
@@ -25,34 +27,33 @@ export function AssignBrandsPanel({ teamId }: { teamId: string }) {
     try {
       await assign({ brandIds: selected })
       alert('Cập nhật brands thành công')
-    } catch (e) {
+    } catch {
       alert('Không thể cập nhật brands')
     }
   }
 
   return (
-    <div className="space-y-3">
-      <div className="text-sm text-gray-600">Chọn brands gán cho team này, sau đó nhấn Lưu thay đổi.</div>
+    <div className="space-y-4">
+      <div className="text-sm text-muted-foreground">Chọn brands gán cho team này, sau đó nhấn Lưu thay đổi.</div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {brandOptions.map((b) => (
-          <label key={b.id} className="flex items-center gap-2 rounded border p-2">
-            <input
-              type="checkbox"
+          <label key={b.id} className="flex items-center gap-3 rounded-lg border p-3 bg-background/50">
+            <Checkbox
               checked={selected.includes(b.id)}
-              onChange={(e) => {
-                if (e.target.checked) setSelected((s) => [...s, b.id])
+              onCheckedChange={(checked) => {
+                if (checked) setSelected((s) => [...s, b.id])
                 else setSelected((s) => s.filter((x) => x !== b.id))
               }}
             />
-            <span>{b.name}</span>
+            <span className="text-sm">{b.name}</span>
           </label>
         ))}
       </div>
       <div className="flex justify-end gap-2">
-        <button className="rounded border px-3 py-2" onClick={() => history.back()} disabled={isPending}>Huỷ</button>
-        <button className="rounded bg-black text-white px-3 py-2 disabled:opacity-50" onClick={handleSave} disabled={isPending || !allowed}>
+        <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => history.back()} disabled={isPending}>Huỷ</Button>
+        <Button size="sm" className="h-8 text-xs" onClick={handleSave} disabled={isPending || !allowed}>
           {isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
-        </button>
+        </Button>
       </div>
     </div>
   )

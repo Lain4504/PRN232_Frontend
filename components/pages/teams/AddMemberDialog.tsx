@@ -5,6 +5,15 @@ import { useAddTeamMember } from '@/hooks/use-teams'
 import { api, endpoints } from '@/lib/api'
 import { User, TeamMemberCreateRequest } from '@/lib/types/aisam-types'
 import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { Search } from 'lucide-react'
 
 // Role-based permissions mapping (synced with backend team_roles.json)
 const ROLE_PERMISSIONS = {
@@ -250,165 +259,134 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
         }
     }
 
-    if (!open) return null
+    const isMobile = useIsMobile()
 
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold">Thêm thành viên mới</h2>
-                    <button
-                        onClick={() => onOpenChange(false)}
-                        className="text-gray-500 hover:text-gray-700"
-                    >
-                        ✕
-                    </button>
+    const content = (
+        <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+                <Label className="text-sm font-medium text-muted-foreground">Tìm và chọn User</Label>
+                <div className="relative">
+                    <Input
+                        type="text"
+                        placeholder="Nhập tên hoặc email để tìm kiếm..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pr-8"
+                    />
+                    <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* User Search and Selection */}
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Tìm và chọn User</label>
-                        <div className="space-y-2">
-                            <input
-                                type="text"
-                                placeholder="Nhập tên hoặc email để tìm kiếm..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full border rounded px-3 py-2"
-                            />
+                {loading && <div className="text-sm text-muted-foreground">Đang tìm kiếm...</div>}
+                {searchQuery.length >= 2 && !loading && users.length === 0 && (
+                    <div className="text-sm text-muted-foreground">Không tìm thấy user nào</div>
+                )}
 
-                            {loading && (
-                                <div className="p-3 text-sm text-gray-500">Đang tìm kiếm...</div>
-                            )}
-
-                            {searchQuery.length >= 2 && !loading && users.length === 0 && (
-                                <div className="p-3 text-sm text-gray-500">Không tìm thấy user nào</div>
-                            )}
-
-                            {users.length > 0 && (
-                                <select
-                                    value={selectedUserId}
-                                    onChange={(e) => {
-                                        setSelectedUserId(e.target.value)
-                                    }}
-                                    className="w-full border rounded px-3 py-2"
-                                    required
-                                >
-                                    <option value="">-- Chọn user từ kết quả tìm kiếm --</option>
-                                    {users.map((user) => {
-
-                                        // Handle both camelCase and PascalCase
-                                        const userId = user.id || `user-${Math.random()}`
-                                        const userEmail = user.email || 'Unknown'
-
-                                        return (
-                                            <option key={userId} value={userId}>
-                                                {userEmail}
-                                            </option>
-                                        )
-                                    })}
-                                </select>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Role Selection */}
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Vai trò</label>
-                        <select
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}
-                            className="w-full border rounded px-3 py-2"
-                        >
-                            <option value="Copywriter">Copywriter</option>
-                            <option value="Designer">Designer</option>
-                            <option value="SocialMediaManager">Social Media Manager</option>
-                            <option value="TeamLeader">Team Leader</option>
-                            <option value="Vendor">Vendor</option>
-                        </select>
-                        <p className="text-xs text-gray-500 mt-1">
-                            Quyền hạn sẽ tự động cập nhật theo vai trò được chọn
-                        </p>
-                    </div>
-
-                    {/* Permissions Selection */}
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <label className="text-sm font-medium">Quyền hạn</label>
-                            <button
-                                type="button"
-                                onClick={() => setShowPermissions(!showPermissions)}
-                                className="text-sm text-blue-600 underline"
-                            >
-                                {showPermissions ? 'Ẩn' : 'Hiển thị'} quyền hạn
-                            </button>
-                        </div>
-
-                        {permissions.length > 0 && (
-                            <div className="text-sm text-gray-600 mb-2">
-                                Đã chọn {permissions.length} quyền cho vai trò &quot;{role}&quot;
-                            </div>
-                        )}
-
-                        {showPermissions && (
-                            <div className="border rounded p-3 max-h-48 overflow-y-auto">
-                                <div className="text-xs text-blue-600 mb-2 p-2 bg-blue-50 rounded">
-                                    Quyền hạn này được tự động gán dựa trên vai trò &quot;{role}&quot;. Bạn có thể tùy chỉnh nếu cần.
-                                </div>
-                                <div className="grid grid-cols-2 gap-2 text-sm">
-                                    {getPermissionsForRole(role).map((permission) => (
-                                        <label key={permission} className="flex items-center gap-2">
-                                            <input
-                                                type="checkbox"
-                                                checked={permissions.includes(permission)}
-                                                onChange={() => togglePermission(permission)}
-                                            />
-                                            <span className="truncate" title={permission}>
-                                                {permission}
-                                            </span>
-                                        </label>
-                                    ))}
-                                </div>
-                                <div className="mt-3 flex gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setPermissions(getPermissionsForRole(role).slice())}
-                                        className="text-sm text-blue-600 underline"
-                                    >
-                                        Chọn tất cả
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setPermissions([])}
-                                        className="text-sm text-red-600 underline"
-                                    >
-                                        Bỏ chọn tất cả
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex justify-end gap-2 pt-4">
-                        <button
-                            type="button"
-                            onClick={() => onOpenChange(false)}
-                            className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-50"
-                        >
-                            Hủy
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={adding || !selectedUserId}
-                            className="px-4 py-2 bg-black text-white rounded disabled:opacity-50"
-                        >
-                            {adding ? 'Đang thêm...' : 'Thêm thành viên'}
-                        </button>
-                    </div>
-                </form>
+                {users.length > 0 && (
+                    <Select value={selectedUserId} onValueChange={setSelectedUserId}>
+                        <SelectTrigger className="w-full"><SelectValue placeholder="Chọn user từ kết quả" /></SelectTrigger>
+                        <SelectContent>
+                            {users.map((user) => {
+                                const userId = user.id || `user-${Math.random()}`
+                                const userEmail = user.email || 'Unknown'
+                                return (
+                                    <SelectItem key={userId} value={userId}>{userEmail}</SelectItem>
+                                )
+                            })}
+                        </SelectContent>
+                    </Select>
+                )}
             </div>
-        </div>
+
+            <div className="space-y-2">
+                <Label className="text-sm font-medium text-muted-foreground">Vai trò</Label>
+                <Select value={role} onValueChange={setRole}>
+                    <SelectTrigger className="w-full"><SelectValue placeholder="Chọn vai trò" /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="Copywriter">Copywriter</SelectItem>
+                        <SelectItem value="Designer">Designer</SelectItem>
+                        <SelectItem value="Marketer">Marketer</SelectItem>
+                        <SelectItem value="TeamLeader">Team Leader</SelectItem>
+                        <SelectItem value="Vendor">Vendor</SelectItem>
+                    </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">Quyền hạn sẽ tự động cập nhật theo vai trò được chọn</p>
+            </div>
+
+            <div>
+                <div className="flex items-center justify-between mb-2">
+                    <Label className="text-sm font-medium">Quyền hạn</Label>
+                    <Button type="button" variant="ghost" size="sm" className="h-8 text-xs" onClick={() => setShowPermissions(!showPermissions)}>
+                        {showPermissions ? 'Ẩn' : 'Hiển thị'} quyền hạn
+                    </Button>
+                </div>
+
+                {permissions.length > 0 && (
+                    <div className="text-sm text-muted-foreground mb-2">
+                        Đã chọn {permissions.length} quyền cho vai trò &quot;{role}&quot;
+                    </div>
+                )}
+
+                {showPermissions && (
+                    <div className="border rounded-lg p-3 max-h-48 overflow-y-auto bg-muted/20">
+                        <div className="text-xs mb-2 p-2 rounded bg-background/50 border">Quyền hạn này được tự động gán theo vai trò. Bạn có thể tùy chỉnh.</div>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                            {getPermissionsForRole(role).map((permission) => (
+                                <label key={permission} className="flex items-center gap-2">
+                                    <Checkbox
+                                        checked={permissions.includes(permission)}
+                                        onCheckedChange={() => togglePermission(permission)}
+                                    />
+                                    <span className="truncate" title={permission}>{permission}</span>
+                                </label>
+                            ))}
+                        </div>
+                        <div className="mt-3 flex gap-2">
+                            <Button type="button" variant="ghost" size="sm" className="h-8 text-xs" onClick={() => setPermissions(getPermissionsForRole(role).slice())}>Chọn tất cả</Button>
+                            <Button type="button" variant="ghost" size="sm" className="h-8 text-xs" onClick={() => setPermissions([])}>Bỏ chọn tất cả</Button>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)} size="sm" className="h-8 text-xs">Hủy</Button>
+                <Button type="submit" disabled={adding || !selectedUserId} size="sm" className="h-8 text-xs">{adding ? 'Đang thêm...' : 'Thêm thành viên'}</Button>
+            </div>
+        </form>
+    )
+
+    if (isMobile) {
+        return (
+            <Drawer open={open} onOpenChange={onOpenChange}>
+                <DrawerContent className="max-h[90vh] flex flex-col">
+                    <DrawerHeader className="flex-shrink-0 text-left">
+                        <DrawerTitle>Thêm thành viên mới</DrawerTitle>
+                        <DrawerDescription>Tìm user, chọn vai trò và quyền hạn.</DrawerDescription>
+                    </DrawerHeader>
+                    <div className="px-4 overflow-y-auto flex-1">
+                        {content}
+                    </div>
+                    <DrawerFooter className="flex-shrink-0 pt-2">
+                        <DrawerClose asChild>
+                            <Button variant="outline">Đóng</Button>
+                        </DrawerClose>
+                    </DrawerFooter>
+                </DrawerContent>
+            </Drawer>
+        )
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+                <DialogHeader className="flex-shrink-0">
+                    <DialogTitle>Thêm thành viên mới</DialogTitle>
+                    <DialogDescription>Tìm user, chọn vai trò và quyền hạn.</DialogDescription>
+                </DialogHeader>
+                <div className="overflow-y-auto flex-1">
+                    {content}
+                </div>
+            </DialogContent>
+        </Dialog>
     )
 }

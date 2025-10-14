@@ -33,7 +33,7 @@ import { LinkIntegrationModal } from './link-integration-modal'
 import { IntegrationsModal } from './integrations-modal'
 import { useUnlinkAccount, useUnlinkTarget } from '@/hooks/use-social-accounts'
 import { toast } from 'sonner'
-import {SiFacebook, SiInstagram, SiTiktok, SiX} from "@icons-pack/react-simple-icons";
+import {SiFacebook, SiInstagram, SiTiktok} from "@icons-pack/react-simple-icons";
 import { api, endpoints } from '@/lib/api'
 
 interface SocialAccountListProps {

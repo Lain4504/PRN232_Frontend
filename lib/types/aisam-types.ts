@@ -4,15 +4,6 @@
 export interface User {
   id: string;
   email: string;
-  createdAt: string;
-  isActive: boolean;
-  socialAccountsCount: number;
-}
-
-// Legacy user type - to be removed
-export interface UserLegacy {
-  id: string;
-  email: string;
   first_name: string;
   last_name: string;
   phone?: string;

@@ -15,7 +15,7 @@ import {
     Menu,
     ChevronDown,
 } from "lucide-react"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { UserDropdown } from "@/components/layout/user-dropdown"
 
 export function Header() {
@@ -236,6 +236,7 @@ export function Header() {
                                 </Button>
                             </SheetTrigger>
                             <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0">
+                                <SheetTitle className="sr-only">Mobile Navigation Menu</SheetTitle>
                                 <div className="flex flex-col h-full">
                                     {/* Mobile Header */}
                                     <div className="flex items-center p-6 border-b">
