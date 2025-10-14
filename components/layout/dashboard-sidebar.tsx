@@ -11,6 +11,7 @@ import {
   Calendar,
   Mail,
   User,
+  Users,
   Target,
   Package,
   CheckCircle,
@@ -34,7 +35,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Settings as CogIcon } from "lucide-react"
+import { getCurrentPermissions } from "@/lib/permissions"
 
 // Dữ liệu menu chính - đơn giản hóa không có sub items
 interface NavItem {
@@ -54,6 +55,11 @@ const mainNavItems: NavItem[] = [
     title: "Brands",
     url: "/dashboard/brands",
     icon: Target,
+  },
+  {
+    title: "Teams",
+    url: "/dashboard/teams",
+    icon: Users,
   },
   {
     title: "Products",
@@ -77,7 +83,7 @@ const mainNavItems: NavItem[] = [
   },
   {
     title: "Approvals",
-    url: "/dashboard/approvals", 
+    url: "/dashboard/approvals",
     icon: CheckCircle,
     badge: "1" as const,
   },
@@ -90,7 +96,7 @@ const mainNavItems: NavItem[] = [
     title: "Reports",
     url: "/dashboard/reports",
     icon: BarChart3,
-  },
+  }
 ]
 
 // Menu phụ - đơn giản hóa
@@ -116,10 +122,13 @@ const secondaryNavItems: NavItem[] = [
 
 export function DashboardSidebar() {
   const pathname = usePathname()
-  const [sidebarModeState, setSidebarModeState] = React.useState<'expanded'|'collapsed'|'hover'>('hover')
+  const [sidebarModeState, setSidebarModeState] = React.useState<'expanded' | 'collapsed' | 'hover'>('hover')
+  const [isAdmin, setIsAdmin] = React.useState(false)
 
   React.useEffect(() => {
     if (typeof window === 'undefined') return
+    // fetch role permissions
+    getCurrentPermissions().then(p => setIsAdmin(p.role === 'admin')).catch(() => setIsAdmin(false))
     const isMobile = window.matchMedia('(max-width: 1023px)').matches
     if (isMobile) {
       // Force expanded on mobile
@@ -187,10 +196,10 @@ export function DashboardSidebar() {
           }
         `}</style>
         {/* Navigation Content */}
-        <div 
-          className="flex-1 overflow-y-auto sidebar-scroll" 
-          style={{ 
-            scrollbarWidth: 'none', 
+        <div
+          className="flex-1 overflow-y-auto sidebar-scroll"
+          style={{
+            scrollbarWidth: 'none',
             msOverflowStyle: 'none'
           }}
         >
@@ -204,7 +213,9 @@ export function DashboardSidebar() {
               </h3>
               {/* Main Navigation Items */}
               <div className="space-y-1">
-                {mainNavItems.map((item) => (
+                {(
+                  isAdmin ? mainNavItems : mainNavItems.filter((i) => i.url !== '/dashboard/team-members')
+                ).map((item) => (
                   <Tooltip key={item.title}>
                     <TooltipTrigger asChild>
                       <Button
@@ -219,47 +230,47 @@ export function DashboardSidebar() {
                         )}
                       >
                         <Link href={item.url}>
-                        <item.icon className={cn(
-                          "size-4",
-                          sidebarModeState === 'expanded' && "mr-2",
-                          sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-2"
-                        )} />
-                        <span className={cn(
-                          "transition-opacity duration-300 whitespace-nowrap",
-                          sidebarModeState === 'expanded' && "inline",
-                          sidebarModeState === 'collapsed' && "hidden",
-                          sidebarModeState === 'hover' && "hidden lg:group-hover:inline"
-                        )}>
-                          {item.title}
-                        </span>
-                        {item.badge && (
-                          <>
-                            {sidebarModeState === 'collapsed' && (
-                              <span className="absolute right-0 top-1 hidden lg:inline-flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] leading-none text-primary-foreground">
-                                {item.badge}
-                              </span>
-                            )}
-                            {sidebarModeState === 'hover' && (
-                              <>
-                                <span className="absolute right-0 top-1 hidden lg:inline-flex lg:group-hover:hidden h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] leading-none text-primary-foreground">
+                          <item.icon className={cn(
+                            "size-4",
+                            sidebarModeState === 'expanded' && "mr-2",
+                            sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-2"
+                          )} />
+                          <span className={cn(
+                            "transition-opacity duration-300 whitespace-nowrap",
+                            sidebarModeState === 'expanded' && "inline",
+                            sidebarModeState === 'collapsed' && "hidden",
+                            sidebarModeState === 'hover' && "hidden lg:group-hover:inline"
+                          )}>
+                            {item.title}
+                          </span>
+                          {item.badge && (
+                            <>
+                              {sidebarModeState === 'collapsed' && (
+                                <span className="absolute right-0 top-1 hidden lg:inline-flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] leading-none text-primary-foreground">
                                   {item.badge}
                                 </span>
-                                <span className="ml-auto hidden lg:group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                              )}
+                              {sidebarModeState === 'hover' && (
+                                <>
+                                  <span className="absolute right-0 top-1 hidden lg:inline-flex lg:group-hover:hidden h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] leading-none text-primary-foreground">
+                                    {item.badge}
+                                  </span>
+                                  <span className="ml-auto hidden lg:group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                                    {item.badge}
+                                  </span>
+                                </>
+                              )}
+                              {sidebarModeState === 'expanded' && (
+                                <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
                                   {item.badge}
                                 </span>
-                              </>
-                            )}
-                            {sidebarModeState === 'expanded' && (
-                              <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                                {item.badge}
-                              </span>
-                            )}
-                          </>
-                        )}
+                              )}
+                            </>
+                          )}
                         </Link>
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden") }>
+                    <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden")}>
                       <p>{item.title}</p>
                     </TooltipContent>
                   </Tooltip>
@@ -313,7 +324,7 @@ export function DashboardSidebar() {
                         </Link>
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden") }>
+                    <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden")}>
                       <p>{item.title}</p>
                     </TooltipContent>
                   </Tooltip>
@@ -328,7 +339,7 @@ export function DashboardSidebar() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="w-full h-10 lg:h-10 px-2 lg:justify-center">
-                <PanelLeftDashed  className="h-5 w-5" />
+                <PanelLeftDashed className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="top" align="center" className="min-w-48">
