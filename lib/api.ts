@@ -129,4 +129,23 @@ export const endpoints = {
 
   // User endpoints
   userSearch: "/users",
+
+  // Social Auth endpoints
+  socialAuth: (provider: string) => `/social-auth/${provider}`,
+  socialCallback: (provider: string) => `/social-auth/${provider}/callback`,
+
+  // Social Accounts endpoints
+  socialAccountsMe: () => '/social/accounts/me',
+  socialAccountsUser: (userId: string) => `/social/accounts/user/${userId}`,
+  socialAccountsWithTargets: () => '/social/accounts/me/accounts-with-targets',
+  socialUnlinkAccount: (userId: string, socialAccountId: string) => `/social/accounts/unlink/${userId}/${socialAccountId}`,
+
+  // Social Targets endpoints
+  availableTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/available-targets`,
+  linkedTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/linked-targets`,
+  linkTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/link-targets`,
+  unlinkTarget: (userId: string, socialIntegrationId: string) => `/social/accounts/unlink-target/${userId}/${socialIntegrationId}`,
+
+  // Brands endpoints
+  brands: () => '/brands',
 }

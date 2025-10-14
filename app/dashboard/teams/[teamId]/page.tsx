@@ -7,6 +7,11 @@ import { createClient } from '@/lib/supabase/client'
 import { TeamEditDialog } from '@/components/pages/teams/TeamEditDialog'
 import { getCurrentPermissions } from '@/lib/permissions'
 import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
+import { Users, Pencil, Eye, Trash2, RefreshCw, Building2, ArrowLeft, Calendar, User, Mail } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function TeamDetailPage() {
   const params = useParams<{ teamId: string }>()
@@ -37,8 +42,8 @@ export default function TeamDetailPage() {
     fetchUserData()
   }, [])
 
-  if (isLoading) return <div className="p-4">Đang tải...</div>
-  if (isError || !data) return <div className="p-4">Không tìm thấy team.</div>
+  if (isLoading) return <div className="p-4 text-sm text-muted-foreground">Đang tải...</div>
+  if (isError || !data) return <div className="p-4 text-sm text-destructive">Không tìm thấy team.</div>
 
   const isDeleted = data.status === 'Archived'
   const isOwner = !!(currentUserId && data.vendorId && currentUserId === data.vendorId)
@@ -64,45 +69,124 @@ export default function TeamDetailPage() {
   }
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-xl font-semibold">{data.name}</h1>
-          <div className="text-sm text-gray-600">Vendor: {data.vendorEmail || data.vendorId}</div>
+    <div className="p-4 space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div className="space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <Button variant="ghost" size="sm" className="h-8 text-xs w-full sm:w-auto" onClick={() => router.back()}>
+              <ArrowLeft className="mr-1 h-3 w-3" />
+              Back
+            </Button>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <h1 className="text-xl sm:text-2xl font-bold">{data.name}</h1>
+              <Badge variant={isDeleted ? 'secondary' : 'outline'} className="text-xs w-fit">
+                {data.status}
+              </Badge>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Building2 className="h-4 w-4" />
+            <span>Vendor: {data.vendorEmail || data.vendorId}</span>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <button className="rounded border px-3 py-2" onClick={() => router.push(`/dashboard/teams/${teamId}/members`)}>VIEW MEMBERS</button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" className="h-8 text-xs flex-1 sm:flex-none" onClick={() => router.push(`/dashboard/teams/${teamId}/members`)}>
+            <Users className="mr-1 h-3 w-3" />
+            View Members
+          </Button>
           {!isDeleted && canEditOrDelete && (
             <>
-              <button className="rounded border px-3 py-2" onClick={() => setOpenEdit(true)}>EDIT</button>
+              <Button variant="outline" size="sm" className="h-8 text-xs flex-1 sm:flex-none" onClick={() => setOpenEdit(true)}>
+                <Pencil className="mr-1 h-3 w-3" />
+                Edit
+              </Button>
               {(isOwner || can.canAssignBrands) && (
-                <button
-                  className="rounded border px-3 py-2"
-                  onClick={() => router.push(`/dashboard/teams/${teamId}/brands`)}
-                >
-                  ASSIGN BRANDS
-                </button>
+                <Button variant="outline" size="sm" className="h-8 text-xs flex-1 sm:flex-none" onClick={() => router.push(`/dashboard/teams/${teamId}/brands`)}>
+                  <Eye className="mr-1 h-3 w-3" />
+                  Assign Brands
+                </Button>
               )}
-              <button className="rounded border px-3 py-2 text-red-600" onClick={() => setConfirmOpen(true)} disabled={deleting}>DELETE</button>
+              <Button variant="outline" size="sm" className="h-8 text-xs text-destructive flex-1 sm:flex-none" onClick={() => setConfirmOpen(true)} disabled={deleting}>
+                <Trash2 className="mr-1 h-3 w-3" />
+                Delete
+              </Button>
             </>
           )}
           {isDeleted && canEditOrDelete && (
-            <button className="rounded border px-3 py-2" onClick={handleRestore} disabled={restoring}>Khôi phục</button>
+            <Button variant="outline" size="sm" className="h-8 text-xs flex-1 sm:flex-none" onClick={handleRestore} disabled={restoring}>
+              {restoring ? <RefreshCw className="mr-2 h-3 w-3 animate-spin" /> : <RefreshCw className="mr-2 h-3 w-3" />}
+              Khôi phục
+            </Button>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="rounded border p-3">
-          <h2 className="font-medium mb-2">Thông tin</h2>
-          <div className="text-sm space-y-1">
-            <div>Mô tả: {data.description || '-'}</div>
-            <div>Trạng thái: {data.status}</div>
-            <div>Ngày tạo: {new Date(data.createdAt).toLocaleString()}</div>
-            <div>Owner: {data.vendorEmail || '-'}</div>
-            <div>Số thành viên: <MembersCount teamId={teamId} /></div>
-          </div>
-        </div>
+      {/* Team Information Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Team Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="space-y-2">
+              <div className="text-sm font-medium">Description</div>
+              <div className="text-sm text-muted-foreground">{data.description || 'No description provided'}</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-sm font-medium">Status</div>
+              <Badge variant={isDeleted ? 'secondary' : 'outline'} className="text-xs">
+                {data.status}
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Team Stats</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              <div className="space-y-1">
+                <div className="text-sm font-medium">Members</div>
+                <div className="text-sm text-muted-foreground"><MembersCount teamId={teamId} /> active members</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <div className="space-y-1">
+                <div className="text-sm font-medium">Created</div>
+                <div className="text-sm text-muted-foreground">{new Date(data.createdAt).toLocaleDateString()}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Owner Info</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center gap-2">
+              <User className="h-4 w-4 text-muted-foreground" />
+              <div className="space-y-1">
+                <div className="text-sm font-medium">Owner</div>
+                <div className="text-sm text-muted-foreground">{data.vendorEmail || data.vendorId}</div>
+              </div>
+            </div>
+            {data.vendorEmail && (
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Email</div>
+                  <div className="text-sm text-muted-foreground">{data.vendorEmail}</div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {openEdit && (
@@ -116,19 +200,28 @@ export default function TeamDetailPage() {
         />
       )}
 
-      {confirmOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-sm rounded bg-white p-4 shadow">
-            <div className="mb-3 font-medium">Bạn có chắc chắn muốn xoá team này?</div>
-            <div className="flex justify-end gap-2">
-              <button className="px-3 py-2 rounded border" onClick={() => setConfirmOpen(false)}>Huỷ</button>
-              <button className="px-3 py-2 rounded bg-red-600 text-white" onClick={handleDelete} disabled={deleting}>
-                {deleting ? 'Đang xoá...' : 'Xoá'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent className="sm:max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Trash2 className="h-5 w-5 text-destructive" />
+              Xoá team
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-muted-foreground">
+              Bạn có chắc chắn muốn xoá team này? Hành động này không thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col-reverse sm:flex-row gap-2">
+            <AlertDialogCancel className="w-full sm:w-auto">Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="w-full sm:w-auto bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? 'Đang xoá...' : 'Xoá'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

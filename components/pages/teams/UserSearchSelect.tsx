@@ -99,8 +99,7 @@ export function UserSearchSelect({ onChange, placeholder = "Search users...", cl
                             >
                                 <div className="font-medium">{user.email}</div>
                                 <div className="text-sm text-gray-500">
-                                    Created: {new Date(user.createdAt).toLocaleDateString()}
-                                    {user.socialAccountsCount > 0 && ` • ${user.socialAccountsCount} social accounts`}
+                                    Created: {new Date(user.created_at).toLocaleDateString()}
                                 </div>
                             </button>
                         )
