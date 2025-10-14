@@ -20,36 +20,37 @@ Implementation này cung cấp đầy đủ UI và logic frontend cho luồng **
 
 ### 2. Components (`components/social/`)
 
-#### `SocialAccountList.tsx`
+#### `social-account-list.tsx`
 - Hiển thị danh sách social accounts với accordion layout
 - Hỗ trợ expand/collapse để xem chi tiết
 - Hiển thị linked targets (fanpages) cho mỗi account
 - Actions: Re-authenticate, Link to Brand, Delete
 
-#### `ConnectModal.tsx`
+#### `connect-modal.tsx`
 - Modal để chọn provider (Facebook/TikTok/Twitter)
 - Trigger OAuth flow
 - Error handling cho connection process
 
-#### `LinkIntegrationModal.tsx`
+#### `link-integration-modal.tsx`
 - Modal để link fanpages với brands
 - Select brand và chọn fanpages
 - Validation và error handling
 
-#### `ReAuthButton.tsx`
+#### Re-authenticate functionality (integrated in `social-account-list.tsx`)
 - Button để re-authenticate khi token expire
 - Hiển thị trạng thái expired/expiring soon
 - Auto-redirect OAuth flow
+- Logic được tích hợp trực tiếp vào `SocialAccountList` component
 
-#### `EmptyState.tsx`
+#### `empty-state.tsx`
 - Component hiển thị khi không có accounts
 - Call-to-action để connect account
 
-#### `LoadingState.tsx`
+#### `loading-state.tsx`
 - Skeleton loading cho danh sách accounts
 - Responsive và consistent với design system
 
-#### `ErrorState.tsx`
+#### `error-state.tsx`
 - Error display với retry functionality
 - User-friendly error messages
 
@@ -115,7 +116,7 @@ Implementation này cung cấp đầy đủ UI và logic frontend cho luồng **
 
 ### 4. Xử Lý Token Expire
 - Check expiresAt < now → Show "Expired" badge
-- ReAuthButton → Redirect OAuth → Update tokens
+- Re-authenticate button → Redirect OAuth → Update tokens
 - Auto-check on page load
 
 ### 5. Edit/Delete Operations

@@ -87,7 +87,7 @@ export interface SocialIntegration {
 // Social Account & Integration API Types
 export interface SocialAccountDto {
   id: string;
-  provider: 'facebook' | 'tiktok' | 'twitter';
+  provider: 'facebook' | 'tiktok' | 'instagram';
   providerUserId: string;
   isActive: boolean;
   expiresAt?: string;
