@@ -3,6 +3,8 @@
 import React from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
+import { api, endpoints } from '@/lib/api'
+import { UserResponseDto } from '@/lib/types/user'
 import {
   Home,
   Settings,
@@ -35,7 +37,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { getCurrentPermissions } from "@/lib/permissions"
 
 // Dữ liệu menu chính - đơn giản hóa không có sub items
 interface NavItem {
@@ -118,17 +119,25 @@ const secondaryNavItems: NavItem[] = [
   },
 ]
 
-
-
 export function DashboardSidebar() {
   const pathname = usePathname()
   const [sidebarModeState, setSidebarModeState] = React.useState<'expanded' | 'collapsed' | 'hover'>('hover')
-  const [isAdmin, setIsAdmin] = React.useState(false)
+  const [userRole, setUserRole] = React.useState<string | null>(null)
 
   React.useEffect(() => {
+    // Fetch user role
+    const fetchUserRole = async () => {
+      try {
+        const response = await api.get<UserResponseDto>(endpoints.userProfile)
+        setUserRole(response.data?.role || null)
+      } catch (error) {
+        console.error('Failed to fetch user role:', error)
+      }
+    }
+
+    fetchUserRole()
+
     if (typeof window === 'undefined') return
-    // fetch role permissions
-    getCurrentPermissions().then(p => setIsAdmin(p.role === 'admin')).catch(() => setIsAdmin(false))
     const isMobile = window.matchMedia('(max-width: 1023px)').matches
     if (isMobile) {
       // Force expanded on mobile
@@ -173,9 +182,7 @@ export function DashboardSidebar() {
     }
   }, [])
 
-
   // Custom sidebar với hover expand effect
-
   const setSidebarMode = (mode: 'expanded' | 'collapsed' | 'hover') => {
     if (typeof window !== 'undefined') {
       const isMobile = window.matchMedia('(max-width: 1023px)').matches
@@ -213,9 +220,15 @@ export function DashboardSidebar() {
               </h3>
               {/* Main Navigation Items */}
               <div className="space-y-1">
-                {(
-                  isAdmin ? mainNavItems : mainNavItems.filter((i) => i.url !== '/dashboard/team-members')
-                ).map((item) => (
+                {mainNavItems
+                  .filter((item) => {
+                    // Hide Teams menu if user is not Vendor
+                    if (item.title === "Teams") {
+                      return userRole === "Vendor"
+                    }
+                    return true
+                  })
+                  .map((item) => (
                   <Tooltip key={item.title}>
                     <TooltipTrigger asChild>
                       <Button

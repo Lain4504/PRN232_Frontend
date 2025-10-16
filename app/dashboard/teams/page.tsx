@@ -1,90 +1,47 @@
 "use client"
 
-import { useMemo, useState, useEffect, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useMemo, useState, Suspense, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTeamsByVendor } from '@/hooks/use-teams'
 import { MembersCount } from '@/components/pages/teams/MembersCount'
 import { TeamCreateDialog } from '@/components/pages/teams/TeamCreateDialog'
-import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { MoreHorizontal, Eye } from 'lucide-react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Eye } from 'lucide-react'
+import { api, endpoints } from '@/lib/api'
+import type { TeamResponse } from '@/lib/types/aisam-types'
+import type { UserResponseDto } from '@/lib/types/user'
 
 function TeamsPageContent() {
-  const searchParams = useSearchParams()
   const router = useRouter()
   const [vendorId, setVendorId] = useState('')
   const [loading, setLoading] = useState(true)
   const { data, isLoading, isError } = useTeamsByVendor(vendorId || undefined)
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await api.get<UserResponseDto>(endpoints.userProfile)
+        if (response.data.role === 'Vendor') {
+          setVendorId(response.data.id)
+        }
+        setLoading(false)
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error)
+        setLoading(false)
+      }
+    }
+
+    fetchUserProfile()
+  }, [])
   const [openCreate, setOpenCreate] = useState(false)
 
   // Helper function để xác định status của team
-  const getTeamStatus = (team: any) => {
-    // Nếu có status từ backend, dùng nó
-    if (team.status) return team.status;
-    
-    // Logic dựa vào IsDeleted: nếu đã xóa = Inactive, chưa xóa = Active
-    if (team.isDeleted === true) return 'Inactive';
-    if (team.isDeleted === false) return 'Active';
-    
-    // Nếu không có isDeleted, kiểm tra các trường khác có thể có
-    if (team.deletedAt) return 'Inactive';
-    
-    // Logic dựa trên dữ liệu có sẵn:
-    // 1. Kiểm tra nếu có updatedAt và khác với createdAt (có thể đã bị deactivate)
-    if (team.updatedAt && team.updatedAt !== team.createdAt) {
-      const daysSinceUpdate = Math.floor((Date.now() - new Date(team.updatedAt).getTime()) / (1000 * 60 * 60 * 24));
-      // Nếu cập nhật lần cuối > 90 ngày, có thể là Inactive
-      if (daysSinceUpdate > 90) return 'Inactive';
-    }
-    
-    // 2. Kiểm tra thời gian tạo team
-    const daysSinceCreated = Math.floor((Date.now() - new Date(team.createdAt).getTime()) / (1000 * 60 * 60 * 24));
-    
-    // Team rất cũ (> 1 năm) có thể là Archived
-    if (daysSinceCreated > 365) return 'Archived';
-    
-    // Team cũ (> 6 tháng) có thể là Inactive
-    if (daysSinceCreated > 180) return 'Inactive';
-    
-    // Team mới hoặc vừa tạo = Active
-    return 'Active';
+  const getTeamStatus = (team: TeamResponse) => {
+    // Use the status directly from the team object as it's already provided by the API
+    return team.status;
   };
-
-  useEffect(() => {
-    const getVendorId = async () => {
-      // Lấy vendorId từ URL params trước
-      const urlVendorId = searchParams.get('vendorId')
-      if (urlVendorId) {
-        setVendorId(urlVendorId)
-        setLoading(false)
-        return
-      }
-
-      // Nếu không có trong URL, lấy từ localStorage
-      const storedVendorId = localStorage.getItem('vendorId')
-      if (storedVendorId) {
-        setVendorId(storedVendorId)
-        setLoading(false)
-        return
-      }
-
-      // Cuối cùng, lấy từ user session
-      const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session?.user) {
-        // Sử dụng user.id làm vendorId tạm thời
-        setVendorId(session.user.id)
-        // Lưu vào localStorage để lần sau sử dụng
-        localStorage.setItem('vendorId', session.user.id)
-      }
-      setLoading(false)
-    }
-
-    getVendorId()
-  }, [searchParams])
 
   const rows = useMemo(() => data || [], [data])
 
@@ -162,26 +119,11 @@ function TeamsPageContent() {
                   </TableCell>
                   <TableCell className="py-3 px-3 text-right w-16">
                     <div className="flex items-center justify-end">
-                      <div className="hidden lg:flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => router.push(`/dashboard/teams/${t.id}`)}>
-                          <Eye className="mr-1 h-3 w-3" />
-                          View
+                          <Eye className="mr-1 h-3 w-3 sm:mr-1" />
+                          <span className="hidden sm:inline">View</span>
                         </Button>
-                      </div>
-                      <div className="lg:hidden">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => router.push(`/dashboard/teams/${t.id}`)} className="cursor-pointer">
-                              <Eye className="mr-2 h-4 w-4" />
-                              View
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
                       </div>
                     </div>
                   </TableCell>

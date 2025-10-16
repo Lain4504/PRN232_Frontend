@@ -18,7 +18,7 @@ interface Props {
   onCreated?: (teamId: string) => void
 }
 
-export function TeamCreateDialog({ open, onOpenChange, vendorId, onCreated }: Props) {
+export function TeamCreateDialog({ open, onOpenChange, onCreated }: Props) {
   const { mutateAsync, isPending } = useCreateTeam()
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
@@ -41,12 +41,12 @@ export function TeamCreateDialog({ open, onOpenChange, vendorId, onCreated }: Pr
       onOpenChange(false)
       onCreated?.(created.id)
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Đã xảy ra lỗi'
+      const message = err instanceof Error ? err.message : 'An error occurred'
       if (message.includes('401')) {
         window.location.href = '/login'
         return
       }
-      setError('Không thể tạo team. Vui lòng kiểm tra các trường và thử lại.')
+      setError('Could not create team. ' + message)
     }
   }
 
@@ -55,18 +55,18 @@ export function TeamCreateDialog({ open, onOpenChange, vendorId, onCreated }: Pr
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-[90vh] flex flex-col">
           <DrawerHeader className="flex-shrink-0 text-left">
-            <DrawerTitle>Tạo team</DrawerTitle>
-            <DrawerDescription>Nhập thông tin để tạo team mới.</DrawerDescription>
+            <DrawerTitle>Create Team</DrawerTitle>
+            <DrawerDescription>Enter the information to create a new team.</DrawerDescription>
           </DrawerHeader>
           <div className="px-4 overflow-y-auto flex-1">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-muted-foreground">Tên team</Label>
-                <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nhập tên team" required />
+                <Label className="text-sm font-medium text-muted-foreground">Team Name</Label>
+                <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter team name" required />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-muted-foreground">Mô tả</Label>
-                <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Mô tả ngắn (tuỳ chọn)" />
+                <Label className="text-sm font-medium text-muted-foreground">Description</Label>
+                <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Short description (optional)" />
               </div>
               {error && (
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
@@ -81,7 +81,7 @@ export function TeamCreateDialog({ open, onOpenChange, vendorId, onCreated }: Pr
               <Button variant="outline">Huỷ</Button>
             </DrawerClose>
             <Button onClick={handleSubmit as unknown as () => void} disabled={isPending}>
-              {isPending ? 'Đang tạo...' : 'Tạo'}
+              {isPending ? 'Creating...' : 'Create'}
             </Button>
           </DrawerFooter>
         </DrawerContent>
@@ -93,18 +93,18 @@ export function TeamCreateDialog({ open, onOpenChange, vendorId, onCreated }: Pr
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle>Tạo team</DialogTitle>
-          <DialogDescription>Nhập thông tin để tạo team mới.</DialogDescription>
+          <DialogTitle>Create Team</DialogTitle>
+          <DialogDescription>Enter the information to create a new team.</DialogDescription>
         </DialogHeader>
         <div className="overflow-y-auto flex-1">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-muted-foreground">Tên team</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nhập tên team" required />
+              <Label className="text-sm font-medium text-muted-foreground">Team Name</Label>
+              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter team name" required />
             </div>
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-muted-foreground">Mô tả</Label>
-              <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Mô tả ngắn (tuỳ chọn)" />
+              <Label className="text-sm font-medium text-muted-foreground">Description</Label>
+              <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Short description (optional)" />
             </div>
             {error && (
               <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
@@ -113,8 +113,8 @@ export function TeamCreateDialog({ open, onOpenChange, vendorId, onCreated }: Pr
               </div>
             )}
             <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} size="sm" className="h-8 text-xs">Huỷ</Button>
-              <Button type="submit" disabled={isPending} size="sm" className="h-8 text-xs">{isPending ? 'Đang tạo...' : 'Tạo'}</Button>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} size="sm" className="h-8 text-xs">Cancel</Button>
+              <Button type="submit" disabled={isPending} size="sm" className="h-8 text-xs">{isPending ? 'Creating...' : 'Create'}</Button>
             </div>
           </form>
         </div>

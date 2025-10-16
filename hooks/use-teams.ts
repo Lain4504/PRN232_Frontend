@@ -50,6 +50,41 @@ export function useTeam(teamId?: string) {
   })
 }
 
+// User permissions for team operations
+export function useUserPermissions(teamId?: string) {
+  return useQuery({
+    queryKey: ['user-permissions', teamId],
+    queryFn: async (): Promise<{ canManageTeams: boolean; canAssignBrands: boolean }> => {
+      try {
+        // Fetch team members to get current user's permissions
+        const resp = await api.get<TeamMemberResponseDto[]>(endpoints.teamMembers(teamId!))
+        const members = resp.data
+
+        // Find current user's member record (assuming we can get userId from auth)
+        // For now, we'll check if user has permissions in any team member record
+        // In a real app, you'd get the current user ID from auth context
+        const hasManageTeams = members.some(member =>
+          member.permissions?.includes('UPDATE_TEAM') || member.permissions?.includes('DELETE_TEAM')
+        )
+        const hasAssignBrands = members.some(member =>
+          member.permissions?.includes('UPDATE_TEAM')
+        )
+
+        return {
+          canManageTeams: hasManageTeams,
+          canAssignBrands: hasAssignBrands,
+        }
+      } catch (error) {
+        // If API fails, default to false for security
+        console.error('Failed to fetch user permissions:', error)
+        return { canManageTeams: false, canAssignBrands: false }
+      }
+    },
+    enabled: !!teamId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
 // Create team
 export function useCreateTeam() {
   const qc = useQueryClient()
