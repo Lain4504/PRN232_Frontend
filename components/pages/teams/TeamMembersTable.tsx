@@ -154,6 +154,7 @@ function MemberRow({ teamId, memberId, email, role, permissions, status, joinedA
 }) {
   const { mutateAsync: deleteMember, isPending: deleting } = useDeleteTeamMember(teamId, memberId)
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [permissionsDialog, setPermissionsDialog] = useState<{ open: boolean; permissions: string[] }>({ open: false, permissions: [] })
 
   return (
     <>
@@ -163,7 +164,7 @@ function MemberRow({ teamId, memberId, email, role, permissions, status, joinedA
           <Badge variant="outline" className="text-xs">{role || '-'}</Badge>
         </TableCell>
         <TableCell className="hidden md:table-cell py-3 px-2 lg:px-3">
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-xs cursor-pointer hover:bg-muted" onClick={() => setPermissionsDialog({ open: true, permissions })}>
             {permissions.length} permission{permissions.length !== 1 ? 's' : ''}
           </Badge>
         </TableCell>
@@ -237,6 +238,29 @@ function MemberRow({ teamId, memberId, email, role, permissions, status, joinedA
             >
               Xoá
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={permissionsDialog.open} onOpenChange={(open) => setPermissionsDialog({ open, permissions: [] })}>
+        <AlertDialogContent className="sm:max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Permissions</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-muted-foreground">
+              List of permissions for this member:
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="max-h-60 overflow-y-auto">
+            <div className="space-y-2">
+              {permissionsDialog.permissions.map((permission, index) => (
+                <div key={index} className="text-sm p-2 bg-muted rounded">
+                  {permission}
+                </div>
+              ))}
+            </div>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

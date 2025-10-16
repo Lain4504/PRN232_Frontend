@@ -55,7 +55,7 @@ export function AssignBrandsPanel({ teamId }: { teamId: string; onClose?: () => 
         ))}
       </div>
       <div className="flex justify-end gap-2">
-        <Button size="sm" className="h-8 text-xs" onClick={handleSave} disabled={isPending || !allowed}>
+        <Button size="sm" className="w-full md:w-auto h-8 text-xs" onClick={handleSave} disabled={isPending || !allowed}>
           {isPending ? 'Saving...' : 'Save changes'}
         </Button>
       </div>
