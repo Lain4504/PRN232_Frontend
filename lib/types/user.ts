@@ -11,6 +11,7 @@ export interface SocialAccountDto {
 export interface UserResponseDto {
   id: string;
   email: string;
+  role: string;
   createdAt: string;
   socialAccounts: SocialAccountDto[];
 }

@@ -128,6 +128,7 @@ export const endpoints = {
   updateTeamMemberRole: (teamId: string, userId: string) => `/team/${teamId}/members/${userId}`,
 
   // User endpoints
+  userProfile: "/users/profile/me",
   userSearch: "/users",
 
   // Social Auth endpoints

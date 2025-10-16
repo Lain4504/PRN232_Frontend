@@ -20,7 +20,7 @@ interface Props {
   vendorId: string
 }
 
-export function TeamEditDialog({ open, onOpenChange, teamId, initialName, initialDescription, vendorId }: Props) {
+export function TeamEditDialog({ open, onOpenChange, teamId, initialName, initialDescription }: Props) {
   const { mutateAsync, isPending } = useUpdateTeam(teamId)
   const [name, setName] = useState(initialName)
   const [description, setDescription] = useState(initialDescription || '')
@@ -42,12 +42,12 @@ export function TeamEditDialog({ open, onOpenChange, teamId, initialName, initia
       await mutateAsync({ name, description: description || undefined})
       onOpenChange(false)
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Đã xảy ra lỗi'
+      const message = err instanceof Error ? err.message : 'An error occurred'
       if (message.includes('401')) {
         window.location.href = '/login'
         return
       }
-      setError('Không thể cập nhật team. Vui lòng thử lại.')
+      setError('Could not update team. ' + message)
     }
   }
 
@@ -56,18 +56,18 @@ export function TeamEditDialog({ open, onOpenChange, teamId, initialName, initia
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-[90vh] flex flex-col">
           <DrawerHeader className="flex-shrink-0 text-left">
-            <DrawerTitle>Chỉnh sửa team</DrawerTitle>
-            <DrawerDescription>Cập nhật thông tin team.</DrawerDescription>
+            <DrawerTitle>Edit Team</DrawerTitle>
+            <DrawerDescription>Update team information.</DrawerDescription>
           </DrawerHeader>
           <div className="px-4 overflow-y-auto flex-1">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-muted-foreground">Tên team</Label>
-                <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nhập tên team" required />
+                <Label className="text-sm font-medium text-muted-foreground">Team Name</Label>
+                <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter team name" required />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-muted-foreground">Mô tả</Label>
-                <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Mô tả ngắn (tuỳ chọn)" />
+                <Label className="text-sm font-medium text-muted-foreground">Description</Label>
+                <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Short description (optional)" />
               </div>
               {error && (
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
@@ -79,10 +79,10 @@ export function TeamEditDialog({ open, onOpenChange, teamId, initialName, initia
           </div>
           <DrawerFooter className="flex-shrink-0 pt-2">
             <DrawerClose asChild>
-              <Button variant="outline">Huỷ</Button>
+              <Button variant="outline">Cancel</Button>
             </DrawerClose>
             <Button onClick={handleSubmit as unknown as () => void} disabled={isPending}>
-              {isPending ? 'Đang lưu...' : 'Lưu'}
+              {isPending ? 'Saving...' : 'Save'}
             </Button>
           </DrawerFooter>
         </DrawerContent>
@@ -94,18 +94,18 @@ export function TeamEditDialog({ open, onOpenChange, teamId, initialName, initia
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle>Chỉnh sửa team</DialogTitle>
-          <DialogDescription>Cập nhật thông tin team.</DialogDescription>
+          <DialogTitle>Edit Team</DialogTitle>
+          <DialogDescription>Update team information.</DialogDescription>
         </DialogHeader>
         <div className="overflow-y-auto flex-1">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-muted-foreground">Tên team</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nhập tên team" required />
+              <Label className="text-sm font-medium text-muted-foreground">Team Name</Label>
+              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter team name" required />
             </div>
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-muted-foreground">Mô tả</Label>
-              <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Mô tả ngắn (tuỳ chọn)" />
+              <Label className="text-sm font-medium text-muted-foreground">Description</Label>
+              <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Short description (optional)" />
             </div>
             {error && (
               <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
@@ -114,8 +114,8 @@ export function TeamEditDialog({ open, onOpenChange, teamId, initialName, initia
               </div>
             )}
             <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} size="sm" className="h-8 text-xs">Huỷ</Button>
-              <Button type="submit" disabled={isPending} size="sm" className="h-8 text-xs">{isPending ? 'Đang lưu...' : 'Lưu'}</Button>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} size="sm" className="h-8 text-xs">Cancel</Button>
+              <Button type="submit" disabled={isPending} size="sm" className="h-8 text-xs">{isPending ? 'Saving...' : 'Save'}</Button>
             </div>
           </form>
         </div>
