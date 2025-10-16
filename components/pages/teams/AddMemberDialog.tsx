@@ -14,135 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Search } from 'lucide-react'
-
-// Role-based permissions mapping (synced with backend team_roles.json)
-const ROLE_PERMISSIONS = {
-    'Vendor': [
-        'CREATE_TEAM',
-        'UPDATE_TEAM',
-        'DELETE_TEAM',
-        'VIEW_TEAM_DETAILS',
-        'VIEW_TEAM_MEMBERS',
-        'VIEW_TEAM_MEMBER_DETAILS',
-        'ADD_MEMBER',
-        'REMOVE_MEMBER',
-        'UPDATE_MEMBER_ROLE',
-        'UPDATE_MEMBER_PERMISSIONS',
-        'ASSIGN_TASK',
-        'INVITE_MEMBER',
-        'APPROVE_JOIN_REQUEST',
-        'CREATE_CONTENT',
-        'EDIT_CONTENT',
-        'SUBMIT_FOR_APPROVAL',
-        'VIEW_APPROVALS',
-        'APPROVE_CONTENT',
-        'REJECT_CONTENT',
-        'SCHEDULE_POST',
-        'PUBLISH_POST',
-        'VIEW_POSTS',
-        'DELETE_POST',
-        'VIEW_REPORTS',
-        'PULL_REPORTS',
-        'LINK_SOCIAL_ACCOUNT',
-        'UNLINK_SOCIAL_ACCOUNT',
-        'LINK_SOCIAL_INTEGRATION',
-        'UNLINK_SOCIAL_INTEGRATION',
-        'VIEW_TEAM_ANALYTICS',
-        'SUBMIT_AI_GENERATION',
-        'VIEW_AI_GENERATIONS',
-        'VIEW_NOTIFICATIONS',
-        'VIEW_SUBSCRIPTIONS'
-    ],
-    'TeamLeader': [
-        'VIEW_TEAM_DETAILS',
-        'VIEW_TEAM_MEMBERS',
-        'VIEW_TEAM_MEMBER_DETAILS',
-        'ADD_MEMBER',
-        'REMOVE_MEMBER',
-        'UPDATE_MEMBER_ROLE',
-        'UPDATE_MEMBER_PERMISSIONS',
-        'ASSIGN_TASK',
-        'INVITE_MEMBER',
-        'APPROVE_JOIN_REQUEST',
-        'CREATE_CONTENT',
-        'EDIT_CONTENT',
-        'SUBMIT_FOR_APPROVAL',
-        'VIEW_APPROVALS',
-        'APPROVE_CONTENT',
-        'REJECT_CONTENT',
-        'SCHEDULE_POST',
-        'PUBLISH_POST',
-        'VIEW_POSTS',
-        'DELETE_POST',
-        'VIEW_REPORTS',
-        'PULL_REPORTS',
-        'LINK_SOCIAL_INTEGRATION',
-        'UNLINK_SOCIAL_INTEGRATION',
-        'VIEW_TEAM_ANALYTICS',
-        'SUBMIT_AI_GENERATION',
-        'VIEW_AI_GENERATIONS',
-        'VIEW_NOTIFICATIONS',
-        'VIEW_SUBSCRIPTIONS'
-    ],
-    'SocialMediaManager': [
-        'VIEW_TEAM_DETAILS',
-        'VIEW_TEAM_MEMBERS',
-        'ASSIGN_TASK',
-        'CREATE_CONTENT',
-        'EDIT_CONTENT',
-        'SUBMIT_FOR_APPROVAL',
-        'VIEW_APPROVALS',
-        'APPROVE_CONTENT',
-        'REJECT_CONTENT',
-        'SCHEDULE_POST',
-        'PUBLISH_POST',
-        'VIEW_POSTS',
-        'DELETE_POST',
-        'VIEW_REPORTS',
-        'PULL_REPORTS',
-        'LINK_SOCIAL_INTEGRATION',
-        'UNLINK_SOCIAL_INTEGRATION',
-        'VIEW_TEAM_ANALYTICS',
-        'SUBMIT_AI_GENERATION',
-        'VIEW_AI_GENERATIONS',
-        'VIEW_NOTIFICATIONS',
-        'VIEW_SUBSCRIPTIONS'
-    ],
-    'Designer': [
-        'VIEW_TEAM_DETAILS',
-        'VIEW_TEAM_MEMBERS',
-        'CREATE_CONTENT',
-        'EDIT_CONTENT',
-        'SUBMIT_FOR_APPROVAL',
-        'VIEW_APPROVALS',
-        'VIEW_POSTS',
-        'VIEW_REPORTS',
-        'SUBMIT_AI_GENERATION',
-        'VIEW_AI_GENERATIONS',
-        'VIEW_NOTIFICATIONS',
-        'VIEW_SUBSCRIPTIONS'
-    ],
-    'Copywriter': [
-        'VIEW_TEAM_DETAILS',
-        'VIEW_TEAM_MEMBERS',
-        'CREATE_CONTENT',
-        'EDIT_CONTENT',
-        'SUBMIT_FOR_APPROVAL',
-        'VIEW_APPROVALS',
-        'VIEW_POSTS',
-        'VIEW_REPORTS',
-        'SUBMIT_AI_GENERATION',
-        'VIEW_AI_GENERATIONS',
-        'VIEW_NOTIFICATIONS',
-        'VIEW_SUBSCRIPTIONS'
-    ]
-} as const
-
-// Get available permissions for a specific role
-const getPermissionsForRole = (role: string): string[] => {
-    const permissions = ROLE_PERMISSIONS[role as keyof typeof ROLE_PERMISSIONS]
-    return permissions ? [...permissions] : []
-}
+import { getPermissionsForRole } from '@/lib/constants/team-roles'
 
 interface Props {
     open: boolean
@@ -349,7 +221,7 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
             </div>
 
             <div className="flex justify-end gap-2 pt-4">
-                <Button type="submit" disabled={adding || !selectedUserId} size="sm" className="h-8 text-xs">{adding ? 'Adding...' : 'Add member'}</Button>
+                <Button type="submit" disabled={adding || !selectedUserId} size="sm" className="w-full md:w-auto h-8 text-xs">{adding ? 'Adding...' : 'Add member'}</Button>
             </div>
         </form>
     )
