@@ -49,7 +49,7 @@ export function CreateProfileForm() {
         setUserId(user.id)
 
         // Ensure backend user exists (GetOrCreate)
-        await api.get(endpoints.userProfile())
+        await api.get(endpoints.userProfile)
       } catch (error) {
         console.error('Failed to load user:', error);
         toast.error('Failed to load user data');
