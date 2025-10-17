@@ -23,5 +23,5 @@ export default function AuthCallbackPage() {
       } 
     }; processLogin(); 
   }, [router]); 
-  return <p>Đang xử lý đăng nhập Google...</p>; 
+  return <p>Processing Google sign-in...</p>; 
 }

@@ -3,17 +3,12 @@
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Lock, AlertCircle } from "lucide-react";
 
 export function UpdatePasswordForm({
                                      className,
@@ -43,36 +38,51 @@ export function UpdatePasswordForm({
   };
 
   return (
-      <div className={cn("flex flex-col gap-6", className)} {...props}>
-        <Card className="bg-transparent border-0 shadow-none">
-          <CardHeader>
-            <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-            <CardDescription>
-              Please enter your new password below.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleForgotPassword}>
-              <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="password">New password</Label>
-                  <Input
-                      id="password"
-                      type="password"
-                      placeholder="New password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                {error && <p className="text-sm text-destructive">{error}</p>}
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Saving..." : "Save new password"}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
+    <div className={cn("space-y-6", className)} {...props}>
+      <form onSubmit={handleForgotPassword} className="space-y-6">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-sm font-medium">
+              New password
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <PasswordInput
+                id="password"
+                placeholder="Enter your new password"
+                className="pl-10 h-12"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Error Alert */}
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Submit Button */}
+        <Button 
+          type="submit" 
+          className="w-full h-12 text-base font-medium" 
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              Saving...
+            </>
+          ) : (
+            "Save new password"
+          )}
+        </Button>
+      </form>
+    </div>
   );
 }

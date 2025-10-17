@@ -1,11 +1,13 @@
 import { UpdatePasswordForm } from "@/components/pages/update-password/update-password-form";
+import { AuthSplitLayout } from "@/components/pages/auth/auth-split-layout";
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <UpdatePasswordForm />
-      </div>
-    </div>
+    <AuthSplitLayout 
+      title="Reset password" 
+      subtitle="Create a new password to secure your account"
+    >
+      <UpdatePasswordForm />
+    </AuthSplitLayout>
   );
 }
