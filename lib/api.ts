@@ -60,7 +60,9 @@ export const api = {
   // GET
   get: async <T>(url: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     const response = await fetchWithAuth(url, {}, options)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
     return response.json()
   },
 
@@ -70,7 +72,9 @@ export const api = {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
     }, options)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
     return response.json()
   },
 
@@ -78,6 +82,16 @@ export const api = {
   put: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     const response = await fetchWithAuth(url, {
       method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined,
+    }, options)
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    return response.json()
+  },
+
+  // PATCH
+  patch: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+    const response = await fetchWithAuth(url, {
+      method: 'PATCH',
       body: data ? JSON.stringify(data) : undefined,
     }, options)
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
@@ -94,28 +108,45 @@ export const api = {
 
 // Endpoints
 export const endpoints = {
-  // User & Profile
-  userProfile: () => '/users/profile/me',
-  
-  // Social Auth
+  // Team endpoints
+  teams: "/team",
+  teamsByVendor: (vendorId: string) => `/team/vendor/${vendorId}`,
+  teamById: (teamId: string) => `/team/${teamId}`,
+  createTeam: () => "/team",
+  teamRestore: (teamId: string) => `/team/${teamId}/restore`,
+  teamStatus: (teamId: string) => `/team/${teamId}/status`,
+  teamAssignBrands: (teamId: string) => `/team/${teamId}/brands`,
+
+  // Team Member endpoints
+  teamMembers: (teamId: string) => `/team/${teamId}/members`,
+  createTeamMember: () => `/team-members`,
+  updateTeamMember: (memberId: string) => `/team-members/${memberId}`,
+  deleteTeamMember: (memberId: string) => `/team-members/${memberId}`,
+  teamMembersPaged: () => "/team-members",
+  addTeamMember: (teamId: string) => `/team/${teamId}/members`,
+  removeTeamMember: (teamId: string, userId: string) => `/team/${teamId}/members/${userId}`,
+  updateTeamMemberRole: (teamId: string, userId: string) => `/team/${teamId}/members/${userId}`,
+
+  // User endpoints
+  userProfile: "/users/profile/me",
+  userSearch: "/users",
+
+  // Social Auth endpoints
   socialAuth: (provider: string) => `/social-auth/${provider}`,
   socialCallback: (provider: string) => `/social-auth/${provider}/callback`,
-  
-  // Social Accounts
+
+  // Social Accounts endpoints
   socialAccountsMe: () => '/social/accounts/me',
   socialAccountsUser: (userId: string) => `/social/accounts/user/${userId}`,
   socialAccountsWithTargets: () => '/social/accounts/me/accounts-with-targets',
   socialUnlinkAccount: (userId: string, socialAccountId: string) => `/social/accounts/unlink/${userId}/${socialAccountId}`,
-  
-  // Social Targets
+
+  // Social Targets endpoints
   availableTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/available-targets`,
   linkedTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/linked-targets`,
   linkTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/link-targets`,
   unlinkTarget: (userId: string, socialIntegrationId: string) => `/social/accounts/unlink-target/${userId}/${socialIntegrationId}`,
-  
-  // Brands
+
+  // Brands endpoints
   brands: () => '/brands',
-  
-  // Content & Posts
-  createPost: () => '/content',
 }

@@ -344,3 +344,63 @@ export interface PerformanceReport {
   average_cpc: number;
   chart_data: ChartData[];
 }
+
+// Team domain types
+export interface TeamResponse {
+  id: string;
+  name: string;
+  description?: string;
+  vendorId: string;
+  vendorEmail?: string;
+  status: 'Active' | 'Inactive' | 'Archived'; // Match backend enum values
+  createdAt: string;
+  updatedAt?: string;
+  membersCount?: number;
+  brands?: { id: string; name: string }[];
+}
+
+export interface CreateTeamRequest {
+  name: string;
+  description?: string;
+}
+
+export interface UpdateTeamStatusRequest {
+  status: 'Active' | 'Inactive' | 'Archived';
+}
+
+export interface AssignBrandToTeamRequest {
+  brandIds: string[]; // supports batch assign/unassign based on backend contract
+}
+
+export interface TeamMemberResponseDto {
+  id: string;
+  teamId: string;
+  userId: string;
+  role: string;
+  permissions: string[];
+  joinedAt: string;
+  isActive: boolean;
+  userEmail: string;
+}
+
+export interface TeamMemberCreateRequest {
+  TeamId: string;  // Backend expects PascalCase
+  UserId: string;  // Backend expects PascalCase
+  Role: string;    // Backend expects PascalCase
+  Permissions?: string[];  // Backend expects PascalCase
+}
+
+export interface TeamMemberUpdateRequest {
+  role?: string;
+  permissions?: string[];
+  isActive?: boolean;
+}
+
+export interface PaginationRequest {
+  page?: number;
+  pageSize?: number;
+  teamId?: string;
+  vendorId?: string;
+  role?: string;
+  status?: string;
+}

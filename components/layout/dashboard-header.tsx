@@ -6,7 +6,7 @@ import { DashboardSidebar } from "@/components/layout/dashboard-sidebar"
 import { Zap, Menu } from "lucide-react"
 import { SearchCommand } from "@/components/search/search-command"
 import { MobileSearchCommand } from "@/components/search/mobile-search-command"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { UserDropdown } from "@/components/layout/user-dropdown"
 import { NotificationsDropdown } from "@/components/ui/notifications-dropdown"
@@ -28,6 +28,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-72 p-0">
+              <SheetTitle className="sr-only">Dashboard Navigation</SheetTitle>
               <div className="h-full">
                 <DashboardSidebar/>
               </div>
