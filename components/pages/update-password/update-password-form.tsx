@@ -38,9 +38,9 @@ export function UpdatePasswordForm({
   };
 
   return (
-    <div className={cn("space-y-6", className)} {...props}>
-      <form onSubmit={handleForgotPassword} className="space-y-6">
-        <div className="space-y-4">
+    <div className={cn("space-y-4", className)} {...props}>
+      <form onSubmit={handleForgotPassword} className="space-y-4">
+        <div className="space-y-3">
           <div className="space-y-2">
             <Label htmlFor="password" className="text-sm font-medium">
               New password
@@ -50,7 +50,7 @@ export function UpdatePasswordForm({
               <PasswordInput
                 id="password"
                 placeholder="Enter your new password"
-                className="pl-10 h-12"
+                className="pl-10 h-8 text-sm"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -70,12 +70,12 @@ export function UpdatePasswordForm({
         {/* Submit Button */}
         <Button 
           type="submit" 
-          className="w-full h-12 text-base font-medium" 
+          className="w-full h-8 text-sm font-medium" 
           disabled={isLoading}
         >
           {isLoading ? (
             <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin mr-1" />
               Saving...
             </>
           ) : (

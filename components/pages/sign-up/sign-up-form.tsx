@@ -74,10 +74,17 @@ export function SignUpForm({
       </Dialog>
 
       {/* Google Sign Up */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         <Button 
           variant="outline" 
-          className="w-full h-12 text-base font-medium"
+          className="w-full h-8 text-sm font-medium"
+          onClick={async () => {
+            const supabase = createClient();
+            await supabase.auth.signInWithOAuth({
+              provider: "google",
+              options: { redirectTo: `${window.location.origin}/auth/callback` },
+            });
+          }}
         >
           <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
             <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -89,18 +96,15 @@ export function SignUpForm({
         </Button>
         
         <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border" />
-          </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-card text-muted-foreground">or</span>
+            <span className="px-4 text-muted-foreground">or</span>
           </div>
         </div>
       </div>
 
       {/* Sign Up Form */}
-      <form onSubmit={handleSignUp} className="space-y-6">
-        <div className="space-y-4">
+      <form onSubmit={handleSignUp} className="space-y-4">
+        <div className="space-y-3">
           {/* Email Field */}
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm font-medium">
@@ -112,7 +116,7 @@ export function SignUpForm({
                 id="email"
                 type="email"
                 placeholder="Enter your email"
-                className="pl-10 h-12"
+                className="pl-10 h-8 text-sm"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -130,7 +134,7 @@ export function SignUpForm({
               <PasswordInput
                 id="password"
                 placeholder="Enter your password"
-                className="pl-10 h-12"
+                className="pl-10 h-8 text-sm"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -148,7 +152,7 @@ export function SignUpForm({
               <PasswordInput
                 id="repeat-password"
                 placeholder="Re-enter your password"
-                className="pl-10 h-12"
+                className="pl-10 h-8 text-sm"
                 required
                 value={repeatPassword}
                 onChange={(e) => setRepeatPassword(e.target.value)}
@@ -168,12 +172,12 @@ export function SignUpForm({
         {/* Submit Button */}
         <Button 
           type="submit" 
-          className="w-full h-12 text-base font-medium" 
+          className="w-full h-8 text-sm font-medium" 
           disabled={isLoading}
         >
           {isLoading ? (
             <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin mr-1" />
               Creating account...
             </>
           ) : (

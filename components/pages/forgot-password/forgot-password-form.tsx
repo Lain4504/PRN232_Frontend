@@ -66,9 +66,9 @@ export function ForgotPasswordForm({
           </div>
         </div>
       ) : (
-        <div className="space-y-6">
-          <form onSubmit={handleForgotPassword} className="space-y-6">
-            <div className="space-y-4">
+        <div className="space-y-4">
+          <form onSubmit={handleForgotPassword} className="space-y-4">
+            <div className="space-y-3">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium">
                   Email
@@ -79,7 +79,7 @@ export function ForgotPasswordForm({
                     id="email"
                     type="email"
                     placeholder="Enter your email"
-                    className="pl-10 h-12"
+                    className="pl-10 h-8 text-sm"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -99,12 +99,12 @@ export function ForgotPasswordForm({
             {/* Submit Button */}
             <Button 
               type="submit" 
-              className="w-full h-12 text-base font-medium" 
+              className="w-full h-8 text-sm font-medium" 
               disabled={isLoading}
             >
               {isLoading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin mr-1" />
                   Sending...
                 </>
               ) : (

@@ -56,10 +56,10 @@ export function LoginForm({
   return (
     <div className={cn("space-y-6", className)} {...props}>
       {/* Google Login */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         <Button 
           variant="outline" 
-          className="w-full h-12 text-base font-medium"
+          className="w-full h-8 text-sm font-medium"
           onClick={handleGoogleLogin}
         >
           <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -72,18 +72,15 @@ export function LoginForm({
         </Button>
         
         <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border" />
-          </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-card text-muted-foreground">or</span>
+            <span className="px-4 text-muted-foreground">or</span>
           </div>
         </div>
       </div>
 
       {/* Login Form */}
-      <form onSubmit={handleLogin} className="space-y-6">
-        <div className="space-y-4">
+      <form onSubmit={handleLogin} className="space-y-4">
+        <div className="space-y-3">
           {/* Email Field */}
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm font-medium">
@@ -95,7 +92,7 @@ export function LoginForm({
                 id="email"
                 type="email"
                 placeholder="Enter your email"
-                className="pl-10 h-12"
+                className="pl-10 h-8 text-sm"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -121,7 +118,7 @@ export function LoginForm({
               <PasswordInput
                 id="password"
                 placeholder="Enter your password"
-                className="pl-10 h-12"
+                className="pl-10 h-8 text-sm"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -141,12 +138,12 @@ export function LoginForm({
         {/* Submit Button */}
         <Button 
           type="submit" 
-          className="w-full h-12 text-base font-medium" 
+          className="w-full h-8 text-sm font-medium" 
           disabled={isLoading}
         >
           {isLoading ? (
             <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin mr-1" />
               Signing in...
             </>
           ) : (

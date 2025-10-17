@@ -41,7 +41,7 @@ export function AuthSplitLayout({
             </div>
 
             {/* Form */}
-            <div className="bg-card/50 backdrop-blur-sm border rounded-2xl p-8 shadow-xl">
+            <div className="bg-transparent rounded-2xl p-8 shadow-none border-0">
               {children}
             </div>
           </div>
