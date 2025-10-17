@@ -33,6 +33,40 @@ import {
 // Utility functions
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// AI Content Generation Helpers
+const generateTextOnlyContent = (prompt: string, brand?: Brand | null, product?: Product | null, styleContext?: string): string => {
+  const templates = [
+    `✨ ${brand?.name || 'Your Brand'} presents: ${prompt}. ${styleContext ? `In a ${styleContext} style.` : ''} #Innovation #Quality`,
+    `🚀 Discover the power of ${brand?.name || 'excellence'}: ${prompt}. ${product?.name ? `Featuring ${product.name}.` : ''} Experience the difference!`,
+    `🌟 Transform your experience with ${brand?.name || 'our brand'}. ${prompt}. ${styleContext || 'Professional and engaging'}. #Premium #Lifestyle`,
+    `💫 ${brand?.name || 'We'} bring you: ${prompt}. ${product?.name ? `Showcasing ${product.name}.` : ''} Elevate your standards today!`,
+    `🎯 Excellence redefined: ${brand?.name || 'Our brand'} delivers ${prompt}. ${styleContext ? `With a ${styleContext} approach.` : ''} #Leadership #Quality`
+  ];
+  return templates[Math.floor(Math.random() * templates.length)];
+};
+
+const generateImageTextContent = (prompt: string, brand?: Brand | null, product?: Product | null, styleContext?: string): string => {
+  const templates = [
+    `📸 Stunning visuals meet exceptional quality! ${brand?.name || 'Our brand'} showcases ${prompt}. ${product?.name ? `Featuring ${product.name}.` : ''} See the difference! #VisualStorytelling`,
+    `🎨 Beauty in every detail. ${brand?.name || 'We'} present ${prompt} in our latest collection. ${styleContext ? `Captured in ${styleContext} style.` : ''} #Aesthetic #Quality`,
+    `🖼️ Picture perfect! ${brand?.name || 'Our brand'} brings you ${prompt}. ${product?.name ? `Highlighting ${product.name}.` : ''} Experience excellence visually.`,
+    `📷 Capturing excellence: ${brand?.name || 'We'} unveil ${prompt}. ${styleContext || 'Professional photography'} that tells your story. #VisualExcellence`,
+    `🌈 Colors of success! ${brand?.name || 'Our brand'} demonstrates ${prompt} through stunning imagery. ${product?.name ? `Showcasing ${product.name}.` : ''} #VisualImpact`
+  ];
+  return templates[Math.floor(Math.random() * templates.length)];
+};
+
+const generateVideoTextContent = (prompt: string, brand?: Brand | null, product?: Product | null, styleContext?: string): string => {
+  const templates = [
+    `🎥 Watch and be amazed! ${brand?.name || 'Our brand'} unveils ${prompt}. ${product?.name ? `Featuring ${product.name}.` : ''} Don't miss this! #VideoContent`,
+    `📹 Motion meets emotion. ${brand?.name || 'We'} bring ${prompt} to life. ${styleContext ? `In ${styleContext} style.` : ''} Watch now! #Dynamic #Engaging`,
+    `🎬 Lights, camera, action! ${brand?.name || 'Our brand'} stars in ${prompt}. ${product?.name ? `Showcasing ${product.name}.` : ''} Experience the magic!`,
+    `📺 Visual storytelling at its finest: ${brand?.name || 'We'} present ${prompt}. ${styleContext || 'Cinematic quality'} that captivates. #VideoExcellence`,
+    `🎪 Experience the spectacle! ${brand?.name || 'Our brand'} delivers ${prompt} through compelling video. ${product?.name ? `Highlighting ${product.name}.` : ''} #Entertainment #Quality`
+  ];
+  return templates[Math.floor(Math.random() * templates.length)];
+};
+
 const getFromStorage = <T>(key: string, defaultValue: T): T => {
   if (typeof window === 'undefined') return defaultValue;
   try {
@@ -474,16 +508,63 @@ export const contentApi = {
     return createSuccessResponse(contents[index], 'Content submitted for approval');
   },
 
-  async generateAIContent(prompt: string): Promise<ApiResponse<{ text: string; image?: string }>> {
-    await delay(2000); // Simulate AI processing time
-    
-    // Mock AI response
+  async generateAIContent(prompt: string, brandId?: string, productId?: string, styleContext?: string, adType?: string): Promise<ApiResponse<{ text: string; image?: string }>> {
+    await delay(3000); // Simulate AI processing time
+
+    // Mock AI response with more sophisticated content generation
+    const brand = brandId ? getFromStorage<Brand[]>('brands', []).find(b => b.id === brandId) : null;
+    const product = productId ? getFromStorage<Product[]>('products', []).find(p => p.id === productId) : null;
+
+    let generatedText = '';
+
+    if (adType === 'text_only') {
+      generatedText = generateTextOnlyContent(prompt, brand, product, styleContext);
+    } else if (adType === 'image_text') {
+      generatedText = generateImageTextContent(prompt, brand, product, styleContext);
+    } else if (adType === 'video_text') {
+      generatedText = generateVideoTextContent(prompt, brand, product, styleContext);
+    } else {
+      generatedText = `✨ ${brand?.name || 'Your Brand'} presents: ${prompt}. Experience excellence today! #Innovation #Quality`;
+    }
+
     const aiResponse = {
-      text: `AI-generated content based on: "${prompt}". This is a mock response that would be generated by AI based on your brand guidelines, target audience, and content requirements.`,
-      image: undefined // Could be a generated image URL
+      text: generatedText,
+      image: adType === 'image_text' || adType === 'video_text' ? 'https://via.placeholder.com/800x600?text=AI+Generated+Image' : undefined
     };
-    
+
     return createSuccessResponse(aiResponse, 'AI content generated successfully');
+  },
+
+  async saveGeneratedContent(generationData: {
+    prompt: string;
+    brand_id: string;
+    product_id?: string;
+    style_context: string;
+    ad_type: string;
+    generated_content: string;
+    image_url?: string;
+  }): Promise<ApiResponse<Content>> {
+    await delay(1000);
+
+    const content: Content = {
+      id: 'content-' + Date.now(),
+      brand_id: generationData.brand_id,
+      product_id: generationData.product_id,
+      ad_type: generationData.ad_type as 'image_text' | 'video_text' | 'text_only',
+      title: `AI Generated: ${generationData.prompt.substring(0, 50)}...`,
+      text_content: generationData.generated_content,
+      style_context_character: generationData.style_context,
+      image_url: generationData.image_url,
+      status: 'draft',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    const contents = getFromStorage<Content[]>('contents', []);
+    contents.push(content);
+    saveToStorage('contents', contents);
+
+    return createSuccessResponse(content, 'Content saved to library successfully');
   }
 };
 
