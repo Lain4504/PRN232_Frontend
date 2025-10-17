@@ -13,7 +13,9 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Trash2, User2, Edit } from 'lucide-react'
+import { getPermissionInfo } from '@/lib/constants/team-roles'
 
 interface Props {
   teamId: string
@@ -251,13 +253,25 @@ function MemberRow({ teamId, memberId, email, role, permissions, status, joinedA
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="max-h-60 overflow-y-auto">
-            <div className="space-y-2">
-              {permissionsDialog.permissions.map((permission, index) => (
-                <div key={index} className="text-sm p-2 bg-muted rounded">
-                  {permission}
-                </div>
-              ))}
-            </div>
+            <TooltipProvider>
+              <div className="space-y-2">
+                {permissionsDialog.permissions.map((permission, index) => {
+                  const info = getPermissionInfo(permission)
+                  return (
+                    <Tooltip key={index}>
+                      <TooltipTrigger asChild>
+                        <div className="text-sm p-2 bg-muted rounded cursor-pointer">
+                          {info?.label || permission}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{info?.description || permission}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )
+                })}
+              </div>
+            </TooltipProvider>
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel>Close</AlertDialogCancel>
