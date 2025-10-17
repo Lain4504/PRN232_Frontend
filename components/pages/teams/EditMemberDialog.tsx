@@ -10,8 +10,9 @@ import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, Dr
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { getPermissionsForRole } from '@/lib/constants/team-roles'
+import { getPermissionsForRole, getPermissionInfo } from '@/lib/constants/team-roles'
 
 interface Props {
     open: boolean
@@ -110,17 +111,31 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: Props) 
                 {showPermissions && (
                     <div className="border rounded-lg p-3 max-h-48 overflow-y-auto bg-muted/20">
                         <div className="text-xs mb-2 p-2 rounded bg-background/50 border">These permissions are automatically assigned based on the role. You can customize them.</div>
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                            {getPermissionsForRole(role).map((permission) => (
-                                <label key={permission} className="flex items-center gap-2">
-                                    <Checkbox
-                                        checked={permissions.includes(permission)}
-                                        onCheckedChange={() => togglePermission(permission)}
-                                    />
-                                    <span className="truncate" title={permission}>{permission}</span>
-                                </label>
-                            ))}
-                        </div>
+                        <TooltipProvider>
+                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                {getPermissionsForRole(role).map((permission) => {
+                                    const info = getPermissionInfo(permission)
+                                    return (
+                                        <Tooltip key={permission}>
+                                            <TooltipTrigger asChild>
+                                                <label className="flex items-center gap-2 cursor-pointer">
+                                                    <Checkbox
+                                                        checked={permissions.includes(permission)}
+                                                        onCheckedChange={() => togglePermission(permission)}
+                                                    />
+                                                    <span className="truncate">
+                                                        {info?.label || permission}
+                                                    </span>
+                                                </label>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>{info?.description || permission}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    )
+                                })}
+                            </div>
+                        </TooltipProvider>
                         <div className="mt-3 flex gap-2">
                             <Button type="button" variant="ghost" size="sm" className="h-8 text-xs" onClick={() => setPermissions(getPermissionsForRole(role).slice())}>Select all</Button>
                             <Button type="button" variant="ghost" size="sm" className="h-8 text-xs" onClick={() => setPermissions([])}>Deselect all</Button>

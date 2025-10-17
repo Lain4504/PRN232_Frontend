@@ -1,16 +1,15 @@
 "use client"
 
 import { useParams, useRouter } from 'next/navigation'
-import { useDeleteTeam, useRestoreTeam, useTeam, useUserPermissions } from '@/hooks/use-teams'
+import { useDeleteTeam, useRestoreTeam, useTeam } from '@/hooks/use-teams'
 import { MembersCount } from '@/components/pages/teams/MembersCount'
 import { TeamEditDialog } from '@/components/pages/teams/TeamEditDialog'
-import { AssignBrandsPanel } from '@/components/pages/teams/AssignBrandsPanel'
+import { AssignBrandDialog } from '@/components/pages/teams/AssignBrandDialog'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Users, Pencil, Eye, Trash2, RefreshCw, Building2, Calendar, User, Mail } from 'lucide-react'
+import { Users, Pencil, Trash2, RefreshCw, Building2, Calendar, User, Mail, Target } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
 
@@ -18,16 +17,12 @@ export default function TeamDetailPage() {
   const params = useParams<{ teamId: string }>()
   const teamId = params.teamId
   const { data, isLoading, isError } = useTeam(teamId)
-  const { data: permissions } = useUserPermissions(teamId)
   const { mutateAsync: deleteTeam, isPending: deleting } = useDeleteTeam(teamId)
   const { mutateAsync: restoreTeam, isPending: restoring } = useRestoreTeam(teamId)
   const router = useRouter()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
-  const [openAssignBrands, setOpenAssignBrands] = useState(false)
-
-  // Use permissions from API, fallback to false if loading
-  const can = permissions || { canManageTeams: false, canAssignBrands: false }
+  const [openAssignBrand, setOpenAssignBrand] = useState(false)
 
   if (isLoading) return <div className="p-4 text-sm text-muted-foreground">Đang tải...</div>
   if (isError || !data) return <div className="p-4 text-sm text-destructive">Không tìm thấy team.</div>
@@ -92,12 +87,10 @@ export default function TeamDetailPage() {
                   <Pencil className="mr-1 h-3 w-3" />
                   Edit
                 </Button>
-                {(can.canAssignBrands) && (
-                  <Button variant="outline" size="sm" className="h-8 text-xs flex-1 sm:flex-none" onClick={() => setOpenAssignBrands(true)}>
-                    <Eye className="mr-1 h-3 w-3" />
-                    Assign Brands
-                  </Button>
-                )}
+                <Button variant="outline" size="sm" className="h-8 text-xs flex-1 sm:flex-none" onClick={() => setOpenAssignBrand(true)}>
+                  <Target className="mr-1 h-3 w-3" />
+                  Assign Brand
+                </Button>
                 <Button variant="outline" size="sm" className="h-8 text-xs text-destructive flex-1 sm:flex-none" onClick={() => setConfirmOpen(true)} disabled={deleting}>
                   <Trash2 className="mr-1 h-3 w-3" />
                   Delete
@@ -192,14 +185,14 @@ export default function TeamDetailPage() {
         />
       )}
 
-      <Dialog open={openAssignBrands} onOpenChange={setOpenAssignBrands}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Assign Brands</DialogTitle>
-          </DialogHeader>
-          <AssignBrandsPanel teamId={teamId} onClose={() => setOpenAssignBrands(false)} />
-        </DialogContent>
-      </Dialog>
+      {openAssignBrand && (
+        <AssignBrandDialog
+          open={openAssignBrand}
+          onOpenChange={setOpenAssignBrand}
+          teamId={teamId}
+          currentBrands={data.brands || []}
+        />
+      )}
 
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent className="sm:max-w-md">
