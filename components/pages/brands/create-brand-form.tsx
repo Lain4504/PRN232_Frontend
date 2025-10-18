@@ -21,7 +21,6 @@ import { authApi, brandApi, profileApi } from "@/lib/mock-api";
 import { User as UserType, Profile, CreateBrandForm as CreateBrandFormType } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export function CreateBrandForm() {
   const [user, setUser] = useState<UserType | null>(null);
@@ -34,7 +33,7 @@ export function CreateBrandForm() {
     slogan: '',
     usp: '',
     target_audience: '',
-    profile_id: '',
+    profile_id: undefined, // Made optional
   });
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const router = useRouter();
@@ -73,7 +72,7 @@ export function CreateBrandForm() {
     loadData();
   }, []);
 
-  const handleInputChange = (field: keyof CreateBrandFormType, value: string) => {
+  const handleInputChange = (field: keyof CreateBrandFormType, value: string | undefined) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -105,10 +104,7 @@ export function CreateBrandForm() {
       return;
     }
 
-    if (!formData.profile_id) {
-      toast.error('Please select a profile');
-      return;
-    }
+    // Profile is optional, no validation needed
 
     try {
       setSubmitting(true);
@@ -141,46 +137,7 @@ export function CreateBrandForm() {
     );
   }
 
-  if (profiles.length === 0) {
-    return (
-      <div className="flex-1 space-y-6 p-6 bg-background">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.back()}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Create Brand</h1>
-            <p className="text-muted-foreground">
-              Set up a new brand for your business
-            </p>
-          </div>
-        </div>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center py-12">
-              <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No profiles found</h3>
-              <p className="text-muted-foreground mb-4">
-                You need to create a profile before you can create a brand
-              </p>
-              <Button asChild>
-                <Link href="/dashboard/profile/create">
-                  <Building2 className="mr-2 h-4 w-4" />
-                  Create Profile First
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  // Profiles are optional, so we don't block brand creation
 
   return (
     <div className="flex-1 space-y-6 p-6 bg-background">
@@ -229,21 +186,23 @@ export function CreateBrandForm() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="profile_id">Profile *</Label>
+                  <Label htmlFor="profile_id">Profile (Optional)</Label>
                   <select
                     id="profile_id"
-                    value={formData.profile_id}
-                    onChange={(e) => handleInputChange('profile_id', e.target.value)}
+                    value={formData.profile_id || ''}
+                    onChange={(e) => handleInputChange('profile_id', e.target.value === '' ? undefined : e.target.value)}
                     className="w-full p-2 border rounded-md"
-                    required
                   >
-                    <option value="">Select a profile</option>
+                    <option value="">No profile selected</option>
                     {profiles.map((profile) => (
                       <option key={profile.id} value={profile.id}>
                         {profile.company_name || `${profile.profile_type} profile`}
                       </option>
                     ))}
                   </select>
+                  <p className="text-xs text-muted-foreground">
+                    You can create a brand without linking it to a profile
+                  </p>
                 </div>
               </div>
               

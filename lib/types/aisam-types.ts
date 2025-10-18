@@ -25,7 +25,7 @@ export interface Profile {
 
 export interface Brand {
   id: string;
-  profile_id: string;
+  profile_id?: string; // Made optional - brands can exist without profiles
   name: string;
   description?: string;
   logo_url?: string;
@@ -223,7 +223,7 @@ export interface CreateBrandForm {
   slogan?: string;
   usp?: string;
   target_audience?: string;
-  profile_id: string;
+  profile_id?: string; // Made optional
 }
 
 export interface CreateProductForm {

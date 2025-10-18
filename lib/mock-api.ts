@@ -216,7 +216,7 @@ export const brandApi = {
     
     const brand: Brand = {
       id: 'brand-' + Date.now(),
-      profile_id: formData.profile_id,
+      profile_id: formData.profile_id || undefined, // Ensure undefined instead of empty string
       name: formData.name,
       description: formData.description,
       logo_url: formData.logo ? URL.createObjectURL(formData.logo) : undefined,
