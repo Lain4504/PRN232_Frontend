@@ -25,10 +25,13 @@ import { productApi, brandApi } from "@/lib/mock-api";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { ProductModal } from "@/components/products/product-modal";
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 // Create columns function to access component state
 const createColumns = (
   handleDeleteProduct: (productId: string, productName: string) => void,
+  handleRefresh: () => void,
   brands: Brand[]
 ): ColumnDef<Product>[] => [
   {
@@ -105,11 +108,11 @@ const createColumns = (
     header: "Actions",
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" asChild>
-          <Link href={`/dashboard/products/edit/${row.original.id}`}>
+        <ProductModal mode="edit" product={row.original} onSuccess={handleRefresh}>
+          <Button variant="outline" size="sm">
             <Pencil className="h-4 w-4" />
-          </Link>
-        </Button>
+          </Button>
+        </ProductModal>
         <Button 
           variant="destructive" 
           size="sm" 
@@ -181,6 +184,22 @@ export function ProductsManagement() {
     return matchesSearch && matchesBrand;
   });
 
+  const handleRefresh = async () => {
+    try {
+      const productsResponse = await productApi.getProducts();
+      if (productsResponse.success) {
+        setProducts(productsResponse.data);
+      }
+      
+      const brandsResponse = await brandApi.getBrands();
+      if (brandsResponse.success) {
+        setBrands(brandsResponse.data);
+      }
+    } catch (error) {
+      console.error("Failed to refresh data:", error);
+    }
+  };
+
   const handleDeleteProduct = async (productId: string, productName: string) => {
     if (!confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`)) {
       return;
@@ -237,6 +256,19 @@ export function ProductsManagement() {
   return (
     <div className="w-full max-w-full overflow-x-hidden">
       <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
+        {/* Breadcrumb */}
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Products</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         {/* Header */}
         <div className="space-y-3 lg:space-y-6">
           <div>
@@ -309,20 +341,26 @@ export function ProductsManagement() {
             <p className="text-xs text-muted-foreground mb-3">
               Add a new product to your catalog to start creating content and campaigns.
             </p>
-            <Button asChild size="sm" className="w-full sm:w-auto h-8 text-xs" 
-              onClick={() => {
-                // Store brand context in localStorage for create form
-                if (isFilteredByBrand) {
-                  localStorage.setItem('createProductBrandContext', brandFilter);
-                } else {
-                  localStorage.removeItem('createProductBrandContext');
-                }
-              }}>
-              <Link href="/dashboard/products/new">
+            <ProductModal 
+              mode="create" 
+              onSuccess={handleRefresh}
+            >
+              <Button 
+                size="sm" 
+                className="w-full sm:w-auto h-8 text-xs"
+                onClick={() => {
+                  // Store brand context in localStorage for create form
+                  if (isFilteredByBrand) {
+                    localStorage.setItem('createProductBrandContext', brandFilter);
+                  } else {
+                    localStorage.removeItem('createProductBrandContext');
+                  }
+                }}
+              >
                 <Plus className="mr-1 h-3 w-3" />
                 Add Product
-              </Link>
-            </Button>
+              </Button>
+            </ProductModal>
           </CardContent>
         </Card>
 
@@ -366,7 +404,7 @@ export function ProductsManagement() {
           </CardHeader>
           <CardContent>
             {filteredProducts.length > 0 ? (
-              <DataTable columns={createColumns(handleDeleteProduct, brands)} data={filteredProducts} filterColumn="name" />
+              <DataTable columns={createColumns(handleDeleteProduct, handleRefresh, brands)} data={filteredProducts} filterColumn="name" />
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-6">
@@ -381,20 +419,25 @@ export function ProductsManagement() {
                     : 'Start by adding your first product to create content and campaigns around it.'
                   }
                 </p>
-                <Button asChild className="mt-6"
-                  onClick={() => {
-                    // Store brand context in localStorage for create form
-                    if (isFilteredByBrand) {
-                      localStorage.setItem('createProductBrandContext', brandFilter);
-                    } else {
-                      localStorage.removeItem('createProductBrandContext');
-                    }
-                  }}>
-                  <Link href="/dashboard/products/new">
+                <ProductModal 
+                  mode="create" 
+                  onSuccess={handleRefresh}
+                >
+                  <Button 
+                    className="mt-6"
+                    onClick={() => {
+                      // Store brand context in localStorage for create form
+                      if (isFilteredByBrand) {
+                        localStorage.setItem('createProductBrandContext', brandFilter);
+                      } else {
+                        localStorage.removeItem('createProductBrandContext');
+                      }
+                    }}
+                  >
                     <Plus className="mr-2 h-4 w-4" />
                     Add Product
-                  </Link>
-                </Button>
+                  </Button>
+                </ProductModal>
               </div>
             )}
           </CardContent>

@@ -20,6 +20,7 @@ import { Brand, Profile } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { BrandModal } from "@/components/brands/brand-modal";
 
 interface BrandDetailsProps {
   brandId: string;
@@ -109,12 +110,12 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
             </p>
           </div>
         </div>
-        <Button asChild>
-          <Link href={`/dashboard/brands/${brand.id}/edit`}>
+        <BrandModal mode="edit" brand={brand} onSuccess={() => window.location.reload()}>
+          <Button>
             <Edit className="mr-2 h-4 w-4" />
             Edit Brand
-          </Link>
-        </Button>
+          </Button>
+        </BrandModal>
       </div>
 
       <div className="max-w-4xl mx-auto space-y-6">

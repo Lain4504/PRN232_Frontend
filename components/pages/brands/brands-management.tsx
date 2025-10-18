@@ -21,6 +21,8 @@ import { User as UserType, Brand, Profile } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { BrandModal } from "@/components/brands/brand-modal";
 
 export function BrandsManagement() {
   const router = useRouter();
@@ -84,6 +86,22 @@ export function BrandsManagement() {
     brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     brand.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleRefresh = async () => {
+    try {
+      const brandsResponse = await brandApi.getBrands();
+      if (brandsResponse.success) {
+        setBrands(brandsResponse.data);
+      }
+      
+      const profilesResponse = await profileApi.getProfiles(user?.id || '');
+      if (profilesResponse.success) {
+        setProfiles(profilesResponse.data);
+      }
+    } catch (error) {
+      console.error("Failed to refresh data:", error);
+    }
+  };
 
   const handleDeleteBrand = async (brandId: string) => {
     const brandToDelete = brands.find(b => b.id === brandId);
@@ -176,12 +194,12 @@ export function BrandsManagement() {
             <p className="text-xs text-muted-foreground mb-3">
               Add a new brand to start managing its products and content.
             </p>
-            <Button asChild size="sm" className="w-full sm:w-auto h-8 text-xs">
-              <Link href="/dashboard/brands/new">
+            <BrandModal mode="create" onSuccess={handleRefresh}>
+              <Button size="sm" className="w-full sm:w-auto h-8 text-xs">
                 <Plus className="mr-1 h-3 w-3" />
                 Create Brand
-              </Link>
-            </Button>
+              </Button>
+            </BrandModal>
           </CardContent>
         </Card>
 
@@ -232,11 +250,11 @@ export function BrandsManagement() {
                         </div>
                       </div>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link href={`/dashboard/brands/${brand.id}/edit`}>
+                        <BrandModal mode="edit" brand={brand} onSuccess={handleRefresh}>
+                          <Button variant="ghost" size="sm">
                             <Edit className="h-4 w-4" />
-                          </Link>
-                        </Button>
+                          </Button>
+                        </BrandModal>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -299,12 +317,12 @@ export function BrandsManagement() {
                   }
                 </p>
                 {!searchTerm && (
-                  <Button asChild>
-                    <Link href="/dashboard/brands/new">
+                  <BrandModal mode="create" onSuccess={handleRefresh}>
+                    <Button>
                       <Plus className="mr-2 h-4 w-4" />
                       Create Your First Brand
-                    </Link>
-                  </Button>
+                    </Button>
+                  </BrandModal>
                 )}
               </div>
             </CardContent>
