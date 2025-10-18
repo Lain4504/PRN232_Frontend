@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Target, 
   ArrowLeft,
@@ -36,6 +37,7 @@ export function CreateBrandForm() {
     profile_id: undefined, // Made optional
   });
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [linkToProfile, setLinkToProfile] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -104,7 +106,11 @@ export function CreateBrandForm() {
       return;
     }
 
-    // Profile is optional, no validation needed
+    // Validate profile selection if linking is enabled
+    if (linkToProfile && !formData.profile_id) {
+      toast.error('Vui lòng chọn profile để liên kết');
+      return;
+    }
 
     try {
       setSubmitting(true);
@@ -185,23 +191,59 @@ export function CreateBrandForm() {
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="profile_id">Profile (Optional)</Label>
-                  <select
-                    id="profile_id"
-                    value={formData.profile_id || ''}
-                    onChange={(e) => handleInputChange('profile_id', e.target.value === '' ? undefined : e.target.value)}
-                    className="w-full p-2 border rounded-md"
-                  >
-                    <option value="">No profile selected</option>
-                    {profiles.map((profile) => (
-                      <option key={profile.id} value={profile.id}>
-                        {profile.company_name || `${profile.profile_type} profile`}
-                      </option>
-                    ))}
-                  </select>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="link-profile" 
+                      checked={linkToProfile}
+                      onCheckedChange={(checked) => {
+                        setLinkToProfile(checked as boolean);
+                        if (!checked) {
+                          handleInputChange('profile_id', undefined);
+                        }
+                      }}
+                    />
+                    <Label htmlFor="link-profile" className="text-sm font-medium">
+                      Liên kết với profile cá nhân/doanh nghiệp của bạn?
+                    </Label>
+                  </div>
+                  
+                  {linkToProfile && (
+                    <div className="space-y-2 ml-6">
+                      {profiles.length > 0 ? (
+                        <>
+                          <Label htmlFor="profile_id">Chọn Profile</Label>
+                          <select
+                            id="profile_id"
+                            value={formData.profile_id || ''}
+                            onChange={(e) => handleInputChange('profile_id', e.target.value === '' ? undefined : e.target.value)}
+                            className="w-full p-2 border rounded-md"
+                          >
+                            <option value="">Chọn profile...</option>
+                            {profiles.map((profile) => (
+                              <option key={profile.id} value={profile.id}>
+                                {profile.company_name || `${profile.profile_type} profile`}
+                              </option>
+                            ))}
+                          </select>
+                        </>
+                      ) : (
+                        <div className="p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-md">
+                          <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-2">
+                            Bạn chưa có profile nào. Hãy tạo profile trước khi liên kết với brand.
+                          </p>
+                          <Button asChild size="sm" variant="outline">
+                            <a href="/dashboard/profile/create">
+                              Tạo Profile
+                            </a>
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
                   <p className="text-xs text-muted-foreground">
-                    You can create a brand without linking it to a profile
+                    Profile giúp định danh thương hiệu và tạo nội dung phù hợp hơn
                   </p>
                 </div>
               </div>

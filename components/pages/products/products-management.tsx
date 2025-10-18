@@ -298,7 +298,7 @@ export function ProductsManagement() {
               Add a new product to your catalog to start creating content and campaigns.
             </p>
             <Button asChild size="sm" className="w-full sm:w-auto h-8 text-xs">
-              <Link href="/dashboard/products/new">
+              <Link href={isFilteredByBrand ? `/dashboard/products/new?brand=${brandFilter}` : "/dashboard/products/new"}>
                 <Plus className="mr-1 h-3 w-3" />
                 Add Product
               </Link>
@@ -357,7 +357,7 @@ export function ProductsManagement() {
                   Start by adding your first product to create content and campaigns around it.
                 </p>
                 <Button asChild className="mt-6">
-                  <Link href="/dashboard/products/new">
+                  <Link href={isFilteredByBrand ? `/dashboard/products/new?brand=${brandFilter}` : "/dashboard/products/new"}>
                     <Plus className="mr-2 h-4 w-4" />
                     Add Product
                   </Link>

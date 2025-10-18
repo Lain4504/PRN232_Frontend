@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,7 @@ import { Loader2, UploadCloud, Package, DollarSign, Tag, Image as ImageIcon } fr
 
 export function CreateProductForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [brands, setBrands] = useState<Brand[]>([]);
   const [selectedBrandId, setSelectedBrandId] = useState<string>("");
   const [name, setName] = useState("");
@@ -34,7 +36,19 @@ export function CreateProductForm() {
         const response = await brandApi.getBrands();
         if (response.success) {
           setBrands(response.data);
-          if (response.data.length > 0) {
+          
+          // Check if brand is specified in URL parameters
+          const brandFromUrl = searchParams.get('brand');
+          console.log('Brand from URL:', brandFromUrl);
+          console.log('Available brands:', response.data.map(b => ({ id: b.id, name: b.name })));
+          
+          if (brandFromUrl && response.data.find(b => b.id === brandFromUrl)) {
+            // Set brand from URL parameter
+            console.log('Setting brand from URL:', brandFromUrl);
+            setSelectedBrandId(brandFromUrl);
+          } else if (response.data.length > 0) {
+            // Default to first brand if no URL parameter
+            console.log('Setting default brand:', response.data[0].id);
             setSelectedBrandId(response.data[0].id);
           }
         } else {
@@ -46,7 +60,7 @@ export function CreateProductForm() {
       }
     };
     loadBrands();
-  }, []);
+  }, [searchParams]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
