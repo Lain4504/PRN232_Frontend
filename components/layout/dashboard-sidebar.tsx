@@ -58,11 +58,6 @@ const mainNavItems: NavItem[] = [
     icon: Target,
   },
   {
-    title: "Teams",
-    url: "/dashboard/teams",
-    icon: Users,
-  },
-  {
     title: "Products",
     url: "/dashboard/products",
     icon: Package,

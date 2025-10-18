@@ -6,13 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  Target, 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
-  Eye,
+import {
+  Target,
+  Plus,
+  Search,
+  Edit,
+  Trash2,
   Calendar,
   Package,
   FileText
@@ -35,18 +34,18 @@ export function BrandsManagement() {
     const loadData = async () => {
       try {
         setLoading(true);
-        
+
         // Get current user
         const userResponse = await authApi.getCurrentUser();
         if (userResponse.success && userResponse.data) {
           setUser(userResponse.data);
-          
+
           // Get user's profiles
           const profilesResponse = await profileApi.getProfiles(userResponse.data.id);
           if (profilesResponse.success) {
             setProfiles(profilesResponse.data);
           }
-          
+
           // Get brands
           const brandsResponse = await brandApi.getBrands();
           if (brandsResponse.success) {
@@ -87,7 +86,13 @@ export function BrandsManagement() {
   );
 
   const handleDeleteBrand = async (brandId: string) => {
-    if (!confirm('Are you sure you want to delete this brand? This action cannot be undone.')) {
+    const brandToDelete = brands.find(b => b.id === brandId);
+    const brandName = brandToDelete?.name || 'this brand';
+
+    // Enhanced confirmation message about cascade delete
+    const confirmMessage = `Are you sure you want to delete "${brandName}"?\n\n⚠️ WARNING: This will also permanently delete:\n• All products associated with this brand\n• All content created for this brand\n• All related data\n\nThis action cannot be undone.`;
+
+    if (!confirm(confirmMessage)) {
       return;
     }
 
@@ -95,7 +100,7 @@ export function BrandsManagement() {
       const response = await brandApi.deleteBrand(brandId);
       if (response.success) {
         setBrands(brands.filter(b => b.id !== brandId));
-        toast.success('Brand deleted successfully');
+        toast.success(`Brand "${brandName}" and all associated products have been deleted successfully`);
       } else {
         toast.error(response.message);
       }
@@ -228,17 +233,12 @@ export function BrandsManagement() {
                       </div>
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" asChild>
-                          <Link href={`/dashboard/brands/${brand.id}`}>
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                        <Button variant="ghost" size="sm" asChild>
                           <Link href={`/dashboard/brands/${brand.id}/edit`}>
                             <Edit className="h-4 w-4" />
                           </Link>
                         </Button>
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           size="sm"
                           onClick={() => handleDeleteBrand(brand.id)}
                           className="text-destructive hover:text-destructive/80"
@@ -293,7 +293,7 @@ export function BrandsManagement() {
                   {searchTerm ? 'No brands found' : 'No brands yet'}
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  {searchTerm 
+                  {searchTerm
                     ? 'Try adjusting your search terms'
                     : 'Create your first brand to get started with AISAM'
                   }

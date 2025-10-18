@@ -20,6 +20,7 @@ export function CreateProductForm() {
   const searchParams = useSearchParams();
   const [brands, setBrands] = useState<Brand[]>([]);
   const [selectedBrandId, setSelectedBrandId] = useState<string>("");
+  const [brandsLoaded, setBrandsLoaded] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -33,34 +34,37 @@ export function CreateProductForm() {
   useEffect(() => {
     const loadBrands = async () => {
       try {
+        setBrandsLoaded(false);
         const response = await brandApi.getBrands();
         if (response.success) {
           setBrands(response.data);
+
+          // Check for brand context from localStorage (from products management page)
+          const brandContext = localStorage.getItem('createProductBrandContext');
           
-          // Check if brand is specified in URL parameters
-          const brandFromUrl = searchParams.get('brand');
-          console.log('Brand from URL:', brandFromUrl);
-          console.log('Available brands:', response.data.map(b => ({ id: b.id, name: b.name })));
-          
-          if (brandFromUrl && response.data.find(b => b.id === brandFromUrl)) {
-            // Set brand from URL parameter
-            console.log('Setting brand from URL:', brandFromUrl);
-            setSelectedBrandId(brandFromUrl);
+          if (brandContext && response.data.find(b => b.id === brandContext)) {
+            // Use brand from context
+            setSelectedBrandId(brandContext);
+            // Clear the context after using it
+            localStorage.removeItem('createProductBrandContext');
           } else if (response.data.length > 0) {
-            // Default to first brand if no URL parameter
-            console.log('Setting default brand:', response.data[0].id);
+            // Auto-select first brand if available
             setSelectedBrandId(response.data[0].id);
           }
+
+          setBrandsLoaded(true);
         } else {
           toast.error("Failed to load brands.");
+          setBrandsLoaded(true);
         }
       } catch (error) {
         console.error("Failed to load brands:", error);
         toast.error("Failed to load brands.");
+        setBrandsLoaded(true);
       }
     };
     loadBrands();
-  }, [searchParams]);
+  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -80,7 +84,7 @@ export function CreateProductForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedBrandId) {
       setError("Please select a brand.");
       return;
@@ -115,7 +119,7 @@ export function CreateProductForm() {
 
       if (response.success) {
         toast.success("Product created successfully!");
-        router.push("/dashboard/products");
+        router.push(`/dashboard/products?brand=${selectedBrandId}`);
       } else {
         setError(response.message);
         toast.error(response.message);
@@ -133,9 +137,10 @@ export function CreateProductForm() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Add New Product</h1>
-          <p className="text-muted-foreground">Create a new product for your catalog.</p>
+          <p className="text-muted-foreground">Create a new product for your catalog.
+          </p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => router.push("/dashboard/products")}>
+        <Button variant="outline" size="sm" onClick={() => router.push(`/dashboard/products?brand=${selectedBrandId}`)}>
           Cancel
         </Button>
       </div>
@@ -152,18 +157,27 @@ export function CreateProductForm() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid gap-2">
               <Label htmlFor="brand">Brand *</Label>
-              <Select value={selectedBrandId} onValueChange={setSelectedBrandId}>
-                <SelectTrigger id="brand">
-                  <SelectValue placeholder="Select a brand" />
-                </SelectTrigger>
-                <SelectContent>
-                  {brands.map((brand) => (
-                    <SelectItem key={brand.id} value={brand.id}>
-                      {brand.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+
+              {brandsLoaded ? (
+                <Select
+                  key={`brand-select-${selectedBrandId}`}
+                  value={selectedBrandId}
+                  onValueChange={setSelectedBrandId}
+                >
+                  <SelectTrigger id="brand">
+                    <SelectValue placeholder="Select a brand" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {brands.map((brand) => (
+                      <SelectItem key={brand.id} value={brand.id}>
+                        {brand.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="h-10 bg-muted animate-pulse rounded-md"></div>
+              )}
             </div>
 
             <div className="grid gap-2">
@@ -250,7 +264,7 @@ export function CreateProductForm() {
                   onChange={handleImageChange}
                   className="cursor-pointer"
                 />
-                
+
                 {imagePreviews.length > 0 && (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {imagePreviews.map((preview, index) => (

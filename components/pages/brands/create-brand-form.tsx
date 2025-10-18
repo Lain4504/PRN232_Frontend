@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  Target, 
+import {
+  Target,
   ArrowLeft,
   Upload,
   Save,
@@ -44,12 +44,12 @@ export function CreateBrandForm() {
     const loadData = async () => {
       try {
         setLoading(true);
-        
+
         // Get current user
         const userResponse = await authApi.getCurrentUser();
         if (userResponse.success && userResponse.data) {
           setUser(userResponse.data);
-          
+
           // Get user's profiles
           const profilesResponse = await profileApi.getProfiles(userResponse.data.id);
           if (profilesResponse.success) {
@@ -88,7 +88,7 @@ export function CreateBrandForm() {
         ...prev,
         logo: file
       }));
-      
+
       // Create preview
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -100,7 +100,7 @@ export function CreateBrandForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
       toast.error('Brand name is required');
       return;
@@ -115,7 +115,7 @@ export function CreateBrandForm() {
     try {
       setSubmitting(true);
       const response = await brandApi.createBrand(formData);
-      
+
       if (response.success) {
         toast.success('Brand created successfully!');
         router.push('/dashboard/brands');
@@ -190,11 +190,11 @@ export function CreateBrandForm() {
                     required
                   />
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="link-profile" 
+                    <Checkbox
+                      id="link-profile"
                       checked={linkToProfile}
                       onCheckedChange={(checked) => {
                         setLinkToProfile(checked as boolean);
@@ -207,7 +207,7 @@ export function CreateBrandForm() {
                       Liên kết với profile cá nhân/doanh nghiệp của bạn?
                     </Label>
                   </div>
-                  
+
                   {linkToProfile && (
                     <div className="space-y-2 ml-6">
                       {profiles.length > 0 ? (
@@ -241,13 +241,13 @@ export function CreateBrandForm() {
                       )}
                     </div>
                   )}
-                  
+
                   <p className="text-xs text-muted-foreground">
                     Profile giúp định danh thương hiệu và tạo nội dung phù hợp hơn
                   </p>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
                 <Textarea
@@ -286,7 +286,7 @@ export function CreateBrandForm() {
                       </AvatarFallback>
                     )}
                   </Avatar>
-                  
+
                   <div>
                     <input
                       type="file"
@@ -310,7 +310,7 @@ export function CreateBrandForm() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="slogan">Slogan</Label>
                 <Input
@@ -345,7 +345,7 @@ export function CreateBrandForm() {
                   rows={3}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="target_audience">Target Audience</Label>
                 <Textarea
@@ -378,7 +378,7 @@ export function CreateBrandForm() {
                 </>
               )}
             </Button>
-            
+
             <Button
               type="button"
               variant="outline"
@@ -398,7 +398,7 @@ export function CreateBrandForm() {
               <div>
                 <h3 className="font-medium mb-1">Why define your brand?</h3>
                 <p className="text-sm text-muted-foreground">
-                  A well-defined brand helps AISAM generate more relevant and consistent content. 
+                  A well-defined brand helps AISAM generate more relevant and consistent content.
                   The more details you provide, the better our AI can understand your brand voice and create content that resonates with your audience.
                 </p>
               </div>

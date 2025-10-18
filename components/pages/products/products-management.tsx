@@ -27,7 +27,10 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 // Create columns function to access component state
-const createColumns = (handleDeleteProduct: (productId: string, productName: string) => void): ColumnDef<Product>[] => [
+const createColumns = (
+  handleDeleteProduct: (productId: string, productName: string) => void,
+  brands: Brand[]
+): ColumnDef<Product>[] => [
   {
     accessorKey: "name",
     header: "Product Name",
@@ -72,11 +75,12 @@ const createColumns = (handleDeleteProduct: (productId: string, productName: str
     accessorKey: "brand_id",
     header: "Brand",
     cell: ({ row }) => {
-      // This would be populated with actual brand data in a real app
+      const brandId = row.getValue("brand_id") as string;
+      const brand = brands.find(b => b.id === brandId);
       return (
         <Badge variant="outline">
           <Target className="mr-1 h-3 w-3" />
-          Brand
+          {brand?.name || 'Unknown Brand'}
         </Badge>
       );
     },
@@ -152,6 +156,14 @@ export function ProductsManagement() {
       }
     };
     loadData();
+
+    // Refresh data when window gains focus (useful when coming back from brand management)
+    const handleFocus = () => {
+      loadData();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
   // Handle URL query parameters for brand filtering
@@ -297,8 +309,16 @@ export function ProductsManagement() {
             <p className="text-xs text-muted-foreground mb-3">
               Add a new product to your catalog to start creating content and campaigns.
             </p>
-            <Button asChild size="sm" className="w-full sm:w-auto h-8 text-xs">
-              <Link href={isFilteredByBrand ? `/dashboard/products/new?brand=${brandFilter}` : "/dashboard/products/new"}>
+            <Button asChild size="sm" className="w-full sm:w-auto h-8 text-xs" 
+              onClick={() => {
+                // Store brand context in localStorage for create form
+                if (isFilteredByBrand) {
+                  localStorage.setItem('createProductBrandContext', brandFilter);
+                } else {
+                  localStorage.removeItem('createProductBrandContext');
+                }
+              }}>
+              <Link href="/dashboard/products/new">
                 <Plus className="mr-1 h-3 w-3" />
                 Add Product
               </Link>
@@ -346,18 +366,31 @@ export function ProductsManagement() {
           </CardHeader>
           <CardContent>
             {filteredProducts.length > 0 ? (
-              <DataTable columns={createColumns(handleDeleteProduct)} data={filteredProducts} filterColumn="name" />
+              <DataTable columns={createColumns(handleDeleteProduct, brands)} data={filteredProducts} filterColumn="name" />
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-6">
                   <Package className="h-10 w-10 text-muted-foreground" />
                 </div>
-                <h4 className="font-semibold text-lg mb-3">No Products Yet</h4>
+                <h4 className="font-semibold text-lg mb-3">
+                  {isFilteredByBrand ? 'No Products for This Brand' : 'No Products Yet'}
+                </h4>
                 <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-                  Start by adding your first product to create content and campaigns around it.
+                  {isFilteredByBrand 
+                    ? 'This brand doesn\'t have any products yet, or they may have been removed when the brand was deleted.'
+                    : 'Start by adding your first product to create content and campaigns around it.'
+                  }
                 </p>
-                <Button asChild className="mt-6">
-                  <Link href={isFilteredByBrand ? `/dashboard/products/new?brand=${brandFilter}` : "/dashboard/products/new"}>
+                <Button asChild className="mt-6"
+                  onClick={() => {
+                    // Store brand context in localStorage for create form
+                    if (isFilteredByBrand) {
+                      localStorage.setItem('createProductBrandContext', brandFilter);
+                    } else {
+                      localStorage.removeItem('createProductBrandContext');
+                    }
+                  }}>
+                  <Link href="/dashboard/products/new">
                     <Plus className="mr-2 h-4 w-4" />
                     Add Product
                   </Link>

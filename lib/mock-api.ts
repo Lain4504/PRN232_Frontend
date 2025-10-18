@@ -211,6 +211,22 @@ export const brandApi = {
     return createSuccessResponse(filteredBrands);
   },
 
+  async getBrand(id: string): Promise<ApiResponse<Brand>> {
+    await delay(600);
+    const brands = getFromStorage<Brand[]>('brands', []);
+    const brand = brands.find(b => b.id === id);
+    
+    if (!brand) {
+      return {
+        data: null as unknown as Brand,
+        message: 'Brand not found',
+        success: false
+      };
+    }
+    
+    return createSuccessResponse(brand);
+  },
+
   async createBrand(formData: CreateBrandForm): Promise<ApiResponse<Brand>> {
     await delay(1000);
     
@@ -261,11 +277,26 @@ export const brandApi = {
   async deleteBrand(id: string): Promise<ApiResponse<null>> {
     await delay(800);
     
+    // Cascade delete: Remove brand and all associated data
     const brands = getFromStorage<Brand[]>('brands', []);
-    const filteredBrands = brands.filter(b => b.id !== id);
-    saveToStorage('brands', filteredBrands);
+    const products = getFromStorage<Product[]>('products', []);
+    const contents = getFromStorage<Content[]>('contents', []);
     
-    return createSuccessResponse(null, 'Brand deleted successfully');
+    // Filter out the brand
+    const filteredBrands = brands.filter(b => b.id !== id);
+    
+    // Filter out products associated with this brand
+    const filteredProducts = products.filter(p => p.brand_id !== id);
+    
+    // Filter out contents associated with this brand
+    const filteredContents = contents.filter(c => c.brand_id !== id);
+    
+    // Save updated data
+    saveToStorage('brands', filteredBrands);
+    saveToStorage('products', filteredProducts);
+    saveToStorage('contents', filteredContents);
+    
+    return createSuccessResponse(null, 'Brand and all associated data deleted successfully');
   }
 };
 
