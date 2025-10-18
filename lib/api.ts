@@ -42,8 +42,10 @@ async function fetchWithAuth(url: string, options: RequestInit = {}, reqOptions:
     }
   }
 
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData
+  const defaultHeaders: Record<string, string> = isFormData ? {} : { 'Content-Type': 'application/json' }
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    ...defaultHeaders,
     ...(options.headers as Record<string, string> || {}),
     ...(reqOptions.headers || {}),
     ...authHeader,
@@ -78,6 +80,18 @@ export const api = {
     return response.json()
   },
 
+  // POST multipart/form-data
+  postForm: async <T>(url: string, formData: FormData, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+    // Let browser set the multipart boundary; do not set Content-Type
+    const response = await fetchWithAuth(url, {
+      method: 'POST',
+      body: formData,
+      headers: {},
+    }, { ...options, headers: {} })
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    return response.json()
+  },
+
   // PUT
   put: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     const response = await fetchWithAuth(url, {
@@ -88,12 +102,13 @@ export const api = {
     return response.json()
   },
 
-  // PATCH
-  patch: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+  // PUT multipart/form-data
+  putForm: async <T>(url: string, formData: FormData, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     const response = await fetchWithAuth(url, {
-      method: 'PATCH',
-      body: data ? JSON.stringify(data) : undefined,
-    }, options)
+      method: 'PUT',
+      body: formData,
+      headers: {},
+    }, { ...options, headers: {} })
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     return response.json()
   },
@@ -101,6 +116,16 @@ export const api = {
   // DELETE
   delete: async <T>(url: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     const response = await fetchWithAuth(url, { method: 'DELETE' }, options)
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    return response.json()
+  },
+
+  // PATCH
+  patch: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+    const response = await fetchWithAuth(url, {
+      method: 'PATCH',
+      body: data ? JSON.stringify(data) : undefined,
+    }, options)
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     return response.json()
   },
@@ -149,4 +174,21 @@ export const endpoints = {
 
   // Brands endpoints
   brands: () => '/brands',
+  
+  // Content & Posts
+  createPost: () => '/content',
+
+  // Profiles
+  profilesByUser: (userId: string, search?: string, isDeleted?: boolean) => {
+    const params = new URLSearchParams()
+    if (search) params.set('search', search)
+    if (typeof isDeleted === 'boolean') params.set('isDeleted', String(isDeleted))
+    const q = params.toString()
+    return q ? `/profiles/user/${userId}?${q}` : `/profiles/user/${userId}`
+  },
+  profileById: (id: string) => `/profiles/${id}`,
+  createProfile: (userId: string) => `/profiles/user/${userId}`,
+  updateProfile: (id: string) => `/profiles/${id}`,
+  deleteProfile: (id: string) => `/profiles/${id}`,
+  restoreProfile: (id: string) => `/profiles/${id}/restore`,
 }
