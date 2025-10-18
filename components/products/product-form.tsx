@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Brand, Product, CreateProductForm } from "@/lib/types/aisam-types";
-import { brandApi, productApi } from "@/lib/mock-api";
 import { toast } from "sonner";
+import { useBrands } from "@/hooks/use-brands";
+import { useCreateProduct, useUpdateProduct } from "@/hooks/use-products";
 import { Loader2, Package, DollarSign, Tag, Upload, Image as ImageIcon } from "lucide-react";
 
 interface ProductFormProps {
@@ -21,8 +22,6 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel }: ProductFormProps) {
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [brandsLoaded, setBrandsLoaded] = useState(false);
   const [brandContextProcessed, setBrandContextProcessed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,60 +35,49 @@ export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadBrands = async () => {
-      try {
-        setBrandsLoaded(false);
-        const response = await brandApi.getBrands();
-        if (response.success) {
-          setBrands(response.data);
+  // Hooks
+  const { data: brands = [], isLoading: brandsLoading } = useBrands();
+  const createProductMutation = useCreateProduct();
+  const updateProductMutation = useUpdateProduct(product?.id || '');
 
-          if (mode === 'edit' && product) {
-            // Pre-fill form for edit mode
-            setFormData({
-              brand_id: product.brand_id,
-              name: product.name,
-              description: product.description || '',
-              price: product.price || 0,
-              category: product.category || '',
-              tags: product.tags || [],
-            });
-            
-            if (product.images && product.images.length > 0) {
-              setImagePreview(product.images[0]);
-            }
-          } else {
-            // For create mode, prioritize defaultBrandId prop, then localStorage, then first brand
-            if (defaultBrandId && response.data.find(b => b.id === defaultBrandId)) {
-              setFormData(prev => ({ ...prev, brand_id: defaultBrandId }));
-              setBrandContextProcessed(true);
-            } else {
-              const brandContext = localStorage.getItem('createProductBrandContext');
-              
-              if (brandContext && response.data.find(b => b.id === brandContext)) {
-                setFormData(prev => ({ ...prev, brand_id: brandContext }));
-                localStorage.removeItem('createProductBrandContext');
-                setBrandContextProcessed(true);
-              } else if (response.data.length > 0 && !brandContextProcessed && !defaultBrandId) {
-                // Only auto-select first brand if no brand context was processed and no defaultBrandId
-                setFormData(prev => ({ ...prev, brand_id: response.data[0].id }));
-              }
-            }
-          }
-          
-          setBrandsLoaded(true);
-        } else {
-          toast.error("Failed to load brands.");
-          setBrandsLoaded(true);
+  const brandsLoaded = !brandsLoading;
+
+  useEffect(() => {
+    if (brands.length > 0) {
+      if (mode === 'edit' && product) {
+        // Pre-fill form for edit mode
+        setFormData({
+          brand_id: product.brandId, // API uses camelCase
+          name: product.name,
+          description: product.description || '',
+          price: product.price || 0,
+          category: product.category || '',
+          tags: product.tags || [],
+        });
+        
+        if (product.images && product.images.length > 0) {
+          setImagePreview(product.images[0]);
         }
-      } catch (error) {
-        console.error("Failed to load brands:", error);
-        toast.error("Failed to load brands.");
-        setBrandsLoaded(true);
+      } else {
+        // For create mode, prioritize defaultBrandId prop, then localStorage, then first brand
+        if (defaultBrandId && brands.find(b => b.id === defaultBrandId)) {
+          setFormData(prev => ({ ...prev, brand_id: defaultBrandId }));
+          setBrandContextProcessed(true);
+        } else {
+          const brandContext = localStorage.getItem('createProductBrandContext');
+          
+          if (brandContext && brands.find(b => b.id === brandContext)) {
+            setFormData(prev => ({ ...prev, brand_id: brandContext }));
+            localStorage.removeItem('createProductBrandContext');
+            setBrandContextProcessed(true);
+          } else if (brands.length > 0 && !brandContextProcessed && !defaultBrandId) {
+            // Only auto-select first brand if no brand context was processed and no defaultBrandId
+            setFormData(prev => ({ ...prev, brand_id: brands[0].id }));
+          }
+        }
       }
-    };
-    loadBrands();
-  }, [mode, product]);
+    }
+  }, [brands, mode, product, defaultBrandId, brandContextProcessed]);
 
   const handleInputChange = (field: keyof CreateProductForm, value: string | number | string[] | undefined) => {
     setFormData(prev => ({
@@ -135,20 +123,15 @@ export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel
 
     try {
       setIsLoading(true);
-      let response;
       
       if (mode === 'create') {
-        response = await productApi.createProduct(formData);
+        await createProductMutation.mutateAsync(formData);
       } else {
-        response = await productApi.updateProduct(product!.id, formData);
+        await updateProductMutation.mutateAsync(formData);
       }
 
-      if (response.success) {
-        toast.success(`Product ${mode === 'create' ? 'created' : 'updated'} successfully!`);
-        onSuccess?.();
-      } else {
-        toast.error(response.message);
-      }
+      toast.success(`Product ${mode === 'create' ? 'created' : 'updated'} successfully!`);
+      onSuccess?.();
     } catch (error) {
       console.error(`Failed to ${mode} product:`, error);
       toast.error(`Failed to ${mode} product`);

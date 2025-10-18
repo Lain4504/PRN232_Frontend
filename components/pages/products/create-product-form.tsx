@@ -11,17 +11,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Brand } from "@/lib/types/aisam-types";
-import { brandApi, productApi } from "@/lib/mock-api";
 import { toast } from "sonner";
+import { useBrands } from "@/hooks/use-brands";
+import { useCreateProduct } from "@/hooks/use-products";
 import { Loader2, Package, DollarSign, Tag, Image as ImageIcon } from "lucide-react";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 export function CreateProductForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [brands, setBrands] = useState<Brand[]>([]);
   const [selectedBrandId, setSelectedBrandId] = useState<string>("");
-  const [brandsLoaded, setBrandsLoaded] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -32,40 +31,28 @@ export function CreateProductForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Hooks
+  const { data: brands = [], isLoading: brandsLoading } = useBrands();
+  const createProductMutation = useCreateProduct();
+
+  const brandsLoaded = !brandsLoading;
+
   useEffect(() => {
-    const loadBrands = async () => {
-      try {
-        setBrandsLoaded(false);
-        const response = await brandApi.getBrands();
-        if (response.success) {
-          setBrands(response.data);
+    if (brands.length > 0) {
+      // Check for brand context from localStorage (from products management page)
+      const brandContext = localStorage.getItem('createProductBrandContext');
 
-          // Check for brand context from localStorage (from products management page)
-          const brandContext = localStorage.getItem('createProductBrandContext');
-
-          if (brandContext && response.data.find(b => b.id === brandContext)) {
-            // Use brand from context
-            setSelectedBrandId(brandContext);
-            // Clear the context after using it
-            localStorage.removeItem('createProductBrandContext');
-          } else if (response.data.length > 0) {
-            // Auto-select first brand if available
-            setSelectedBrandId(response.data[0].id);
-          }
-
-          setBrandsLoaded(true);
-        } else {
-          toast.error("Failed to load brands.");
-          setBrandsLoaded(true);
-        }
-      } catch (error) {
-        console.error("Failed to load brands:", error);
-        toast.error("Failed to load brands.");
-        setBrandsLoaded(true);
+      if (brandContext && brands.find(b => b.id === brandContext)) {
+        // Use brand from context
+        setSelectedBrandId(brandContext);
+        // Clear the context after using it
+        localStorage.removeItem('createProductBrandContext');
+      } else if (brands.length > 0) {
+        // Auto-select first brand if available
+        setSelectedBrandId(brands[0].id);
       }
-    };
-    loadBrands();
-  }, []);
+    }
+  }, [brands]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -116,15 +103,9 @@ export function CreateProductForm() {
         images: imageFiles, // File objects for upload
       };
 
-      const response = await productApi.createProduct(newProduct);
-
-      if (response.success) {
-        toast.success("Product created successfully!");
-        router.push(`/dashboard/products?brand=${selectedBrandId}`);
-      } else {
-        setError(response.message);
-        toast.error(response.message);
-      }
+      await createProductMutation.mutateAsync(newProduct);
+      toast.success("Product created successfully!");
+      router.push(`/dashboard/products?brand=${selectedBrandId}`);
     } catch (err) {
       setError("An unexpected error occurred.");
       toast.error("An unexpected error occurred.");

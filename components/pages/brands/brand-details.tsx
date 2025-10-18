@@ -15,9 +15,9 @@ import {
   Users,
   Lightbulb
 } from "lucide-react";
-import { brandApi, profileApi } from "@/lib/mock-api";
 import { Brand, Profile } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
+import { useBrand } from "@/hooks/use-brands";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { BrandModal } from "@/components/brands/brand-modal";
@@ -27,43 +27,18 @@ interface BrandDetailsProps {
 }
 
 export function BrandDetails({ brandId }: BrandDetailsProps) {
-  const [brand, setBrand] = useState<Brand | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  // Hooks
+  const { data: brand, isLoading: loading, error } = useBrand(brandId);
+
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-
-        // Get brand data
-        const brandResponse = await brandApi.getBrand(brandId);
-        if (brandResponse.success && brandResponse.data) {
-          const brandData = brandResponse.data;
-          setBrand(brandData);
-
-          // Get linked profile if exists
-          if (brandData.profile_id) {
-            // We need to get all profiles and find the one that matches
-            // Since we don't have a getProfile method, we'll skip this for now
-            // or you could implement it in the mock API
-          }
-        } else {
-          toast.error('Brand not found');
-          router.push('/dashboard/brands');
-        }
-      } catch (error) {
-        console.error('Failed to load brand data:', error);
-        toast.error('Failed to load brand data');
-        router.push('/dashboard/brands');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, [brandId, router]);
+    if (error) {
+      toast.error('Brand not found');
+      router.push('/dashboard/brands');
+    }
+  }, [error, router]);
 
   if (loading) {
     return (
@@ -147,7 +122,7 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
                 <p className="text-muted-foreground">{brand.description}</p>
               </div>
             )}
-            
+
             {brand.slogan && (
               <div className="p-4 bg-muted rounded-lg">
                 <h3 className="font-medium mb-2 flex items-center gap-2">
@@ -187,7 +162,7 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
                   <p className="text-muted-foreground">{brand.usp}</p>
                 </div>
               )}
-              
+
               {brand.target_audience && (
                 <div>
                   <h3 className="font-medium mb-2">Target Audience</h3>
@@ -221,7 +196,7 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
                   </div>
                 </Link>
               </Button>
-              
+
               <Button variant="outline" asChild className="h-auto p-4">
                 <Link href={`/dashboard/contents?brand=${brand.id}`}>
                   <div className="flex items-center gap-3">

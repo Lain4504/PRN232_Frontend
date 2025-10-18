@@ -28,110 +28,52 @@ import {
   FileText,
   AlertTriangle
 } from "lucide-react";
-import { authApi, brandApi, profileApi } from "@/lib/mock-api";
 import { User as UserType, Brand, Profile } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
+import { useUserProfile, useProfiles } from "@/hooks/use-profile";
+import { useBrands, useDeleteBrand } from "@/hooks/use-brands";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { BrandModal } from "@/components/brands/brand-modal";
 
 export function BrandsManagement() {
-  const [user, setUser] = useState<UserType | null>(null);
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [deletingBrandId, setDeletingBrandId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
+  // Hooks
+  const { data: user } = useUserProfile();
+  const { data: profiles = [] } = useProfiles();
+  const { data: brands = [], isLoading: loading, refetch: refetchBrands } = useBrands();
+  const deleteBrandMutation = useDeleteBrand();
 
-        // Get current user
-        const userResponse = await authApi.getCurrentUser();
-        if (userResponse.success && userResponse.data) {
-          setUser(userResponse.data);
+  // Ensure brands is always an array
+  const safeBrands = Array.isArray(brands) ? brands : [];
 
-          // Get user's profiles
-          const profilesResponse = await profileApi.getProfiles(userResponse.data.id);
-          if (profilesResponse.success) {
-            setProfiles(profilesResponse.data);
-          }
-
-          // Get brands
-          const brandsResponse = await brandApi.getBrands();
-          if (brandsResponse.success) {
-            setBrands(brandsResponse.data);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load brands data:', error);
-        toast.error('Failed to load brands data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, []);
-
-  // Refresh brands data when component mounts (useful when navigating back)
-  useEffect(() => {
-    const refreshBrands = async () => {
-      try {
-        const brandsResponse = await brandApi.getBrands();
-        if (brandsResponse.success) {
-          setBrands(brandsResponse.data);
-        }
-      } catch (error) {
-        console.error('Failed to refresh brands data:', error);
-      }
-    };
-
-    // Refresh brands on component mount
-    refreshBrands();
-  }, []);
-
-  const filteredBrands = brands.filter(brand =>
+  const filteredBrands = safeBrands.filter(brand =>
     brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     brand.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleRefresh = async () => {
-    try {
-      const brandsResponse = await brandApi.getBrands();
-      if (brandsResponse.success) {
-        setBrands(brandsResponse.data);
-      }
-      
-      const profilesResponse = await profileApi.getProfiles(user?.id || '');
-      if (profilesResponse.success) {
-        setProfiles(profilesResponse.data);
-      }
-    } catch (error) {
-      console.error("Failed to refresh data:", error);
-    }
+  // Debug logs
+  console.log('Raw brands data:', brands);
+  console.log('Safe brands:', safeBrands);
+  console.log('Search term:', searchTerm);
+  console.log('Filtered brands:', filteredBrands);
+  console.log('Loading state:', loading);
+
+  const handleRefresh = () => {
+    refetchBrands();
   };
 
   const handleDeleteBrand = async (brandId: string) => {
-    const brandToDelete = brands.find(b => b.id === brandId);
+    const brandToDelete = safeBrands.find(b => b.id === brandId);
     const brandName = brandToDelete?.name || 'this brand';
 
     try {
-      setDeletingBrandId(brandId);
-      const response = await brandApi.deleteBrand(brandId);
-      if (response.success) {
-        setBrands(brands.filter(b => b.id !== brandId));
-        toast.success(`Brand "${brandName}" and all associated products have been deleted successfully`);
-      } else {
-        toast.error(response.message);
-      }
+      await deleteBrandMutation.mutateAsync(brandId);
+      toast.success(`Brand "${brandName}" and all associated products have been deleted successfully`);
     } catch (error) {
       console.error('Failed to delete brand:', error);
       toast.error('Failed to delete brand');
-    } finally {
-      setDeletingBrandId(null);
     }
   };
 
@@ -161,7 +103,7 @@ export function BrandsManagement() {
   }
 
   // Main UI
-  const totalBrands = brands.length;
+  const totalBrands = safeBrands.length;
   const totalProfiles = profiles.length;
 
   return (
@@ -281,7 +223,7 @@ export function BrandsManagement() {
                               variant="ghost"
                               size="sm"
                               className="text-destructive hover:text-destructive/80"
-                              disabled={deletingBrandId === brand.id}
+                              disabled={deleteBrandMutation.isPending}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -303,9 +245,9 @@ export function BrandsManagement() {
                               <AlertDialogAction
                                 onClick={() => handleDeleteBrand(brand.id)}
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                disabled={deletingBrandId === brand.id}
+                                disabled={deleteBrandMutation.isPending}
                               >
-                                {deletingBrandId === brand.id ? (
+                                {deleteBrandMutation.isPending ? (
                                   <>
                                     <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                                     Deleting...

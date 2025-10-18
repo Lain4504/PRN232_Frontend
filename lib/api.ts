@@ -120,13 +120,74 @@ export const api = {
     return response.json()
   },
 
-  // PATCH
-  patch: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
-    const response = await fetchWithAuth(url, {
-      method: 'PATCH',
-      body: data ? JSON.stringify(data) : undefined,
-    }, options)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+  // POST Multipart (for file uploads)
+  postMultipart: async <T>(url: string, formData: FormData, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+    const { requireAuth = true } = options || {}
+
+    const authHeader: Record<string, string> = {}
+    if (requireAuth) {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.access_token) {
+        authHeader['Authorization'] = `Bearer ${session.access_token}`
+      }
+    }
+
+    // Don't set Content-Type for FormData, let browser set it with boundary
+    const headers: Record<string, string> = {
+      ...(options?.headers || {}),
+      ...authHeader,
+    }
+
+    console.log('Sending multipart request to:', `${API_URL}${url}`)
+    console.log('Headers:', headers)
+
+    const response = await fetch(`${API_URL}${url}`, {
+      method: 'POST',
+      body: formData,
+      headers,
+    })
+
+    console.log('Response status:', response.status)
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`API Error ${response.status}:`, errorText)
+      throw new Error(`HTTP ${response.status}: ${errorText}`)
+    }
+    return response.json()
+  },
+
+  // PUT Multipart (for file uploads)
+  putMultipart: async <T>(url: string, formData: FormData, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+    const { requireAuth = true } = options || {}
+
+    const authHeader: Record<string, string> = {}
+    if (requireAuth) {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.access_token) {
+        authHeader['Authorization'] = `Bearer ${session.access_token}`
+      }
+    }
+
+    // Don't set Content-Type for FormData, let browser set it with boundary
+    const headers: Record<string, string> = {
+      ...(options?.headers || {}),
+      ...authHeader,
+    }
+
+    const response = await fetch(`${API_URL}${url}`, {
+      method: 'PUT',
+      body: formData,
+      headers,
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`API Error ${response.status}:`, errorText)
+      throw new Error(`HTTP ${response.status}: ${errorText}`)
+    }
     return response.json()
   },
 }
@@ -174,21 +235,18 @@ export const endpoints = {
 
   // Brands endpoints
   brands: () => '/brands',
-  
-  // Content & Posts
-  createPost: () => '/content',
+  brandById: (brandId: string) => `/brands/${brandId}`,
 
-  // Profiles
-  profilesByUser: (userId: string, search?: string, isDeleted?: boolean) => {
-    const params = new URLSearchParams()
-    if (search) params.set('search', search)
-    if (typeof isDeleted === 'boolean') params.set('isDeleted', String(isDeleted))
-    const q = params.toString()
-    return q ? `/profiles/user/${userId}?${q}` : `/profiles/user/${userId}`
-  },
-  profileById: (id: string) => `/profiles/${id}`,
-  createProfile: (userId: string) => `/profiles/user/${userId}`,
-  updateProfile: (id: string) => `/profiles/${id}`,
-  deleteProfile: (id: string) => `/profiles/${id}`,
-  restoreProfile: (id: string) => `/profiles/${id}/restore`,
+  // Products endpoints
+  products: () => '/products',
+  productById: (productId: string) => `/products/${productId}`,
+  createProduct: () => '/products',
+  updateProduct: (productId: string) => `/products/${productId}`,
+  deleteProduct: (productId: string) => `/products/${productId}`,
+  restoreProduct: (productId: string) => `/products/${productId}/restore`,
+
+  // Profile endpoints
+  profiles: () => '/profile',
+  profileById: (profileId: string) => `/profile/${profileId}`,
+  profilesMe: () => '/users/profile/me',
 }

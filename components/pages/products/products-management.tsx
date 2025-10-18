@@ -33,8 +33,9 @@ import {
 import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Product, Brand } from "@/lib/types/aisam-types";
-import { productApi, brandApi } from "@/lib/mock-api";
 import { toast } from "sonner";
+import { useBrands } from "@/hooks/use-brands";
+import { useProducts, useDeleteProduct } from "@/hooks/use-products";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ProductModal } from "@/components/products/product-modal";
@@ -45,7 +46,7 @@ const createColumns = (
   handleDeleteProduct: (productId: string, productName: string) => void,
   handleRefresh: () => void,
   brands: Brand[],
-  deletingProductId: string | null
+  isDeleting: boolean
 ): ColumnDef<Product>[] => [
     {
       accessorKey: "name",
@@ -88,10 +89,10 @@ const createColumns = (
       },
     },
     {
-      accessorKey: "brand_id",
+      accessorKey: "brandId",
       header: "Brand",
       cell: ({ row }) => {
-        const brandId = row.getValue("brand_id") as string;
+        const brandId = row.getValue("brandId") as string;
         const brand = brands.find(b => b.id === brandId);
         return (
           <Badge variant="outline">
@@ -131,7 +132,7 @@ const createColumns = (
               <Button
                 variant="destructive"
                 size="sm"
-                disabled={deletingProductId === row.original.id}
+                disabled={isDeleting}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -153,9 +154,9 @@ const createColumns = (
                 <AlertDialogAction
                   onClick={() => handleDeleteProduct(row.original.id, row.original.name)}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  disabled={deletingProductId === row.original.id}
+                  disabled={isDeleting}
                 >
-                  {deletingProductId === row.original.id ? (
+                  {isDeleting ? (
                     <>
                       <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                       Deleting...
@@ -177,48 +178,27 @@ const createColumns = (
 
 export function ProductsManagement() {
   const searchParams = useSearchParams();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [brandFilter, setBrandFilter] = useState<string>("all");
-  const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
 
+  // Hooks
+  const { data: brands = [] } = useBrands();
+  const { data: products = [], isLoading: loading, refetch: refetchProducts } = useProducts();
+  const deleteProductMutation = useDeleteProduct();
+
+  // Ensure arrays are always arrays
+  const safeBrands = Array.isArray(brands) ? brands : [];
+  const safeProducts = Array.isArray(products) ? products : [];
+
+  // Refresh data when window gains focus (useful when coming back from brand management)
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-
-        // Get products
-        const productsResponse = await productApi.getProducts();
-        if (productsResponse.success) {
-          setProducts(productsResponse.data);
-        } else {
-          toast.error(productsResponse.message);
-        }
-
-        // Get brands for filter
-        const brandsResponse = await brandApi.getBrands();
-        if (brandsResponse.success) {
-          setBrands(brandsResponse.data);
-        }
-      } catch (error) {
-        console.error("Failed to load products:", error);
-        toast.error("Failed to load products.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
-
-    // Refresh data when window gains focus (useful when coming back from brand management)
     const handleFocus = () => {
-      loadData();
+      refetchProducts();
     };
 
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
-  }, []);
+  }, [refetchProducts]);
 
   // Handle URL query parameters for brand filtering
   useEffect(() => {
@@ -228,44 +208,24 @@ export function ProductsManagement() {
     }
   }, [searchParams]);
 
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = safeProducts.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesBrand = brandFilter === "all" || product.brand_id === brandFilter;
+    const matchesBrand = brandFilter === "all" || product.brandId === brandFilter;
     return matchesSearch && matchesBrand;
   });
 
-  const handleRefresh = async () => {
-    try {
-      const productsResponse = await productApi.getProducts();
-      if (productsResponse.success) {
-        setProducts(productsResponse.data);
-      }
-
-      const brandsResponse = await brandApi.getBrands();
-      if (brandsResponse.success) {
-        setBrands(brandsResponse.data);
-      }
-    } catch (error) {
-      console.error("Failed to refresh data:", error);
-    }
+  const handleRefresh = () => {
+    refetchProducts();
   };
 
   const handleDeleteProduct = async (productId: string, productName: string) => {
     try {
-      setDeletingProductId(productId);
-      const response = await productApi.deleteProduct(productId);
-      if (response.success) {
-        setProducts(products.filter(p => p.id !== productId));
-        toast.success(`Product "${productName}" deleted successfully`);
-      } else {
-        toast.error(response.message);
-      }
+      await deleteProductMutation.mutateAsync(productId);
+      toast.success(`Product "${productName}" deleted successfully`);
     } catch (error) {
       console.error('Failed to delete product:', error);
       toast.error('Failed to delete product');
-    } finally {
-      setDeletingProductId(null);
     }
   };
 
@@ -295,12 +255,12 @@ export function ProductsManagement() {
   }
 
   // Main UI
-  const totalProducts = products.length;
-  const totalBrands = brands.length;
-  const avgPrice = products.length > 0 ? (products.reduce((sum, p) => sum + (p.price || 0), 0) / products.length).toFixed(2) : '0.00';
+  const totalProducts = safeProducts.length;
+  const totalBrands = safeBrands.length;
+  const avgPrice = safeProducts.length > 0 ? (safeProducts.reduce((sum, p) => sum + (p.price || 0), 0) / safeProducts.length).toFixed(2) : '0.00';
 
   // Get current brand name for display
-  const currentBrand = brands.find(b => b.id === brandFilter);
+  const currentBrand = safeBrands.find(b => b.id === brandFilter);
   const isFilteredByBrand = brandFilter !== "all";
 
   return (
@@ -430,7 +390,7 @@ export function ProductsManagement() {
                 className="px-3 py-2 border rounded-md"
               >
                 <option value="all">All Brands</option>
-                {brands.map(brand => (
+                {safeBrands.map(brand => (
                   <option key={brand.id} value={brand.id}>
                     {brand.name}
                   </option>
@@ -451,7 +411,7 @@ export function ProductsManagement() {
           </CardHeader>
           <CardContent>
             {filteredProducts.length > 0 ? (
-              <DataTable columns={createColumns(handleDeleteProduct, handleRefresh, brands, deletingProductId)} data={filteredProducts} filterColumn="name" />
+              <DataTable columns={createColumns(handleDeleteProduct, handleRefresh, safeBrands, deleteProductMutation.isPending)} data={filteredProducts} filterColumn="name" />
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-6">

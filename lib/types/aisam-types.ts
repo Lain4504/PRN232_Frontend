@@ -38,13 +38,27 @@ export interface Brand {
 
 export interface Product {
   id: string;
-  brand_id: string;
+  brandId: string; // API uses camelCase
   name: string;
   description?: string;
   price?: number;
   category?: string;
   tags?: string[];
   images: string[]; // JSONB array of image URLs
+  createdAt: string; // API uses camelCase
+  updatedAt: string; // API uses camelCase
+}
+
+// For backward compatibility, create an alias with snake_case
+export interface ProductLegacy {
+  id: string;
+  brand_id: string;
+  name: string;
+  description?: string;
+  price?: number;
+  category?: string;
+  tags?: string[];
+  images: string[];
   created_at: string;
   updated_at: string;
 }
@@ -236,6 +250,46 @@ export interface CreateProductForm {
   category?: string;
   tags?: string[];
   images?: File[];
+}
+
+// API request format for products (matches swagger spec)
+export interface CreateProductRequest {
+  BrandId: string;
+  Name: string;
+  Description?: string;
+  Price?: number;
+  ImageFiles: File[];
+}
+
+// Utility functions to convert between API and internal formats
+export function convertProductFromApi(apiProduct: Product): ProductLegacy {
+  return {
+    id: apiProduct.id,
+    brand_id: apiProduct.brandId,
+    name: apiProduct.name,
+    description: apiProduct.description,
+    price: apiProduct.price,
+    category: apiProduct.category,
+    tags: apiProduct.tags,
+    images: apiProduct.images,
+    created_at: apiProduct.createdAt,
+    updated_at: apiProduct.updatedAt,
+  }
+}
+
+export function convertProductToApi(internalProduct: ProductLegacy): Product {
+  return {
+    id: internalProduct.id,
+    brandId: internalProduct.brand_id,
+    name: internalProduct.name,
+    description: internalProduct.description,
+    price: internalProduct.price,
+    category: internalProduct.category,
+    tags: internalProduct.tags,
+    images: internalProduct.images,
+    createdAt: internalProduct.created_at,
+    updatedAt: internalProduct.updated_at,
+  }
 }
 
 export interface CreateContentForm {

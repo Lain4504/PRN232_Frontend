@@ -15,9 +15,10 @@ import {
   Users,
   Loader2
 } from "lucide-react";
-import { authApi, brandApi, profileApi } from "@/lib/mock-api";
 import { User as UserType, Profile, Brand, CreateBrandForm as CreateBrandFormType } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
+import { useUserProfile, useProfiles } from "@/hooks/use-profile";
+import { useCreateBrand, useUpdateBrand } from "@/hooks/use-brands";
 
 interface BrandFormProps {
   mode: 'create' | 'edit';
@@ -27,9 +28,6 @@ interface BrandFormProps {
 }
 
 export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) {
-  const [user, setUser] = useState<UserType | null>(null);
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<CreateBrandFormType>({
     name: '',
@@ -42,49 +40,32 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [linkToProfile, setLinkToProfile] = useState<boolean>(false);
 
+  // Hooks
+  const { data: user } = useUserProfile();
+  const { data: profiles = [], isLoading: profilesLoading } = useProfiles();
+  const createBrandMutation = useCreateBrand();
+  const updateBrandMutation = useUpdateBrand(brand?.id || '');
+
+  const loading = profilesLoading;
+
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-
-        // Get current user
-        const userResponse = await authApi.getCurrentUser();
-        if (userResponse.success && userResponse.data) {
-          setUser(userResponse.data);
-
-          // Get user's profiles
-          const profilesResponse = await profileApi.getProfiles(userResponse.data.id);
-          if (profilesResponse.success) {
-            setProfiles(profilesResponse.data);
-          }
-        }
-
-        // If edit mode, pre-fill form data
-        if (mode === 'edit' && brand) {
-          setFormData({
-            name: brand.name,
-            description: brand.description || '',
-            slogan: brand.slogan || '',
-            usp: brand.usp || '',
-            target_audience: brand.target_audience || '',
-            profile_id: brand.profile_id || undefined,
-          });
-          
-          if (brand.logo_url) {
-            setLogoPreview(brand.logo_url);
-          }
-          
-          setLinkToProfile(!!brand.profile_id);
-        }
-      } catch (error) {
-        console.error('Failed to load data:', error);
-        toast.error('Failed to load data');
-      } finally {
-        setLoading(false);
+    // If edit mode, pre-fill form data
+    if (mode === 'edit' && brand) {
+      setFormData({
+        name: brand.name,
+        description: brand.description || '',
+        slogan: brand.slogan || '',
+        usp: brand.usp || '',
+        target_audience: brand.target_audience || '',
+        profile_id: brand.profile_id || undefined,
+      });
+      
+      if (brand.logo_url) {
+        setLogoPreview(brand.logo_url);
       }
-    };
-
-    loadData();
+      
+      setLinkToProfile(!!brand.profile_id);
+    }
   }, [mode, brand]);
 
   const handleInputChange = (field: keyof CreateBrandFormType, value: string | undefined) => {
@@ -127,20 +108,15 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
 
     try {
       setSubmitting(true);
-      let response;
       
       if (mode === 'create') {
-        response = await brandApi.createBrand(formData);
+        await createBrandMutation.mutateAsync(formData);
       } else {
-        response = await brandApi.updateBrand(brand!.id, formData);
+        await updateBrandMutation.mutateAsync(formData);
       }
 
-      if (response.success) {
-        toast.success(`Brand ${mode === 'create' ? 'created' : 'updated'} successfully!`);
-        onSuccess?.();
-      } else {
-        toast.error(response.message);
-      }
+      toast.success(`Brand ${mode === 'create' ? 'created' : 'updated'} successfully!`);
+      onSuccess?.();
     } catch (error) {
       console.error(`Failed to ${mode} brand:`, error);
       toast.error(`Failed to ${mode} brand`);
