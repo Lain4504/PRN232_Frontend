@@ -10,8 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Product, Brand } from "@/lib/types/aisam-types";
-import { productApi, brandApi } from "@/lib/mock-api";
 import { toast } from "sonner";
+import { useBrands } from "@/hooks/use-brands";
+import { useProduct, useUpdateProduct } from "@/hooks/use-products";
 import { Loader2, Package, DollarSign, Tag, Image as ImageIcon, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -20,8 +21,6 @@ export function EditProductForm() {
   const params = useParams();
   const productId = params.id as string;
 
-  const [product, setProduct] = useState<Product | null>(null);
-  const [brands, setBrands] = useState<Brand[]>([]);
   const [selectedBrandId, setSelectedBrandId] = useState<string>("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -31,55 +30,31 @@ export function EditProductForm() {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        
-        // Load product data
-        const productsResponse = await productApi.getProducts();
-        if (productsResponse.success) {
-          const productData = productsResponse.data.find(p => p.id === productId);
-          if (!productData) {
-            toast.error('Product not found');
-            router.push('/dashboard/products');
-            return;
-          }
-          setProduct(productData);
-          setSelectedBrandId(productData.brand_id);
-          setName(productData.name);
-          setDescription(productData.description || "");
-          setPrice(productData.price?.toString() || "");
-          setCategory(""); // Category not available in Product type
-          setTags(""); // Tags not available in Product type
-          setImagePreviews(productData.images || []);
-        } else {
-          toast.error("Product not found.");
-          router.push("/dashboard/products");
-          return;
-        }
-        
-        // Load brands
-        const brandsResponse = await brandApi.getBrands();
-        if (brandsResponse.success) {
-          setBrands(brandsResponse.data);
-        }
-      } catch (error) {
-        console.error("Failed to load product data:", error);
-        toast.error("Failed to load product data.");
-        router.push("/dashboard/products");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Hooks
+  const { data: product, isLoading: loading, error: productError } = useProduct(productId);
+  const { data: brands = [] } = useBrands();
+  const updateProductMutation = useUpdateProduct(productId);
 
-    if (productId) {
-      loadData();
+  useEffect(() => {
+    if (productError) {
+      toast.error("Product not found.");
+      router.push("/dashboard/products");
     }
-  }, [productId, router]);
+  }, [productError, router]);
+
+  useEffect(() => {
+    if (product) {
+      setSelectedBrandId(product.brand_id);
+      setName(product.name);
+      setDescription(product.description || "");
+      setPrice(product.price?.toString() || "");
+      setCategory(""); // Category not available in Product type
+      setTags(""); // Tags not available in Product type
+      setImagePreviews(product.images || []);
+    }
+  }, [product]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -126,15 +101,9 @@ export function EditProductForm() {
         images: imageFiles, // Use File objects for update
       };
 
-      const response = await productApi.updateProduct(productId, updatedProduct);
-
-      if (response.success) {
-        toast.success("Product updated successfully!");
-        router.push("/dashboard/products");
-      } else {
-        setError(response.message);
-        toast.error(response.message);
-      }
+      await updateProductMutation.mutateAsync(updatedProduct);
+      toast.success("Product updated successfully!");
+      router.push("/dashboard/products");
     } catch (err) {
       setError("An unexpected error occurred.");
       toast.error("An unexpected error occurred.");

@@ -1,17 +1,17 @@
 // Mock API functions for AISAM Frontend
 // Simulates API calls with delays and localStorage for persistence
 
-import { 
-  User, 
-  Profile, 
-  Brand, 
-  Product, 
-  Content, 
-  SocialAccount, 
-  SocialIntegration, 
-  Approval, 
-  ScheduledPost, 
-  Post, 
+import {
+  User,
+  Profile,
+  Brand,
+  Product,
+  Content,
+  SocialAccount,
+  SocialIntegration,
+  Approval,
+  ScheduledPost,
+  Post,
   PerformanceMetrics,
   DashboardStats,
   RecentActivity,
@@ -69,7 +69,7 @@ const createErrorResponse = (message: string): ApiResponse<null> => ({
 export const authApi = {
   async login(email: string, password: string): Promise<ApiResponse<{ user: User; token: string }>> {
     await delay(1000);
-    
+
     // Mock validation
     if (email === 'john.doe@example.com' && password === 'password123') {
       const user: User = {
@@ -82,14 +82,14 @@ export const authApi = {
         created_at: '2024-01-15T10:00:00Z',
         updated_at: '2024-01-15T10:00:00Z'
       };
-      
+
       const token = 'mock_jwt_token_' + Date.now();
       saveToStorage('auth_token', token);
       saveToStorage('current_user', user);
-      
+
       return createSuccessResponse({ user, token }, 'Login successful');
     }
-    
+
     return {
       data: null as unknown as { user: User; token: string },
       message: 'Invalid email or password',
@@ -105,7 +105,7 @@ export const authApi = {
     phone?: string;
   }): Promise<ApiResponse<{ user: User; token: string }>> {
     await delay(1200);
-    
+
     // Mock validation
     if (userData.email && userData.password && userData.first_name && userData.last_name) {
       const user: User = {
@@ -118,14 +118,14 @@ export const authApi = {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
-      
+
       const token = 'mock_jwt_token_' + Date.now();
       saveToStorage('auth_token', token);
       saveToStorage('current_user', user);
-      
+
       return createSuccessResponse({ user, token }, 'Account created successfully');
     }
-    
+
     return {
       data: null as unknown as { user: User; token: string },
       message: 'Missing required fields',
@@ -158,7 +158,7 @@ export const profileApi = {
 
   async createProfile(userId: string, formData: CreateProfileForm): Promise<ApiResponse<Profile>> {
     await delay(1000);
-    
+
     const profile: Profile = {
       id: 'profile-' + Date.now(),
       user_id: userId,
@@ -169,20 +169,20 @@ export const profileApi = {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
-    
+
     const profiles = getFromStorage<Profile[]>('profiles', []);
     profiles.push(profile);
     saveToStorage('profiles', profiles);
-    
+
     return createSuccessResponse(profile, 'Profile created successfully');
   },
 
   async updateProfile(id: string, formData: Partial<CreateProfileForm>): Promise<ApiResponse<Profile>> {
     await delay(1000);
-    
+
     const profiles = getFromStorage<Profile[]>('profiles', []);
     const index = profiles.findIndex(p => p.id === id);
-    
+
     if (index === -1) {
       return {
         data: null as unknown as Profile,
@@ -190,13 +190,13 @@ export const profileApi = {
         success: false
       };
     }
-    
+
     profiles[index] = {
       ...profiles[index],
       ...formData,
       updated_at: new Date().toISOString()
     };
-    
+
     saveToStorage('profiles', profiles);
     return createSuccessResponse(profiles[index], 'Profile updated successfully');
   }
@@ -213,7 +213,7 @@ export const brandApi = {
 
   async createBrand(formData: CreateBrandForm): Promise<ApiResponse<Brand>> {
     await delay(1000);
-    
+
     const brand: Brand = {
       id: 'brand-' + Date.now(),
       profile_id: formData.profile_id,
@@ -226,20 +226,20 @@ export const brandApi = {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
-    
+
     const brands = getFromStorage<Brand[]>('brands', []);
     brands.push(brand);
     saveToStorage('brands', brands);
-    
+
     return createSuccessResponse(brand, 'Brand created successfully');
   },
 
   async updateBrand(id: string, formData: Partial<CreateBrandForm>): Promise<ApiResponse<Brand>> {
     await delay(1000);
-    
+
     const brands = getFromStorage<Brand[]>('brands', []);
     const index = brands.findIndex(b => b.id === id);
-    
+
     if (index === -1) {
       return {
         data: null as unknown as Brand,
@@ -247,24 +247,24 @@ export const brandApi = {
         success: false
       };
     }
-    
+
     brands[index] = {
       ...brands[index],
       ...formData,
       updated_at: new Date().toISOString()
     };
-    
+
     saveToStorage('brands', brands);
     return createSuccessResponse(brands[index], 'Brand updated successfully');
   },
 
   async deleteBrand(id: string): Promise<ApiResponse<null>> {
     await delay(800);
-    
+
     const brands = getFromStorage<Brand[]>('brands', []);
     const filteredBrands = brands.filter(b => b.id !== id);
     saveToStorage('brands', filteredBrands);
-    
+
     return createSuccessResponse(null, 'Brand deleted successfully');
   }
 };
@@ -274,49 +274,49 @@ export const productApi = {
   async getProducts(filters?: ProductFilters): Promise<ApiResponse<Product[]>> {
     await delay(800);
     let products = getFromStorage<Product[]>('products', []);
-    
+
     if (filters?.brand_id) {
       products = products.filter(p => p.brand_id === filters.brand_id);
     }
-    
+
     if (filters?.search) {
       const searchLower = filters.search.toLowerCase();
-      products = products.filter(p => 
+      products = products.filter(p =>
         p.name.toLowerCase().includes(searchLower) ||
         p.description?.toLowerCase().includes(searchLower)
       );
     }
-    
+
     return createSuccessResponse(products);
   },
 
   async createProduct(formData: CreateProductForm): Promise<ApiResponse<Product>> {
     await delay(1200);
-    
+
     const product: Product = {
       id: 'product-' + Date.now(),
       brand_id: formData.brand_id,
       name: formData.name,
       description: formData.description,
       price: formData.price,
-      images: formData.images.map(img => URL.createObjectURL(img)),
+      images: formData.images ? formData.images.map(img => URL.createObjectURL(img)) : [],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
-    
+
     const products = getFromStorage<Product[]>('products', []);
     products.push(product);
     saveToStorage('products', products);
-    
+
     return createSuccessResponse(product, 'Product created successfully');
   },
 
   async updateProduct(id: string, formData: Partial<CreateProductForm>): Promise<ApiResponse<Product>> {
     await delay(1000);
-    
+
     const products = getFromStorage<Product[]>('products', []);
     const index = products.findIndex(p => p.id === id);
-    
+
     if (index === -1) {
       return {
         data: null as unknown as Product,
@@ -324,35 +324,35 @@ export const productApi = {
         success: false
       };
     }
-    
+
     const { images, ...formDataWithoutImages } = formData;
-    
+
     const updateData: Partial<Product> = {
       ...formDataWithoutImages,
       updated_at: new Date().toISOString()
     };
-    
+
     // Convert File[] to string[] if images are provided
     if (images) {
       updateData.images = images.map(img => URL.createObjectURL(img));
     }
-    
+
     products[index] = {
       ...products[index],
       ...updateData
     };
-    
+
     saveToStorage('products', products);
     return createSuccessResponse(products[index], 'Product updated successfully');
   },
 
   async deleteProduct(id: string): Promise<ApiResponse<null>> {
     await delay(800);
-    
+
     const products = getFromStorage<Product[]>('products', []);
     const filteredProducts = products.filter(p => p.id !== id);
     saveToStorage('products', filteredProducts);
-    
+
     return createSuccessResponse(null, 'Product deleted successfully');
   }
 };
@@ -362,37 +362,37 @@ export const contentApi = {
   async getContents(filters?: ContentFilters): Promise<ApiResponse<Content[]>> {
     await delay(800);
     let contents = getFromStorage<Content[]>('contents', []);
-    
+
     if (filters?.brand_id) {
       contents = contents.filter(c => c.brand_id === filters.brand_id);
     }
-    
+
     if (filters?.product_id) {
       contents = contents.filter(c => c.product_id === filters.product_id);
     }
-    
+
     if (filters?.status) {
       contents = contents.filter(c => c.status === filters.status);
     }
-    
+
     if (filters?.ad_type) {
       contents = contents.filter(c => c.ad_type === filters.ad_type);
     }
-    
+
     if (filters?.search) {
       const searchLower = filters.search.toLowerCase();
-      contents = contents.filter(c => 
+      contents = contents.filter(c =>
         c.title.toLowerCase().includes(searchLower) ||
         c.text_content?.toLowerCase().includes(searchLower)
       );
     }
-    
+
     return createSuccessResponse(contents);
   },
 
   async createContent(formData: CreateContentForm): Promise<ApiResponse<Content>> {
     await delay(1200);
-    
+
     const content: Content = {
       id: 'content-' + Date.now(),
       brand_id: formData.brand_id,
@@ -407,20 +407,20 @@ export const contentApi = {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
-    
+
     const contents = getFromStorage<Content[]>('contents', []);
     contents.push(content);
     saveToStorage('contents', contents);
-    
+
     return createSuccessResponse(content, 'Content created successfully');
   },
 
   async updateContent(id: string, formData: Partial<CreateContentForm>): Promise<ApiResponse<Content>> {
     await delay(1000);
-    
+
     const contents = getFromStorage<Content[]>('contents', []);
     const index = contents.findIndex(c => c.id === id);
-    
+
     if (index === -1) {
       return {
         data: null as unknown as Content,
@@ -428,23 +428,23 @@ export const contentApi = {
         success: false
       };
     }
-    
+
     contents[index] = {
       ...contents[index],
       ...formData,
       updated_at: new Date().toISOString()
     };
-    
+
     saveToStorage('contents', contents);
     return createSuccessResponse(contents[index], 'Content updated successfully');
   },
 
   async submitForApproval(id: string): Promise<ApiResponse<Content>> {
     await delay(800);
-    
+
     const contents = getFromStorage<Content[]>('contents', []);
     const index = contents.findIndex(c => c.id === id);
-    
+
     if (index === -1) {
       return {
         data: null as unknown as Content,
@@ -452,12 +452,12 @@ export const contentApi = {
         success: false
       };
     }
-    
+
     contents[index].status = 'pending_approval';
     contents[index].updated_at = new Date().toISOString();
-    
+
     saveToStorage('contents', contents);
-    
+
     // Create approval record
     const approvals = getFromStorage<Approval[]>('approvals', []);
     const approval: Approval = {
@@ -470,19 +470,19 @@ export const contentApi = {
     };
     approvals.push(approval);
     saveToStorage('approvals', approvals);
-    
+
     return createSuccessResponse(contents[index], 'Content submitted for approval');
   },
 
   async generateAIContent(prompt: string): Promise<ApiResponse<{ text: string; image?: string }>> {
     await delay(2000); // Simulate AI processing time
-    
+
     // Mock AI response
     const aiResponse = {
       text: `AI-generated content based on: "${prompt}". This is a mock response that would be generated by AI based on your brand guidelines, target audience, and content requirements.`,
       image: undefined // Could be a generated image URL
     };
-    
+
     return createSuccessResponse(aiResponse, 'AI content generated successfully');
   }
 };
@@ -498,7 +498,7 @@ export const socialAccountApi = {
 
   async connectAccount(platform: string, accountData: Record<string, unknown>): Promise<ApiResponse<SocialAccount>> {
     await delay(1500); // Simulate OAuth flow
-    
+
     const account: SocialAccount = {
       id: 'social-' + Date.now(),
       user_id: accountData.user_id as string,
@@ -510,21 +510,21 @@ export const socialAccountApi = {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
-    
+
     const accounts = getFromStorage<SocialAccount[]>('social_accounts', []);
     accounts.push(account);
     saveToStorage('social_accounts', accounts);
-    
+
     return createSuccessResponse(account, 'Account connected successfully');
   },
 
   async disconnectAccount(id: string): Promise<ApiResponse<null>> {
     await delay(800);
-    
+
     const accounts = getFromStorage<SocialAccount[]>('social_accounts', []);
     const filteredAccounts = accounts.filter(a => a.id !== id);
     saveToStorage('social_accounts', filteredAccounts);
-    
+
     return createSuccessResponse(null, 'Account disconnected successfully');
   }
 };
@@ -540,7 +540,7 @@ export const socialIntegrationApi = {
 
   async createSocialIntegration(formData: CreateSocialIntegrationForm): Promise<ApiResponse<SocialIntegration>> {
     await delay(1000);
-    
+
     const integration: SocialIntegration = {
       id: 'integration-' + Date.now(),
       brand_id: formData.brand_id,
@@ -549,11 +549,11 @@ export const socialIntegrationApi = {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
-    
+
     const integrations = getFromStorage<SocialIntegration[]>('social_integrations', []);
     integrations.push(integration);
     saveToStorage('social_integrations', integrations);
-    
+
     return createSuccessResponse(integration, 'Social integration created successfully');
   }
 };
@@ -568,10 +568,10 @@ export const approvalApi = {
 
   async approveContent(approvalId: string, notes?: string): Promise<ApiResponse<Content>> {
     await delay(1000);
-    
+
     const approvals = getFromStorage<Approval[]>('approvals', []);
     const approvalIndex = approvals.findIndex(a => a.id === approvalId);
-    
+
     if (approvalIndex === -1) {
       return {
         data: null as unknown as Content,
@@ -579,32 +579,32 @@ export const approvalApi = {
         success: false
       };
     }
-    
+
     approvals[approvalIndex].status = 'approved';
     approvals[approvalIndex].notes = notes;
     approvals[approvalIndex].updated_at = new Date().toISOString();
-    
+
     // Update content status
     const contents = getFromStorage<Content[]>('contents', []);
     const contentIndex = contents.findIndex(c => c.id === approvals[approvalIndex].content_id);
-    
+
     if (contentIndex !== -1) {
       contents[contentIndex].status = 'approved';
       contents[contentIndex].updated_at = new Date().toISOString();
       saveToStorage('contents', contents);
     }
-    
+
     saveToStorage('approvals', approvals);
-    
+
     return createSuccessResponse(contents[contentIndex], 'Content approved successfully');
   },
 
   async rejectContent(approvalId: string, notes: string): Promise<ApiResponse<Content>> {
     await delay(1000);
-    
+
     const approvals = getFromStorage<Approval[]>('approvals', []);
     const approvalIndex = approvals.findIndex(a => a.id === approvalId);
-    
+
     if (approvalIndex === -1) {
       return {
         data: null as unknown as Content,
@@ -612,23 +612,23 @@ export const approvalApi = {
         success: false
       };
     }
-    
+
     approvals[approvalIndex].status = 'rejected';
     approvals[approvalIndex].notes = notes;
     approvals[approvalIndex].updated_at = new Date().toISOString();
-    
+
     // Update content status
     const contents = getFromStorage<Content[]>('contents', []);
     const contentIndex = contents.findIndex(c => c.id === approvals[approvalIndex].content_id);
-    
+
     if (contentIndex !== -1) {
       contents[contentIndex].status = 'rejected';
       contents[contentIndex].updated_at = new Date().toISOString();
       saveToStorage('contents', contents);
     }
-    
+
     saveToStorage('approvals', approvals);
-    
+
     return createSuccessResponse(contents[contentIndex], 'Content rejected');
   }
 };
@@ -643,7 +643,7 @@ export const calendarApi = {
 
   async schedulePost(formData: SchedulePostForm): Promise<ApiResponse<ScheduledPost>> {
     await delay(1000);
-    
+
     const scheduledPost: ScheduledPost = {
       id: 'scheduled-' + Date.now(),
       content_id: formData.content_id,
@@ -654,11 +654,11 @@ export const calendarApi = {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
-    
+
     const scheduledPosts = getFromStorage<ScheduledPost[]>('scheduled_posts', []);
     scheduledPosts.push(scheduledPost);
     saveToStorage('scheduled_posts', scheduledPosts);
-    
+
     return createSuccessResponse(scheduledPost, 'Post scheduled successfully');
   }
 };
@@ -668,21 +668,21 @@ export const postApi = {
   async getPosts(filters?: PostFilters): Promise<ApiResponse<Post[]>> {
     await delay(800);
     let posts = getFromStorage<Post[]>('posts', []);
-    
+
     if (filters?.social_integration_id) {
       posts = posts.filter(p => p.social_integration_id === filters.social_integration_id);
     }
-    
+
     if (filters?.status) {
       posts = posts.filter(p => p.status === filters.status);
     }
-    
+
     return createSuccessResponse(posts);
   },
 
   async publishPost(contentId: string, socialIntegrationId: string): Promise<ApiResponse<Post>> {
     await delay(1500); // Simulate publishing time
-    
+
     const post: Post = {
       id: 'post-' + Date.now(),
       content_id: contentId,
@@ -693,11 +693,11 @@ export const postApi = {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
-    
+
     const posts = getFromStorage<Post[]>('posts', []);
     posts.push(post);
     saveToStorage('posts', posts);
-    
+
     return createSuccessResponse(post, 'Post published successfully');
   }
 };
@@ -706,14 +706,14 @@ export const postApi = {
 export const dashboardApi = {
   async getDashboardStats(): Promise<ApiResponse<DashboardStats>> {
     await delay(800);
-    
+
     const brands = getFromStorage<Brand[]>('brands', []);
     const products = getFromStorage<Product[]>('products', []);
     const contents = getFromStorage<Content[]>('contents', []);
     const posts = getFromStorage<Post[]>('posts', []);
     const approvals = getFromStorage<Approval[]>('approvals', []);
     const scheduledPosts = getFromStorage<ScheduledPost[]>('scheduled_posts', []);
-    
+
     const stats: DashboardStats = {
       total_brands: brands.length,
       total_products: products.length,
@@ -722,7 +722,7 @@ export const dashboardApi = {
       pending_approvals: approvals.filter(a => a.status === 'pending').length,
       scheduled_posts: scheduledPosts.filter(s => s.status === 'scheduled').length
     };
-    
+
     return createSuccessResponse(stats);
   },
 
@@ -737,7 +737,7 @@ export const dashboardApi = {
 export const reportsApi = {
   async getPerformanceReport(period: string): Promise<ApiResponse<PerformanceReport>> {
     await delay(1000);
-    
+
     // Mock performance data
     const report: PerformanceReport = {
       period,
@@ -756,7 +756,7 @@ export const reportsApi = {
         { date: '2024-01-07', impressions: 16000, engagement: 640, clicks: 128, ctr: 0.8 }
       ]
     };
-    
+
     return createSuccessResponse(report);
   }
 };
