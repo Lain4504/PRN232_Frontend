@@ -71,28 +71,6 @@ export function AuthSplitLayout({
                 </div>
               </div>
             </div>
-
-            {/* Features */}
-            <div className="space-y-4 pt-8">
-              <div className="flex items-center gap-3 text-foreground/80">
-                <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Shield className="size-4 text-primary" />
-                </div>
-                <span className="font-medium">Absolute security</span>
-              </div>
-              <div className="flex items-center gap-3 text-foreground/80">
-                <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Zap className="size-4 text-primary" />
-                </div>
-                <span className="font-medium">Optimize performance</span>
-              </div>
-              <div className="flex items-center gap-3 text-foreground/80">
-                <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="size-4 text-primary" />
-                </div>
-                <span className="font-medium">Smart AI</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>

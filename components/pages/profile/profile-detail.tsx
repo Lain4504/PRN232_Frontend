@@ -61,7 +61,9 @@ export function ProfileDetail() {
           </Button>
         </div>
         <Card>
-          <CardContent className="py-10 text-center text-muted-foreground">Không tìm thấy hồ sơ</CardContent>
+          <CardContent className="py-10 text-center text-muted-foreground">
+            {error ? 'Có lỗi xảy ra khi tải hồ sơ' : 'Không tìm thấy hồ sơ'}
+          </CardContent>
         </Card>
       </div>
     )

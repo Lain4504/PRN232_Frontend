@@ -57,7 +57,7 @@ export function ForgotPasswordForm({
           </div>
 
           <div className="space-y-3">
-            <Button asChild className="w-full h-12">
+            <Button asChild className="w-full h-8 text-sm">
               <Link href="/auth/login">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to sign in
@@ -99,7 +99,7 @@ export function ForgotPasswordForm({
             {/* Submit Button */}
             <Button 
               type="submit" 
-              className="w-full h-8 text-sm font-medium" 
+              className="w-full h-6 text-xs font-medium" 
               disabled={isLoading}
             >
               {isLoading ? (
