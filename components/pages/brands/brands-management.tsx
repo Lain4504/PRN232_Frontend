@@ -7,6 +7,17 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Target,
   Plus,
   Search,
@@ -14,23 +25,23 @@ import {
   Trash2,
   Calendar,
   Package,
-  FileText
+  FileText,
+  AlertTriangle
 } from "lucide-react";
 import { authApi, brandApi, profileApi } from "@/lib/mock-api";
 import { User as UserType, Brand, Profile } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { BrandModal } from "@/components/brands/brand-modal";
 
 export function BrandsManagement() {
-  const router = useRouter();
   const [user, setUser] = useState<UserType | null>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [deletingBrandId, setDeletingBrandId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -107,14 +118,8 @@ export function BrandsManagement() {
     const brandToDelete = brands.find(b => b.id === brandId);
     const brandName = brandToDelete?.name || 'this brand';
 
-    // Enhanced confirmation message about cascade delete
-    const confirmMessage = `Are you sure you want to delete "${brandName}"?\n\n⚠️ WARNING: This will also permanently delete:\n• All products associated with this brand\n• All content created for this brand\n• All related data\n\nThis action cannot be undone.`;
-
-    if (!confirm(confirmMessage)) {
-      return;
-    }
-
     try {
+      setDeletingBrandId(brandId);
       const response = await brandApi.deleteBrand(brandId);
       if (response.success) {
         setBrands(brands.filter(b => b.id !== brandId));
@@ -125,6 +130,8 @@ export function BrandsManagement() {
     } catch (error) {
       console.error('Failed to delete brand:', error);
       toast.error('Failed to delete brand');
+    } finally {
+      setDeletingBrandId(null);
     }
   };
 
@@ -160,6 +167,19 @@ export function BrandsManagement() {
   return (
     <div className="w-full max-w-full overflow-x-hidden">
       <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
+        {/* Breadcrumb */}
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Brands</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         {/* Header */}
         <div className="space-y-3 lg:space-y-6">
           <div>
@@ -255,14 +275,51 @@ export function BrandsManagement() {
                             <Edit className="h-4 w-4" />
                           </Button>
                         </BrandModal>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteBrand(brand.id)}
-                          className="text-destructive hover:text-destructive/80"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive/80"
+                              disabled={deletingBrandId === brand.id}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle className="flex items-center gap-2">
+                                <AlertTriangle className="h-5 w-5 text-destructive" />
+                                Delete Brand "{brand.name}"?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription className="text-left space-y-3">
+                                <p>
+                                  Are you sure you want to permanently delete this brand? This action cannot be undone.
+                                </p>
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteBrand(brand.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                disabled={deletingBrandId === brand.id}
+                              >
+                                {deletingBrandId === brand.id ? (
+                                  <>
+                                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                                    Deleting...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete Brand
+                                  </>
+                                )}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </div>
                   </CardHeader>

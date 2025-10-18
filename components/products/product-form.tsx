@@ -7,31 +7,34 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Brand, Product } from "@/lib/types/aisam-types";
+import { Brand, Product, CreateProductForm } from "@/lib/types/aisam-types";
 import { brandApi, productApi } from "@/lib/mock-api";
 import { toast } from "sonner";
-import { Loader2, Package, DollarSign, Tag, Image as ImageIcon } from "lucide-react";
+import { Loader2, Package, DollarSign, Tag, Upload, Image as ImageIcon } from "lucide-react";
 
 interface ProductFormProps {
   mode: 'create' | 'edit';
   product?: Product;
+  defaultBrandId?: string;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
-export function ProductForm({ mode, product, onSuccess, onCancel }: ProductFormProps) {
+export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel }: ProductFormProps) {
   const [brands, setBrands] = useState<Brand[]>([]);
-  const [selectedBrandId, setSelectedBrandId] = useState<string>("");
   const [brandsLoaded, setBrandsLoaded] = useState(false);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("");
-  const [tags, setTags] = useState("");
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [brandContextProcessed, setBrandContextProcessed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState<CreateProductForm>({
+    brand_id: '',
+    name: '',
+    description: '',
+    price: 0,
+    category: '',
+    tags: [],
+  });
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     const loadBrands = async () => {
@@ -43,20 +46,34 @@ export function ProductForm({ mode, product, onSuccess, onCancel }: ProductFormP
 
           if (mode === 'edit' && product) {
             // Pre-fill form for edit mode
-            setSelectedBrandId(product.brand_id);
-            setName(product.name);
-            setDescription(product.description || "");
-            setPrice(product.price?.toString() || "");
-            setImagePreviews(product.images || []);
-          } else {
-            // For create mode, check localStorage for brand context
-            const brandContext = localStorage.getItem('createProductBrandContext');
+            setFormData({
+              brand_id: product.brand_id,
+              name: product.name,
+              description: product.description || '',
+              price: product.price || 0,
+              category: product.category || '',
+              tags: product.tags || [],
+            });
             
-            if (brandContext && response.data.find(b => b.id === brandContext)) {
-              setSelectedBrandId(brandContext);
-              localStorage.removeItem('createProductBrandContext');
-            } else if (response.data.length > 0) {
-              setSelectedBrandId(response.data[0].id);
+            if (product.images && product.images.length > 0) {
+              setImagePreview(product.images[0]);
+            }
+          } else {
+            // For create mode, prioritize defaultBrandId prop, then localStorage, then first brand
+            if (defaultBrandId && response.data.find(b => b.id === defaultBrandId)) {
+              setFormData(prev => ({ ...prev, brand_id: defaultBrandId }));
+              setBrandContextProcessed(true);
+            } else {
+              const brandContext = localStorage.getItem('createProductBrandContext');
+              
+              if (brandContext && response.data.find(b => b.id === brandContext)) {
+                setFormData(prev => ({ ...prev, brand_id: brandContext }));
+                localStorage.removeItem('createProductBrandContext');
+                setBrandContextProcessed(true);
+              } else if (response.data.length > 0 && !brandContextProcessed && !defaultBrandId) {
+                // Only auto-select first brand if no brand context was processed and no defaultBrandId
+                setFormData(prev => ({ ...prev, brand_id: response.data[0].id }));
+              }
             }
           }
           
@@ -74,72 +91,67 @@ export function ProductForm({ mode, product, onSuccess, onCancel }: ProductFormP
     loadBrands();
   }, [mode, product]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setImageFiles(files);
-      const previews = files.map(file => URL.createObjectURL(file));
-      setImagePreviews(previews);
-    }
+  const handleInputChange = (field: keyof CreateProductForm, value: string | number | string[] | undefined) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
-  const removeImage = (index: number) => {
-    const newFiles = imageFiles.filter((_, i) => i !== index);
-    const newPreviews = imagePreviews.filter((_, i) => i !== index);
-    setImageFiles(newFiles);
-    setImagePreviews(newPreviews);
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setFormData(prev => ({
+        ...prev,
+        images: [file]
+      }));
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!selectedBrandId) {
-      setError("Please select a brand.");
+
+    if (!formData.name.trim()) {
+      toast.error('Product name is required');
       return;
     }
 
-    if (!name || !description || !price) {
-      setError("Please fill in all required fields.");
+    if (!formData.description?.trim()) {
+      toast.error('Product description is required');
       return;
     }
 
-    const priceValue = parseFloat(price);
-    if (isNaN(priceValue) || priceValue < 0) {
-      setError("Please enter a valid price.");
+    if (!formData.price || formData.price <= 0) {
+      toast.error('Please enter a valid price');
       return;
     }
-
-    setIsLoading(true);
-    setError(null);
 
     try {
-      const productData = {
-        brand_id: selectedBrandId,
-        name,
-        description,
-        price: priceValue,
-        category: category || undefined,
-        tags: tags ? tags.split(',').map(tag => tag.trim()) : undefined,
-        images: imageFiles,
-      };
-
+      setIsLoading(true);
       let response;
+      
       if (mode === 'create') {
-        response = await productApi.createProduct(productData);
+        response = await productApi.createProduct(formData);
       } else {
-        response = await productApi.updateProduct(product!.id, productData);
+        response = await productApi.updateProduct(product!.id, formData);
       }
 
       if (response.success) {
         toast.success(`Product ${mode === 'create' ? 'created' : 'updated'} successfully!`);
         onSuccess?.();
       } else {
-        setError(response.message);
         toast.error(response.message);
       }
-    } catch (err) {
-      setError("An unexpected error occurred.");
-      toast.error("An unexpected error occurred.");
+    } catch (error) {
+      console.error(`Failed to ${mode} product:`, error);
+      toast.error(`Failed to ${mode} product`);
     } finally {
       setIsLoading(false);
     }
@@ -152,9 +164,9 @@ export function ProductForm({ mode, product, onSuccess, onCancel }: ProductFormP
           <Label htmlFor="brand">Brand *</Label>
           {brandsLoaded ? (
             <Select 
-              key={`brand-select-${selectedBrandId}`} 
-              value={selectedBrandId} 
-              onValueChange={setSelectedBrandId}
+              key={`brand-select-${formData.brand_id}`} 
+              value={formData.brand_id} 
+              onValueChange={(value) => handleInputChange('brand_id', value)}
             >
               <SelectTrigger id="brand">
                 <SelectValue placeholder="Select a brand" />
@@ -178,8 +190,8 @@ export function ProductForm({ mode, product, onSuccess, onCancel }: ProductFormP
             id="name"
             type="text"
             placeholder="e.g., 'Premium Wireless Headphones'"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={formData.name}
+            onChange={(e) => handleInputChange('name', e.target.value)}
             required
           />
         </div>
@@ -189,8 +201,8 @@ export function ProductForm({ mode, product, onSuccess, onCancel }: ProductFormP
           <Textarea
             id="description"
             placeholder="Describe your product features, benefits, and specifications..."
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={formData.description}
+            onChange={(e) => handleInputChange('description', e.target.value)}
             rows={4}
             required
           />
@@ -207,8 +219,8 @@ export function ProductForm({ mode, product, onSuccess, onCancel }: ProductFormP
                 step="0.01"
                 min="0"
                 placeholder="0.00"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                value={formData.price?.toString() || ''}
+                onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
                 className="pl-10"
                 required
               />
@@ -221,8 +233,8 @@ export function ProductForm({ mode, product, onSuccess, onCancel }: ProductFormP
               id="category"
               type="text"
               placeholder="e.g., 'Electronics', 'Clothing'"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              value={formData.category}
+              onChange={(e) => handleInputChange('category', e.target.value)}
             />
           </div>
         </div>
@@ -235,8 +247,8 @@ export function ProductForm({ mode, product, onSuccess, onCancel }: ProductFormP
               id="tags"
               type="text"
               placeholder="e.g., 'wireless, bluetooth, premium' (comma-separated)"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
+              value={formData.tags?.join(', ') || ''}
+              onChange={(e) => handleInputChange('tags', e.target.value ? e.target.value.split(',').map(tag => tag.trim()) : [])}
               className="pl-10"
             />
           </div>
@@ -245,49 +257,45 @@ export function ProductForm({ mode, product, onSuccess, onCancel }: ProductFormP
           </p>
         </div>
 
-        <div className="grid gap-2">
-          <Label htmlFor="images">Product Images</Label>
-          <div className="space-y-4">
-            <Input
-              id="images"
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleImageChange}
-              className="cursor-pointer"
-            />
-            
-            {imagePreviews.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {imagePreviews.map((preview, index) => (
-                  <div key={index} className="relative group">
-                    <Avatar className="h-24 w-24">
-                      <AvatarImage src={preview} alt={`Product image ${index + 1}`} />
-                      <AvatarFallback>
-                        <ImageIcon className="h-6 w-6" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      className="absolute -top-2 -right-2 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => removeImage(index)}
-                    >
-                      ×
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
+        {/* Product Image Upload */}
+        <div className="space-y-3">
+          <Label>Product Image</Label>
+          <div className="flex items-center gap-4">
+            <Avatar className="h-20 w-20">
+              {imagePreview ? (
+                <AvatarImage src={imagePreview} alt="Product preview" />
+              ) : (
+                <AvatarFallback>
+                  <ImageIcon className="h-8 w-8" />
+                </AvatarFallback>
+              )}
+            </Avatar>
+
+            <div>
+              <input
+                type="file"
+                id="product-image"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => document.getElementById('product-image')?.click()}
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                {imagePreview ? 'Change Image' : 'Upload Image'}
+              </Button>
+              <p className="text-xs text-muted-foreground mt-1">
+                JPG, PNG up to 10MB
+              </p>
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground">
-            {mode === 'create' 
-              ? 'Upload multiple images to showcase your product from different angles'
-              : 'Upload additional images or remove existing ones'
-            }
-          </p>
         </div>
+
+
 
         {error && (
           <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">

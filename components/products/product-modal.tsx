@@ -13,10 +13,11 @@ interface ProductModalProps {
   children?: React.ReactNode
   mode: 'create' | 'edit'
   product?: Product
+  defaultBrandId?: string
   onSuccess?: () => void
 }
 
-export function ProductModal({ children, mode, product, onSuccess }: ProductModalProps) {
+export function ProductModal({ children, mode, product, defaultBrandId, onSuccess }: ProductModalProps) {
   const [open, setOpen] = useState(false)
   const isMobile = useIsMobile()
 
@@ -61,6 +62,7 @@ export function ProductModal({ children, mode, product, onSuccess }: ProductModa
             <ProductForm 
               mode={mode} 
               product={product} 
+              defaultBrandId={defaultBrandId}
               onSuccess={handleSuccess}
               onCancel={() => setOpen(false)}
             />
@@ -110,6 +112,7 @@ export function ProductModal({ children, mode, product, onSuccess }: ProductModa
           <ProductForm 
             mode={mode} 
             product={product} 
+            defaultBrandId={defaultBrandId}
             onSuccess={handleSuccess}
             onCancel={() => setOpen(false)}
           />

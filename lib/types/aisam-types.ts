@@ -42,6 +42,8 @@ export interface Product {
   name: string;
   description?: string;
   price?: number;
+  category?: string;
+  tags?: string[];
   images: string[]; // JSONB array of image URLs
   created_at: string;
   updated_at: string;
@@ -231,7 +233,9 @@ export interface CreateProductForm {
   name: string;
   description?: string;
   price?: number;
-  images: File[];
+  category?: string;
+  tags?: string[];
+  images?: File[];
 }
 
 export interface CreateContentForm {

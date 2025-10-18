@@ -6,17 +6,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  Package, 
-  Plus, 
-  Search, 
-  Pencil, 
-  Trash2, 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Package,
+  Plus,
+  Search,
+  Pencil,
+  Trash2,
   Filter,
   DollarSign,
   Tag,
   Image as ImageIcon,
-  Target
+  Target,
+  AlertTriangle
 } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
@@ -32,98 +44,136 @@ import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbP
 const createColumns = (
   handleDeleteProduct: (productId: string, productName: string) => void,
   handleRefresh: () => void,
-  brands: Brand[]
+  brands: Brand[],
+  deletingProductId: string | null
 ): ColumnDef<Product>[] => [
-  {
-    accessorKey: "name",
-    header: "Product Name",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-3">
-        <Avatar className="h-10 w-10">
-          <AvatarImage src={row.original.images?.[0] || "/placeholder.svg"} alt={row.getValue("name")} />
-          <AvatarFallback>
-            <Package className="h-4 w-4" />
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <div className="font-medium">{row.getValue("name")}</div>
-          <div className="text-sm text-muted-foreground">ID: {row.original.id.slice(0, 8)}</div>
+    {
+      accessorKey: "name",
+      header: "Product Name",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={row.original.images?.[0] || "/placeholder.svg"} alt={row.getValue("name")} />
+            <AvatarFallback>
+              <Package className="h-4 w-4" />
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <div className="font-medium">{row.getValue("name")}</div>
+            <div className="text-sm text-muted-foreground">ID: {row.original.id.slice(0, 8)}</div>
+          </div>
         </div>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => (
-      <div className="text-muted-foreground line-clamp-2 max-w-xs">
-        {row.getValue("description")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "price",
-    header: "Price",
-    cell: ({ row }) => {
-      const price = row.getValue("price") as number;
-      return (
-        <div className="flex items-center gap-1">
-          <DollarSign className="h-4 w-4 text-chart-2" />
-          <span className="font-medium">{price.toFixed(2)}</span>
+      ),
+    },
+    {
+      accessorKey: "description",
+      header: "Description",
+      cell: ({ row }) => (
+        <div className="text-muted-foreground line-clamp-2 max-w-xs">
+          {row.getValue("description")}
         </div>
-      );
+      ),
     },
-  },
-  {
-    accessorKey: "brand_id",
-    header: "Brand",
-    cell: ({ row }) => {
-      const brandId = row.getValue("brand_id") as string;
-      const brand = brands.find(b => b.id === brandId);
-      return (
-        <Badge variant="outline">
-          <Target className="mr-1 h-3 w-3" />
-          {brand?.name || 'Unknown Brand'}
-        </Badge>
-      );
+    {
+      accessorKey: "price",
+      header: "Price",
+      cell: ({ row }) => {
+        const price = row.getValue("price") as number;
+        return (
+          <div className="flex items-center gap-1">
+            <DollarSign className="h-4 w-4 text-chart-2" />
+            <span className="font-medium">{price.toFixed(2)}</span>
+          </div>
+        );
+      },
     },
-  },
-  {
-    accessorKey: "images",
-    header: "Images",
-    cell: ({ row }) => {
-      const images = row.getValue("images") as string[] | null;
-      return (
-        <div className="flex items-center gap-1">
-          <ImageIcon className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">
-            {images?.length || 0} image{(images?.length || 0) !== 1 ? 's' : ''}
-          </span>
+    {
+      accessorKey: "brand_id",
+      header: "Brand",
+      cell: ({ row }) => {
+        const brandId = row.getValue("brand_id") as string;
+        const brand = brands.find(b => b.id === brandId);
+        return (
+          <Badge variant="outline">
+            <Target className="mr-1 h-3 w-3" />
+            {brand?.name || 'Unknown Brand'}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "images",
+      header: "Images",
+      cell: ({ row }) => {
+        const images = row.getValue("images") as string[] | null;
+        return (
+          <div className="flex items-center gap-1">
+            <ImageIcon className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
+              {images?.length || 0} image{(images?.length || 0) !== 1 ? 's' : ''}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <ProductModal mode="edit" product={row.original} onSuccess={handleRefresh}>
+            <Button variant="outline" size="sm">
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </ProductModal>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                size="sm"
+                disabled={deletingProductId === row.original.id}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-destructive" />
+                  Delete Product "{row.original.name}"?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-left space-y-3">
+                  <p>
+                    Are you sure you want to permanently delete this product? This action cannot be undone.
+                  </p>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => handleDeleteProduct(row.original.id, row.original.name)}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  disabled={deletingProductId === row.original.id}
+                >
+                  {deletingProductId === row.original.id ? (
+                    <>
+                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete Product
+                    </>
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
-      );
+      ),
     },
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <ProductModal mode="edit" product={row.original} onSuccess={handleRefresh}>
-          <Button variant="outline" size="sm">
-            <Pencil className="h-4 w-4" />
-          </Button>
-        </ProductModal>
-        <Button 
-          variant="destructive" 
-          size="sm" 
-          onClick={() => handleDeleteProduct(row.original.id, row.original.name)}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
-    ),
-  },
-];
+  ];
 
 export function ProductsManagement() {
   const searchParams = useSearchParams();
@@ -132,12 +182,13 @@ export function ProductsManagement() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [brandFilter, setBrandFilter] = useState<string>("all");
+  const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
-        
+
         // Get products
         const productsResponse = await productApi.getProducts();
         if (productsResponse.success) {
@@ -145,7 +196,7 @@ export function ProductsManagement() {
         } else {
           toast.error(productsResponse.message);
         }
-        
+
         // Get brands for filter
         const brandsResponse = await brandApi.getBrands();
         if (brandsResponse.success) {
@@ -179,7 +230,7 @@ export function ProductsManagement() {
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      product.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesBrand = brandFilter === "all" || product.brand_id === brandFilter;
     return matchesSearch && matchesBrand;
   });
@@ -190,7 +241,7 @@ export function ProductsManagement() {
       if (productsResponse.success) {
         setProducts(productsResponse.data);
       }
-      
+
       const brandsResponse = await brandApi.getBrands();
       if (brandsResponse.success) {
         setBrands(brandsResponse.data);
@@ -201,21 +252,20 @@ export function ProductsManagement() {
   };
 
   const handleDeleteProduct = async (productId: string, productName: string) => {
-    if (!confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`)) {
-      return;
-    }
-
     try {
+      setDeletingProductId(productId);
       const response = await productApi.deleteProduct(productId);
       if (response.success) {
         setProducts(products.filter(p => p.id !== productId));
-        toast.success('Product deleted successfully');
+        toast.success(`Product "${productName}" deleted successfully`);
       } else {
         toast.error(response.message);
       }
     } catch (error) {
       console.error('Failed to delete product:', error);
       toast.error('Failed to delete product');
+    } finally {
+      setDeletingProductId(null);
     }
   };
 
@@ -248,7 +298,7 @@ export function ProductsManagement() {
   const totalProducts = products.length;
   const totalBrands = brands.length;
   const avgPrice = products.length > 0 ? (products.reduce((sum, p) => sum + (p.price || 0), 0) / products.length).toFixed(2) : '0.00';
-  
+
   // Get current brand name for display
   const currentBrand = brands.find(b => b.id === brandFilter);
   const isFilteredByBrand = brandFilter !== "all";
@@ -261,6 +311,10 @@ export function ProductsManagement() {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard/brands">Brands</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -281,7 +335,7 @@ export function ProductsManagement() {
               )}
             </h1>
             <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
-              {isFilteredByBrand 
+              {isFilteredByBrand
                 ? `Products for ${currentBrand?.name || 'selected brand'}`
                 : 'Manage your product catalog and inventory.'
               }
@@ -318,8 +372,8 @@ export function ProductsManagement() {
                     Showing products for: <strong>{currentBrand?.name}</strong>
                   </span>
                 </div>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => setBrandFilter("all")}
                   className="text-xs"
@@ -341,21 +395,14 @@ export function ProductsManagement() {
             <p className="text-xs text-muted-foreground mb-3">
               Add a new product to your catalog to start creating content and campaigns.
             </p>
-            <ProductModal 
-              mode="create" 
+            <ProductModal
+              mode="create"
+              defaultBrandId={isFilteredByBrand ? brandFilter : undefined}
               onSuccess={handleRefresh}
             >
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 className="w-full sm:w-auto h-8 text-xs"
-                onClick={() => {
-                  // Store brand context in localStorage for create form
-                  if (isFilteredByBrand) {
-                    localStorage.setItem('createProductBrandContext', brandFilter);
-                  } else {
-                    localStorage.removeItem('createProductBrandContext');
-                  }
-                }}
               >
                 <Plus className="mr-1 h-3 w-3" />
                 Add Product
@@ -404,7 +451,7 @@ export function ProductsManagement() {
           </CardHeader>
           <CardContent>
             {filteredProducts.length > 0 ? (
-              <DataTable columns={createColumns(handleDeleteProduct, handleRefresh, brands)} data={filteredProducts} filterColumn="name" />
+              <DataTable columns={createColumns(handleDeleteProduct, handleRefresh, brands, deletingProductId)} data={filteredProducts} filterColumn="name" />
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-6">
@@ -414,26 +461,17 @@ export function ProductsManagement() {
                   {isFilteredByBrand ? 'No Products for This Brand' : 'No Products Yet'}
                 </h4>
                 <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-                  {isFilteredByBrand 
+                  {isFilteredByBrand
                     ? 'This brand doesn\'t have any products yet, or they may have been removed when the brand was deleted.'
                     : 'Start by adding your first product to create content and campaigns around it.'
                   }
                 </p>
-                <ProductModal 
-                  mode="create" 
+                <ProductModal
+                  mode="create"
+                  defaultBrandId={isFilteredByBrand ? brandFilter : undefined}
                   onSuccess={handleRefresh}
                 >
-                  <Button 
-                    className="mt-6"
-                    onClick={() => {
-                      // Store brand context in localStorage for create form
-                      if (isFilteredByBrand) {
-                        localStorage.setItem('createProductBrandContext', brandFilter);
-                      } else {
-                        localStorage.removeItem('createProductBrandContext');
-                      }
-                    }}
-                  >
+                  <Button className="mt-6">
                     <Plus className="mr-2 h-4 w-4" />
                     Add Product
                   </Button>

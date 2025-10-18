@@ -13,7 +13,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Brand } from "@/lib/types/aisam-types";
 import { brandApi, productApi } from "@/lib/mock-api";
 import { toast } from "sonner";
-import { Loader2, UploadCloud, Package, DollarSign, Tag, Image as ImageIcon } from "lucide-react";
+import { Loader2, Package, DollarSign, Tag, Image as ImageIcon } from "lucide-react";
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 export function CreateProductForm() {
   const router = useRouter();
@@ -41,7 +42,7 @@ export function CreateProductForm() {
 
           // Check for brand context from localStorage (from products management page)
           const brandContext = localStorage.getItem('createProductBrandContext');
-          
+
           if (brandContext && response.data.find(b => b.id === brandContext)) {
             // Use brand from context
             setSelectedBrandId(brandContext);
@@ -134,6 +135,27 @@ export function CreateProductForm() {
 
   return (
     <div className="flex-1 space-y-6 p-6 bg-background">
+      {/* Breadcrumb */}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard/brands">Brands</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard/products">Products</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Create Product</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Add New Product</h1>
