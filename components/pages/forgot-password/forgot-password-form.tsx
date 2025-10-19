@@ -3,17 +3,12 @@
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "../../ui/label";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import { useState } from "react";
+import { Mail, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react";
 
 export function ForgotPasswordForm({
                                      className,
@@ -44,54 +39,92 @@ export function ForgotPasswordForm({
   };
 
   return (
-      <div className={cn("flex flex-col gap-6", className)} {...props}>
-        {success ? (
-            <Card className="bg-transparent border-0 shadow-none">
-              <CardHeader>
-                <CardTitle className="text-2xl">Check Your Email</CardTitle>
-                <CardDescription>Password reset instructions sent</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  If you registered using your email and password, you will receive
-                  a password reset email.
-                </p>
-              </CardContent>
-            </Card>
-        ) : (
-            <Card className="bg-transparent border-0 shadow-none">
-              <CardHeader>
-                <CardTitle className="text-2xl">Forgot Password</CardTitle>
-                <CardDescription>
-                  Enter your email to receive a password reset link
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleForgotPassword} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                        id="email"
-                        type="email"
-                        placeholder="Enter your email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                  </div>
-                  {error && <div className="text-destructive text-sm">{error}</div>}
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Sending..." : "Send Reset Link"}
-                  </Button>
-                </form>
-                <div className="mt-4 text-center">
-                  <Link href="/auth/login" className="text-primary hover:underline text-sm">
-                    Back to Login
-                  </Link>
+    <div className={cn("space-y-6", className)} {...props}>
+      {success ? (
+        <div className="text-center space-y-6">
+          <div className="flex justify-center">
+            <div className="size-16 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+              <CheckCircle className="size-8 text-green-600 dark:text-green-400" />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <h3 className="text-xl font-semibold">Check your email</h3>
+            <p className="text-muted-foreground">
+              We have sent a password reset link to your email. 
+              Please check your inbox and follow the instructions.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <Button asChild className="w-full h-8 text-sm">
+              <Link href="/auth/login">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to sign in
+              </Link>
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <form onSubmit={handleForgotPassword} className="space-y-4">
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium">
+                  Email
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input 
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    className="pl-10 h-8 text-sm"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
                 </div>
-              </CardContent>
-            </Card>
-        )}
-      </div>
+              </div>
+            </div>
+
+            {/* Error Alert */}
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {/* Submit Button */}
+            <Button 
+              type="submit" 
+              className="w-full h-6 text-xs font-medium" 
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin mr-1" />
+                  Sending...
+                </>
+              ) : (
+                "Send reset link"
+              )}
+            </Button>
+          </form>
+
+          {/* Back to login */}
+          <div className="text-center">
+            <Link 
+              href="/auth/login" 
+              className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back to sign in
+            </Link>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

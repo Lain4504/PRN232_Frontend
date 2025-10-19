@@ -42,8 +42,10 @@ async function fetchWithAuth(url: string, options: RequestInit = {}, reqOptions:
     }
   }
 
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData
+  const defaultHeaders: Record<string, string> = isFormData ? {} : { 'Content-Type': 'application/json' }
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    ...defaultHeaders,
     ...(options.headers as Record<string, string> || {}),
     ...(reqOptions.headers || {}),
     ...authHeader,
@@ -78,6 +80,18 @@ export const api = {
     return response.json()
   },
 
+  // POST multipart/form-data
+  postForm: async <T>(url: string, formData: FormData, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+    // Let browser set the multipart boundary; do not set Content-Type
+    const response = await fetchWithAuth(url, {
+      method: 'POST',
+      body: formData,
+      headers: {},
+    }, { ...options, headers: {} })
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    return response.json()
+  },
+
   // PUT
   put: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     const response = await fetchWithAuth(url, {
@@ -88,12 +102,13 @@ export const api = {
     return response.json()
   },
 
-  // PATCH
-  patch: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+  // PUT multipart/form-data
+  putForm: async <T>(url: string, formData: FormData, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     const response = await fetchWithAuth(url, {
-      method: 'PATCH',
-      body: data ? JSON.stringify(data) : undefined,
-    }, options)
+      method: 'PUT',
+      body: formData,
+      headers: {},
+    }, { ...options, headers: {} })
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     return response.json()
   },
@@ -102,6 +117,77 @@ export const api = {
   delete: async <T>(url: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     const response = await fetchWithAuth(url, { method: 'DELETE' }, options)
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    return response.json()
+  },
+
+  // POST Multipart (for file uploads)
+  postMultipart: async <T>(url: string, formData: FormData, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+    const { requireAuth = true } = options || {}
+
+    const authHeader: Record<string, string> = {}
+    if (requireAuth) {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.access_token) {
+        authHeader['Authorization'] = `Bearer ${session.access_token}`
+      }
+    }
+
+    // Don't set Content-Type for FormData, let browser set it with boundary
+    const headers: Record<string, string> = {
+      ...(options?.headers || {}),
+      ...authHeader,
+    }
+
+    console.log('Sending multipart request to:', `${API_URL}${url}`)
+    console.log('Headers:', headers)
+
+    const response = await fetch(`${API_URL}${url}`, {
+      method: 'POST',
+      body: formData,
+      headers,
+    })
+
+    console.log('Response status:', response.status)
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`API Error ${response.status}:`, errorText)
+      throw new Error(`HTTP ${response.status}: ${errorText}`)
+    }
+    return response.json()
+  },
+
+  // PUT Multipart (for file uploads)
+  putMultipart: async <T>(url: string, formData: FormData, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+    const { requireAuth = true } = options || {}
+
+    const authHeader: Record<string, string> = {}
+    if (requireAuth) {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.access_token) {
+        authHeader['Authorization'] = `Bearer ${session.access_token}`
+      }
+    }
+
+    // Don't set Content-Type for FormData, let browser set it with boundary
+    const headers: Record<string, string> = {
+      ...(options?.headers || {}),
+      ...authHeader,
+    }
+
+    const response = await fetch(`${API_URL}${url}`, {
+      method: 'PUT',
+      body: formData,
+      headers,
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`API Error ${response.status}:`, errorText)
+      throw new Error(`HTTP ${response.status}: ${errorText}`)
+    }
     return response.json()
   },
 }
@@ -149,4 +235,18 @@ export const endpoints = {
 
   // Brands endpoints
   brands: () => '/brands',
+  brandById: (brandId: string) => `/brands/${brandId}`,
+
+  // Products endpoints
+  products: () => '/products',
+  productById: (productId: string) => `/products/${productId}`,
+  createProduct: () => '/products',
+  updateProduct: (productId: string) => `/products/${productId}`,
+  deleteProduct: (productId: string) => `/products/${productId}`,
+  restoreProduct: (productId: string) => `/products/${productId}/restore`,
+
+  // Profile endpoints
+  profiles: () => '/profile',
+  profileById: (profileId: string) => `/profile/${profileId}`,
+  profilesMe: () => '/users/profile/me',
 }

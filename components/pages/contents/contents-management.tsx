@@ -18,17 +18,20 @@ import {
   Video,
   Type
 } from "lucide-react";
-import { contentApi, brandApi } from "@/lib/mock-api";
+import { contentApi } from "@/lib/mock-api";
+import { useBrands } from "@/hooks/use-brands";
 import { Content, Brand } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import Link from "next/link";
 
 export function ContentsManagement() {
-  const [brands, setBrands] = useState<Brand[]>([]);
   const [contents, setContents] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+
+  // Hooks
+  const { data: brands = [] } = useBrands();
 
   useEffect(() => {
     const loadData = async () => {
@@ -36,11 +39,7 @@ export function ContentsManagement() {
         setLoading(true);
         
         
-        // Get brands
-        const brandsResponse = await brandApi.getBrands();
-        if (brandsResponse.success) {
-          setBrands(brandsResponse.data);
-        }
+        // Brands are loaded via hook
         
         // Get contents
         const contentsResponse = await contentApi.getContents();
