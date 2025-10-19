@@ -12,7 +12,6 @@ export default function AuthCallbackPage() {
       
       const { 
         data,
-        error,
       }: { data: { session: { access_token: string } | null } | null; error: { message: string } | null } = 
       await supabase.auth.getSession(); 
       

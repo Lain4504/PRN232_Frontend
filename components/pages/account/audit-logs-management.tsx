@@ -3,10 +3,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Clock, RefreshCw, ChevronDown, Eye } from "lucide-react";
@@ -62,7 +59,6 @@ const mockAuditLogs = [
 
 export function AuditLogsManagement() {
   const [filterProject, setFilterProject] = useState("Projects");
-  const [dateRange, setDateRange] = useState("07 Oct, 10:22 - 08 Oct, 10:22");
   const [logs] = useState(mockAuditLogs);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
@@ -118,7 +114,7 @@ export function AuditLogsManagement() {
                   className="h-8 px-3 text-sm"
                 >
                   <Clock className="h-3 w-3 mr-2" />
-                  {dateRange}
+                  07 Oct, 10:22 - 08 Oct, 10:22
                 </Button>
               </div>
             </div>

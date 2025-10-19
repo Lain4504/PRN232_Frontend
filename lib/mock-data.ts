@@ -5,8 +5,7 @@ import {
   User, 
   Profile, 
   Brand, 
-  Product, 
-  Content, 
+  Content,
   SocialAccount, 
   SocialIntegration, 
   Approval, 
@@ -107,49 +106,6 @@ export const mockBrands: Brand[] = [
   }
 ];
 
-// Mock Products
-export const mockProducts: Product[] = [
-  {
-    id: 'product-1',
-    brand_id: 'brand-1',
-    name: 'AI Analytics Platform',
-    description: 'Comprehensive AI-powered analytics solution for business intelligence',
-    price: 299.99,
-    images: ['/products/ai-analytics-1.jpg', '/products/ai-analytics-2.jpg'],
-    created_at: '2024-01-15T11:30:00Z',
-    updated_at: '2024-01-15T11:30:00Z'
-  },
-  {
-    id: 'product-2',
-    brand_id: 'brand-1',
-    name: 'Smart Automation Suite',
-    description: 'End-to-end automation tools for business processes',
-    price: 199.99,
-    images: ['/products/automation-suite-1.jpg'],
-    created_at: '2024-01-15T12:30:00Z',
-    updated_at: '2024-01-15T12:30:00Z'
-  },
-  {
-    id: 'product-3',
-    brand_id: 'brand-2',
-    name: 'Bamboo Phone Case',
-    description: 'Sustainable bamboo phone case with wireless charging',
-    price: 29.99,
-    images: ['/products/bamboo-case-1.jpg', '/products/bamboo-case-2.jpg'],
-    created_at: '2024-01-15T13:00:00Z',
-    updated_at: '2024-01-15T13:00:00Z'
-  },
-  {
-    id: 'product-4',
-    brand_id: 'brand-3',
-    name: 'Brand Identity Package',
-    description: 'Complete brand identity design including logo, colors, and guidelines',
-    price: 499.99,
-    images: ['/products/brand-package-1.jpg'],
-    created_at: '2024-01-16T11:30:00Z',
-    updated_at: '2024-01-16T11:30:00Z'
-  }
-];
 
 // Mock Contents
 export const mockContents: Content[] = [
@@ -467,7 +423,6 @@ export const getMockData = {
   user: (id: string) => mockUsers.find(u => u.id === id),
   profile: (id: string) => mockProfiles.find(p => p.id === id),
   brand: (id: string) => mockBrands.find(b => b.id === id),
-  product: (id: string) => mockProducts.find(p => p.id === id),
   content: (id: string) => mockContents.find(c => c.id === id),
   socialAccount: (id: string) => mockSocialAccounts.find(s => s.id === id),
   socialIntegration: (id: string) => mockSocialIntegrations.find(s => s.id === id),
@@ -481,10 +436,7 @@ export const getMockData = {
 export const getBrandsByProfile = (profileId: string) => 
   mockBrands.filter(b => b.profile_id === profileId);
 
-export const getProductsByBrand = (brandId: string) => 
-  mockProducts.filter(p => p.brand_id === brandId);
-
-export const getContentsByBrand = (brandId: string) => 
+export const getContentsByBrand = (brandId: string) =>
   mockContents.filter(c => c.brand_id === brandId);
 
 export const getSocialAccountsByUser = (userId: string) => 

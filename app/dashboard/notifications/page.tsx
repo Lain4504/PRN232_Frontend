@@ -115,7 +115,7 @@ export default function NotificationsPage() {
     pageSize: pageSizeAll,
     fetchNotifications: fetchAll,
     markAsRead: markAsReadAll,
-    markBulkAsRead: markBulkAsReadAll,
+    markBulkAsRead: _markBulkAsReadAll,
     hasNextPage: hasNextAll,
     hasPreviousPage: hasPrevAll
   } = useNotifications()

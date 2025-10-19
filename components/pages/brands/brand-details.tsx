@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import {
   Target,
   ArrowLeft,
@@ -27,7 +26,7 @@ interface BrandDetailsProps {
 }
 
 export function BrandDetails({ brandId }: BrandDetailsProps) {
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [_profile, setProfile] = useState<Profile | null>(null);
   const router = useRouter();
 
   // Hooks
@@ -110,7 +109,7 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
               <div>
                 <CardTitle className="text-2xl">{brand.name}</CardTitle>
                 <CardDescription>
-                  {profile ? (profile.company_name || profile.profile_type) : 'No profile linked'}
+                  {_profile ? (_profile.company_name || _profile.profile_type) : 'No profile linked'}
                 </CardDescription>
               </div>
             </div>

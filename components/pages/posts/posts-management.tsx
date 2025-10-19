@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { 
   Send, 
@@ -13,15 +12,10 @@ import {
   Calendar,
   BarChart3,
   ExternalLink,
-  CheckCircle,
-  XCircle,
   Clock,
   TrendingUp,
-  Users,
   Heart,
-  MessageCircle,
   Share,
-  Linkedin
 } from "lucide-react";
 import { 
   SiFacebook, 
@@ -112,8 +106,6 @@ export function PostsManagement() {
         return <SiInstagram className="h-4 w-4" color="#E4405F" />;
       case 'twitter':
         return <SiX className="h-4 w-4" color="#000000" />;
-      case 'linkedin':
-        return <Linkedin className="h-4 w-4" color="#0A66C2" />;
       case 'youtube':
         return <SiYoutube className="h-4 w-4" color="#FF0000" />;
       case 'tiktok':
