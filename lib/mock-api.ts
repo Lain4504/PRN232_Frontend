@@ -508,7 +508,6 @@ export const contentApi = {
     return createSuccessResponse(contents[index], 'Content submitted for approval');
   },
 
-<<<<<<< HEAD
   async generateAIContent(prompt: string, brandId?: string, productId?: string, styleContext?: string, adType?: string): Promise<ApiResponse<{ text: string; image?: string }>> {
     await delay(3000); // Simulate AI processing time
 
@@ -528,12 +527,6 @@ export const contentApi = {
       generatedText = `✨ ${brand?.name || 'Your Brand'} presents: ${prompt}. Experience excellence today! #Innovation #Quality`;
     }
 
-=======
-  async generateAIContent(prompt: string): Promise<ApiResponse<{ text: string; image?: string }>> {
-    await delay(2000); // Simulate AI processing time
-
-    // Mock AI response
->>>>>>> eb2ee3a871cf49fb4f327263f4b5bacdf3088fdf
     const aiResponse = {
       text: generatedText,
       image: adType === 'image_text' || adType === 'video_text' ? 'https://via.placeholder.com/800x600?text=AI+Generated+Image' : undefined
