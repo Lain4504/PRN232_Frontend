@@ -16,20 +16,23 @@ import {
   X,
   Clock
 } from "lucide-react";
-import { approvalApi, contentApi, brandApi } from "@/lib/mock-api";
-import { Approval, Content, Brand } from "@/lib/types/aisam-types";
+import { approvalApi, contentApi } from "@/lib/mock-api";
+import { useBrands } from "@/hooks/use-brands";
+import { Approval, Content } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 
 export function ApprovalsManagement() {
   const [approvals, setApprovals] = useState<Approval[]>([]);
   const [contents, setContents] = useState<Content[]>([]);
-  const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("pending");
   const [selectedApproval, setSelectedApproval] = useState<Approval | null>(null);
   const [approvalNotes, setApprovalNotes] = useState("");
   const [processing, setProcessing] = useState<string | null>(null);
+
+  // Hooks
+  const { data: brands = [] } = useBrands();
 
   useEffect(() => {
     const loadData = async () => {
@@ -49,11 +52,7 @@ export function ApprovalsManagement() {
           setContents(contentsResponse.data);
         }
         
-        // Get brands
-        const brandsResponse = await brandApi.getBrands();
-        if (brandsResponse.success) {
-          setBrands(brandsResponse.data);
-        }
+        // Brands are loaded via hook
       } catch (error) {
         console.error('Failed to load approvals data:', error);
         toast.error('Failed to load approvals data');

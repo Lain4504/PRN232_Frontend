@@ -3,19 +3,14 @@
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState } from "react";
+import { Mail, Lock, AlertCircle, CheckCircle } from "lucide-react";
 
 export function SignUpForm({
                              className,
@@ -58,105 +53,148 @@ export function SignUpForm({
   };
 
   return (
-      <div className={cn("flex flex-col gap-6", className)} {...props}>
-        {/* Desktop Dialog */}
-        <div className="hidden md:block">
-          <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Đăng ký thành công</DialogTitle>
-                <DialogDescription>
-                  Vui lòng kiểm tra email để xác nhận tài khoản của bạn.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <Button onClick={() => setSuccessOpen(false)}>Đã hiểu</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-        {/* Mobile Drawer */}
-        <div className="md:hidden">
-          <Drawer open={successOpen} onOpenChange={setSuccessOpen}>
-            <DrawerContent>
-              <DrawerHeader>
-                <DrawerTitle>Đăng ký thành công</DrawerTitle>
-                <DrawerDescription>
-                  Vui lòng kiểm tra email để xác nhận tài khoản của bạn.
-                </DrawerDescription>
-              </DrawerHeader>
-              <DrawerFooter>
-                <Button onClick={() => setSuccessOpen(false)}>Đóng</Button>
-              </DrawerFooter>
-            </DrawerContent>
-          </Drawer>
-        </div>
-        <div className="space-y-3">
-          <Button variant="outline" className="w-full justify-start">
-            Continue with Google
-          </Button>
-          <div className="relative py-2 text-center text-sm text-muted-foreground">
-            <span className="px-2 bg-background relative z-10">or</span>
-            <div className="absolute left-0 right-0 top-1/2 h-px bg-border" />
+    <div className={cn("space-y-6", className)} {...props}>
+      {/* Success Dialog - single centered message */}
+      <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <div className="flex items-center gap-2 justify-center">
+              <CheckCircle className="h-5 w-5 text-green-500" />
+              <DialogTitle>Sign up successful</DialogTitle>
+            </div>
+            <DialogDescription className="text-center">
+              Please check your email to confirm your account.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button onClick={() => setSuccessOpen(false)}>Got it</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Google Sign Up */}
+      <div className="space-y-3">
+        <Button 
+          variant="outline" 
+          className="w-full h-8 text-sm font-medium"
+          onClick={async () => {
+            const supabase = createClient();
+            await supabase.auth.signInWithOAuth({
+              provider: "google",
+              options: { redirectTo: `${window.location.origin}/auth/callback` },
+            });
+          }}
+        >
+          <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Continue with Google
+        </Button>
+        
+        <div className="relative">
+          <div className="relative flex justify-center text-sm">
+            <span className="px-4 text-muted-foreground">or</span>
           </div>
         </div>
-        <Card className="bg-transparent border-0 shadow-none">
-          <CardHeader>
-            <CardTitle className="text-2xl">Sign up</CardTitle>
-            <CardDescription>Create a new account</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSignUp}>
-              <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                      id="email"
-                      type="email"
-                      placeholder="m@example.com"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
-                  </div>
-                  <Input
-                      id="password"
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <Label htmlFor="repeat-password">Repeat Password</Label>
-                  </div>
-                  <Input
-                      id="repeat-password"
-                      type="password"
-                      required
-                      value={repeatPassword}
-                      onChange={(e) => setRepeatPassword(e.target.value)}
-                  />
-                </div>
-                {error && <p className="text-sm text-destructive">{error}</p>}
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Creating an account..." : "Sign up"}
-                </Button>
-              </div>
-              <div className="mt-4 text-center text-sm">
-                Already have an account?{" "}
-                <Link href="/auth/login" className="underline underline-offset-4">
-                  Login
-                </Link>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
       </div>
+
+      {/* Sign Up Form */}
+      <form onSubmit={handleSignUp} className="space-y-4">
+        <div className="space-y-3">
+          {/* Email Field */}
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm font-medium">
+              Email
+            </Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                className="pl-10 h-8 text-sm"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Password Field */}
+          <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-medium">
+              Password
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <PasswordInput
+                id="password"
+                placeholder="Enter your password"
+                className="pl-10 h-8 text-sm"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Confirm Password Field */}
+          <div className="space-y-2">
+              <Label htmlFor="repeat-password" className="text-sm font-medium">
+              Confirm password
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <PasswordInput
+                id="repeat-password"
+                placeholder="Re-enter your password"
+                className="pl-10 h-8 text-sm"
+                required
+                value={repeatPassword}
+                onChange={(e) => setRepeatPassword(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Error Alert */}
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Submit Button */}
+        <Button 
+          type="submit" 
+          className="w-full h-8 text-sm font-medium" 
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin mr-1" />
+              Creating account...
+            </>
+          ) : (
+            "Create account"
+          )}
+        </Button>
+      </form>
+
+      {/* Login link */}
+      <div className="text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Link
+          href="/auth/login"
+          className="text-primary hover:text-primary/80 font-medium transition-colors"
+        >
+          Sign in now
+        </Link>
+      </div>
+    </div>
   );
 }

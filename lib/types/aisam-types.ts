@@ -25,7 +25,7 @@ export interface Profile {
 
 export interface Brand {
   id: string;
-  profile_id: string;
+  profile_id?: string; // Made optional - brands can exist without profiles
   name: string;
   description?: string;
   logo_url?: string;
@@ -38,11 +38,27 @@ export interface Brand {
 
 export interface Product {
   id: string;
+  brandId: string; // API uses camelCase
+  name: string;
+  description?: string;
+  price?: number;
+  category?: string;
+  tags?: string[];
+  images: string[]; // JSONB array of image URLs
+  createdAt: string; // API uses camelCase
+  updatedAt: string; // API uses camelCase
+}
+
+// For backward compatibility, create an alias with snake_case
+export interface ProductLegacy {
+  id: string;
   brand_id: string;
   name: string;
   description?: string;
   price?: number;
-  images: string[]; // JSONB array of image URLs
+  category?: string;
+  tags?: string[];
+  images: string[];
   created_at: string;
   updated_at: string;
 }
@@ -223,7 +239,7 @@ export interface CreateBrandForm {
   slogan?: string;
   usp?: string;
   target_audience?: string;
-  profile_id: string;
+  profile_id?: string; // Made optional
 }
 
 export interface CreateProductForm {
@@ -231,7 +247,49 @@ export interface CreateProductForm {
   name: string;
   description?: string;
   price?: number;
-  images: File[];
+  category?: string;
+  tags?: string[];
+  images?: File[];
+}
+
+// API request format for products (matches swagger spec)
+export interface CreateProductRequest {
+  BrandId: string;
+  Name: string;
+  Description?: string;
+  Price?: number;
+  ImageFiles: File[];
+}
+
+// Utility functions to convert between API and internal formats
+export function convertProductFromApi(apiProduct: Product): ProductLegacy {
+  return {
+    id: apiProduct.id,
+    brand_id: apiProduct.brandId,
+    name: apiProduct.name,
+    description: apiProduct.description,
+    price: apiProduct.price,
+    category: apiProduct.category,
+    tags: apiProduct.tags,
+    images: apiProduct.images,
+    created_at: apiProduct.createdAt,
+    updated_at: apiProduct.updatedAt,
+  }
+}
+
+export function convertProductToApi(internalProduct: ProductLegacy): Product {
+  return {
+    id: internalProduct.id,
+    brandId: internalProduct.brand_id,
+    name: internalProduct.name,
+    description: internalProduct.description,
+    price: internalProduct.price,
+    category: internalProduct.category,
+    tags: internalProduct.tags,
+    images: internalProduct.images,
+    createdAt: internalProduct.created_at,
+    updatedAt: internalProduct.updated_at,
+  }
 }
 
 export interface CreateContentForm {
@@ -403,4 +461,36 @@ export interface PaginationRequest {
   vendorId?: string;
   role?: string;
   status?: string;
+}
+
+// Notification types
+export type NotificationType = 'ApprovalNeeded' | 'PostScheduled' | 'PerformanceAlert' | 'AiSuggestion' | 'SystemUpdate';
+
+export interface Notification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: NotificationType;
+  targetId?: string;
+  targetType?: string;
+  isRead: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+}
+
+export interface NotificationFilters {
+  isRead?: boolean;
+  type?: NotificationType;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface MarkAsReadRequest {
+  notificationIds: string[];
+}
+
+export interface NotificationStats {
+  total: number;
+  unread: number;
 }

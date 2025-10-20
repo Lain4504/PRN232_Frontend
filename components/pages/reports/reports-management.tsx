@@ -10,7 +10,6 @@ import {
   TrendingDown,
   Eye,
   Heart,
-  MessageCircle,
   Share,
   Users,
   Calendar,
@@ -18,7 +17,6 @@ import {
   Filter,
   Target,
   Zap,
-  Linkedin
 } from "lucide-react";
 import { 
   SiFacebook, 
@@ -93,8 +91,6 @@ export function ReportsManagement() {
         return <SiInstagram className="h-4 w-4" color="#E4405F" />;
       case 'twitter':
         return <SiX className="h-4 w-4" color="#000000" />;
-      case 'linkedin':
-        return <Linkedin className="h-4 w-4" color="#0A66C2" />;
       case 'youtube':
         return <SiYoutube className="h-4 w-4" color="#FF0000" />;
       case 'tiktok':

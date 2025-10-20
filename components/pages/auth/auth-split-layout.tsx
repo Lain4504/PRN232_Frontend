@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
+import { Sparkles } from "lucide-react";
 
 export function AuthSplitLayout({
   children,
   title = "Welcome back",
   subtitle = "Sign in to your account",
-  quote = "AISAM giúp tối ưu hiệu suất và bảo mật cho chiến dịch quảng cáo, tăng sự tự tin khi triển khai ở mọi quy mô.",
+  quote = "AISAM helps optimize performance and security for advertising campaigns, increasing confidence when deploying at any scale",
   author = "@AISAM Team",
 }: {
   children: React.ReactNode;
@@ -16,32 +17,60 @@ export function AuthSplitLayout({
   author?: string;
 }) {
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-5">
-      {/* Left: Form area */}
-      <div className="bg-muted/40 dark:bg-muted/20 lg:col-span-2">
-        <div className="px-6 py-10 sm:px-10 flex flex-col max-w-xl w-full mx-auto">
-        <div className="mb-8">
-          <div className="flex items-center gap-2">
-            <div className="size-6 rounded bg-primary" />
-            <span className="font-semibold">AISAM</span>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
+        {/* Left: Form area */}
+        <div className="flex items-center justify-center p-6 lg:p-12">
+          <div className="w-full max-w-md space-y-8">
+            {/* Logo */}
+            <div className="text-center lg:text-left">
+              <div className="flex items-center justify-center lg:justify-start gap-3 mb-6">
+                <div className="relative">
+                  <div className="size-8 rounded-lg bg-gradient-to-r from-primary to-primary/80 shadow-lg" />
+                  <Sparkles className="absolute -top-1 -right-1 size-3 text-primary animate-pulse" />
+                </div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                  AISAM
+                </span>
+              </div>
+              
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
+                <p className="text-muted-foreground text-lg">{subtitle}</p>
+              </div>
+            </div>
+
+            {/* Form */}
+            <div className="bg-transparent rounded-2xl p-8 shadow-none border-0">
+              {children}
+            </div>
           </div>
         </div>
-        <h1 className="text-3xl font-semibold mb-1">{title}</h1>
-        <p className="text-muted-foreground mb-8">{subtitle}</p>
-        <div className="w-full max-w-md">{children}</div>
-        </div>
-      </div>
 
-      {/* Right: Quote/Testimonial */}
-      <div className="hidden lg:flex lg:col-span-3 items-center justify-center p-10 bg-background">
-        <div className="max-w-2xl">
-          <div className="text-[64px] leading-none text-muted-foreground/30 select-none">“</div>
-          <p className="text-3xl font-medium leading-snug tracking-tight mb-6">
-            {quote}
-          </p>
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-full bg-muted" />
-            <span className="text-muted-foreground">{author}</span>
+        {/* Right: Features/Testimonial */}
+        <div className="hidden lg:flex items-center justify-center p-12 bg-gradient-to-br from-primary/5 via-primary/10 to-transparent relative overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+          <div className="absolute top-20 right-20 size-32 rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute bottom-20 left-20 size-24 rounded-full bg-primary/5 blur-2xl" />
+          
+          <div className="relative z-10 max-w-lg space-y-8">
+            {/* Quote */}
+            <div className="space-y-6">
+              <div className="text-6xl leading-none text-primary/20 font-serif">&ldquo;</div>
+              <p className="text-2xl font-medium leading-relaxed text-foreground/90">
+                {quote}
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="size-12 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center">
+                  <span className="text-white font-semibold text-sm">A</span>
+                </div>
+                <div>
+                  <p className="font-medium">{author}</p>
+                  <p className="text-sm text-muted-foreground">Development Team</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -146,9 +146,9 @@ const DashboardContent = () => {
             </Link>
           </Button>
           <Button asChild size="sm">
-            <Link href="/dashboard/brands/new">
+            <Link href="/dashboard/brands">
             <Plus className="mr-2 h-4 w-4" />
-            Create Brand
+            Manage Brands
             </Link>
           </Button>
         </div>
@@ -243,15 +243,15 @@ const DashboardContent = () => {
             </CardHeader>
             <CardContent className="space-y-3">
               <Button asChild className="w-full justify-start" variant="outline">
-                <Link href="/dashboard/brands/new">
+                <Link href="/dashboard/brands">
                   <Target className="mr-2 h-4 w-4" />
-                  Create Brand
+                  Manage Brands
                 </Link>
               </Button>
               <Button asChild className="w-full justify-start" variant="outline">
-                <Link href="/dashboard/products/new">
+                <Link href="/dashboard/products">
                   <Package className="mr-2 h-4 w-4" />
-                  Add Product
+                  Manage Products
                 </Link>
               </Button>
               <Button asChild className="w-full justify-start" variant="outline">
