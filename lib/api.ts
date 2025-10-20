@@ -244,7 +244,8 @@ export const endpoints = {
   unlinkTarget: (userId: string, socialIntegrationId: string) => `/social/accounts/unlink-target/${userId}/${socialIntegrationId}`,
 
   // Brands endpoints
-  brands: () => '/brands',
+  brands: () => '/brands/team',
+  brandsByTeam: (teamId: string) => `/brands/team/${teamId}`,
   brandById: (brandId: string) => `/brands/${brandId}`,
 
   // Products endpoints
