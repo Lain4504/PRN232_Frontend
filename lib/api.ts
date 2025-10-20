@@ -120,6 +120,16 @@ export const api = {
     return response.json()
   },
 
+  // PATCH
+  patch: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+    const response = await fetchWithAuth(url, {
+      method: 'PATCH',
+      body: data ? JSON.stringify(data) : undefined,
+    }, options)
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    return response.json()
+  },
+
   // POST Multipart (for file uploads)
   postMultipart: async <T>(url: string, formData: FormData, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     const { requireAuth = true } = options || {}
@@ -249,4 +259,15 @@ export const endpoints = {
   profiles: () => '/profile',
   profileById: (profileId: string) => `/profile/${profileId}`,
   profilesMe: () => '/users/profile/me',
+
+  // Approval endpoints
+  approvals: () => '/approvals',
+  approvalsPending: () => '/approvals/pending',
+  approvalById: (approvalId: string) => `/approvals/${approvalId}`,
+  approvalApprove: (approvalId: string) => `/approvals/${approvalId}/approve`,
+  approvalReject: (approvalId: string) => `/approvals/${approvalId}/reject`,
+  approvalsByContent: (contentId: string) => `/approvals/content/${contentId}`,
+  approvalsByApprover: (approverId: string) => `/approvals/approver/${approverId}`,
+  approvalRestore: (approvalId: string) => `/approvals/${approvalId}/restore`,
+  approvalContentPending: (contentId: string) => `/approvals/content/${contentId}/pending`,
 }

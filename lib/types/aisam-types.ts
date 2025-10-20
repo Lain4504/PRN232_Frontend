@@ -462,3 +462,48 @@ export interface PaginationRequest {
   role?: string;
   status?: string;
 }
+
+// Approval domain types
+export interface ApprovalResponseDto {
+  id: string;
+  contentId: string;
+  approverId: string;
+  status: ContentStatusEnum;
+  notes?: string;
+  createdAt: string;
+  updatedAt?: string;
+  approverEmail?: string;
+  contentTitle?: string;
+  brandName?: string;
+}
+
+export interface CreateApprovalRequest {
+  contentId: string;
+  approverId: string;
+  notes?: string;
+}
+
+export interface UpdateApprovalRequest {
+  status?: ContentStatusEnum;
+  notes?: string;
+}
+
+export enum ContentStatusEnum {
+  Draft = 'Draft',
+  PendingApproval = 'PendingApproval',
+  Approved = 'Approved',
+  Rejected = 'Rejected',
+  Published = 'Published'
+}
+
+export interface ApprovalFilters {
+  page?: number;
+  pageSize?: number;
+  searchTerm?: string;
+  sortBy?: string;
+  sortDescending?: boolean;
+  status?: ContentStatusEnum;
+  contentId?: string;
+  approverId?: string;
+  onlyDeleted?: boolean;
+}
