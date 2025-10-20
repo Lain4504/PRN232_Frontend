@@ -26,9 +26,12 @@ import {
   User,
   Settings,
 } from "lucide-react";
-import { brandApi, productApi, contentApi } from "@/lib/mock-api";
-import { Brand, Product } from "@/lib/types/aisam-types";
+import { contentApi } from "@/lib/mock-api";
+import { Brand, Product, ConversationSummary, ConversationDetails, ConversationsResponse } from "@/lib/types/aisam-types";
+import { useAIChat, AdTypes } from "@/hooks/use-ai-chat";
+import { api, endpoints } from "@/lib/api";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 
 // Types for AI content generation
 interface AIContentGeneration {
@@ -85,6 +88,13 @@ export function AIContentGenerator() {
   const [isTyping, setIsTyping] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement>(null);
 
+  // Conversation management state
+  const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+  const [loadingConversations, setLoadingConversations] = useState(false);
+
+  // AI Chat hook
+  const aiChatMutation = useAIChat();
+
   const [form, setForm] = useState<GenerationForm>({
     brand_id: '',
     product_id: '',
@@ -98,43 +108,107 @@ export function AIContentGenerator() {
       try {
         setLoading(true);
 
-        // Load brands
-        const brandsResponse = await brandApi.getBrands();
-        if (brandsResponse.success) {
-          setBrands(brandsResponse.data);
+        // Load products from real API (no auth required)
+        console.log('Loading products from API...');
+        try {
+          const productsResponse = await api.get<{
+            data: Product[];
+            totalCount: number;
+            page: number;
+            pageSize: number;
+            totalPages: number;
+            hasNextPage: boolean;
+            hasPreviousPage: boolean;
+          }>('/products?page=1&pageSize=1000', { requireAuth: false });
+          console.log('Products response:', productsResponse);
+          if (productsResponse.success && productsResponse.data) {
+            console.log('Setting products:', productsResponse.data.data);
+            setProducts(productsResponse.data.data);
+          } else {
+            console.error('Failed to load products:', productsResponse);
+          }
+        } catch (error) {
+          console.error('Products API error:', error);
         }
 
-        // Load products
-        const productsResponse = await productApi.getProducts();
-        if (productsResponse.success) {
-          setProducts(productsResponse.data);
+        // Load brands from real API (requires auth)
+        console.log('Loading brands from API...');
+        try {
+          const supabase = createClient();
+          const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+          console.log('Supabase session:', session);
+          console.log('Session error:', sessionError);
+
+          if (!session?.access_token) {
+            console.warn('No active session found');
+            toast.error('Please log in to load brands');
+            return;
+          }
+
+          const brandsResponse = await api.get<{
+            data: Brand[];
+            totalCount: number;
+            page: number;
+            pageSize: number;
+            totalPages: number;
+            hasNextPage: boolean;
+            hasPreviousPage: boolean;
+          }>('/brands?page=1&pageSize=1000');
+          console.log('Brands response:', brandsResponse);
+          if (brandsResponse.success && brandsResponse.data) {
+            console.log('Raw brands response:', brandsResponse);
+            console.log('Brands data:', brandsResponse.data);
+            const brandsData = brandsResponse.data.data || [];
+            console.log('Setting brands:', brandsData);
+            setBrands(brandsData);
+            console.log('Brands state updated:', brandsData.length, 'brands');
+            if (brandsData.length > 0) {
+              toast.success(`Loaded ${brandsData.length} brands successfully`);
+            } else {
+              toast.error('No brands found for your account');
+            }
+          } else {
+            console.error('Failed to load brands:', brandsResponse);
+            // If brands fail due to auth, show a message
+            if (brandsResponse.statusCode === 401 || brandsResponse.statusCode === 403) {
+              console.warn('Brands require authentication - user may not be logged in');
+              toast.error('Authentication required to load brands');
+            } else {
+              toast.error('Failed to load brands');
+            }
+          }
+        } catch (error) {
+          console.error('Brands API error:', error);
+          toast.error('Failed to load brands from server');
         }
 
-        // Load previous generations (mock data for now)
-        setGenerations([
-          {
-            id: '1',
-            prompt: 'Create an engaging post about our new eco-friendly water bottles',
-            brand_id: 'brand-1',
-            product_id: 'product-1',
-            style_context: 'Professional, informative, environmentally conscious',
-            generated_content: '🌍 Going green has never been easier! Introducing our new eco-friendly water bottles, made from 100% recycled materials. Stay hydrated while helping the planet. #SustainableLiving #EcoFriendly',
-            status: 'completed',
-            created_at: new Date().toISOString(),
-            brand_name: 'EcoLife',
-            product_name: 'Eco Bottle',
-          },
-          {
-            id: '2',
-            prompt: 'Promote our summer sale with fun and energetic tone',
-            brand_id: 'brand-2',
-            style_context: 'Fun, energetic, youthful',
-            generated_content: '☀️ SUMMER SALE ALERT! 🔥 Get ready to heat up your wardrobe with our amazing deals! Up to 50% off on all summer essentials. Don\'t miss out, shop now! 🏖️',
-            status: 'completed',
-            created_at: new Date(Date.now() - 86400000).toISOString(),
-            brand_name: 'Fashion Forward',
-          },
-        ]);
+        // Load conversations from backend
+        console.log('Loading conversations from API...');
+        try {
+          const supabase = createClient();
+          const { data: { session } } = await supabase.auth.getSession();
+
+          if (session?.access_token) {
+            const conversationsResponse = await api.get<ConversationsResponse>(
+              `${endpoints.conversations()}?page=1&pageSize=50&sortBy=updatedAt&sortDescending=true`
+            );
+            console.log('Conversations response:', conversationsResponse);
+            if (conversationsResponse.success && conversationsResponse.data) {
+              console.log('Setting conversations:', conversationsResponse.data.data);
+              setConversations(conversationsResponse.data.data);
+            } else {
+              console.error('Failed to load conversations:', conversationsResponse);
+            }
+          } else {
+            console.warn('No session available for conversations');
+          }
+        } catch (error) {
+          console.error('Conversations API error:', error);
+          // Don't show error for conversations as it's not critical
+        }
+
+        // Load previous generations (will be empty initially)
+        setGenerations([]);
       } catch (error) {
         console.error('Failed to load data:', error);
         toast.error('Failed to load data');
@@ -153,51 +227,25 @@ export function AIContentGenerator() {
     setProducts(brandProducts);
   };
 
-  const handleGenerate = async () => {
-    if (!form.brand_id || !form.prompt.trim()) {
-      toast.error('Please select a brand and enter a prompt');
-      return;
-    }
+  const handleChatBrandChange = (brandId: string) => {
+    setForm(prev => ({ ...prev, brand_id: brandId, product_id: '' }));
+    // Filter products by selected brand
+    const brandProducts = products.filter(p => p.brandId === brandId);
+    setProducts(brandProducts);
 
-    try {
-      setGenerating(true);
-
-      // Simulate AI generation delay
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      // Mock AI response
-      const mockContent = generateMockContent(form);
-
-      const newGeneration: AIContentGeneration = {
-        id: Date.now().toString(),
-        prompt: form.prompt,
-        brand_id: form.brand_id,
-        product_id: form.product_id,
-        style_context: form.style_context,
-        generated_content: mockContent,
-        status: 'completed',
-        created_at: new Date().toISOString(),
-        brand_name: brands.find(b => b.id === form.brand_id)?.name,
-        product_name: form.product_id ? products.find(p => p.id === form.product_id)?.name : undefined,
-      };
-
-      setGenerations(prev => [newGeneration, ...prev]);
-      setSelectedGeneration(newGeneration);
-      toast.success('Content generated successfully!');
-
-      // Reset form
-      setForm(prev => ({
-        ...prev,
-        prompt: '',
-        style_context: '',
-      }));
-    } catch (error) {
-      console.error('Failed to generate content:', error);
-      toast.error('Failed to generate content');
-    } finally {
-      setGenerating(false);
-    }
+    // Update current session if exists
+    updateChatContext(brandId, undefined);
   };
+
+  const handleChatProductChange = (productId: string) => {
+    const newValue = productId === "none" ? "" : productId;
+    setForm(prev => ({ ...prev, product_id: newValue }));
+
+    // Update current session if exists
+    updateChatContext(form.brand_id, newValue || undefined);
+  };
+
+  // Removed handleGenerate function - now using AI chat for content generation
 
   // Chat functions
   const createNewChatSession = () => {
@@ -213,11 +261,29 @@ export function AIContentGenerator() {
     setCurrentSession(newSession);
   };
 
+  const updateChatContext = (brandId?: string, productId?: string) => {
+    if (currentSession) {
+      setCurrentSession(prev => prev ? {
+        ...prev,
+        brand_id: brandId,
+        product_id: productId
+      } : null);
+    }
+  };
+
   const sendChatMessage = async () => {
     if (!chatInput.trim()) return;
 
     if (!currentSession) {
       createNewChatSession();
+      return;
+    }
+
+    // Get current user ID
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user?.id) {
+      toast.error('User not authenticated');
       return;
     }
 
@@ -240,58 +306,206 @@ export function AIContentGenerator() {
     setIsTyping(true);
 
     try {
-      // Simulate AI response delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Call real AI API - match backend expected format
+      const requestData = {
+        userId: session.user.id,
+        brandId: currentSession.brand_id || null,
+        productId: currentSession.product_id || null,
+        adType: AdTypes.TextOnly, // Default to text-only for chat
+        message: chatInput,
+        // conversationId: currentSession.id, // Remove conversationId for now as backend expects null
+      };
 
-      // Generate AI content based on chat message
-      const mockContent = generateMockContent({
-        brand_id: currentSession.brand_id || '',
-        product_id: currentSession.product_id,
-        prompt: chatInput,
-        style_context: '',
-        ad_type: 'text_only',
-      });
+      console.log('Sending AI chat request:', requestData);
 
-      const aiMessage: ChatMessage = {
+      const response = await aiChatMutation.mutateAsync(requestData);
+
+      console.log('AI chat response:', response);
+
+      // Update conversation list if this is a new conversation
+      if (response.success && response.data?.conversationId) {
+        // Update current session with the conversation ID from backend
+        const sessionWithConversationId = {
+          ...updatedSession,
+          id: response.data.conversationId, // Use backend conversation ID
+        };
+        setCurrentSession(sessionWithConversationId);
+
+        // Refresh conversations list to include the new/updated conversation
+        try {
+          const supabase = createClient();
+          const { data: { session } } = await supabase.auth.getSession();
+
+          if (session?.access_token) {
+            const conversationsResponse = await api.get<ConversationsResponse>(
+              `${endpoints.conversations()}?page=1&pageSize=50&sortBy=updatedAt&sortDescending=true`
+            );
+            if (conversationsResponse.success && conversationsResponse.data) {
+              setConversations(conversationsResponse.data.data);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to refresh conversations:', error);
+        }
+      }
+
+      if (response.success && response.data) {
+        let aiMessage: ChatMessage;
+
+        if (response.data.isContentGenerated && response.data.generatedContent) {
+          // Content was generated - create generation object
+          const generation: AIContentGeneration = {
+            id: response.data.aiGenerationId || Date.now().toString(),
+            prompt: chatInput,
+            brand_id: currentSession.brand_id || '',
+            product_id: currentSession.product_id,
+            style_context: '',
+            generated_content: response.data.generatedContent,
+            status: 'completed',
+            created_at: new Date().toISOString(),
+            brand_name: brands.find(b => b.id === currentSession.brand_id)?.name,
+            product_name: currentSession.product_id ? products.find(p => p.id === currentSession.product_id)?.name : undefined,
+          };
+
+          aiMessage = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: response.data.response,
+            timestamp: new Date().toISOString(),
+            generation: generation,
+          };
+
+          // Add to generations list
+          setGenerations(prev => [generation, ...prev]);
+        } else {
+          // Chat-only response
+          aiMessage = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: response.data.response,
+            timestamp: new Date().toISOString(),
+          };
+        }
+
+        const finalSession = {
+          ...updatedSession,
+          messages: [...updatedSession.messages, aiMessage],
+          updated_at: new Date().toISOString(),
+        };
+
+        setCurrentSession(finalSession);
+        setChatSessions(prev => prev.map(s => s.id === finalSession.id ? finalSession : s));
+
+        toast.success('AI response received');
+      } else {
+        throw new Error(response.error?.errorMessage || 'Failed to get AI response');
+      }
+    } catch (error) {
+      console.error('Failed to generate chat response:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to generate response');
+
+      // Add error message to chat
+      const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `Here's a content suggestion based on your request:\n\n${mockContent}`,
+        content: 'Sorry, I encountered an error while processing your request. Please try again.',
         timestamp: new Date().toISOString(),
-        generation: {
-          id: Date.now().toString(),
-          prompt: chatInput,
-          brand_id: currentSession.brand_id || '',
-          product_id: currentSession.product_id,
-          style_context: '',
-          generated_content: mockContent,
-          status: 'completed',
-          created_at: new Date().toISOString(),
-          brand_name: brands.find(b => b.id === currentSession.brand_id)?.name,
-          product_name: currentSession.product_id ? products.find(p => p.id === currentSession.product_id)?.name : undefined,
-        },
       };
 
       const finalSession = {
         ...updatedSession,
-        messages: [...updatedSession.messages, aiMessage],
+        messages: [...updatedSession.messages, errorMessage],
         updated_at: new Date().toISOString(),
       };
 
       setCurrentSession(finalSession);
       setChatSessions(prev => prev.map(s => s.id === finalSession.id ? finalSession : s));
-
-      // Add to generations list
-      setGenerations(prev => [aiMessage.generation!, ...prev]);
-    } catch (error) {
-      console.error('Failed to generate chat response:', error);
-      toast.error('Failed to generate response');
     } finally {
       setIsTyping(false);
     }
   };
 
-  const selectChatSession = (session: ChatSession) => {
+  const selectChatSession = async (session: ChatSession) => {
     setCurrentSession(session);
+  };
+
+  const selectConversation = async (conversation: ConversationSummary) => {
+    try {
+      setLoadingConversations(true);
+
+      // Load full conversation details with messages
+      const response = await api.get<ConversationDetails>(
+        endpoints.conversationById(conversation.id)
+      );
+
+      if (response.success && response.data) {
+        // Convert backend conversation to frontend chat session format
+        const chatSession: ChatSession = {
+          id: response.data.id,
+          brand_id: response.data.brandId || undefined,
+          product_id: response.data.productId || undefined,
+          messages: response.data.messages.map(msg => ({
+            id: msg.id,
+            role: msg.senderType === 'User' ? 'user' : 'assistant',
+            content: msg.message,
+            timestamp: msg.createdAt,
+            generation: msg.aiGenerationId ? {
+              id: msg.aiGenerationId,
+              prompt: msg.message,
+              brand_id: response.data.brandId || '',
+              product_id: response.data.productId || undefined,
+              style_context: '',
+              generated_content: '', // Would need to fetch from content API
+              status: 'completed',
+              created_at: msg.createdAt,
+              brand_name: response.data.brandName || undefined,
+              product_name: response.data.productName || undefined,
+            } : undefined
+          })),
+          created_at: response.data.createdAt,
+          updated_at: response.data.updatedAt,
+        };
+
+        setCurrentSession(chatSession);
+        // Update form context to match the conversation
+        if (response.data.brandId) {
+          setForm(prev => ({ ...prev, brand_id: response.data.brandId! }));
+        }
+        if (response.data.productId) {
+          setForm(prev => ({ ...prev, product_id: response.data.productId! }));
+        }
+      } else {
+        toast.error('Failed to load conversation');
+      }
+    } catch (error) {
+      console.error('Failed to load conversation:', error);
+      toast.error('Failed to load conversation details');
+    } finally {
+      setLoadingConversations(false);
+    }
+  };
+
+  const deleteConversation = async (conversationId: string) => {
+    try {
+      const response = await api.delete(endpoints.conversationById(conversationId));
+
+      if (response.success) {
+        // Remove from conversations list
+        setConversations(prev => prev.filter(c => c.id !== conversationId));
+
+        // If current session is the deleted conversation, clear it
+        if (currentSession?.id === conversationId) {
+          setCurrentSession(null);
+        }
+
+        toast.success('Conversation deleted successfully');
+      } else {
+        toast.error('Failed to delete conversation');
+      }
+    } catch (error) {
+      console.error('Failed to delete conversation:', error);
+      toast.error('Failed to delete conversation');
+    }
   };
 
   useEffect(() => {
@@ -300,31 +514,6 @@ export function AIContentGenerator() {
     }
   }, [currentSession?.messages]);
 
-  const generateMockContent = (formData: GenerationForm): string => {
-    const brand = brands.find(b => b.id === formData.brand_id);
-    const product = formData.product_id ? products.find(p => p.id === formData.product_id) : null;
-
-    const templates = {
-      text_only: [
-        `✨ Discover the magic of ${brand?.name}! ${formData.prompt} #Innovation #Quality`,
-        `🚀 ${brand?.name} presents: ${formData.prompt}. Experience excellence today!`,
-        `🌟 Transform your experience with ${brand?.name}. ${formData.prompt} #Premium #Lifestyle`,
-      ],
-      image_text: [
-        `📸 Stunning visuals meet exceptional quality! ${brand?.name}'s ${product?.name || 'latest creation'}: ${formData.prompt} #VisualStorytelling`,
-        `🎨 Beauty in every detail. ${brand?.name} brings you ${formData.prompt}. See the difference!`,
-        `🖼️ Picture perfect! ${brand?.name} showcases ${formData.prompt} in our latest collection.`,
-      ],
-      video_text: [
-        `🎥 Watch and be amazed! ${brand?.name} unveils ${formData.prompt}. Don't miss this!`,
-        `📹 Motion meets emotion. ${brand?.name}'s dynamic presentation: ${formData.prompt} #VideoContent`,
-        `🎬 Lights, camera, action! ${brand?.name} stars in ${formData.prompt}. Watch now!`,
-      ],
-    };
-
-    const templateList = templates[formData.ad_type];
-    return templateList[Math.floor(Math.random() * templateList.length)];
-  };
 
   const handleSaveToLibrary = async (generation: AIContentGeneration) => {
     try {
@@ -418,9 +607,9 @@ export function AIContentGenerator() {
                 Chat with AI to generate and refine your social media content
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 flex flex-col p-0">
+            <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
               {/* Chat Messages */}
-              <ScrollArea className="flex-1 p-4" ref={chatScrollRef}>
+              <div className="flex-1 overflow-y-auto p-4" ref={chatScrollRef}>
                 <div className="space-y-4">
                   {currentSession?.messages.map((message) => (
                     <div
@@ -506,7 +695,7 @@ export function AIContentGenerator() {
                     </div>
                   )}
                 </div>
-              </ScrollArea>
+              </div>
 
               {/* Chat Input */}
               {currentSession && (
@@ -549,22 +738,23 @@ export function AIContentGenerator() {
                   <Label htmlFor="chat_brand">Brand</Label>
                   <Select
                     value={form.brand_id}
-                    onValueChange={(value) => {
-                      handleBrandChange(value);
-                      if (currentSession) {
-                        setCurrentSession(prev => prev ? { ...prev, brand_id: value } : null);
-                      }
-                    }}
+                    onValueChange={handleChatBrandChange}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a brand" />
                     </SelectTrigger>
                     <SelectContent>
-                      {brands.map((brand) => (
-                        <SelectItem key={brand.id} value={brand.id}>
-                          {brand.name}
-                        </SelectItem>
-                      ))}
+                      {brands.length === 0 ? (
+                        <div className="p-2 text-sm text-muted-foreground">
+                          No brands available - please start the backend API
+                        </div>
+                      ) : (
+                        brands.map((brand) => (
+                          <SelectItem key={brand.id} value={brand.id}>
+                            {brand.name}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -573,13 +763,7 @@ export function AIContentGenerator() {
                   <Label htmlFor="chat_product">Product (Optional)</Label>
                   <Select
                     value={form.product_id}
-                    onValueChange={(value) => {
-                      const newValue = value === "none" ? "" : value;
-                      setForm(prev => ({ ...prev, product_id: newValue }));
-                      if (currentSession) {
-                        setCurrentSession(prev => prev ? { ...prev, product_id: newValue } : null);
-                      }
-                    }}
+                    onValueChange={handleChatProductChange}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a product" />
@@ -595,6 +779,30 @@ export function AIContentGenerator() {
                   </Select>
                 </div>
               </div>
+
+              {/* Current Chat Context Display */}
+              {(form.brand_id || form.product_id) && (
+                <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                  <h4 className="text-sm font-medium mb-2">Current Chat Context:</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {form.brand_id && (
+                      <Badge variant="secondary" className="flex items-center gap-1">
+                        <span className="text-xs">Brand:</span>
+                        {brands.find(b => b.id === form.brand_id)?.name}
+                      </Badge>
+                    )}
+                    {form.product_id && form.product_id !== "none" && (
+                      <Badge variant="outline" className="flex items-center gap-1">
+                        <span className="text-xs">Product:</span>
+                        {products.find(p => p.id === form.product_id)?.name}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    AI will use this context to generate more relevant content for your brand and products.
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -651,41 +859,54 @@ export function AIContentGenerator() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {chatSessions.map((session) => (
+                {conversations.map((conversation) => (
                   <div
-                    key={session.id}
+                    key={conversation.id}
                     className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                      currentSession?.id === session.id ? 'bg-primary/5 border-primary' : 'hover:bg-muted/50'
+                      currentSession?.id === conversation.id ? 'bg-primary/5 border-primary' : 'hover:bg-muted/50'
                     }`}
-                    onClick={() => selectChatSession(session)}
+                    onClick={() => selectConversation(conversation)}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <Bot className="h-4 w-4" />
                         <span className="text-sm font-medium">
-                          {session.brand_id ? brands.find(b => b.id === session.brand_id)?.name : 'General Chat'}
+                          {conversation.brandName || conversation.title}
                         </span>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(session.updated_at).toLocaleDateString()}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(conversation.updatedAt).toLocaleDateString()}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteConversation(conversation.id);
+                          }}
+                          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                        >
+                          <XCircle className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {session.messages.length} messages
+                      {conversation.lastMessage || `${conversation.messageCount} messages`}
                     </p>
-                    {session.product_id && (
+                    {conversation.productName && (
                       <Badge variant="outline" className="text-xs mt-1">
-                        {products.find(p => p.id === session.product_id)?.name}
+                        {conversation.productName}
                       </Badge>
                     )}
                   </div>
                 ))}
 
-                {chatSessions.length === 0 && (
+                {conversations.length === 0 && (
                   <div className="text-center py-8">
                     <Bot className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                     <p className="text-sm text-muted-foreground">
-                      No chat sessions yet. Start your first conversation!
+                      No conversations yet. Start your first chat!
                     </p>
                   </div>
                 )}
@@ -693,54 +914,6 @@ export function AIContentGenerator() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Generations</CardTitle>
-              <CardDescription>
-                Your recent AI content generations
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {generations.slice(0, 5).map((generation) => (
-                  <div
-                    key={generation.id}
-                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                      selectedGeneration?.id === generation.id ? 'bg-primary/5 border-primary' : 'hover:bg-muted/50'
-                    }`}
-                    onClick={() => setSelectedGeneration(generation)}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(generation.status)}
-                        <span className="text-sm font-medium">{generation.brand_name}</span>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(generation.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-                      {generation.prompt}
-                    </p>
-                    {generation.product_name && (
-                      <Badge variant="outline" className="text-xs">
-                        {generation.product_name}
-                      </Badge>
-                    )}
-                  </div>
-                ))}
-
-                {generations.length === 0 && (
-                  <div className="text-center py-8">
-                    <Sparkles className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">
-                      No generations yet. Chat with AI to create content!
-                    </p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Tips Card */}
           <Card>

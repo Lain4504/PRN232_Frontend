@@ -25,6 +25,7 @@ export interface Profile {
 
 export interface Brand {
   id: string;
+  userId?: string; // API returns userId, not profile_id
   profile_id?: string; // Made optional - brands can exist without profiles
   name: string;
   description?: string;
@@ -32,8 +33,10 @@ export interface Brand {
   slogan?: string;
   usp?: string; // Unique Selling Proposition
   target_audience?: string;
-  created_at: string;
-  updated_at: string;
+  createdAt?: string; // API uses camelCase
+  updatedAt?: string; // API uses camelCase
+  created_at?: string; // Keep for backward compatibility
+  updated_at?: string; // Keep for backward compatibility
 }
 
 export interface Product {
@@ -462,3 +465,100 @@ export interface PaginationRequest {
   role?: string;
   status?: string;
 }
+
+// AI Chat API Types
+export interface AIChatRequest {
+  userId: string;
+  brandId?: string | null;
+  productId?: string | null;
+  adType: number; // 0=TextOnly, 1=Image, 2=Video, 3=Carousel
+  message: string;
+  conversationId?: string | null;
+}
+
+export interface AIChatResponse {
+  success: boolean;
+  message: string;
+  statusCode: number;
+  data: {
+    response: string;
+    isContentGenerated: boolean;
+    contentId?: string | null;
+    aiGenerationId?: string | null;
+    generatedContent?: string | null;
+    conversationId?: string | null;
+  } | null;
+  error?: {
+    errorCode: string;
+    errorMessage: string;
+    stackTrace?: string;
+    validationErrors?: any;
+  };
+  timestamp: string;
+}
+
+export interface AIChatError {
+  errorCode: string;
+  errorMessage: string;
+  stackTrace?: string;
+  validationErrors?: any;
+}
+
+// Conversation Management Types
+export interface ConversationSummary {
+  id: string;
+  userId: string;
+  brandId?: string | null;
+  brandName?: string | null;
+  productId?: string | null;
+  productName?: string | null;
+  adType: string;
+  title: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  lastMessage?: string;
+  lastMessageAt?: string;
+  messageCount: number;
+}
+
+export interface ConversationMessage {
+  id: string;
+  senderType: 'User' | 'AI';
+  message: string;
+  aiGenerationId?: string | null;
+  contentId?: string | null;
+  createdAt: string;
+}
+
+export interface ConversationDetails {
+  id: string;
+  userId: string;
+  brandId?: string | null;
+  brandName?: string | null;
+  productId?: string | null;
+  productName?: string | null;
+  adType: string;
+  title: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  messages: ConversationMessage[];
+}
+
+export interface ConversationsResponse {
+  data: ConversationSummary[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}
+
+// AdType enum for reference
+export const AdTypes = {
+  TextOnly: 0,
+  Image: 1,
+  Video: 2,
+  Carousel: 3,
+} as const;
+
+export type AdType = typeof AdTypes[keyof typeof AdTypes];
