@@ -1,9 +1,22 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Plus, FileText, Brain, Sparkles, AlertCircle, Search, Filter, X } from "lucide-react";
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { DataTable } from "@/components/ui/data-table";
+import { ColumnDef } from "@tanstack/react-table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useBrands } from "@/hooks/use-brands";
 import { useProducts } from "@/hooks/use-products";
 import { 
@@ -27,11 +40,170 @@ import { ContentFilters as ContentFiltersComponent } from "@/components/contents
 import { ContentList } from "@/components/contents/content-list";
 import { ContentModal } from "@/components/contents/content-modal";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Calendar, Eye, TrendingUp, Edit, Trash2, Send, Globe } from "lucide-react";
 
 // TODO: Replace with actual auth hook
 const useCurrentUser = () => {
   return { userId: 'current-user-id' }; // This should come from your auth system
 };
+
+// Create columns for the data table
+const createColumns = (
+  handleEditContent: (contentId: string) => void,
+  handleDeleteContent: (contentId: string) => void,
+  handleSubmitContent: (contentId: string) => void,
+  handlePublishContent: (contentId: string, integrationId: string) => void,
+  brands: { id: string; name: string }[] = [],
+  isProcessing: boolean
+): ColumnDef<ContentResponseDto>[] => [
+  {
+    accessorKey: "title",
+    header: "Content Title",
+    cell: ({ row }) => {
+      const content = row.original;
+      const status = content.status;
+      
+      return (
+        <div className="flex items-center gap-3">
+          <Avatar className="h-10 w-10">
+            <AvatarFallback>
+              <FileText className="h-4 w-4" />
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <div className="font-medium">{row.getValue("title")}</div>
+            <div className="flex items-center gap-2 mt-1">
+              <Badge variant="secondary" className={
+                status === ContentStatusEnum.Published ? "bg-green-100 text-green-800" :
+                status === ContentStatusEnum.Approved ? "bg-blue-100 text-blue-800" :
+                status === ContentStatusEnum.PendingApproval ? "bg-yellow-100 text-yellow-800" :
+                status === ContentStatusEnum.Rejected ? "bg-red-100 text-red-800" :
+                "bg-gray-100 text-gray-800"
+              }>
+                {status}
+              </Badge>
+              <span className="text-xs text-muted-foreground">
+                ID: {row.original.id.slice(0, 8)}
+              </span>
+            </div>
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "adType",
+    header: "Type",
+    cell: ({ row }) => {
+      const adType = row.getValue("adType") as AdTypeEnum;
+      return (
+        <div className="text-sm">
+          {adType === AdTypeEnum.TextOnly ? (
+            <Badge variant="outline">Text Only</Badge>
+          ) : adType === AdTypeEnum.ImageText ? (
+            <Badge variant="outline">Image + Text</Badge>
+          ) : adType === AdTypeEnum.VideoText ? (
+            <Badge variant="outline">Video + Text</Badge>
+          ) : (
+            <span className="text-muted-foreground">Unknown</span>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "brandId",
+    header: "Brand",
+    cell: ({ row }) => {
+      const brandId = row.getValue("brandId") as string;
+      const brand = brands.find(b => b.id === brandId);
+      return (
+        <div className="text-sm">
+          {brand ? (
+            <Badge variant="outline">
+              {brand.name}
+            </Badge>
+          ) : (
+            <span className="text-muted-foreground">No brand</span>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created",
+    cell: ({ row }) => {
+      const createdAt = row.getValue("createdAt") as string;
+      
+      return (
+        <div className="text-sm text-muted-foreground">
+          {createdAt ? (
+            <div className="flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              <div>
+                <div>{new Date(createdAt).toLocaleDateString()}</div>
+                <div className="text-xs">{new Date(createdAt).toLocaleTimeString()}</div>
+              </div>
+            </div>
+          ) : (
+            <span>No date</span>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Actions",
+    cell: ({ row }) => {
+      const content = row.original;
+      const canSubmit = content.status === ContentStatusEnum.Draft;
+      const canPublish = content.status === ContentStatusEnum.Approved;
+      
+      return (
+        <div className="flex items-center gap-2">
+          {canSubmit && (
+            <Button
+              onClick={() => handleSubmitContent(content.id)}
+              variant="outline"
+              size="sm"
+              disabled={isProcessing}
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          )}
+          {canPublish && (
+            <Button
+              onClick={() => handlePublishContent(content.id, "integration-id")}
+              variant="outline"
+              size="sm"
+              disabled={isProcessing}
+            >
+              <Globe className="h-4 w-4" />
+            </Button>
+          )}
+          <Button
+            onClick={() => handleEditContent(content.id)}
+            variant="outline"
+            size="sm"
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
+          <Button
+            onClick={() => handleDeleteContent(content.id)}
+            variant="destructive"
+            size="sm"
+            disabled={isProcessing}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      );
+    },
+  },
+];
 
 interface ContentsManagementProps {
   initialBrandId?: string; // Allow passing brandId from parent component
@@ -41,7 +213,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ContentStatusEnum | "all">("all");
   const [adTypeFilter, setAdTypeFilter] = useState<AdTypeEnum | "all">("all");
-  const [brandFilter, setBrandFilter] = useState(initialBrandId || "");
+  const [brandFilter, setBrandFilter] = useState(initialBrandId || "all");
 
   // Update brandFilter when initialBrandId changes
   useEffect(() => {
@@ -50,6 +222,8 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
     }
   }, [initialBrandId]);
   const [isCreating, setIsCreating] = useState(false);
+  const [selectedContent, setSelectedContent] = useState<ContentResponseDto | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   // State for current content operations
   const [currentContentId, setCurrentContentId] = useState<string>("");
@@ -67,7 +241,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
     queryString,
     isBrandFiltered 
   } = useContentsByBrandFilter({
-    brandId: brandFilter || undefined,
+    brandId: brandFilter !== "all" ? brandFilter : undefined,
     searchTerm: searchTerm || undefined,
     status: statusFilter !== "all" ? statusFilter : undefined,
     adType: adTypeFilter !== "all" ? adTypeFilter : undefined,
@@ -86,12 +260,6 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
     }));
   }, [brandsData]);
 
-  // Debug: Log the current filters and brandId
-  useEffect(() => {
-    console.log('Current filters:', filters);
-    console.log('Selected brandFilter:', brandFilter);
-    console.log('Available brands:', brands);
-  }, [filters, brandFilter, brands]);
 
   // Use hooks with current content ID
   const createContentMutation = useCreateContent();
@@ -113,11 +281,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
 
   const handleCreateContent = async (data: CreateContentRequest) => {
     try {
-      const contentData = {
-        ...data,
-        userId,
-      };
-      await createContentMutation.mutateAsync(contentData);
+      await createContentMutation.mutateAsync(data);
       setIsCreating(false);
       toast.success('Content created successfully');
     } catch (error) {
@@ -176,15 +340,44 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
     }
   };
 
+  // Function to open edit modal
+  const handleEditContent = (contentId: string) => {
+    const content = contents.find(c => c.id === contentId);
+    if (content) {
+      setSelectedContent(content);
+      setIsEditing(true);
+    }
+  };
+
+  // Wrapper function for ContentModal onSave
+  const handleSaveContent = async (data: UpdateContentRequest) => {
+    if (selectedContent) {
+      await handleUpdateContent(selectedContent.id, data);
+      setSelectedContent(null);
+      setIsEditing(false);
+    }
+  };
+
   if (isLoading || brandsLoading) {
     return (
-      <div className="flex-1 space-y-6 p-6 bg-background">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">
-              {brandsLoading ? 'Loading brands...' : 'Loading contents...'}
-            </p>
+      <div className="w-full max-w-full overflow-x-hidden">
+        <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <div>
+                <Skeleton className="h-10 w-64 mb-3" />
+                <Skeleton className="h-5 w-80" />
+              </div>
+              <div className="flex items-center gap-4">
+                <Skeleton className="h-8 w-32" />
+                <Skeleton className="h-8 w-28" />
+              </div>
+            </div>
+            <div className="space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-32 w-full" />
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -192,99 +385,248 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
   }
 
   return (
-    <div className="flex-1 space-y-6 p-6 bg-background">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Content Management</h1>
-          <p className="text-muted-foreground">
-            Create, manage, and publish your social media content
-          </p>
+    <div className="w-full max-w-full overflow-x-hidden">
+      <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
+        {/* Breadcrumb */}
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Content Management</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        {/* Header */}
+        <div className="space-y-3 lg:space-y-6">
+          <div>
+            <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
+              Content Management
+            </h1>
+            <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
+              Create, manage, and publish your social media content with AI assistance
+            </p>
+          </div>
+          
+          {/* Stats */}
+          <div className="flex flex-wrap items-center gap-2 lg:gap-4">
+            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
+              <FileText className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
+              <span className="font-medium">{filteredContents.length}</span>
+              <span className="text-muted-foreground">Content{filteredContents.length !== 1 ? 's' : ''}</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
+              <Brain className="h-3 w-3 lg:h-4 lg:w-4 text-primary flex-shrink-0" />
+              <span className="font-medium">AI Powered</span>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          <Badge variant="secondary" className="text-lg px-3 py-1">
-            {filteredContents.length} Content{filteredContents.length !== 1 ? 's' : ''}
-          </Badge>
-          <Button onClick={() => setIsCreating(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Create Content
-          </Button>
-        </div>
-      </div>
 
-      {/* Debug Info */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="p-4 bg-gray-100 rounded-lg text-sm">
-          <strong>Debug Info:</strong>
-          <br />
-          Selected Brand ID: {brandFilter || 'None'}
-          <br />
-          Available Brands: {brands.length}
-          <br />
-          API URL: {`/api/content?${queryString}`}
-          <br />
-          Is Brand Filtered: {isBrandFiltered ? 'Yes' : 'No'}
-        </div>
-      )}
 
-      {/* Search and Filters */}
-      <ContentFiltersComponent
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        statusFilter={statusFilter}
-        onStatusChange={setStatusFilter}
-        adTypeFilter={adTypeFilter}
-        onAdTypeChange={setAdTypeFilter}
-        brandFilter={brandFilter}
-        onBrandChange={setBrandFilter}
-        totalCount={filteredContents.length}
-        onCreateNew={() => setIsCreating(true)}
-        brands={brands}
-      />
 
-      {/* Content List */}
-      <ContentList
-        contents={filteredContents}
-        onEdit={handleUpdateContent}
-        onCreate={handleCreateContent}
-        onDelete={handleDeleteContent}
-        onSubmit={handleSubmitContent}
-        onPublish={handlePublishContent}
-        isProcessing={
-          createContentMutation.isPending ||
-          updateContentMutation.isPending ||
-          deleteContentMutation.isPending ||
-          submitContentMutation.isPending ||
-          publishContentMutation.isPending
-        }
-        emptyMessage={
-          searchTerm || statusFilter !== "all" || adTypeFilter !== "all" || brandFilter
-            ? 'No content found'
-            : 'No content yet'
-        }
-        emptyDescription={
-          searchTerm || statusFilter !== "all" || adTypeFilter !== "all" || brandFilter
-            ? 'Try adjusting your search terms or filters'
-            : 'Create your first piece of content to get started'
-        }
-        brands={brands}
-        products={products}
-        userId={userId}
-      />
+        {/* Actions and Search */}
+        {filteredContents.length > 0 ? (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                {/* Search and Create */}
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search content..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Badge variant="secondary">
+                      {filteredContents.length} content{filteredContents.length !== 1 ? 's' : ''}
+                    </Badge>
+                    <Button onClick={() => setIsCreating(true)} size="sm">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create Content
+                    </Button>
+                  </div>
+                </div>
 
-      {/* Create Content Modal */}
-      {isCreating && (
+                {/* Filters */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Filters:</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ContentStatusEnum | "all")}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value={ContentStatusEnum.Draft}>Draft</SelectItem>
+                        <SelectItem value={ContentStatusEnum.PendingApproval}>Pending Approval</SelectItem>
+                        <SelectItem value={ContentStatusEnum.Approved}>Approved</SelectItem>
+                        <SelectItem value={ContentStatusEnum.Rejected}>Rejected</SelectItem>
+                        <SelectItem value={ContentStatusEnum.Published}>Published</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={adTypeFilter === "all" ? "all" : adTypeFilter.toString()} onValueChange={(value) => setAdTypeFilter(value === "all" ? "all" : parseInt(value) as AdTypeEnum)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Types</SelectItem>
+                        <SelectItem value={AdTypeEnum.TextOnly.toString()}>Text Only</SelectItem>
+                        <SelectItem value={AdTypeEnum.ImageText.toString()}>Image + Text</SelectItem>
+                        <SelectItem value={AdTypeEnum.VideoText.toString()}>Video + Text</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={brandFilter} onValueChange={setBrandFilter}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Brand" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Brands</SelectItem>
+                        {brands.map((brand: { id: string; name: string }) => (
+                          <SelectItem key={brand.id} value={brand.id}>
+                            {brand.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {(searchTerm || statusFilter !== "all" || adTypeFilter !== "all" || brandFilter !== "all") && (
+                    <div className="flex justify-end">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSearchTerm("");
+                          setStatusFilter("all");
+                          setAdTypeFilter("all");
+                          setBrandFilter("all");
+                        }}
+                        className="text-muted-foreground"
+                      >
+                        <X className="mr-2 h-4 w-4" />
+                        Clear Filters
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          /* Empty state with beautiful card design */
+          <Card className="border border-dashed border-border/50 bg-card/50 backdrop-blur-sm">
+            <CardContent className="p-6 text-center">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
+                <FileText className="h-6 w-6 text-primary" />
+              </div>
+                <h3 className="text-lg font-semibold mb-2">
+                {searchTerm ? 'No content found' : 'No content yet'}
+                </h3>
+              <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
+                {searchTerm
+                  ? 'Try adjusting your search terms or filters to find your content.'
+                  : 'Create your first piece of content to start your social media journey.'
+                }
+              </p>
+              {!searchTerm && brands.length > 0 && (
+                <div className="space-y-3">
+                  <Button onClick={() => setIsCreating(true)} size="sm" className="h-8 text-xs">
+                    <Plus className="mr-1 h-3 w-3" />
+                    Create Your First Content
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    AI-powered content • Multiple formats • Easy publishing
+                  </p>
+                </div>
+                )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Content Table */}
+        {filteredContents.length > 0 && (
+          <DataTable
+            columns={createColumns(
+              handleEditContent,
+              handleDeleteContent,
+              handleSubmitContent,
+              handlePublishContent,
+              brands,
+              createContentMutation.isPending ||
+              updateContentMutation.isPending ||
+              deleteContentMutation.isPending ||
+              submitContentMutation.isPending ||
+              publishContentMutation.isPending
+            )}
+            data={filteredContents}
+            pageSize={10}
+            showSearch={false}
+          />
+        )}
+
+        {/* Help Section */}
+        <Card className="border border-blue-200 dark:border-blue-800">
+          <CardContent className="p-3">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-blue-900 dark:text-blue-100 text-xs mb-1">
+                  About Content Management
+                </h3>
+                <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
+                  Create and manage your social media content with AI assistance. All content goes through an approval workflow before publishing to ensure quality and brand consistency.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Create Content Modal */}
         <ContentModal
           content={null}
           isEditing={true}
-          onClose={() => setIsCreating(false)}
+          open={isCreating}
+          onOpenChange={setIsCreating}
           onCreate={handleCreateContent}
           isProcessing={createContentMutation.isPending}
           brands={brands}
           products={products}
           userId={userId}
         />
-      )}
+
+        {/* Edit Content Modal */}
+        <ContentModal
+          content={selectedContent}
+          isEditing={isEditing}
+          open={!!selectedContent}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedContent(null);
+              setIsEditing(false);
+            }
+          }}
+          onSave={handleSaveContent}
+          onSubmit={handleSubmitContent}
+          onPublish={handlePublishContent}
+          isProcessing={updateContentMutation.isPending}
+          brands={brands}
+          products={products}
+          userId={userId}
+        />
+      </div>
     </div>
   );
 }

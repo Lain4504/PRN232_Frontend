@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Sparkles,
   Wand2,
@@ -25,8 +26,11 @@ import {
   Bot,
   User,
   Settings,
+  Brain,
+  FileText,
+  Plus,
 } from "lucide-react";
-import { contentApi } from "@/lib/mock-api";
+// Removed mock-api import - using real API instead
 import { Brand, Product, ConversationSummary, ConversationDetails, ConversationsResponse } from "@/lib/types/aisam-types";
 import { useAIChat, AdTypes } from "@/hooks/use-ai-chat";
 import { api, endpoints } from "@/lib/api";
@@ -73,7 +77,11 @@ interface ChatSession {
   updated_at: string;
 }
 
-export function AIContentGenerator() {
+interface AIContentGeneratorProps {
+  initialBrandId?: string;
+}
+
+export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps = {}) {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [generations, setGenerations] = useState<AIContentGeneration[]>([]);
@@ -96,7 +104,7 @@ export function AIContentGenerator() {
   const aiChatMutation = useAIChat();
 
   const [form, setForm] = useState<GenerationForm>({
-    brand_id: '',
+    brand_id: initialBrandId || '',
     product_id: '',
     prompt: '',
     style_context: '',
@@ -517,7 +525,7 @@ export function AIContentGenerator() {
 
   const handleSaveToLibrary = async (generation: AIContentGeneration) => {
     try {
-      const response = await contentApi.saveGeneratedContent({
+      const response = await api.post(endpoints.contents(), {
         prompt: generation.prompt,
         brand_id: generation.brand_id,
         product_id: generation.product_id,
@@ -558,11 +566,24 @@ export function AIContentGenerator() {
 
   if (loading) {
     return (
-      <div className="flex-1 space-y-6 p-6 bg-background">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading AI Content Generator...</p>
+      <div className="w-full max-w-full overflow-x-hidden">
+        <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <div>
+                <Skeleton className="h-10 w-64 mb-3" />
+                <Skeleton className="h-5 w-80" />
+              </div>
+              <div className="flex items-center gap-4">
+                <Skeleton className="h-8 w-32" />
+                <Skeleton className="h-8 w-28" />
+              </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {[...Array(4)].map((_, i) => (
+                <Skeleton key={i} className="h-32 w-full" />
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -570,29 +591,42 @@ export function AIContentGenerator() {
   }
 
   return (
-    <div className="flex-1 space-y-6 p-6 bg-background">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            <Sparkles className="h-8 w-8 text-primary" />
-            AI Content Generator
-          </h1>
-          <p className="text-muted-foreground">
-            Chat with AI to generate engaging social media content
-          </p>
+    <div className="w-full max-w-full overflow-x-hidden">
+      <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
+        {/* Header */}
+        <div className="space-y-3 lg:space-y-6">
+          <div>
+            <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground flex items-center gap-3">
+              <Sparkles className="h-6 w-6 lg:h-8 lg:w-8 text-primary" />
+              AI Content Generator
+            </h1>
+            <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
+              Chat with AI to generate engaging social media content for your campaigns
+            </p>
+          </div>
+          
+          {/* Stats */}
+          <div className="flex flex-wrap items-center gap-2 lg:gap-4">
+            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
+              <Brain className="h-3 w-3 lg:h-4 lg:w-4 text-primary flex-shrink-0" />
+              <span className="font-medium">AI Powered</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
+              <FileText className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
+              <span className="font-medium">{generations.length}</span>
+              <span className="text-muted-foreground">Generated</span>
+            </div>
+            <Button
+              variant="outline"
+              onClick={createNewChatSession}
+              size="sm"
+              className="h-8 text-xs"
+            >
+              <Plus className="mr-1 h-3 w-3" />
+              New Chat
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={createNewChatSession}
-            className="flex items-center gap-2"
-          >
-            <Settings className="h-4 w-4" />
-            New Chat
-          </Button>
-        </div>
-      </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Chat Interface */}
@@ -916,29 +950,34 @@ export function AIContentGenerator() {
 
 
           {/* Tips Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5" />
-                AI Generation Tips
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="text-sm">
-                <strong>Be specific:</strong> Include details about tone, target audience, and key messages.
-              </div>
-              <div className="text-sm">
-                <strong>Use context:</strong> Mention your brand personality and unique selling points.
-              </div>
-              <div className="text-sm">
-                <strong>Specify format:</strong> Choose the right content type for your platform.
-              </div>
-              <div className="text-sm">
-                <strong>Review & edit:</strong> AI content is a starting point - customize for your voice.
+          <Card className="border border-blue-200 dark:border-blue-800">
+            <CardContent className="p-3">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-semibold text-blue-900 dark:text-blue-100 text-xs mb-2">
+                    AI Generation Tips
+                  </h3>
+                  <div className="space-y-2 text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
+                    <div>
+                      <strong>Be specific:</strong> Include details about tone, target audience, and key messages.
+                    </div>
+                    <div>
+                      <strong>Use context:</strong> Mention your brand personality and unique selling points.
+                    </div>
+                    <div>
+                      <strong>Specify format:</strong> Choose the right content type for your platform.
+                    </div>
+                    <div>
+                      <strong>Review & edit:</strong> AI content is a starting point - customize for your voice.
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
+      </div>
       </div>
     </div>
   );

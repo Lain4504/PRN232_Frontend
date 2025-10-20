@@ -59,7 +59,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
           {/* Main Content Area */}
           <div className={"flex flex-col flex-1 pt-12 min-h-0 max-w-full overflow-hidden dashboard-content " + (sidebarMode === 'expanded' ? 'lg:ml-64' : 'lg:ml-12')}>
-            <main className="flex-1 overflow-y-auto overflow-x-hidden max-w-full">
+            <main className="flex-1 overflow-x-hidden max-w-full">
               {children}
             </main>
           </div>

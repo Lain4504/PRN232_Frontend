@@ -3,8 +3,9 @@
 import React from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
+import { useUser } from '@/hooks/use-user'
+import { useQuery } from '@tanstack/react-query'
 import { api, endpoints } from '@/lib/api'
-import { UserResponseDto } from '@/lib/types/user'
 import {
   Home,
   Settings,
@@ -17,11 +18,19 @@ import {
   CheckCircle,
   Share2,
   PanelLeftDashed,
+  Users,
+  TrendingUp,
+  Bell,
+  HelpCircle,
+  BookOpen,
+  Megaphone,
+  CreditCard,
   Sparkles,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { CompactSubscriptionStatus } from "@/components/subscription/subscription-status-indicator"
 import {
   Tooltip,
   TooltipContent,
@@ -57,9 +66,9 @@ const mainNavItems: NavItem[] = [
     icon: Target,
   },
   {
-    title: "Contents",
-    url: "/dashboard/contents",
-    icon: FileText,
+    title: "Campaigns",
+    url: "/dashboard/campaigns",
+    icon: Megaphone,
   },
   {
     title: "AI Generator",
@@ -77,15 +86,14 @@ const mainNavItems: NavItem[] = [
     icon: Calendar,
   },
   {
-    title: "Approvals",
-    url: "/dashboard/approvals",
-    icon: CheckCircle,
-    badge: "1" as const,
-  },
-  {
     title: "Posts",
     url: "/dashboard/posts",
     icon: Mail,
+  },
+  {
+    title: "Analytics",
+    url: "/dashboard/analytics",
+    icon: TrendingUp,
   },
   {
     title: "Reports",
@@ -94,8 +102,34 @@ const mainNavItems: NavItem[] = [
   }
 ]
 
-// Menu phụ - đơn giản hóa
+// Dynamic workflow items with API data
+const getWorkflowNavItems = (approvalCount: number, notificationCount: number): NavItem[] => [
+  {
+    title: "Approvals",
+    url: "/dashboard/approvals",
+    icon: CheckCircle,
+    badge: approvalCount > 0 ? approvalCount.toString() : undefined,
+  },
+  {
+    title: "Team",
+    url: "/dashboard/teams",
+    icon: Users,
+  },
+  {
+    title: "Notifications",
+    url: "/dashboard/notifications",
+    icon: Bell,
+    badge: notificationCount > 0 ? notificationCount.toString() : undefined,
+  }
+]
+
+// System and Support Navigation
 const secondaryNavItems: NavItem[] = [
+  {
+    title: "Subscription",
+    url: "/subscription",
+    icon: CreditCard,
+  },
   {
     title: "Settings",
     url: "/dashboard/settings",
@@ -111,26 +145,58 @@ const secondaryNavItems: NavItem[] = [
     url: "/account/me",
     icon: User,
   },
+  {
+    title: "Help & Support",
+    url: "/dashboard/help",
+    icon: HelpCircle,
+  },
+  {
+    title: "Documentation",
+    url: "/dashboard/docs",
+    icon: BookOpen,
+  },
 ]
 
 export function DashboardSidebar() {
   const pathname = usePathname()
   const [sidebarModeState, setSidebarModeState] = React.useState<'expanded' | 'collapsed' | 'hover'>('hover')
-  const [userRole, setUserRole] = React.useState<string | null>(null)
+  const { data: user } = useUser()
+  const userRole = user?.role || null
+
+  // API calls for notifications and approvals
+  const { data: approvalCount = 0 } = useQuery({
+    queryKey: ['approvals', 'pending', 'count'],
+    queryFn: async () => {
+      try {
+        const response = await api.get<{ data: number }>('/approvals/pending/count')
+        return response.data.data ?? 0
+      } catch (error) {
+        console.error('Error fetching approval count:', error)
+        return 0
+      }
+    },
+    staleTime: 30 * 1000, // 30 seconds
+    refetchInterval: 60 * 1000, // Refetch every minute
+  })
+
+  const { data: notificationCount = 0 } = useQuery({
+    queryKey: ['notifications', 'unread', 'count'],
+    queryFn: async () => {
+      try {
+        const response = await api.get<{ data: number }>('/notifications/unread/count')
+        return response.data.data ?? 0
+      } catch (error) {
+        console.error('Error fetching notification count:', error)
+        return 0
+      }
+    },
+    staleTime: 30 * 1000, // 30 seconds
+    refetchInterval: 60 * 1000, // Refetch every minute
+  })
+
+  const workflowNavItems = getWorkflowNavItems(approvalCount, notificationCount)
 
   React.useEffect(() => {
-    // Fetch user role
-    const fetchUserRole = async () => {
-      try {
-        const response = await api.get<UserResponseDto>(endpoints.userProfile)
-        setUserRole(response.data?.role || null)
-      } catch (error) {
-        console.error('Failed to fetch user role:', error)
-      }
-    }
-
-    fetchUserRole()
-
     if (typeof window === 'undefined') return
     const isMobile = window.matchMedia('(max-width: 1023px)').matches
     if (isMobile) {
@@ -205,24 +271,17 @@ export function DashboardSidebar() {
           }}
         >
           <div className="p-2 lg:p-2">
-            <div className="mb-4">
+            {/* Main Navigation */}
+            <div className="mb-6">
               <h3 className={cn(
-                "text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
+                "text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
                 sidebarModeState === 'collapsed' && "hidden"
               )}>
                 Main Navigation
               </h3>
               {/* Main Navigation Items */}
               <div className="space-y-1">
-                {mainNavItems
-                  .filter((item) => {
-                    // Hide Teams menu if user is not Vendor
-                    if (item.title === "Teams") {
-                      return userRole === "Vendor"
-                    }
-                    return true
-                  })
-                  .map((item) => (
+                {mainNavItems.map((item) => (
                     <Tooltip key={item.title}>
                       <TooltipTrigger asChild>
                         <Button
@@ -253,22 +312,22 @@ export function DashboardSidebar() {
                             {item.badge && (
                               <>
                                 {sidebarModeState === 'collapsed' && (
-                                  <span className="absolute right-0 top-1 hidden lg:inline-flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] leading-none text-primary-foreground">
+                                  <span className="absolute right-0 top-1 hidden lg:inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none text-white">
                                     {item.badge}
                                   </span>
                                 )}
                                 {sidebarModeState === 'hover' && (
                                   <>
-                                    <span className="absolute right-0 top-1 hidden lg:inline-flex lg:group-hover:hidden h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] leading-none text-primary-foreground">
+                                    <span className="absolute right-0 top-1 hidden lg:inline-flex lg:group-hover:hidden h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none text-white">
                                       {item.badge}
                                     </span>
-                                    <span className="ml-auto hidden lg:group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                                    <span className="ml-auto hidden lg:group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                                       {item.badge}
                                     </span>
                                   </>
                                 )}
                                 {sidebarModeState === 'expanded' && (
-                                  <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                                  <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                                     {item.badge}
                                   </span>
                                 )}
@@ -285,16 +344,96 @@ export function DashboardSidebar() {
               </div>
             </div>
 
+            {/* Workflow Navigation */}
+            <div className="mb-6">
+              <h3 className={cn(
+                "text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
+                sidebarModeState === 'collapsed' && "hidden"
+              )}>
+                Workflow
+              </h3>
+              <div className="space-y-1">
+                {workflowNavItems
+                  .filter((item) => {
+                    // Hide Teams menu if user is not Vendor
+                    if (item.title === "Team") {
+                      return userRole === "Vendor"
+                    }
+                    return true
+                  })
+                  .map((item) => (
+                  <Tooltip key={item.title}>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        asChild
+                        className={cn(
+                          "relative w-full h-8 lg:h-8 px-2",
+                          sidebarModeState === 'expanded' && "justify-start",
+                          sidebarModeState === 'collapsed' && "lg:justify-center",
+                          sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start",
+                          pathname === item.url && "bg-accent"
+                        )}
+                      >
+                        <Link href={item.url}>
+                          <item.icon className={cn(
+                            "size-4",
+                            sidebarModeState === 'expanded' && "mr-2",
+                            sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-2"
+                          )} />
+                          <span className={cn(
+                            "transition-opacity duration-300 whitespace-nowrap",
+                            sidebarModeState === 'expanded' && "inline",
+                            sidebarModeState === 'collapsed' && "hidden",
+                            sidebarModeState === 'hover' && "hidden lg:group-hover:inline"
+                          )}>
+                            {item.title}
+                          </span>
+                          {item.badge && (
+                            <>
+                              {sidebarModeState === 'collapsed' && (
+                                <span className="absolute right-0 top-1 hidden lg:inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none text-white">
+                                  {item.badge}
+                                </span>
+                              )}
+                              {sidebarModeState === 'hover' && (
+                                <>
+                                  <span className="absolute right-0 top-1 hidden lg:inline-flex lg:group-hover:hidden h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none text-white">
+                                    {item.badge}
+                                  </span>
+                                  <span className="ml-auto hidden lg:group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                                    {item.badge}
+                                  </span>
+                                </>
+                              )}
+                              {sidebarModeState === 'expanded' && (
+                                <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                                  {item.badge}
+                                </span>
+                              )}
+                            </>
+                          )}
+                        </Link>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden")}>
+                      <p>{item.title}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+              </div>
+            </div>
+
             {/* Separator */}
             <div className={cn(
-              "border-t border-sidebar-border my-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
+              "border-t border-sidebar-border my-4 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
               sidebarModeState === 'collapsed' && "hidden"
             )} />
 
             {/* System Navigation */}
             <div className="mb-4">
               <h3 className={cn(
-                "text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
+                "text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
                 sidebarModeState === 'collapsed' && "hidden"
               )}>
                 System
@@ -341,8 +480,14 @@ export function DashboardSidebar() {
           </div>
         </div>
 
-        {/* Footer with mode switcher icon - hidden on mobile */}
-        <div className="p-2 border-t border-sidebar-border hidden lg:block">
+        {/* Footer with subscription status and mode switcher - hidden on mobile */}
+        <div className="p-2 border-t border-sidebar-border hidden lg:block space-y-2">
+          {/* Subscription Status */}
+          <div className="px-2">
+            <CompactSubscriptionStatus />
+          </div>
+
+          {/* Mode Switcher */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="w-full h-10 lg:h-10 px-2 lg:justify-center">

@@ -5,7 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Plus } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, Plus, Filter } from "lucide-react";
 import { ContentStatusEnum, AdTypeEnum } from "@/lib/types/aisam-types";
 
 interface ContentFiltersProps {
@@ -36,66 +37,80 @@ export function ContentFilters({
   brands = []
 }: ContentFiltersProps) {
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="flex items-center gap-4 flex-wrap">
-          <div className="relative flex-1 min-w-[200px]">
+    <Card className="border border-muted/50">
+      <CardContent className="p-3">
+        <div className="flex items-center gap-2 mb-3">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <h3 className="text-sm font-semibold">Filters & Search</h3>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Search */}
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search content, title, or description..."
+              placeholder="Search content..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10"
+              className="pl-10 h-9 text-sm"
             />
           </div>
           
-          <select
-            value={brandFilter}
-            onChange={(e) => {
-              console.log('Brand filter changed to:', e.target.value); // Debug log
-              onBrandChange(e.target.value);
-            }}
-            className="px-3 py-2 border rounded-md min-w-[120px]"
-          >
-            <option value="">All Brands ({brands.length} available)</option>
-            {brands.map((brand) => (
-              <option key={brand.id} value={brand.id}>
-                {brand.name}
-              </option>
-            ))}
-          </select>
+          {/* Brand Filter */}
+          <Select value={brandFilter} onValueChange={onBrandChange}>
+            <SelectTrigger className="h-9 text-sm">
+              <SelectValue placeholder={`All Brands (${brands.length})`} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Brands ({brands.length} available)</SelectItem>
+              {brands.map((brand) => (
+                <SelectItem key={brand.id} value={brand.id}>
+                  {brand.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           
-          <select
-            value={statusFilter}
-            onChange={(e) => onStatusChange(e.target.value as ContentStatusEnum | "all")}
-            className="px-3 py-2 border rounded-md min-w-[120px]"
-          >
-            <option value="all">All Status</option>
-            <option value={ContentStatusEnum.Draft}>Draft</option>
-            <option value={ContentStatusEnum.PendingApproval}>Pending Approval</option>
-            <option value={ContentStatusEnum.Approved}>Approved</option>
-            <option value={ContentStatusEnum.Rejected}>Rejected</option>
-            <option value={ContentStatusEnum.Published}>Published</option>
-          </select>
+          {/* Status Filter */}
+          <Select value={statusFilter} onValueChange={onStatusChange}>
+            <SelectTrigger className="h-9 text-sm">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value={ContentStatusEnum.Draft}>Draft</SelectItem>
+              <SelectItem value={ContentStatusEnum.PendingApproval}>Pending Approval</SelectItem>
+              <SelectItem value={ContentStatusEnum.Approved}>Approved</SelectItem>
+              <SelectItem value={ContentStatusEnum.Rejected}>Rejected</SelectItem>
+              <SelectItem value={ContentStatusEnum.Published}>Published</SelectItem>
+            </SelectContent>
+          </Select>
           
-          <select
-            value={adTypeFilter}
-            onChange={(e) => onAdTypeChange(e.target.value === "all" ? "all" : parseInt(e.target.value) as AdTypeEnum)}
-            className="px-3 py-2 border rounded-md min-w-[120px]"
+          {/* Ad Type Filter */}
+          <Select 
+            value={adTypeFilter === "all" ? "all" : adTypeFilter.toString()} 
+            onValueChange={(value) => onAdTypeChange(value === "all" ? "all" : parseInt(value) as AdTypeEnum)}
           >
-            <option value="all">All Types</option>
-            <option value={AdTypeEnum.TextOnly}>Text Only</option>
-            <option value={AdTypeEnum.ImageText}>Image + Text</option>
-            <option value={AdTypeEnum.VideoText}>Video + Text</option>
-          </select>
-          
-          <Badge variant="secondary">
-            {totalCount} content{totalCount !== 1 ? 's' : ''}
+            <SelectTrigger className="h-9 text-sm">
+              <SelectValue placeholder="All Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value={AdTypeEnum.TextOnly.toString()}>Text Only</SelectItem>
+              <SelectItem value={AdTypeEnum.ImageText.toString()}>Image + Text</SelectItem>
+              <SelectItem value={AdTypeEnum.VideoText.toString()}>Video + Text</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="flex items-center justify-between mt-3 pt-3 border-t">
+          <Badge variant="secondary" className="text-xs">
+            {totalCount} content{totalCount !== 1 ? 's' : ''} found
           </Badge>
           
           {onCreateNew && (
-            <Button onClick={onCreateNew} className="ml-auto">
-              <Plus className="mr-2 h-4 w-4" />
+            <Button onClick={onCreateNew} size="sm" className="h-8 text-xs">
+              <Plus className="mr-1 h-3 w-3" />
               Create Content
             </Button>
           )}

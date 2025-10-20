@@ -183,7 +183,7 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <Button variant="outline" asChild className="h-auto p-4">
-                <Link href={`/dashboard/products?brand=${brand.id}`}>
+                <Link href={`/dashboard/brands/${brand.id}/products`}>
                   <div className="flex items-center gap-3">
                     <Package className="h-6 w-6" />
                     <div className="text-left">
@@ -197,7 +197,7 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
               </Button>
 
               <Button variant="outline" asChild className="h-auto p-4">
-                <Link href={`/dashboard/contents?brand=${brand.id}`}>
+                <Link href={`/dashboard/brands/${brand.id}/contents`}>
                   <div className="flex items-center gap-3">
                     <FileText className="h-6 w-6" />
                     <div className="text-left">

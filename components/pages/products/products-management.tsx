@@ -34,9 +34,12 @@ import { Product, Brand } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useBrands } from "@/hooks/use-brands";
 import { useProducts, useDeleteProduct } from "@/hooks/use-products";
-import { useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { ProductModal } from "@/components/products/product-modal";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { FormField } from "@/components/ui/form-field";
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
+import Link from "next/link";
 
 // Create columns function to access component state
 const createColumns = (
@@ -174,9 +177,11 @@ const createColumns = (
   ];
 
 export function ProductsManagement() {
-  const searchParams = useSearchParams();
+  const params = useParams();
   const [searchTerm, setSearchTerm] = useState("");
-  const [brandFilter, setBrandFilter] = useState<string>("all");
+
+  // Get brand ID from route params
+  const brandId = params.id as string;
 
   // Hooks
   const { data: brands = [] } = useBrands();
@@ -187,29 +192,15 @@ export function ProductsManagement() {
   const safeBrands = Array.isArray(brands) ? brands : [];
   const safeProducts = Array.isArray(products) ? products : [];
 
-  // Refresh data when window gains focus (useful when coming back from brand management)
-  useEffect(() => {
-    const handleFocus = () => {
-      refetchProducts();
-    };
+  // Get current brand info
+  const currentBrand = safeBrands.find(b => b.id === brandId);
 
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [refetchProducts]);
-
-  // Handle URL query parameters for brand filtering
-  useEffect(() => {
-    const brandFromUrl = searchParams.get('brand');
-    if (brandFromUrl) {
-      setBrandFilter(brandFromUrl);
-    }
-  }, [searchParams]);
-
+  // Filter products by brand and search term
   const filteredProducts = safeProducts.filter(product => {
+    const matchesBrand = brandId ? product.brandId === brandId : true;
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesBrand = brandFilter === "all" || product.brandId === brandFilter;
-    return matchesSearch && matchesBrand;
+    return matchesBrand && matchesSearch;
   });
 
   const handleRefresh = () => {
@@ -229,36 +220,39 @@ export function ProductsManagement() {
   // Loading state
   if (loading) {
     return (
-      <div className="flex-1 space-y-8 p-6 lg:p-8 bg-background">
-        <div className="space-y-6">
-          <div className="space-y-4">
-            <div>
-              <div className="h-10 w-64 mb-3 bg-muted animate-pulse rounded" />
-              <div className="h-5 w-80 bg-muted animate-pulse rounded" />
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="h-8 w-32 bg-muted animate-pulse rounded" />
-              <div className="h-8 w-28 bg-muted animate-pulse rounded" />
-            </div>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-40 bg-muted animate-pulse rounded" />
-            ))}
-          </div>
+      <div className="flex-1 space-y-6 p-6 bg-background">
+        <LoadingSkeleton className="h-8 w-48" />
+        <div className="grid gap-6 md:grid-cols-2">
+          <LoadingSkeleton className="h-10 w-full" />
+          <LoadingSkeleton className="h-10 w-full" />
         </div>
+        <LoadingSkeleton className="h-64 w-full" />
       </div>
     );
   }
 
   // Main UI
-  const totalProducts = safeProducts.length;
-  const totalBrands = safeBrands.length;
-  const avgPrice = safeProducts.length > 0 ? (safeProducts.reduce((sum, p) => sum + (p.price || 0), 0) / safeProducts.length).toFixed(2) : '0.00';
+  const totalProducts = filteredProducts.length;
+  const avgPrice = filteredProducts.length > 0 ? (filteredProducts.reduce((sum, p) => sum + (p.price || 0), 0) / filteredProducts.length).toFixed(2) : '0.00';
 
-  // Get current brand name for display
-  const currentBrand = safeBrands.find(b => b.id === brandFilter);
-  const isFilteredByBrand = brandFilter !== "all";
+  // Redirect to brands if no brand ID provided
+  if (!brandId) {
+    return (
+      <div className="flex-1 space-y-6 p-6 bg-background">
+        <div className="text-center py-16">
+          <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">No Brand Selected</h2>
+          <p className="text-muted-foreground mb-6">Please select a brand to view its products.</p>
+          <Button asChild>
+            <Link href="/dashboard/brands">
+              <Target className="mr-2 h-4 w-4" />
+              Go to Brands
+            </Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-full overflow-x-hidden">
@@ -275,7 +269,7 @@ export function ProductsManagement() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Products</BreadcrumbPage>
+              <BreadcrumbPage>{currentBrand?.name || 'Brand'} - Products</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -284,21 +278,13 @@ export function ProductsManagement() {
         <div className="space-y-3 lg:space-y-6">
           <div>
             <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
-              Products
-              {isFilteredByBrand && currentBrand && (
-                <span className="text-lg font-normal text-muted-foreground ml-2">
-                  - {currentBrand.name}
-                </span>
-              )}
+              Products - {currentBrand?.name || 'Unknown Brand'}
             </h1>
             <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
-              {isFilteredByBrand
-                ? `Products for ${currentBrand?.name || 'selected brand'}`
-                : 'Manage your product catalog and inventory.'
-              }
+              Manage products for {currentBrand?.name || 'this brand'}
             </p>
           </div>
-          {/* Stats */}
+          {/* Stats and Quick Actions */}
           <div className="flex flex-wrap items-center gap-2 lg:gap-4">
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
               <Package className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
@@ -306,96 +292,49 @@ export function ProductsManagement() {
               <span className="text-muted-foreground">Products</span>
             </div>
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <Target className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
-              <span className="font-medium">{totalBrands}</span>
-              <span className="text-muted-foreground">Brands</span>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
               <DollarSign className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
               <span className="font-medium">${avgPrice}</span>
               <span className="text-muted-foreground">Avg Price</span>
             </div>
+            <Button asChild variant="outline" size="sm" className="ml-auto">
+              <Link href="/dashboard/brands">
+                <Target className="mr-2 h-4 w-4" />
+                Back to Brands
+              </Link>
+            </Button>
           </div>
         </div>
 
-        {/* Brand Filter Info */}
-        {isFilteredByBrand && (
-          <Card className="border border-blue-200 dark:border-blue-800">
-            <CardContent className="p-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Target className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                    Showing products for: <strong>{currentBrand?.name}</strong>
-                  </span>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setBrandFilter("all")}
-                  className="text-xs"
-                >
-                  Show All Products
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Add Product Card */}
-        <Card className="border border-primary/20">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <Plus className="h-4 w-4 text-primary" />
-              <h3 className="text-base font-semibold">Add New Product</h3>
-            </div>
-            <p className="text-xs text-muted-foreground mb-3">
-              Add a new product to your catalog to start creating content and campaigns.
-            </p>
-            <ProductModal
-              mode="create"
-              defaultBrandId={isFilteredByBrand ? brandFilter : undefined}
-              onSuccess={handleRefresh}
-            >
-              <Button
-                size="sm"
-                className="w-full sm:w-auto h-8 text-xs"
-              >
-                <Plus className="mr-1 h-3 w-3" />
-                Add Product
-              </Button>
-            </ProductModal>
-          </CardContent>
-        </Card>
-
-        {/* Search and Filters */}
+        {/* Actions and Filters */}
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search products..."
-                  value={searchTerm}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+              <div className="flex flex-col sm:flex-row gap-4 flex-1">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search products..."
+                    value={searchTerm}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
               </div>
-              <select
-                value={brandFilter}
-                onChange={(e) => setBrandFilter(e.target.value)}
-                className="px-3 py-2 border rounded-md"
-              >
-                <option value="all">All Brands</option>
-                {safeBrands.map(brand => (
-                  <option key={brand.id} value={brand.id}>
-                    {brand.name}
-                  </option>
-                ))}
-              </select>
-              <Badge variant="secondary">
-                {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
-              </Badge>
+              <div className="flex items-center gap-3">
+                <Badge variant="secondary">
+                  {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
+                </Badge>
+                <ProductModal
+                  mode="create"
+                  defaultBrandId={brandId}
+                  onSuccess={handleRefresh}
+                >
+                  <Button size="sm">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Product
+                  </Button>
+                </ProductModal>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -408,24 +347,26 @@ export function ProductsManagement() {
           </CardHeader>
           <CardContent>
             {filteredProducts.length > 0 ? (
-              <DataTable columns={createColumns(handleDeleteProduct, handleRefresh, safeBrands, deleteProductMutation.isPending)} data={filteredProducts} filterColumn="name" />
+              <DataTable 
+                columns={createColumns(handleDeleteProduct, handleRefresh, safeBrands, deleteProductMutation.isPending)} 
+                data={filteredProducts} 
+                filterColumn="name" 
+                showSearch={false}
+              />
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-6">
                   <Package className="h-10 w-10 text-muted-foreground" />
                 </div>
                 <h4 className="font-semibold text-lg mb-3">
-                  {isFilteredByBrand ? 'No Products for This Brand' : 'No Products Yet'}
+                  No Products for {currentBrand?.name || 'This Brand'}
                 </h4>
                 <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-                  {isFilteredByBrand
-                    ? 'This brand doesn\'t have any products yet, or they may have been removed when the brand was deleted.'
-                    : 'Start by adding your first product to create content and campaigns around it.'
-                  }
+                  This brand doesn't have any products yet. Start by adding your first product to create content and campaigns around it.
                 </p>
                 <ProductModal
                   mode="create"
-                  defaultBrandId={isFilteredByBrand ? brandFilter : undefined}
+                  defaultBrandId={brandId}
                   onSuccess={handleRefresh}
                 >
                   <Button className="mt-6">
@@ -448,7 +389,7 @@ export function ProductsManagement() {
                   About Product Management
                 </h3>
                 <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
-                  Managing your products helps AISAM organize your catalog and campaigns efficiently. You can add, edit, or remove products at any time.
+                  Managing products for {currentBrand?.name || 'this brand'} helps AISAM organize your catalog and campaigns efficiently. You can add, edit, or remove products at any time.
                 </p>
               </div>
             </div>

@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, endpoints, PaginatedResponse } from '@/lib/api'
 import type {
   AssignBrandToTeamRequest,
+  UnassignBrandFromTeamRequest,
   CreateTeamRequest,
   PaginationRequest,
   TeamMemberCreateRequest,
@@ -187,7 +188,25 @@ export function useAssignBrands(teamId: string) {
       return resp.data
     },
     onSuccess: () => {
+      // Invalidate team detail and teams list to update brand assignments
       qc.invalidateQueries({ queryKey: teamKeys.detail(teamId) })
+      qc.invalidateQueries({ queryKey: teamKeys.lists() })
+    },
+  })
+}
+
+// Unassign brand
+export function useUnassignBrand(teamId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (payload: UnassignBrandFromTeamRequest): Promise<boolean> => {
+      const resp = await api.delete<boolean>(endpoints.teamUnassignBrand(teamId), payload)
+      return resp.data
+    },
+    onSuccess: () => {
+      // Invalidate team detail and teams list to update brand assignments
+      qc.invalidateQueries({ queryKey: teamKeys.detail(teamId) })
+      qc.invalidateQueries({ queryKey: teamKeys.lists() })
     },
   })
 }
@@ -213,7 +232,10 @@ export function useAddTeamMember(teamId: string) {
       return resp.data
     },
     onSuccess: () => {
+      // Invalidate team members, team detail, and teams list to update member counts
       qc.invalidateQueries({ queryKey: teamKeys.members(teamId) })
+      qc.invalidateQueries({ queryKey: teamKeys.detail(teamId) })
+      qc.invalidateQueries({ queryKey: teamKeys.lists() })
     },
   })
 }
@@ -227,7 +249,10 @@ export function useUpdateTeamMember(teamId: string, memberId: string) {
       return resp.data
     },
     onSuccess: () => {
+      // Invalidate team members, team detail, and teams list to update member counts
       qc.invalidateQueries({ queryKey: teamKeys.members(teamId) })
+      qc.invalidateQueries({ queryKey: teamKeys.detail(teamId) })
+      qc.invalidateQueries({ queryKey: teamKeys.lists() })
     },
   })
 }
@@ -241,7 +266,10 @@ export function useDeleteTeamMember(teamId: string, memberId: string) {
       return resp.data
     },
     onSuccess: () => {
+      // Invalidate team members, team detail, and teams list to update member counts
       qc.invalidateQueries({ queryKey: teamKeys.members(teamId) })
+      qc.invalidateQueries({ queryKey: teamKeys.detail(teamId) })
+      qc.invalidateQueries({ queryKey: teamKeys.lists() })
     },
   })
 }

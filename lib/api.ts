@@ -114,8 +114,15 @@ export const api = {
   },
 
   // DELETE
-  delete: async <T>(url: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
-    const response = await fetchWithAuth(url, { method: 'DELETE' }, options)
+  delete: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+    const requestOptions: RequestInit = { method: 'DELETE' }
+    
+    if (data) {
+      requestOptions.body = JSON.stringify(data)
+      requestOptions.headers = { 'Content-Type': 'application/json' }
+    }
+    
+    const response = await fetchWithAuth(url, requestOptions, options)
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     return response.json()
   },
@@ -200,16 +207,7 @@ export const api = {
     }
     return response.json()
   },
-  
-  // PATCH
-  patch: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
-    const response = await fetchWithAuth(url, {
-      method: 'PATCH',
-      body: data ? JSON.stringify(data) : undefined,
-    }, options)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    return response.json()
-  },
+
 }
 
 // Endpoints
@@ -222,6 +220,7 @@ export const endpoints = {
   teamRestore: (teamId: string) => `/team/${teamId}/restore`,
   teamStatus: (teamId: string) => `/team/${teamId}/status`,
   teamAssignBrands: (teamId: string) => `/team/${teamId}/brands`,
+  teamUnassignBrand: (teamId: string) => `/team/${teamId}/brands`,
 
   // Team Member endpoints
   teamMembers: (teamId: string) => `/team/${teamId}/members`,
@@ -232,6 +231,35 @@ export const endpoints = {
   addTeamMember: (teamId: string) => `/team/${teamId}/members`,
   removeTeamMember: (teamId: string, userId: string) => `/team/${teamId}/members/${userId}`,
   updateTeamMemberRole: (teamId: string, userId: string) => `/team/${teamId}/members/${userId}`,
+
+  // Team Invitation endpoints
+  teamInvitations: (teamId: string) => `/team/${teamId}/invitations`,
+  teamInvitationById: (invitationId: string) => `/team-invitations/${invitationId}`,
+  sendTeamInvitation: (teamId: string) => `/team/${teamId}/invitations`,
+  resendTeamInvitation: (invitationId: string) => `/team-invitations/${invitationId}/resend`,
+  cancelTeamInvitation: (invitationId: string) => `/team-invitations/${invitationId}`,
+  acceptTeamInvitation: (invitationId: string) => `/team-invitations/${invitationId}/accept`,
+  rejectTeamInvitation: (invitationId: string) => `/team-invitations/${invitationId}/reject`,
+
+  // Team Activity endpoints
+  teamActivity: (teamId: string) => `/team/${teamId}/activity`,
+  teamAnalytics: (teamId: string) => `/team/${teamId}/analytics`,
+
+  // Team Billing endpoints
+  teamBilling: (teamId: string) => `/team/${teamId}/billing`,
+  teamInvoices: (teamId: string) => `/team/${teamId}/invoices`,
+  updateTeamBilling: (teamId: string) => `/team/${teamId}/billing`,
+  cancelTeamSubscription: (teamId: string) => `/team/${teamId}/billing/cancel`,
+  reactivateTeamSubscription: (teamId: string) => `/team/${teamId}/billing/reactivate`,
+  downloadTeamInvoice: (invoiceId: string) => `/team-invoices/${invoiceId}/download`,
+
+  // Team Settings endpoints
+  teamSettings: (teamId: string) => `/team/${teamId}/settings`,
+  updateTeamSettings: (teamId: string) => `/team/${teamId}/settings`,
+  updateTeam: (teamId: string) => `/team/${teamId}`,
+  deleteTeam: (teamId: string) => `/team/${teamId}`,
+  archiveTeam: (teamId: string) => `/team/${teamId}/archive`,
+  restoreTeam: (teamId: string) => `/team/${teamId}/restore`,
 
   // User endpoints
   userProfile: "/users/profile/me",
@@ -253,6 +281,9 @@ export const endpoints = {
   linkTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/link-targets`,
   unlinkTarget: (userId: string, socialIntegrationId: string) => `/social/accounts/unlink-target/${userId}/${socialIntegrationId}`,
 
+  // Ad Accounts endpoints
+  adAccounts: (socialAccountId: string) => `/social/accounts/${socialAccountId}/ad-accounts`,
+
   // Brands endpoints
   brands: () => '/brands/team',
   brandsByTeam: (teamId: string) => `/brands/team/${teamId}`,
@@ -267,8 +298,8 @@ export const endpoints = {
   restoreProduct: (productId: string) => `/products/${productId}/restore`,
 
   // Profile endpoints
-  profiles: () => '/profile',
-  profileById: (profileId: string) => `/profile/${profileId}`,
+  profiles: () => '/profiles',
+  profileById: (profileId: string) => `/profiles/${profileId}`,
   profilesMe: () => '/users/profile/me',
 
   // Approval endpoints
@@ -299,10 +330,110 @@ export const endpoints = {
     if (search) params.append('search', search);
     if (isDeleted !== undefined) params.append('isDeleted', isDeleted.toString());
     const queryString = params.toString() ? `?${params.toString()}` : '';
-    return `/profile/user/${userId}${queryString}`;
+    return `/profiles/user/${userId}${queryString}`;
   },
-  createProfile: (userId: string) => `/profile/user/${userId}`,
-  updateProfile: (profileId: string) => `/profile/${profileId}`,
-  deleteProfile: (profileId: string) => `/profile/${profileId}`,
-  restoreProfile: (profileId: string) => `/profile/${profileId}/restore`,
+  createProfile: (userId: string) => `/profiles/user/${userId}`,
+  updateProfile: (profileId: string) => `/profiles/${profileId}`,
+  deleteProfile: (profileId: string) => `/profiles/${profileId}`,
+  restoreProfile: (profileId: string) => `/profiles/${profileId}/restore`,
+
+  // Campaign endpoints
+  campaigns: (params?: { brandId?: string; page?: number; pageSize?: number }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.brandId) searchParams.append('brandId', params.brandId);
+    if (params?.page) searchParams.append('page', params.page.toString());
+    if (params?.pageSize) searchParams.append('pageSize', params.pageSize.toString());
+    const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return `/ad-campaigns${queryString}`;
+  },
+  campaignById: (campaignId: string) => `/ad-campaigns/${campaignId}`,
+  createCampaign: () => '/ad-campaigns',
+  updateCampaign: (campaignId: string) => `/ad-campaigns/${campaignId}`,
+  deleteCampaign: (campaignId: string) => `/ad-campaigns/${campaignId}`,
+
+  // Ad Set endpoints
+  adSets: (params?: { campaignId?: string; page?: number; pageSize?: number; search?: string; status?: string; sortBy?: string; sortOrder?: string }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.campaignId) searchParams.append('campaignId', params.campaignId);
+    if (params?.page) searchParams.append('page', params.page.toString());
+    if (params?.pageSize) searchParams.append('pageSize', params.pageSize.toString());
+    if (params?.search) searchParams.append('search', params.search);
+    if (params?.status) searchParams.append('status', params.status);
+    if (params?.sortBy) searchParams.append('sortBy', params.sortBy);
+    if (params?.sortOrder) searchParams.append('sortOrder', params.sortOrder);
+    const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return `/ad-sets${queryString}`;
+  },
+  adSetById: (adSetId: string) => `/ad-sets/${adSetId}`,
+  createAdSet: () => '/ad-sets',
+  updateAdSet: (adSetId: string) => `/ad-sets/${adSetId}`,
+  deleteAdSet: (adSetId: string) => `/ad-sets/${adSetId}`,
+
+  // Creative endpoints
+  creatives: (params?: { adSetId?: string; page?: number; pageSize?: number; search?: string; type?: string; tags?: string[]; sortBy?: string; sortOrder?: string }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.adSetId) searchParams.append('adSetId', params.adSetId);
+    if (params?.page) searchParams.append('page', params.page.toString());
+    if (params?.pageSize) searchParams.append('pageSize', params.pageSize.toString());
+    if (params?.search) searchParams.append('search', params.search);
+    if (params?.type) searchParams.append('type', params.type);
+    if (params?.tags && params.tags.length > 0) searchParams.append('tags', params.tags.join(','));
+    if (params?.sortBy) searchParams.append('sortBy', params.sortBy);
+    if (params?.sortOrder) searchParams.append('sortOrder', params.sortOrder);
+    const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return `/ad-creatives${queryString}`;
+  },
+  creativeById: (creativeId: string) => `/ad-creatives/${creativeId}`,
+  createCreative: () => '/ad-creatives',
+  updateCreative: (creativeId: string) => `/ad-creatives/${creativeId}`,
+  deleteCreative: (creativeId: string) => `/ad-creatives/${creativeId}`,
+  creativeMetrics: (creativeId: string) => `/ad-creatives/${creativeId}/metrics`,
+
+  // Ad endpoints
+  ads: (params: { adSetId: string; status?: string; page?: number; pageSize?: number }) => {
+    const searchParams = new URLSearchParams();
+    searchParams.append('adSetId', params.adSetId);
+    if (params.status) searchParams.append('status', params.status);
+    if (params.page) searchParams.append('page', params.page.toString());
+    if (params.pageSize) searchParams.append('pageSize', params.pageSize.toString());
+    const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return `/ads${queryString}`;
+  },
+  adById: (adId: string) => `/ads/${adId}`,
+  createAd: () => '/ads',
+  updateAd: (adId: string) => `/ads/${adId}`,
+  deleteAd: (adId: string) => `/ads/${adId}`,
+  adStatus: (adId: string) => `/ads/${adId}/status`,
+  bulkAdStatus: () => `/ads/status/bulk`,
+
+  // Notification endpoints
+  notifications: () => '/notifications',
+  notificationById: (notificationId: string) => `/notifications/${notificationId}`,
+  markNotificationAsRead: (notificationId: string) => `/notifications/${notificationId}/read`,
+  markAllNotificationsAsRead: () => '/notifications/read/all',
+  getUnreadNotificationCount: () => '/notifications/unread/count',
+
+  // Content Calendar endpoints
+  contentCalendar: {
+    schedule: (contentId: string) => `/content-calendar/schedule/${contentId}`,
+    scheduleRecurring: (contentId: string) => `/content-calendar/schedule-recurring/${contentId}`,
+    cancelSchedule: (scheduleId: string) => `/content-calendar/schedule/${scheduleId}`,
+    updateSchedule: (scheduleId: string) => `/content-calendar/schedule/${scheduleId}`,
+    upcoming: (limit?: number) => `/content-calendar/upcoming${limit ? `?limit=${limit}` : ''}`,
+  },
+
+  // Posts endpoints
+  posts: {
+    list: (params?: { page?: number; pageSize?: number; status?: string; platform?: string }) => {
+      const searchParams = new URLSearchParams();
+      if (params?.page) searchParams.append('page', params.page.toString());
+      if (params?.pageSize) searchParams.append('pageSize', params.pageSize.toString());
+      if (params?.status) searchParams.append('status', params.status);
+      if (params?.platform) searchParams.append('platform', params.platform);
+      const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
+      return `/posts${queryString}`;
+    },
+    byContent: (contentId: string) => `/posts/content/${contentId}`,
+    byIntegration: (integrationId: string) => `/posts/integration/${integrationId}`,
+  },
 }

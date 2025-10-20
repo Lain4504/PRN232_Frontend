@@ -18,7 +18,7 @@ export default function AuthCallbackPage() {
       if (data?.session) { 
         router.replace("/dashboard"); 
       } else { 
-        router.replace("/login"); 
+        router.replace("/auth/login");
       } 
     }; processLogin(); 
   }, [router]); 

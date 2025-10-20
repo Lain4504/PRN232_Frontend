@@ -20,28 +20,28 @@ export function AuthSplitLayout({
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
         {/* Left: Form area */}
-        <div className="flex items-center justify-center p-6 lg:p-12">
-          <div className="w-full max-w-md space-y-8">
+        <div className="flex items-center justify-center p-3 sm:p-6 lg:p-12 min-h-screen lg:min-h-0">
+          <div className="w-full max-w-md space-y-4 sm:space-y-6 lg:space-y-8">
             {/* Logo */}
             <div className="text-center lg:text-left">
-              <div className="flex items-center justify-center lg:justify-start gap-3 mb-6">
+              <div className="flex items-center justify-center lg:justify-start gap-3 mb-4 sm:mb-6">
                 <div className="relative">
-                  <div className="size-8 rounded-lg bg-gradient-to-r from-primary to-primary/80 shadow-lg" />
-                  <Sparkles className="absolute -top-1 -right-1 size-3 text-primary animate-pulse" />
+                  <div className="size-7 sm:size-8 rounded-lg bg-gradient-to-r from-primary to-primary/80 shadow-lg" />
+                  <Sparkles className="absolute -top-1 -right-1 size-2.5 sm:size-3 text-primary animate-pulse" />
                 </div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
                   AISAM
                 </span>
               </div>
               
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-                <p className="text-muted-foreground text-lg">{subtitle}</p>
+              <div className="space-y-1 sm:space-y-2">
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{title}</h1>
+                <p className="text-muted-foreground text-base sm:text-lg">{subtitle}</p>
               </div>
             </div>
 
             {/* Form */}
-            <div className="bg-transparent rounded-2xl p-8 shadow-none border-0">
+            <div className="bg-transparent rounded-2xl p-4 sm:p-6 lg:p-8 shadow-none border-0">
               {children}
             </div>
           </div>

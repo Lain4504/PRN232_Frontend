@@ -106,18 +106,17 @@ export function ContentList({
           </CardContent>
         </Card>
 
-        {isCreating && (
-          <ContentModal
-            content={null}
-            isEditing={true}
-            onClose={handleCloseModal}
-            onCreate={handleCreateContent}
-            isProcessing={isProcessing}
-            brands={brands}
-            products={products}
-            userId={userId}
-          />
-        )}
+        <ContentModal
+          content={null}
+          isEditing={true}
+          open={isCreating}
+          onOpenChange={setIsCreating}
+          onCreate={handleCreateContent}
+          isProcessing={isProcessing}
+          brands={brands}
+          products={products}
+          userId={userId}
+        />
       </>
     );
   }
@@ -139,21 +138,20 @@ export function ContentList({
         ))}
       </div>
 
-      {(selectedContent || isCreating) && (
-        <ContentModal
-          content={selectedContent}
-          isEditing={isEditing || isCreating}
-          onClose={handleCloseModal}
-          onSave={handleSave}
-          onCreate={handleCreateContent}
-          onSubmit={handleSubmitContent}
-          onPublish={handlePublishContent}
-          isProcessing={isProcessing}
-          brands={brands}
-          products={products}
-          userId={userId}
-        />
-      )}
+      <ContentModal
+        content={selectedContent}
+        isEditing={isEditing}
+        open={!!selectedContent}
+        onOpenChange={(open) => !open && handleCloseModal()}
+        onSave={handleSave}
+        onCreate={handleCreateContent}
+        onSubmit={handleSubmitContent}
+        onPublish={handlePublishContent}
+        isProcessing={isProcessing}
+        brands={brands}
+        products={products}
+        userId={userId}
+      />
     </>
   );
 }

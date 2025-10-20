@@ -8,8 +8,8 @@ import { SearchCommand } from "@/components/search/search-command"
 import { MobileSearchCommand } from "@/components/search/mobile-search-command"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { UserDropdown } from "@/components/layout/user-dropdown"
-import { NotificationsDropdown } from "@/components/ui/notifications-dropdown"
+import { EnhancedUserMenu } from "@/components/layout/enhanced-user-menu"
+import { EnhancedNotifications } from "@/components/layout/enhanced-notifications"
 
 interface DashboardHeaderProps {
   user?: User | null
@@ -52,9 +52,9 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             <MobileSearchCommand />
           </div>
 
-          <NotificationsDropdown />
+          <EnhancedNotifications />
 
-          <UserDropdown user={user} />
+          <EnhancedUserMenu user={user} />
         </div>
       </header>
     </>

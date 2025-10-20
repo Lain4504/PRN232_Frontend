@@ -17,7 +17,6 @@ export function useBrands() {
     queryFn: async (): Promise<Brand[]> => {
       try {
         const resp = await api.get<any>(endpoints.brands())
-        console.log('Brands API response:', resp); // Debug log
         
         // Handle different response formats
         let brandsArray = [];
@@ -36,7 +35,6 @@ export function useBrands() {
           }
         }
         
-        console.log('Processed brands array:', brandsArray); // Debug log
         return brandsArray;
       } catch (error) {
         console.error('Error fetching brands:', error);
@@ -55,7 +53,6 @@ export function useBrandsByTeam(teamId?: string) {
       if (!teamId) return [];
       try {
         const resp = await api.get<any>(endpoints.brandsByTeam(teamId))
-        console.log('Brands by team API response:', resp); // Debug log
 
         // Handle different response formats
         let brandsArray = [];
@@ -74,7 +71,6 @@ export function useBrandsByTeam(teamId?: string) {
           }
         }
 
-        console.log('Processed brands by team array:', brandsArray); // Debug log
         return brandsArray;
       } catch (error) {
         console.error('Error fetching brands by team:', error);

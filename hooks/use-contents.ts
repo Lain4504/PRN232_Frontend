@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { api, endpoints, PaginatedResponse } from '@/lib/api'
+import { api, endpoints, PaginatedResponse, ApiResponse } from '@/lib/api'
 import type {
   ContentResponseDto,
   CreateContentRequest,
@@ -37,8 +37,8 @@ export function useContents(filters?: ContentFilters) {
     queryKey: [...contentKeys.lists(), queryString],
     queryFn: async (): Promise<PaginatedResponse<ContentResponseDto>> => {
       const url = queryString ? `${endpoints.contents()}?${queryString}` : endpoints.contents()
-      const resp = await api.get<PaginatedResponse<ContentResponseDto>>(url)
-      return resp.data
+      const resp = await api.get<ApiResponse<PaginatedResponse<ContentResponseDto>>>(url)
+      return resp.data.data
     },
   })
 }
@@ -48,8 +48,8 @@ export function useContent(contentId?: string) {
   return useQuery({
     queryKey: contentId ? contentKeys.detail(contentId) : contentKeys.details(),
     queryFn: async (): Promise<ContentResponseDto> => {
-      const resp = await api.get<ContentResponseDto>(endpoints.contentById(contentId!))
-      return resp.data
+      const resp = await api.get<ApiResponse<ContentResponseDto>>(endpoints.contentById(contentId!))
+      return resp.data.data
     },
     enabled: !!contentId,
     retry: (count, err) => {
@@ -82,8 +82,8 @@ export function useContentsByBrand(brandId?: string, filters?: Omit<ContentFilte
 
       const queryString = params.toString()
       const url = queryString ? `${endpoints.contents()}?${queryString}` : endpoints.contents()
-      const resp = await api.get<PaginatedResponse<ContentResponseDto>>(url)
-      return resp.data
+      const resp = await api.get<ApiResponse<PaginatedResponse<ContentResponseDto>>>(url)
+      return resp.data.data
     },
     enabled: !!brandId,
   })
@@ -94,12 +94,14 @@ export function useCreateContent() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (payload: CreateContentRequest): Promise<ContentResponseDto> => {
-      const resp = await api.post<ContentResponseDto>(endpoints.contents(), payload)
-      return resp.data
+      const resp = await api.post<ApiResponse<ContentResponseDto>>(endpoints.contents(), payload)
+      console.log('Create content response:', resp.data)
+      return resp.data.data
     },
     onSuccess: (created) => {
+      console.log('Created content object:', created)
       qc.invalidateQueries({ queryKey: contentKeys.lists() })
-      if (created.brandId) {
+      if (created && created.brandId) {
         qc.invalidateQueries({ queryKey: contentKeys.byBrand(created.brandId) })
       }
     },
@@ -111,8 +113,8 @@ export function useUpdateContent(contentId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (payload: UpdateContentRequest): Promise<ContentResponseDto> => {
-      const resp = await api.put<ContentResponseDto>(endpoints.contentById(contentId), payload)
-      return resp.data
+      const resp = await api.put<ApiResponse<ContentResponseDto>>(endpoints.contentById(contentId), payload)
+      return resp.data.data
     },
     onSuccess: (updated) => {
       qc.invalidateQueries({ queryKey: contentKeys.detail(contentId) })
