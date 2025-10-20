@@ -9,7 +9,8 @@ import {
   MessageSquare,
   Check,
   X,
-  Clock
+  Clock,
+  Trash2
 } from "lucide-react";
 import { ApprovalResponseDto, ContentStatusEnum } from "@/lib/types/aisam-types";
 
@@ -18,6 +19,7 @@ interface ApprovalCardProps {
   onReview: (approval: ApprovalResponseDto) => void;
   onApprove?: (approvalId: string) => void;
   onReject?: (approvalId: string) => void;
+  onDelete?: (approval: ApprovalResponseDto) => void;
   isProcessing?: boolean;
 }
 
@@ -26,6 +28,7 @@ export function ApprovalCard({
   onReview, 
   onApprove, 
   onReject, 
+  onDelete,
   isProcessing = false 
 }: ApprovalCardProps) {
   const getStatusBadge = (status: ContentStatusEnum) => {
@@ -69,6 +72,16 @@ export function ApprovalCard({
               <Eye className="mr-2 h-4 w-4" />
               Review
             </Button>
+            {onDelete && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => onDelete(approval)}
+                className="text-destructive hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
       </CardHeader>

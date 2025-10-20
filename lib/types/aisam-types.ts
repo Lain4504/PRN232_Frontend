@@ -351,8 +351,8 @@ export interface PaginatedResponse<T> {
   };
 }
 
-// Filter and search types
-export interface ContentFilters {
+// Filter and search types (legacy)
+export interface ContentFiltersLegacy {
   brand_id?: string;
   product_id?: string;
   status?: string;
@@ -506,4 +506,75 @@ export interface ApprovalFilters {
   contentId?: string;
   approverId?: string;
   onlyDeleted?: boolean;
+}
+
+// Content domain types
+export interface ContentResponseDto {
+  id: string;
+  brandId: string;
+  title: string;
+  description?: string;
+  textContent?: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  adType: AdTypeEnum;
+  status: ContentStatusEnum;
+  createdAt: string;
+  updatedAt?: string;
+  brandName?: string;
+  productId?: string;
+  productName?: string;
+}
+
+export interface CreateContentRequest {
+  userId: string;
+  brandId: string;
+  productId?: string;
+  adType: AdTypeEnum;
+  title?: string;
+  textContent?: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  styleDescription?: string;
+  contextDescription?: string;
+  representativeCharacter?: string;
+  publishImmediately: boolean;
+  integrationId?: string;
+}
+
+export interface UpdateContentRequest {
+  title?: string;
+  textContent?: string;
+  adType?: AdTypeEnum;
+  productId?: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  styleDescription?: string;
+  contextDescription?: string;
+  representativeCharacter?: string;
+}
+
+export interface PublishResultDto {
+  success: boolean;
+  message: string;
+  externalPostId?: string;
+  publishedAt?: string;
+}
+
+export enum AdTypeEnum {
+  TextOnly = 0,
+  ImageText = 1,
+  VideoText = 2
+}
+
+export interface ContentFilters {
+  brandId?: string;
+  page?: number;
+  pageSize?: number;
+  searchTerm?: string;
+  sortBy?: string;
+  sortDescending?: boolean;
+  adType?: AdTypeEnum;
+  onlyDeleted?: boolean;
+  status?: ContentStatusEnum;
 }

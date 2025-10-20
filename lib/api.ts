@@ -270,4 +270,11 @@ export const endpoints = {
   approvalsByApprover: (approverId: string) => `/approvals/approver/${approverId}`,
   approvalRestore: (approvalId: string) => `/approvals/${approvalId}/restore`,
   approvalContentPending: (contentId: string) => `/approvals/content/${contentId}/pending`,
+
+  // Content endpoints
+  contents: () => '/content',
+  contentById: (contentId: string) => `/content/${contentId}`,
+  contentSubmit: (contentId: string) => `/content/${contentId}/submit`,
+  contentPublish: (contentId: string, integrationId: string) => `/content/${contentId}/publish/${integrationId}`,
+  contentRestore: (contentId: string) => `/content/${contentId}/restore`,
 }

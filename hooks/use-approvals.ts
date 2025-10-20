@@ -272,3 +272,19 @@ export function useRestoreApproval(approvalId: string) {
     },
   })
 }
+
+// Delete approval with confirmation
+export function useDeleteApprovalWithConfirm() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (approvalId: string): Promise<boolean> => {
+      const resp = await api.delete<boolean>(endpoints.approvalById(approvalId))
+      return resp.data
+    },
+    onSuccess: (_, approvalId) => {
+      qc.invalidateQueries({ queryKey: approvalKeys.detail(approvalId) })
+      qc.invalidateQueries({ queryKey: approvalKeys.lists() })
+      qc.invalidateQueries({ queryKey: approvalKeys.pending() })
+    },
+  })
+}

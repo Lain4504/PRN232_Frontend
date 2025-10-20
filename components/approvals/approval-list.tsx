@@ -6,11 +6,13 @@ import { CheckCircle } from "lucide-react";
 import { ApprovalResponseDto, ContentStatusEnum } from "@/lib/types/aisam-types";
 import { ApprovalCard } from "./approval-card";
 import { ApprovalModal } from "./approval-modal";
+import { DeleteApprovalDialog } from "./delete-approval-dialog";
 
 interface ApprovalListProps {
   approvals: ApprovalResponseDto[];
   onApprove?: (notes: string) => Promise<void>;
   onReject?: (notes: string) => Promise<void>;
+  onDelete?: (approvalId: string) => Promise<void>;
   isProcessing?: boolean;
   emptyMessage?: string;
   emptyDescription?: string;
@@ -20,11 +22,14 @@ export function ApprovalList({
   approvals,
   onApprove,
   onReject,
+  onDelete,
   isProcessing = false,
   emptyMessage = "No approvals found",
   emptyDescription = "There are no approvals to display"
 }: ApprovalListProps) {
   const [selectedApproval, setSelectedApproval] = useState<ApprovalResponseDto | null>(null);
+  const [approvalToDelete, setApprovalToDelete] = useState<ApprovalResponseDto | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleQuickApprove = async (approvalId: string) => {
     if (!onApprove) return;
@@ -70,6 +75,28 @@ export function ApprovalList({
     }
   };
 
+  const handleDeleteClick = (approval: ApprovalResponseDto) => {
+    setApprovalToDelete(approval);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async (approvalId: string) => {
+    if (!onDelete) return;
+    
+    try {
+      await onDelete(approvalId);
+      setIsDeleteDialogOpen(false);
+      setApprovalToDelete(null);
+    } catch (error) {
+      console.error('Failed to delete approval:', error);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteDialogOpen(false);
+    setApprovalToDelete(null);
+  };
+
   if (approvals.length === 0) {
     return (
       <Card>
@@ -94,6 +121,7 @@ export function ApprovalList({
             onReview={setSelectedApproval}
             onApprove={onApprove ? handleQuickApprove : undefined}
             onReject={onReject ? handleQuickReject : undefined}
+            onDelete={onDelete ? handleDeleteClick : undefined}
             isProcessing={isProcessing}
           />
         ))}
@@ -105,6 +133,14 @@ export function ApprovalList({
         onApprove={handleModalApprove}
         onReject={handleModalReject}
         isProcessing={isProcessing}
+      />
+
+      <DeleteApprovalDialog
+        approval={approvalToDelete}
+        isOpen={isDeleteDialogOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        isDeleting={isProcessing}
       />
     </>
   );

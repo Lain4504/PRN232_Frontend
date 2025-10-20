@@ -3,13 +3,23 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useBrands } from "@/hooks/use-brands";
 import { 
   useApprovals, 
   usePendingApprovals, 
   useApproveApproval, 
-  useRejectApproval 
+  useRejectApproval,
+  useDeleteApprovalWithConfirm
 } from "@/hooks/use-approvals";
 import { 
   ApprovalResponseDto, 
@@ -20,12 +30,23 @@ import { ApprovalCard } from "@/components/approvals/approval-card";
 import { ApprovalModal } from "@/components/approvals/approval-modal";
 import { ApprovalFilters as ApprovalFiltersComponent } from "@/components/approvals/approval-filters";
 import { toast } from "sonner";
+import { 
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import Link from "next/link";
 
 export function ApprovalsManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ContentStatusEnum | "all">("all");
   const [selectedApproval, setSelectedApproval] = useState<ApprovalResponseDto | null>(null);
   const [approvalNotes, setApprovalNotes] = useState("");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [approvalToDelete, setApprovalToDelete] = useState<ApprovalResponseDto | null>(null);
 
   // Build filters for approvals query
   const filters: ApprovalFilters = {
@@ -43,6 +64,7 @@ export function ApprovalsManagement() {
   const { data: approvalsData, isLoading } = useApprovals(filters);
   const approveApprovalMutation = useApproveApproval(selectedApproval?.id || "");
   const rejectApprovalMutation = useRejectApproval(selectedApproval?.id || "");
+  const deleteApprovalMutation = useDeleteApprovalWithConfirm();
 
   // Get approvals based on filter
   const approvals = statusFilter === "all" ? approvalsData?.data || [] : 
@@ -115,6 +137,25 @@ export function ApprovalsManagement() {
     // For quick reject, we still need to open the modal to get rejection reason
   };
 
+  const handleDelete = (approval: ApprovalResponseDto) => {
+    setApprovalToDelete(approval);
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!approvalToDelete) return;
+
+    try {
+      await deleteApprovalMutation.mutateAsync(approvalToDelete.id);
+      toast.success('Approval deleted successfully');
+      setShowDeleteDialog(false);
+      setApprovalToDelete(null);
+    } catch (error) {
+      console.error('Failed to delete approval:', error);
+      toast.error('Failed to delete approval');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex-1 space-y-6 p-6 bg-background">
@@ -179,6 +220,7 @@ export function ApprovalsManagement() {
               onReview={setSelectedApproval}
               onApprove={handleQuickApprove}
               onReject={handleQuickReject}
+              onDelete={handleDelete}
               isProcessing={approveApprovalMutation.isPending || rejectApprovalMutation.isPending}
             />
           ))}
@@ -193,6 +235,42 @@ export function ApprovalsManagement() {
         onReject={handleReject}
         isProcessing={approveApprovalMutation.isPending || rejectApprovalMutation.isPending}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Approval</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this approval? This action cannot be undone.
+              {approvalToDelete && (
+                <div className="mt-2 p-3 bg-muted rounded-md">
+                  <p className="font-medium">{approvalToDelete.contentTitle}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Brand: {approvalToDelete.brandName} • Status: {approvalToDelete.status}
+                  </p>
+                </div>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+              disabled={deleteApprovalMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={deleteApprovalMutation.isPending}
+            >
+              {deleteApprovalMutation.isPending ? 'Deleting...' : 'Delete Approval'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
