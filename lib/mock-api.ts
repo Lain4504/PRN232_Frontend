@@ -23,6 +23,40 @@ import {
 // Utility functions
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// AI Content Generation Helpers
+const generateTextOnlyContent = (prompt: string, brand?: Brand | null, product?: Product | null, styleContext?: string): string => {
+  const templates = [
+    `✨ ${brand?.name || 'Your Brand'} presents: ${prompt}. ${styleContext ? `In a ${styleContext} style.` : ''} #Innovation #Quality`,
+    `🚀 Discover the power of ${brand?.name || 'excellence'}: ${prompt}. ${product?.name ? `Featuring ${product.name}.` : ''} Experience the difference!`,
+    `🌟 Transform your experience with ${brand?.name || 'our brand'}. ${prompt}. ${styleContext || 'Professional and engaging'}. #Premium #Lifestyle`,
+    `💫 ${brand?.name || 'We'} bring you: ${prompt}. ${product?.name ? `Showcasing ${product.name}.` : ''} Elevate your standards today!`,
+    `🎯 Excellence redefined: ${brand?.name || 'Our brand'} delivers ${prompt}. ${styleContext ? `With a ${styleContext} approach.` : ''} #Leadership #Quality`
+  ];
+  return templates[Math.floor(Math.random() * templates.length)];
+};
+
+const generateImageTextContent = (prompt: string, brand?: Brand | null, product?: Product | null, styleContext?: string): string => {
+  const templates = [
+    `📸 Stunning visuals meet exceptional quality! ${brand?.name || 'Our brand'} showcases ${prompt}. ${product?.name ? `Featuring ${product.name}.` : ''} See the difference! #VisualStorytelling`,
+    `🎨 Beauty in every detail. ${brand?.name || 'We'} present ${prompt} in our latest collection. ${styleContext ? `Captured in ${styleContext} style.` : ''} #Aesthetic #Quality`,
+    `🖼️ Picture perfect! ${brand?.name || 'Our brand'} brings you ${prompt}. ${product?.name ? `Highlighting ${product.name}.` : ''} Experience excellence visually.`,
+    `📷 Capturing excellence: ${brand?.name || 'We'} unveil ${prompt}. ${styleContext || 'Professional photography'} that tells your story. #VisualExcellence`,
+    `🌈 Colors of success! ${brand?.name || 'Our brand'} demonstrates ${prompt} through stunning imagery. ${product?.name ? `Showcasing ${product.name}.` : ''} #VisualImpact`
+  ];
+  return templates[Math.floor(Math.random() * templates.length)];
+};
+
+const generateVideoTextContent = (prompt: string, brand?: Brand | null, product?: Product | null, styleContext?: string): string => {
+  const templates = [
+    `🎥 Watch and be amazed! ${brand?.name || 'Our brand'} unveils ${prompt}. ${product?.name ? `Featuring ${product.name}.` : ''} Don't miss this! #VideoContent`,
+    `📹 Motion meets emotion. ${brand?.name || 'We'} bring ${prompt} to life. ${styleContext ? `In ${styleContext} style.` : ''} Watch now! #Dynamic #Engaging`,
+    `🎬 Lights, camera, action! ${brand?.name || 'Our brand'} stars in ${prompt}. ${product?.name ? `Showcasing ${product.name}.` : ''} Experience the magic!`,
+    `📺 Visual storytelling at its finest: ${brand?.name || 'We'} present ${prompt}. ${styleContext || 'Cinematic quality'} that captivates. #VideoExcellence`,
+    `🎪 Experience the spectacle! ${brand?.name || 'Our brand'} delivers ${prompt} through compelling video. ${product?.name ? `Highlighting ${product.name}.` : ''} #Entertainment #Quality`
+  ];
+  return templates[Math.floor(Math.random() * templates.length)];
+};
+
 const getFromStorage = <T>(key: string, defaultValue: T): T => {
   if (typeof window === 'undefined') return defaultValue;
   try {

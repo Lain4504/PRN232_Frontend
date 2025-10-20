@@ -21,7 +21,7 @@ export interface PaginatedResponse<T> {
 }
 
 // Environment
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api'
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5283/api'
 
 // Options for API methods
 export interface ApiRequestOptions {
@@ -31,16 +31,16 @@ export interface ApiRequestOptions {
 
 // Auth fetch helper
 async function fetchWithAuth(url: string, options: RequestInit = {}, reqOptions: ApiRequestOptions = {}) {
-  const { requireAuth = true } = reqOptions
+   const { requireAuth = true } = reqOptions
 
-  const authHeader: Record<string, string> = {}
-  if (requireAuth) {
-    const supabase = createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    if (session?.access_token) {
-      authHeader['Authorization'] = `Bearer ${session.access_token}`
-    }
-  }
+   const authHeader: Record<string, string> = {}
+   if (requireAuth) {
+     const supabase = createClient()
+     const { data: { session } } = await supabase.auth.getSession()
+     if (session?.access_token) {
+       authHeader['Authorization'] = `Bearer ${session.access_token}`
+     }
+   }
 
   const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData
   const defaultHeaders: Record<string, string> = isFormData ? {} : { 'Content-Type': 'application/json' }
@@ -259,6 +259,13 @@ export const endpoints = {
   profiles: () => '/profile',
   profileById: (profileId: string) => `/profile/${profileId}`,
   profilesMe: () => '/users/profile/me',
+
+  // AI Chat endpoints
+  aiChat: () => '/ai/chat',
+
+  // Conversation Management endpoints
+  conversations: () => '/conversations',
+  conversationById: (id: string) => `/conversations/${id}`,
   profilesByUser: (userId: string, search?: string, isDeleted?: boolean) => {
     const params = new URLSearchParams();
     if (search) params.append('search', search);
