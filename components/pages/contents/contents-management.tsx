@@ -14,7 +14,7 @@ import {
   Calendar,
   Send,
   Clock,
-  Image,
+  Image as ImageIcon,
   Video,
   Type
 } from "lucide-react";
@@ -84,7 +84,7 @@ export function ContentsManagement() {
   const getAdTypeIcon = (adType: string) => {
     switch (adType) {
       case 'image_text':
-        return <Image className="h-4 w-4" />;
+        return <ImageIcon className="h-4 w-4" />;
       case 'video_text':
         return <Video className="h-4 w-4" />;
       case 'text_only':
@@ -251,7 +251,7 @@ export function ContentsManagement() {
                   
                   {content.image_url && (
                     <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                      <Image className="h-8 w-8 text-muted-foreground" />
+                      <ImageIcon className="h-8 w-8 text-muted-foreground" />
                     </div>
                   )}
                   

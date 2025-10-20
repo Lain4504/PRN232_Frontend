@@ -562,3 +562,34 @@ export const AdTypes = {
 } as const;
 
 export type AdType = typeof AdTypes[keyof typeof AdTypes];
+// Notification types
+export type NotificationType = 'ApprovalNeeded' | 'PostScheduled' | 'PerformanceAlert' | 'AiSuggestion' | 'SystemUpdate';
+
+export interface Notification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: NotificationType;
+  targetId?: string;
+  targetType?: string;
+  isRead: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+}
+
+export interface NotificationFilters {
+  isRead?: boolean;
+  type?: NotificationType;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface MarkAsReadRequest {
+  notificationIds: string[];
+}
+
+export interface NotificationStats {
+  total: number;
+  unread: number;
+}

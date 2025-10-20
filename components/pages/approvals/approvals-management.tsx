@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { approvalApi, contentApi } from "@/lib/mock-api";
 import { useBrands } from "@/hooks/use-brands";
-import { Approval, Content, Brand } from "@/lib/types/aisam-types";
+import { Approval, Content } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 
 export function ApprovalsManagement() {

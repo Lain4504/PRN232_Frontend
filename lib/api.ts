@@ -190,6 +190,16 @@ export const api = {
     }
     return response.json()
   },
+  
+  // PATCH
+  patch: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+    const response = await fetchWithAuth(url, {
+      method: 'PATCH',
+      body: data ? JSON.stringify(data) : undefined,
+    }, options)
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    return response.json()
+  },
 }
 
 // Endpoints
@@ -256,4 +266,15 @@ export const endpoints = {
   // Conversation Management endpoints
   conversations: () => '/conversations',
   conversationById: (id: string) => `/conversations/${id}`,
+  profilesByUser: (userId: string, search?: string, isDeleted?: boolean) => {
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (isDeleted !== undefined) params.append('isDeleted', isDeleted.toString());
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+    return `/profile/user/${userId}${queryString}`;
+  },
+  createProfile: (userId: string) => `/profile/user/${userId}`,
+  updateProfile: (profileId: string) => `/profile/${profileId}`,
+  deleteProfile: (profileId: string) => `/profile/${profileId}`,
+  restoreProfile: (profileId: string) => `/profile/${profileId}/restore`,
 }

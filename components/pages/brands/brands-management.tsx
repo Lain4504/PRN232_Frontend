@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,7 +28,7 @@ import {
   FileText,
   AlertTriangle
 } from "lucide-react";
-import { User as UserType, Brand, Profile } from "@/lib/types/aisam-types";
+import { Brand } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useUserProfile, useProfiles } from "@/hooks/use-profile";
 import { useBrands, useDeleteBrand } from "@/hooks/use-brands";
@@ -232,7 +232,7 @@ export function BrandsManagement() {
                             <AlertDialogHeader>
                               <AlertDialogTitle className="flex items-center gap-2">
                                 <AlertTriangle className="h-5 w-5 text-destructive" />
-                                Delete Brand "{brand.name}"?
+                                Delete Brand &ldquo;{brand.name}&rdquo;?
                               </AlertDialogTitle>
                               <AlertDialogDescription className="text-left space-y-3">
                                 <p>

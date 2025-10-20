@@ -23,9 +23,7 @@ import {
   Search,
   Pencil,
   Trash2,
-  Filter,
   DollarSign,
-  Tag,
   Image as ImageIcon,
   Target,
   AlertTriangle
@@ -36,7 +34,6 @@ import { Product, Brand } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useBrands } from "@/hooks/use-brands";
 import { useProducts, useDeleteProduct } from "@/hooks/use-products";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ProductModal } from "@/components/products/product-modal";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -141,7 +138,7 @@ const createColumns = (
               <AlertDialogHeader>
                 <AlertDialogTitle className="flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-destructive" />
-                  Delete Product "{row.original.name}"?
+                  Delete Product &ldquo;{row.original.name}&rdquo;?
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-left space-y-3">
                   <p>
