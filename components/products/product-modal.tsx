@@ -67,11 +67,6 @@ export function ProductModal({ children, mode, product, defaultBrandId, onSucces
               onCancel={() => setOpen(false)}
             />
           </div>
-          <DrawerFooter className="flex-shrink-0 pt-2">
-            <DrawerClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DrawerClose>
-          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     )

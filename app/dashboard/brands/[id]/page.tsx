@@ -1,5 +1,6 @@
 import { BrandDetails } from "@/components/pages/brands/brand-details";
 
-export default function BrandPage({ params }: { params: { id: string } }) {
-  return <BrandDetails brandId={params.id} />;
+export default async function BrandPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <BrandDetails brandId={id} />;
 }

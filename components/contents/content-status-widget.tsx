@@ -118,7 +118,7 @@ export function ContentStatusWidget({
                       {content.status === ContentStatusEnum.PendingApproval ? 'Pending' : content.status}
                     </Badge>
                     <Button variant="ghost" size="sm" asChild>
-                      <Link href={`/dashboard/contents?id=${content.id}`}>
+                      <Link href={brandId ? `/dashboard/brands/${brandId}/contents` : `/dashboard/contents`}>
                         <Eye className="h-3 w-3" />
                       </Link>
                     </Button>
@@ -132,7 +132,7 @@ export function ContentStatusWidget({
         {showViewAll && contents.length > 0 && (
           <div className="mt-4 pt-4 border-t">
             <Button variant="outline" size="sm" className="w-full" asChild>
-              <Link href="/dashboard/contents">
+              <Link href={brandId ? `/dashboard/brands/${brandId}/contents` : `/dashboard/contents`}>
                 <TrendingUp className="mr-2 h-4 w-4" />
                 View All Content
               </Link>

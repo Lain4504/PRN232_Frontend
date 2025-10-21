@@ -18,11 +18,22 @@ import {
   ArrowDownIcon,
   Clock,
   Send,
+  TrendingUp,
+  Users,
+  Zap,
+  Sparkles,
+  Eye,
+  Heart,
+  MessageCircle,
+  Share2,
 } from "lucide-react"
-import { authApi, dashboardApi } from "@/lib/mock-api"
+// Removed mock-api import - using real API instead
 import { User, DashboardStats, RecentActivity } from "@/lib/types/aisam-types"
+import { api, endpoints } from "@/lib/api"
+import { QuickActionsPanel } from "./quick-actions-panel"
+import { CurrentPlanCard } from "@/components/subscription/current-plan-card"
 
-// Stats Cards Data - will be populated from API
+// Enhanced Stats Cards Data with better visualization
 const getStatsData = (stats: DashboardStats) => [
   {
     title: "Total Brands",
@@ -31,14 +42,10 @@ const getStatsData = (stats: DashboardStats) => [
     trend: "up",
     icon: Target,
     color: "text-chart-1",
-  },
-  {
-    title: "Total Products", 
-    value: stats.total_products.toString(),
-    change: "+12.8%",
-    trend: "up",
-    icon: Package,
-    color: "text-chart-2",
+    bgColor: "bg-chart-1/10",
+    borderColor: "border-chart-1/20",
+    description: "Active brand profiles",
+    href: "/dashboard/brands"
   },
   {
     title: "Total Contents",
@@ -47,6 +54,10 @@ const getStatsData = (stats: DashboardStats) => [
     trend: "up",
     icon: FileText,
     color: "text-chart-3",
+    bgColor: "bg-chart-3/10",
+    borderColor: "border-chart-3/20",
+    description: "AI-generated content",
+    href: "/dashboard/contents"
   },
   {
     title: "Published Posts",
@@ -55,6 +66,10 @@ const getStatsData = (stats: DashboardStats) => [
     trend: "up", 
     icon: Send,
     color: "text-chart-4",
+    bgColor: "bg-chart-4/10",
+    borderColor: "border-chart-4/20",
+    description: "Social media posts",
+    href: "/dashboard/posts"
   },
 ]
 
@@ -72,19 +87,20 @@ const DashboardContent = () => {
         setLoading(true)
         
         // Get current user
-        const userResponse = await authApi.getCurrentUser()
+        const userResponse = await api.get<User>(endpoints.userProfile)
         if (userResponse.success) {
           setUser(userResponse.data)
         }
         
-        // Get dashboard stats
-        const statsResponse = await dashboardApi.getDashboardStats()
+        // Get dashboard stats - using a custom endpoint or calculating from other data
+        // For now, we'll create a mock stats object based on available data
+        const statsResponse = await api.get<DashboardStats>('/dashboard/stats')
         if (statsResponse.success) {
           setStats(statsResponse.data)
         }
         
-        // Get recent activities
-        const activitiesResponse = await dashboardApi.getRecentActivities()
+        // Get recent activities - using a custom endpoint
+        const activitiesResponse = await api.get<RecentActivity[]>('/dashboard/activities')
         if (activitiesResponse.success) {
           setRecentActivities(activitiesResponse.data)
         }
@@ -128,54 +144,74 @@ const DashboardContent = () => {
 
   return (
     <div className="flex-1 space-y-6 p-6 bg-background">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Welcome back, {user?.first_name || user?.email?.split('@')[0] || 'User'}!
-          </h1>
-          <p className="text-muted-foreground">
-            Here&apos;s what&apos;s happening with your AISAM campaigns today.
-          </p>
+      {/* Enhanced Header */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Sparkles className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Welcome back, {user?.first_name || user?.email?.split('@')[0] || 'User'}!
+              </h1>
+              <p className="text-muted-foreground">
+                Here&apos;s what&apos;s happening with your AISAM campaigns today.
+              </p>
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Button asChild variant="outline" size="sm">
             <Link href="/dashboard?filter=open">
-            <Filter className="mr-2 h-4 w-4" />
-            Filter
+              <Filter className="mr-2 h-4 w-4" />
+              Filter
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/dashboard/insights">
+              <TrendingUp className="mr-2 h-4 w-4" />
+              Analytics
             </Link>
           </Button>
           <Button asChild size="sm">
             <Link href="/dashboard/brands">
-            <Plus className="mr-2 h-4 w-4" />
-            Manage Brands
+              <Plus className="mr-2 h-4 w-4" />
+              New Brand
             </Link>
           </Button>
         </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Enhanced Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats && getStatsData(stats).map((stat, index) => (
-          <Card key={index} className="hover:shadow-md transition-shadow">
+          <Card key={index} className={`group hover:shadow-lg transition-all duration-200 cursor-pointer border-l-4 ${stat.borderColor} hover:scale-[1.02]`}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className={`h-4 w-4 ${stat.color}`} />
+              <div className="space-y-1">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {stat.title}
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">{stat.description}</p>
+              </div>
+              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                <stat.icon className={`h-5 w-5 ${stat.color}`} />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <div className="flex items-center text-xs text-muted-foreground">
-                {stat.trend === 'up' ? (
-                  <ArrowUpIcon className="mr-1 h-3 w-3 text-chart-2" />
-                ) : (
-                  <ArrowDownIcon className="mr-1 h-3 w-3 text-destructive" />
-                )}
-                <span className={stat.trend === 'up' ? 'text-chart-2' : 'text-destructive'}>
-                  {stat.change}
-                </span>
-                <span className="ml-1">from last month</span>
+              <div className="space-y-2">
+                <div className="text-3xl font-bold">{stat.value}</div>
+                <div className="flex items-center text-xs">
+                  {stat.trend === 'up' ? (
+                    <ArrowUpIcon className="mr-1 h-3 w-3 text-chart-2" />
+                  ) : (
+                    <ArrowDownIcon className="mr-1 h-3 w-3 text-destructive" />
+                  )}
+                  <span className={stat.trend === 'up' ? 'text-chart-2 font-medium' : 'text-destructive font-medium'}>
+                    {stat.change}
+                  </span>
+                  <span className="ml-1 text-muted-foreground">from last month</span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -230,75 +266,60 @@ const DashboardContent = () => {
             </CardContent>
         </Card>
 
-        {/* Quick Actions & Stats */}
+        {/* Enhanced Quick Actions & Stats */}
         <div className="space-y-6">
           
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>
-                Common tasks and shortcuts
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button asChild className="w-full justify-start" variant="outline">
-                <Link href="/dashboard/brands">
-                  <Target className="mr-2 h-4 w-4" />
-                  Manage Brands
-                </Link>
-              </Button>
-              <Button asChild className="w-full justify-start" variant="outline">
-                <Link href="/dashboard/products">
-                  <Package className="mr-2 h-4 w-4" />
-                  Manage Products
-                </Link>
-              </Button>
-              <Button asChild className="w-full justify-start" variant="outline">
-                <Link href="/dashboard/contents/new">
-                  <FileText className="mr-2 h-4 w-4" />
-                  Create Content
-                </Link>
-              </Button>
-              <Button asChild className="w-full justify-start" variant="outline">
-                <Link href="/dashboard/calendar">
-                  <Calendar className="mr-2 h-4 w-4" />
-                  Schedule Posts
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+          {/* Current Plan Card */}
+          <CurrentPlanCard showUsage={true} showActions={true} />
 
-          {/* Campaign Status */}
+          {/* Enhanced Quick Actions Panel */}
+          <QuickActionsPanel />
+
+          {/* Enhanced Campaign Status */}
           <Card>
             <CardHeader>
-              <CardTitle>Campaign Status</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
+                Campaign Status
+              </CardTitle>
               <CardDescription>
-                Current campaign health
+                Current campaign health and system status
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Pending Approvals</span>
-                <Badge variant="secondary" className="bg-chart-4/10 text-chart-4">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                <div className="flex items-center gap-3">
+                  <Clock className="h-4 w-4 text-chart-4" />
+                  <span className="text-sm font-medium">Pending Approvals</span>
+                </div>
+                <Badge variant="secondary" className="bg-chart-4/10 text-chart-4 border-chart-4/20">
                   {stats?.pending_approvals || 0}
                 </Badge>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Scheduled Posts</span>
-                <Badge variant="secondary" className="bg-chart-1/10 text-chart-1">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                <div className="flex items-center gap-3">
+                  <Calendar className="h-4 w-4 text-chart-1" />
+                  <span className="text-sm font-medium">Scheduled Posts</span>
+                </div>
+                <Badge variant="secondary" className="bg-chart-1/10 text-chart-1 border-chart-1/20">
                   {stats?.scheduled_posts || 0}
                 </Badge>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">AI Generation</span>
-                <Badge variant="secondary" className="bg-chart-2/10 text-chart-2">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                <div className="flex items-center gap-3">
+                  <Sparkles className="h-4 w-4 text-chart-2" />
+                  <span className="text-sm font-medium">AI Generation</span>
+                </div>
+                <Badge variant="secondary" className="bg-chart-2/10 text-chart-2 border-chart-2/20">
                   Active
                 </Badge>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Social Accounts</span>
-                <Badge variant="secondary" className="bg-chart-3/10 text-chart-3">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                <div className="flex items-center gap-3">
+                  <Share2 className="h-4 w-4 text-chart-3" />
+                  <span className="text-sm font-medium">Social Accounts</span>
+                </div>
+                <Badge variant="secondary" className="bg-chart-3/10 text-chart-3 border-chart-3/20">
                   Connected
                 </Badge>
               </div>
@@ -308,35 +329,50 @@ const DashboardContent = () => {
         </div>
       </div>
 
-      {/* Additional Quick Stats */}
+      {/* Enhanced Today's Overview */}
       <Card>
         <CardHeader>
-          <CardTitle>Today&apos;s Overview</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-primary" />
+            Today&apos;s Overview
+          </CardTitle>
           <CardDescription>
             Key metrics for today ({new Date().toLocaleDateString()})
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-4">
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Content Created</p>
+            <div className="space-y-2 p-4 rounded-lg bg-chart-2/5 border border-chart-2/20">
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-chart-2" />
+                <p className="text-sm font-medium text-muted-foreground">Content Created</p>
+              </div>
               <p className="text-2xl font-bold">5</p>
-              <p className="text-xs text-chart-2">+2 from yesterday</p>
+              <p className="text-xs text-chart-2 font-medium">+2 from yesterday</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Posts Published</p>
+            <div className="space-y-2 p-4 rounded-lg bg-chart-1/5 border border-chart-1/20">
+              <div className="flex items-center gap-2">
+                <Send className="h-4 w-4 text-chart-1" />
+                <p className="text-sm font-medium text-muted-foreground">Posts Published</p>
+              </div>
               <p className="text-2xl font-bold">12</p>
-              <p className="text-xs text-chart-1">Across all platforms</p>
+              <p className="text-xs text-chart-1 font-medium">Across all platforms</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Engagement Rate</p>
+            <div className="space-y-2 p-4 rounded-lg bg-chart-4/5 border border-chart-4/20">
+              <div className="flex items-center gap-2">
+                <Heart className="h-4 w-4 text-chart-4" />
+                <p className="text-sm font-medium text-muted-foreground">Engagement Rate</p>
+              </div>
               <p className="text-2xl font-bold">8.4%</p>
-              <p className="text-xs text-chart-4">Above average</p>
+              <p className="text-xs text-chart-4 font-medium">Above average</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">AI Generations</p>
+            <div className="space-y-2 p-4 rounded-lg bg-chart-3/5 border border-chart-3/20">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-chart-3" />
+                <p className="text-sm font-medium text-muted-foreground">AI Generations</p>
+              </div>
               <p className="text-2xl font-bold">23</p>
-              <p className="text-xs text-chart-3">Content & images</p>
+              <p className="text-xs text-chart-3 font-medium">Content & images</p>
             </div>
           </div>
         </CardContent>

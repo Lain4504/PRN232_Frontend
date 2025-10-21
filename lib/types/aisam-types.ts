@@ -14,13 +14,13 @@ export interface User {
 
 export interface Profile {
   id: string;
-  user_id: string;
-  profile_type: 'personal' | 'business';
+  userId: string;
+  profileType: number; // 0 = personal, 1 = business
   company_name?: string;
   bio?: string;
-  avatar_url?: string;
-  created_at: string;
-  updated_at: string;
+  avatarUrl?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Brand {
@@ -127,6 +127,15 @@ export interface SocialTargetDto {
   brandName?: string;
 }
 
+export interface AdAccountDto {
+  id: string; // Facebook Ad Account ID
+  name: string;
+  accountId: string;
+  currency: string;
+  timezone: string;
+  status: string;
+}
+
 export interface AvailableTargetDto {
   providerTargetId: string;
   name: string;
@@ -211,6 +220,7 @@ export interface Post {
   status: 'published' | 'failed' | 'deleted';
   created_at: string;
   updated_at: string;
+  metrics?: PostMetrics;
 }
 
 export interface PerformanceMetrics {
@@ -233,6 +243,7 @@ export interface CreateProfileForm {
   company_name?: string;
   bio?: string;
   avatar?: File;
+  avatarUrl?: string;
 }
 
 export interface CreateBrandForm {
@@ -416,7 +427,7 @@ export interface TeamResponse {
   status: 'Active' | 'Inactive' | 'Archived'; // Match backend enum values
   createdAt: string;
   updatedAt?: string;
-  membersCount?: number;
+  membersCount: number; // Now required from backend
   brands?: { id: string; name: string }[];
 }
 
@@ -430,7 +441,11 @@ export interface UpdateTeamStatusRequest {
 }
 
 export interface AssignBrandToTeamRequest {
-  brandIds: string[]; // supports batch assign/unassign based on backend contract
+  brandIds: string[]; // supports batch assign based on backend contract
+}
+
+export interface UnassignBrandFromTeamRequest {
+  brandId: string; // single brand unassign
 }
 
 export interface TeamMemberResponseDto {
@@ -530,7 +545,6 @@ export interface ContentResponseDto {
 }
 
 export interface CreateContentRequest {
-  userId: string;
   brandId: string;
   productId?: string;
   adType: AdTypeEnum;
@@ -707,4 +721,52 @@ export interface MarkAsReadRequest {
 export interface NotificationStats {
   total: number;
   unread: number;
+}
+
+// Content Calendar Types
+export interface ContentCalendar {
+  id: string;
+  contentId: string;
+  scheduledDate: string;
+  scheduledTime?: string;
+  timezone: string;
+  integrationIds: string[];
+  status: 'scheduled' | 'published' | 'failed' | 'cancelled';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ScheduleContentRequest {
+  scheduledDate: string;
+  scheduledTime?: string;
+  timezone: string;
+  integrationIds: string[];
+}
+
+export interface ScheduleRecurringContentRequest {
+  startDate: string;
+  scheduledTime?: string;
+  timezone: string;
+  repeatType: 'daily' | 'weekly' | 'monthly';
+  repeatInterval: number;
+  repeatUntil?: string;
+  integrationIds: string[];
+}
+
+// Enhanced Post Types
+export interface PostMetrics {
+  likes?: number;
+  shares?: number;
+  comments?: number;
+  views?: number;
+  clicks?: number;
+}
+
+export interface PostFilters {
+  page?: number;
+  pageSize?: number;
+  status?: string;
+  platform?: string;
+  contentId?: string;
+  integrationId?: string;
 }

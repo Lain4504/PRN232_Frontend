@@ -66,7 +66,7 @@ export function AssignBrandDialog({ open, onOpenChange, teamId, currentBrands = 
     } catch (err) {
       const message = err instanceof Error ? err.message : 'An error occurred'
       if (message.includes('401')) {
-        window.location.href = '/login'
+        window.location.href = '/auth/login'
         return
       }
       setError('Could not assign brands. ' + message)

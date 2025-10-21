@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { FormField } from "@/components/ui/form-field";
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 import { Brand, Product, CreateProductForm } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useBrands } from "@/hooks/use-brands";
@@ -140,11 +142,28 @@ export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel
     }
   };
 
+  if (brandsLoading) {
+    return (
+      <div className="space-y-6 p-4">
+        <LoadingSkeleton className="h-6 w-32" />
+        <div className="grid gap-6 md:grid-cols-2">
+          <LoadingSkeleton className="h-10 w-full" />
+          <LoadingSkeleton className="h-10 w-full" />
+        </div>
+        <LoadingSkeleton className="h-24 w-full" />
+        <div className="grid gap-6 md:grid-cols-2">
+          <LoadingSkeleton className="h-10 w-full" />
+          <LoadingSkeleton className="h-10 w-full" />
+        </div>
+        <LoadingSkeleton className="h-10 w-32" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 p-4">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid gap-2">
-          <Label htmlFor="brand">Brand *</Label>
+        <FormField label="Brand" required>
           {brandsLoaded ? (
             <Select 
               key={`brand-select-${formData.brand_id}`} 
@@ -163,12 +182,11 @@ export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel
               </SelectContent>
             </Select>
           ) : (
-            <div className="h-10 bg-muted animate-pulse rounded-md"></div>
+            <LoadingSkeleton className="h-10 w-full" />
           )}
-        </div>
+        </FormField>
 
-        <div className="grid gap-2">
-          <Label htmlFor="name">Product Name *</Label>
+        <FormField label="Product Name" required>
           <Input
             id="name"
             type="text"
@@ -177,10 +195,9 @@ export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel
             onChange={(e) => handleInputChange('name', e.target.value)}
             required
           />
-        </div>
+        </FormField>
 
-        <div className="grid gap-2">
-          <Label htmlFor="description">Description *</Label>
+        <FormField label="Description" required>
           <Textarea
             id="description"
             placeholder="Describe your product features, benefits, and specifications..."
@@ -189,11 +206,10 @@ export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel
             rows={4}
             required
           />
-        </div>
+        </FormField>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="price">Price *</Label>
+          <FormField label="Price" required>
             <div className="relative">
               <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -208,10 +224,9 @@ export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel
                 required
               />
             </div>
-          </div>
+          </FormField>
 
-          <div className="grid gap-2">
-            <Label htmlFor="category">Category</Label>
+          <FormField label="Category">
             <Input
               id="category"
               type="text"
@@ -219,11 +234,10 @@ export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel
               value={formData.category}
               onChange={(e) => handleInputChange('category', e.target.value)}
             />
-          </div>
+          </FormField>
         </div>
 
-        <div className="grid gap-2">
-          <Label htmlFor="tags">Tags</Label>
+        <FormField label="Tags" description="Separate tags with commas for better categorization">
           <div className="relative">
             <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -235,10 +249,7 @@ export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel
               className="pl-10"
             />
           </div>
-          <p className="text-sm text-muted-foreground">
-            Separate tags with commas for better categorization
-          </p>
-        </div>
+        </FormField>
 
         {/* Product Image Upload */}
         <div className="space-y-3">
@@ -286,7 +297,7 @@ export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel
           </div>
         )}
 
-        <div className="flex gap-3 pt-4">
+        <div className="flex flex-col sm:flex-row gap-3 pt-4">
           <Button type="submit" className="flex-1" disabled={isLoading}>
             {isLoading ? (
               <>
@@ -300,7 +311,7 @@ export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel
               </>
             )}
           </Button>
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading} className="w-full sm:w-auto">
             Cancel
           </Button>
         </div>

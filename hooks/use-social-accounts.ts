@@ -10,6 +10,7 @@ import {
   LinkTargetsRequest,
   LinkTargetsResponse,
   AccountsWithTargetsResponse,
+  AdAccountDto,
   Brand
 } from '@/lib/types/aisam-types'
 
@@ -22,6 +23,7 @@ export const socialAccountKeys = {
   detail: (id: string) => [...socialAccountKeys.details(), id] as const,
   availableTargets: (id: string) => [...socialAccountKeys.detail(id), 'available-targets'] as const,
   linkedTargets: (id: string) => [...socialAccountKeys.detail(id), 'linked-targets'] as const,
+  adAccounts: (id: string) => [...socialAccountKeys.detail(id), 'ad-accounts'] as const,
   accountsWithTargets: () => [...socialAccountKeys.all, 'accounts-with-targets'] as const,
 }
 
@@ -76,6 +78,18 @@ export function useGetLinkedTargets(socialAccountId: string) {
     queryKey: socialAccountKeys.linkedTargets(socialAccountId),
     queryFn: async (): Promise<SocialTargetDto[]> => {
       const response = await api.get<SocialTargetDto[]>(endpoints.linkedTargets(socialAccountId))
+      return response.data
+    },
+    enabled: !!socialAccountId,
+  })
+}
+
+// Get ad accounts for a social account
+export function useGetAdAccounts(socialAccountId: string) {
+  return useQuery({
+    queryKey: socialAccountKeys.adAccounts(socialAccountId),
+    queryFn: async (): Promise<AdAccountDto[]> => {
+      const response = await api.get<AdAccountDto[]>(endpoints.adAccounts(socialAccountId))
       return response.data
     },
     enabled: !!socialAccountId,

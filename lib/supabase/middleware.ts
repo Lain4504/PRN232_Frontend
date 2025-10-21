@@ -42,15 +42,23 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
+  // Debug logging
+  console.log('Auth middleware debug:', {
+    pathname: request.nextUrl.pathname,
+    hasUser: !!user,
+    userClaims: user
+  });
+
   // Redirect to login if user is not authenticated and trying to access protected routes
   if (
     !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
+    !request.nextUrl.pathname.startsWith("/auth/login") &&
     !request.nextUrl.pathname.startsWith("/auth") &&
     request.nextUrl.pathname !== "/"
   ) {
+    console.log('No user, redirecting to login');
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    url.pathname = "/auth/login";
     return NextResponse.redirect(url);
   }
 

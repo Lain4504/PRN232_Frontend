@@ -134,7 +134,8 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
 
     const isMobile = useIsMobile()
 
-    const content = (
+    // Shared form content component
+    const AddMemberFormContent = ({ onCancel }: { onCancel: () => void }) => (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
                 <Label className="text-sm font-medium text-muted-foreground">Search and select User</Label>
@@ -235,8 +236,21 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
                 )}
             </div>
 
-            <div className="flex justify-end gap-2 pt-4">
-                <Button type="submit" disabled={adding || !selectedUserId} size="sm" className="w-full md:w-auto h-8 text-xs">{adding ? 'Adding...' : 'Add member'}</Button>
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
+                <Button type="button" variant="outline" onClick={onCancel} size="lg" className="w-full sm:w-auto">Cancel</Button>
+                <Button type="submit" disabled={adding || !selectedUserId} size="lg" className="w-full sm:w-auto">
+                    {adding ? (
+                        <>
+                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                            Adding...
+                        </>
+                    ) : (
+                        <>
+                            <Search className="mr-2 h-4 w-4" />
+                            Add Member
+                        </>
+                    )}
+                </Button>
             </div>
         </form>
     )
@@ -249,14 +263,9 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
                         <DrawerTitle>Add new member</DrawerTitle>
                         <DrawerDescription>Search for a user, select a role, and set permissions.</DrawerDescription>
                     </DrawerHeader>
-                    <div className="px-4 overflow-y-auto flex-1 pt-2">
-                        {content}
+                    <div className="px-4 overflow-y-auto flex-1">
+                        <AddMemberFormContent onCancel={() => onOpenChange(false)} />
                     </div>
-                    <DrawerFooter className="flex-shrink-0 pt-2">
-                        <DrawerClose asChild>
-                            <Button variant="outline">Cancel</Button>
-                        </DrawerClose>
-                    </DrawerFooter>
                 </DrawerContent>
             </Drawer>
         )
@@ -270,7 +279,7 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
                     <DialogDescription>Search for a user, select a role, and set permissions.</DialogDescription>
                 </DialogHeader>
                 <div className="overflow-y-auto flex-1">
-                    {content}
+                    <AddMemberFormContent onCancel={() => onOpenChange(false)} />
                 </div>
             </DialogContent>
         </Dialog>

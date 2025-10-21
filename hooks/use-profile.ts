@@ -67,11 +67,20 @@ export function useProfile(profileId?: string) {
 }
 
 // Create profile
-export function useCreateProfile() {
+export function useCreateProfile(userId?: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (payload: CreateProfileForm): Promise<Profile> => {
-      const resp = await api.post<Profile>(endpoints.profiles(), payload)
+      const formData = new FormData()
+      formData.append('ProfileType', payload.profile_type === 'business' ? '1' : '0')
+      if (payload.company_name) formData.append('CompanyName', payload.company_name)
+      if (payload.bio) formData.append('Bio', payload.bio)
+      if (payload.avatar) formData.append('AvatarFile', payload.avatar)
+      if (payload.avatarUrl !== undefined) formData.append('AvatarUrl', payload.avatarUrl ?? '')
+      
+      const resp = await api.post<Profile>(endpoints.profilesByUser(userId!), formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
       return resp.data
     },
     onSuccess: () => {
@@ -85,7 +94,16 @@ export function useUpdateProfile(profileId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (payload: CreateProfileForm): Promise<Profile> => {
-      const resp = await api.put<Profile>(endpoints.profileById(profileId), payload)
+      const formData = new FormData()
+      formData.append('ProfileType', payload.profile_type === 'business' ? '1' : '0')
+      if (payload.company_name) formData.append('CompanyName', payload.company_name)
+      if (payload.bio) formData.append('Bio', payload.bio)
+      if (payload.avatar) formData.append('AvatarFile', payload.avatar)
+      if (payload.avatarUrl !== undefined) formData.append('AvatarUrl', payload.avatarUrl ?? '')
+      
+      const resp = await api.put<Profile>(endpoints.profileById(profileId), formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
       return resp.data
     },
     onSuccess: () => {

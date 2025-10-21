@@ -1,9 +1,16 @@
 import { updateSession } from "@/lib/supabase/middleware";
+import { getSubscriptionMiddleware } from "@/lib/middleware/subscription-middleware";
 import { type NextRequest } from "next/server";
 
-
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  // First, handle authentication
+  const authResponse = await updateSession(request);
+  
+  // Temporarily disable subscription middleware for debugging
+  // const subscriptionMiddleware = getSubscriptionMiddleware();
+  // return await subscriptionMiddleware(request);
+
+  return authResponse;
 }
 
 export const config = {

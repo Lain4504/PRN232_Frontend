@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FormField } from "@/components/ui/form-field";
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 import {
   Target,
   Upload,
@@ -96,7 +98,7 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
     e.preventDefault();
 
     if (!formData.name.trim()) {
-      toast.error('Brand name is required');
+      toast.error('                        The brand name can&apos;t be empty.');
       return;
     }
 
@@ -127,11 +129,19 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
+      <div className="space-y-6 p-4">
+        <LoadingSkeleton className="h-6 w-48" />
+        <div className="grid gap-6 md:grid-cols-2">
+          <LoadingSkeleton className="h-10 w-full" />
+          <LoadingSkeleton className="h-10 w-full" />
         </div>
+        <LoadingSkeleton className="h-24 w-full" />
+        <LoadingSkeleton className="h-6 w-32" />
+        <div className="grid gap-6 md:grid-cols-2">
+          <LoadingSkeleton className="h-24 w-full" />
+          <LoadingSkeleton className="h-24 w-full" />
+        </div>
+        <LoadingSkeleton className="h-10 w-32" />
       </div>
     );
   }
@@ -147,84 +157,81 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
           </div>
           
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="name">Brand Name *</Label>
+            <FormField label="Brand Name" required>
               <Input
-                id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 placeholder="Enter your brand name"
                 required
+                className="h-10 sm:h-9"
               />
-            </div>
+            </FormField>
 
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="link-profile"
-                  checked={linkToProfile}
-                  onCheckedChange={(checked) => {
-                    setLinkToProfile(checked as boolean);
-                    if (!checked) {
-                      handleInputChange('profile_id', undefined);
-                    }
-                  }}
-                />
-                <Label htmlFor="link-profile" className="text-sm font-medium">
-                  Liên kết với profile cá nhân/doanh nghiệp của bạn?
-                </Label>
-              </div>
-
-              {linkToProfile && (
-                <div className="space-y-2 ml-6">
-                  {profiles.length > 0 ? (
-                    <>
-                      <Label htmlFor="profile_id">Chọn Profile</Label>
-                      <select
-                        id="profile_id"
-                        value={formData.profile_id || ''}
-                        onChange={(e) => handleInputChange('profile_id', e.target.value === '' ? undefined : e.target.value)}
-                        className="w-full p-2 border rounded-md"
-                      >
-                        <option value="">Chọn profile...</option>
-                        {profiles.map((profile) => (
-                          <option key={profile.id} value={profile.id}>
-                            {profile.company_name || `${profile.profile_type} profile`}
-                          </option>
-                        ))}
-                      </select>
-                    </>
-                  ) : (
-                    <div className="p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-md">
-                      <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-2">
-                        Bạn chưa có profile nào. Hãy tạo profile trước khi liên kết với brand.
-                      </p>
-                      <Button asChild size="sm" variant="outline">
-                        <Link href="/dashboard/profile/create">
-                          Tạo Profile
-                        </Link>
-                      </Button>
-                    </div>
-                  )}
+            <FormField 
+              label="Link to Profile" 
+              description="Profile helps identify your brand and create more relevant content"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="link-profile"
+                    checked={linkToProfile}
+                    onCheckedChange={(checked) => {
+                      setLinkToProfile(checked as boolean);
+                      if (!checked) {
+                        handleInputChange('profile_id', undefined);
+                      }
+                    }}
+                  />
+                  <Label htmlFor="link-profile" className="text-sm font-medium">
+                    Link to your personal/business profile?
+                  </Label>
                 </div>
-              )}
 
-              <p className="text-xs text-muted-foreground">
-                Profile giúp định danh thương hiệu và tạo nội dung phù hợp hơn
-              </p>
-            </div>
+                {linkToProfile && (
+                  <div className="space-y-2 ml-6">
+                    {profiles.length > 0 ? (
+                      <FormField label="Select Profile" required={linkToProfile}>
+                        <select
+                          value={formData.profile_id || ''}
+                          onChange={(e) => handleInputChange('profile_id', e.target.value === '' ? undefined : e.target.value)}
+                          className="w-full p-2 border rounded-md h-10 sm:h-9"
+                        >
+                          <option value="">Select profile...</option>
+                          {profiles.map((profile) => (
+                            <option key={profile.id} value={profile.id}>
+                              {profile.company_name || `${profile.profile_type} profile`}
+                            </option>
+                          ))}
+                        </select>
+                      </FormField>
+                    ) : (
+                      <div className="p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-md">
+                        <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-2">
+                          You don&apos;t have any profiles yet. Create a profile before linking to a brand.
+                        </p>
+                        <Button asChild size="sm" variant="outline">
+                          <Link href="/dashboard/profile">
+                            Go to Profiles
+                          </Link>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </FormField>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+          <FormField label="Description">
             <Textarea
-              id="description"
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               placeholder="Describe what your brand does and what makes it unique"
               rows={3}
+              className="min-h-[80px] sm:min-h-[70px]"
             />
-          </div>
+          </FormField>
         </div>
 
         {/* Brand Identity */}
@@ -235,8 +242,7 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
           </div>
 
           {/* Logo Upload */}
-          <div className="space-y-3">
-            <Label>Brand Logo</Label>
+          <FormField label="Brand Logo" description="JPG, PNG up to 2MB">
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
                 {logoPreview ? (
@@ -265,22 +271,18 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
                   <Upload className="mr-2 h-4 w-4" />
                   {logoPreview ? 'Change Logo' : 'Upload Logo'}
                 </Button>
-                <p className="text-xs text-muted-foreground mt-1">
-                  JPG, PNG up to 2MB
-                </p>
               </div>
             </div>
-          </div>
+          </FormField>
 
-          <div className="space-y-2">
-            <Label htmlFor="slogan">Slogan</Label>
+          <FormField label="Slogan">
             <Input
-              id="slogan"
               value={formData.slogan}
               onChange={(e) => handleInputChange('slogan', e.target.value)}
               placeholder="Your brand's tagline or slogan"
+              className="h-10 sm:h-9"
             />
-          </div>
+          </FormField>
         </div>
 
         {/* Brand Strategy */}
@@ -290,35 +292,33 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
             <h3 className="text-lg font-semibold">Brand Strategy</h3>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="usp">Unique Selling Proposition (USP)</Label>
+          <FormField label="Unique Selling Proposition (USP)">
             <Textarea
-              id="usp"
               value={formData.usp}
               onChange={(e) => handleInputChange('usp', e.target.value)}
               placeholder="What makes your brand different from competitors? What unique value do you provide?"
               rows={3}
+              className="min-h-[80px] sm:min-h-[70px]"
             />
-          </div>
+          </FormField>
 
-          <div className="space-y-2">
-            <Label htmlFor="target_audience">Target Audience</Label>
+          <FormField label="Target Audience">
             <Textarea
-              id="target_audience"
               value={formData.target_audience}
               onChange={(e) => handleInputChange('target_audience', e.target.value)}
               placeholder="Describe your ideal customers: demographics, interests, pain points, etc."
               rows={3}
+              className="min-h-[80px] sm:min-h-[70px]"
             />
-          </div>
+          </FormField>
         </div>
 
         {/* Submit Button */}
-        <div className="flex gap-3 pt-4">
+        <div className="flex flex-col sm:flex-row gap-3 pt-4">
           <Button
             type="submit"
             disabled={submitting}
-            className="flex-1"
+            className="flex-1 h-10 sm:h-9"
           >
             {submitting ? (
               <>
@@ -338,6 +338,7 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
             variant="outline"
             onClick={onCancel}
             disabled={submitting}
+            className="h-10 sm:h-9 w-full sm:w-auto"
           >
             Cancel
           </Button>

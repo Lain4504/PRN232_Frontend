@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { Plus, Edit } from 'lucide-react'
 import { BrandForm } from '@/components/brands/brand-form'
 import { Brand } from '@/lib/types/aisam-types'
 
@@ -14,11 +13,17 @@ interface BrandModalProps {
   mode: 'create' | 'edit'
   brand?: Brand
   onSuccess?: () => void
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function BrandModal({ children, mode, brand, onSuccess }: BrandModalProps) {
-  const [open, setOpen] = useState(false)
+export function BrandModal({ children, mode, brand, onSuccess, open: controlledOpen, onOpenChange }: BrandModalProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
   const isMobile = useIsMobile()
+  
+  // Use controlled open if provided, otherwise use internal state
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const setOpen = onOpenChange || setInternalOpen
 
   const handleSuccess = () => {
     setOpen(false)
@@ -28,23 +33,11 @@ export function BrandModal({ children, mode, brand, onSuccess }: BrandModalProps
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger asChild>
-          {children || (
-            <Button>
-              {mode === 'create' ? (
-                <>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Brand
-                </>
-              ) : (
-                <>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit Brand
-                </>
-              )}
-            </Button>
-          )}
-        </DrawerTrigger>
+        {children && (
+          <DrawerTrigger asChild>
+            {children}
+          </DrawerTrigger>
+        )}
         <DrawerContent className="max-h-[90vh] flex flex-col">
           <DrawerHeader className="flex-shrink-0 text-left">
             <DrawerTitle>
@@ -65,11 +58,6 @@ export function BrandModal({ children, mode, brand, onSuccess }: BrandModalProps
               onCancel={() => setOpen(false)}
             />
           </div>
-          <DrawerFooter className="flex-shrink-0 pt-2">
-            <DrawerClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DrawerClose>
-          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     )
@@ -77,23 +65,11 @@ export function BrandModal({ children, mode, brand, onSuccess }: BrandModalProps
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children || (
-          <Button>
-            {mode === 'create' ? (
-              <>
-                <Plus className="mr-2 h-4 w-4" />
-                Create Brand
-              </>
-            ) : (
-              <>
-                <Edit className="mr-2 h-4 w-4" />
-                Edit Brand
-              </>
-            )}
-          </Button>
-        )}
-      </DialogTrigger>
+      {children && (
+        <DialogTrigger asChild>
+          {children}
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>

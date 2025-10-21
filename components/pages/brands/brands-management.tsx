@@ -15,7 +15,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   Target,
@@ -28,16 +27,167 @@ import {
   FileText,
   AlertTriangle
 } from "lucide-react";
-import { Brand } from "@/lib/types/aisam-types";
+import { Brand, Profile } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useUserProfile, useProfiles } from "@/hooks/use-profile";
 import { useBrands, useDeleteBrand } from "@/hooks/use-brands";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { BrandModal } from "@/components/brands/brand-modal";
+import { DataTable } from "@/components/ui/data-table";
+import { ColumnDef } from "@tanstack/react-table";
+
+// Create columns for the data table
+const createColumns = (
+  handleEditBrand: (brand: Brand) => void,
+  handleDeleteBrand: (brandId: string) => void,
+  profiles: Profile[] = [],
+  isDeleting: boolean
+): ColumnDef<Brand>[] => [
+  {
+    accessorKey: "name",
+    header: "Brand Name",
+    cell: ({ row }) => (
+      <div className="flex items-center gap-3">
+        <Avatar className="h-10 w-10">
+          {row.original.logo_url ? (
+            <AvatarImage src={row.original.logo_url} alt={row.getValue("name")} />
+          ) : (
+            <AvatarFallback>
+              <Target className="h-4 w-4" />
+            </AvatarFallback>
+          )}
+        </Avatar>
+        <div>
+          <div className="font-medium">{row.getValue("name")}</div>
+          <div className="text-sm text-muted-foreground">ID: {row.original.id.slice(0, 8)}</div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => (
+      <div className="text-muted-foreground line-clamp-2 max-w-xs">
+        {row.getValue("description") || 'No description'}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "profile_id",
+    header: "Linked Profile",
+    cell: ({ row }) => {
+      const profileId = row.getValue("profile_id") as string;
+      const profile = profiles.find(p => p.id === profileId);
+      return (
+        <div className="text-sm">
+          {profile ? (
+            <Badge variant="outline">
+              {profile.company_name || profile.profileType}
+            </Badge>
+          ) : (
+            <span className="text-muted-foreground">No profile linked</span>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "created_at",
+    header: "Created",
+    cell: ({ row }) => (
+      <div className="text-sm text-muted-foreground">
+        {new Date(row.getValue("created_at")).toLocaleDateString()}
+      </div>
+    ),
+  },
+  {
+    id: "products",
+    header: "Products",
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2">
+        <Package className="h-4 w-4 text-muted-foreground" />
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="h-auto p-0 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <Link href={`/dashboard/brands/${row.original.id}/products`}>
+            View Products
+          </Link>
+        </Button>
+      </div>
+    ),
+  },
+  {
+    id: "content",
+    header: "Content",
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2">
+        <FileText className="h-4 w-4 text-muted-foreground" />
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="h-auto p-0 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <Link href={`/dashboard/brands/${row.original.id}/contents`}>
+            Manage Content
+          </Link>
+        </Button>
+      </div>
+    ),
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2">
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+        >
+          <Link href={`/dashboard/brands/${row.original.id}/products`}>
+            <Package className="h-4 w-4" />
+          </Link>
+        </Button>
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+        >
+          <Link href={`/dashboard/brands/${row.original.id}/contents`}>
+            <FileText className="h-4 w-4" />
+          </Link>
+        </Button>
+        <Button
+          onClick={() => handleEditBrand(row.original)}
+          variant="outline"
+          size="sm"
+        >
+          <Edit className="h-4 w-4" />
+        </Button>
+        <Button
+          onClick={() => handleDeleteBrand(row.original.id)}
+          variant="destructive"
+          size="sm"
+          disabled={isDeleting}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
+    ),
+  },
+];
 
 export function BrandsManagement() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [deleteBrandId, setDeleteBrandId] = useState<string | null>(null);
 
   // Hooks
   const { data: user } = useUserProfile();
@@ -45,32 +195,44 @@ export function BrandsManagement() {
   const { data: brands = [], isLoading: loading, refetch: refetchBrands } = useBrands();
   const deleteBrandMutation = useDeleteBrand();
 
-  // Ensure brands is always an array
+  // Ensure brands and profiles are always arrays
   const safeBrands = Array.isArray(brands) ? brands : [];
+  const safeProfiles = Array.isArray(profiles) ? profiles : [];
 
   const filteredBrands = safeBrands.filter(brand =>
     brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     brand.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Debug logs
-  console.log('Raw brands data:', brands);
-  console.log('Safe brands:', safeBrands);
-  console.log('Search term:', searchTerm);
-  console.log('Filtered brands:', filteredBrands);
-  console.log('Loading state:', loading);
 
   const handleRefresh = () => {
     refetchBrands();
   };
 
-  const handleDeleteBrand = async (brandId: string) => {
-    const brandToDelete = safeBrands.find(b => b.id === brandId);
+  const handleEditBrand = (brand: Brand) => {
+    setEditingBrand(brand);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEdit = () => {
+    setEditingBrand(null);
+    setIsEditModalOpen(false);
+  };
+
+  const handleDeleteBrand = (brandId: string) => {
+    setDeleteBrandId(brandId);
+  };
+
+  const confirmDeleteBrand = async () => {
+    if (!deleteBrandId) return;
+    
+    const brandToDelete = safeBrands.find(b => b.id === deleteBrandId);
     const brandName = brandToDelete?.name || 'this brand';
 
     try {
-      await deleteBrandMutation.mutateAsync(brandId);
+      await deleteBrandMutation.mutateAsync(deleteBrandId);
       toast.success(`Brand "${brandName}" and all associated products have been deleted successfully`);
+      setDeleteBrandId(null);
     } catch (error) {
       console.error('Failed to delete brand:', error);
       toast.error('Failed to delete brand');
@@ -146,29 +308,10 @@ export function BrandsManagement() {
           </div>
         </div>
 
-        {/* Create Brand Card */}
-        <Card className="border border-primary/20">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <Plus className="h-4 w-4 text-primary" />
-              <h3 className="text-base font-semibold">Create New Brand</h3>
-            </div>
-            <p className="text-xs text-muted-foreground mb-3">
-              Add a new brand to start managing its products and content.
-            </p>
-            <BrandModal mode="create" onSuccess={handleRefresh}>
-              <Button size="sm" className="w-full sm:w-auto h-8 text-xs">
-                <Plus className="mr-1 h-3 w-3" />
-                Create Brand
-              </Button>
-            </BrandModal>
-          </CardContent>
-        </Card>
-
-        {/* Search and Filters */}
+        {/* Actions and Search */}
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -178,148 +321,55 @@ export function BrandsManagement() {
                   className="pl-10"
                 />
               </div>
-              <Badge variant="secondary">
-                {filteredBrands.length} brand{filteredBrands.length !== 1 ? 's' : ''}
-              </Badge>
+              <div className="flex items-center gap-3">
+                <Badge variant="secondary">
+                  {filteredBrands.length} brand{filteredBrands.length !== 1 ? 's' : ''}
+                </Badge>
+                <BrandModal mode="create" onSuccess={handleRefresh}>
+                  <Button size="sm">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Brand
+                  </Button>
+                </BrandModal>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Brands List/Grid */}
+        {/* Brands Table */}
         {filteredBrands.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredBrands.map((brand) => {
-              const profile = brand.profile_id ? profiles.find(p => p.id === brand.profile_id) : null;
-              return (
-                <Card key={brand.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12">
-                          {brand.logo_url ? (
-                            <AvatarImage src={brand.logo_url} alt={brand.name} />
-                          ) : (
-                            <AvatarFallback>
-                              <Target className="h-6 w-6" />
-                            </AvatarFallback>
-                          )}
-                        </Avatar>
-                        <div>
-                          <CardTitle className="text-lg">{brand.name}</CardTitle>
-                          <CardDescription>
-                            {profile ? (profile.company_name || profile.profile_type) : 'No profile linked'}
-                          </CardDescription>
-                        </div>
-                      </div>
-                      <div className="flex gap-1">
-                        <BrandModal mode="edit" brand={brand} onSuccess={handleRefresh}>
-                          <Button variant="ghost" size="sm">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        </BrandModal>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-destructive hover:text-destructive/80"
-                              disabled={deleteBrandMutation.isPending}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle className="flex items-center gap-2">
-                                <AlertTriangle className="h-5 w-5 text-destructive" />
-                                Delete Brand &ldquo;{brand.name}&rdquo;?
-                              </AlertDialogTitle>
-                              <AlertDialogDescription className="text-left space-y-3">
-                                <p>
-                                  Are you sure you want to permanently delete this brand? This action cannot be undone.
-                                </p>
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDeleteBrand(brand.id)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                disabled={deleteBrandMutation.isPending}
-                              >
-                                {deleteBrandMutation.isPending ? (
-                                  <>
-                                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                                    Deleting...
-                                  </>
-                                ) : (
-                                  <>
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Delete Brand
-                                  </>
-                                )}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {brand.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {brand.description}
-                      </p>
-                    )}
-                    {brand.slogan && (
-                      <div className="p-3 bg-muted rounded-lg">
-                        <p className="text-sm font-medium italic">&ldquo;{brand.slogan}&rdquo;</p>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        <span>{new Date(brand.created_at).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" asChild className="flex-1">
-                        <Link href={`/dashboard/products?brand=${brand.id}`}>
-                          <Package className="mr-2 h-4 w-4" />
-                          Products
-                        </Link>
-                      </Button>
-                      <Button variant="outline" size="sm" asChild className="flex-1">
-                        <Link href={`/dashboard/contents?brand=${brand.id}`}>
-                          <FileText className="mr-2 h-4 w-4" />
-                          Contents
-                        </Link>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+          <DataTable
+            columns={createColumns(
+              handleEditBrand,
+              handleDeleteBrand,
+              safeProfiles,
+              deleteBrandMutation.isPending
+            )}
+            data={filteredBrands}
+            pageSize={10}
+            showSearch={false}
+          />
         ) : (
           <Card>
             <CardContent className="pt-6">
-              <div className="text-center py-12">
-                <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <div className="text-center py-6">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
+                  <Target className="h-6 w-6 text-primary" />
+                </div>
                 <h3 className="text-lg font-semibold mb-2">
                   {searchTerm ? 'No brands found' : 'No brands yet'}
                 </h3>
-                <p className="text-muted-foreground mb-4">
+                <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
                   {searchTerm
                     ? 'Try adjusting your search terms'
-                    : 'Create your first brand to get started with AISAM'
+                    : 'Create your first brand to get started'
                   }
                 </p>
                 {!searchTerm && (
                   <BrandModal mode="create" onSuccess={handleRefresh}>
                     <Button>
                       <Plus className="mr-2 h-4 w-4" />
-                      Create Your First Brand
+                      Create Brand
                     </Button>
                   </BrandModal>
                 )}
@@ -328,23 +378,56 @@ export function BrandsManagement() {
           </Card>
         )}
 
-        {/* Help Section */}
-        <Card className="border border-blue-200 dark:border-blue-800">
-          <CardContent className="p-3">
-            <div className="flex items-start gap-2">
-              <Target className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-              <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-blue-900 dark:text-blue-100 text-xs mb-1">
-                  About Brand Management
-                </h3>
-                <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
-                  Managing your brands helps AISAM organize your products and content efficiently. You can add, edit, or remove brands at any time.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Edit Brand Modal */}
+        {editingBrand && (
+          <BrandModal
+            mode="edit"
+            brand={editingBrand}
+            open={isEditModalOpen}
+            onOpenChange={setIsEditModalOpen}
+            onSuccess={() => {
+              handleRefresh();
+              handleCloseEdit();
+            }}
+          />
+        )}
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={!!deleteBrandId} onOpenChange={() => setDeleteBrandId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+                Delete Brand?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to permanently delete this brand? This action cannot be undone and will also delete all associated products.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmDeleteBrand}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                disabled={deleteBrandMutation.isPending}
+              >
+                {deleteBrandMutation.isPending ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Brand
+                  </>
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
 }
+

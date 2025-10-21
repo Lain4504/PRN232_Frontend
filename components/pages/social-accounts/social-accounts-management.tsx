@@ -116,37 +116,39 @@ export function SocialAccountsManagement() {
         </div>
       </div>
 
-      {/* Connect New Account */}
-      <Card className="border border-primary/20">
-        <CardContent className="p-3">
-          <div className="flex items-center gap-2 mb-2">
-            <Plus className="h-4 w-4 text-primary" />
-            <h3 className="text-base font-semibold">Connect New Account</h3>
-          </div>
-          <p className="text-xs text-muted-foreground mb-3">
-            Link your social media accounts to start managing your content and campaigns.
-          </p>
-          <ConnectModal>
-            <Button size="sm" className="w-full sm:w-auto h-8 text-xs">
-              <Plus className="mr-1 h-3 w-3" />
-              Choose Platform
-            </Button>
-          </ConnectModal>
-        </CardContent>
-      </Card>
-
       {/* Social Accounts List */}
       {socialAccounts.length > 0 ? (
-        <div className="space-y-3 lg:space-y-4">
-          <h2 className="text-lg lg:text-xl font-semibold">Connected Accounts</h2>
-          <SocialAccountList 
-            accounts={socialAccounts} 
-            userId={user?.id || ""}
-            onRefresh={handleRefresh}
-          />
-        </div>
+        <>
+          {/* Connect New Account - Only show when user has at least one account */}
+          <Card className="border border-primary/20">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Plus className="h-4 w-4 text-primary" />
+                <h3 className="text-base font-semibold">Connect New Account</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Link additional social media accounts to expand your content management capabilities.
+              </p>
+              <ConnectModal>
+                <Button size="sm" className="w-full sm:w-auto h-8 text-xs">
+                  <Plus className="mr-1 h-3 w-3" />
+                  Choose Platform
+                </Button>
+              </ConnectModal>
+            </CardContent>
+          </Card>
+
+          <div className="space-y-3 lg:space-y-4">
+            <h2 className="text-lg lg:text-xl font-semibold">Connected Accounts</h2>
+            <SocialAccountList 
+              accounts={socialAccounts} 
+              userId={user?.id || ""}
+              onRefresh={handleRefresh}
+            />
+          </div>
+        </>
       ) : (
-        <EmptyState onConnect={() => {}} type="accounts" />
+        <EmptyState type="accounts" />
       )}
 
       {/* Help Section */}

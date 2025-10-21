@@ -1,40 +1,21 @@
 "use client"
 
-import { useMemo, useState, Suspense, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useMemo, useState, Suspense } from 'react'
+import Link from 'next/link'
 import { useTeamsByVendor } from '@/hooks/use-teams'
-import { MembersCount } from '@/components/pages/teams/MembersCount'
+import { useUser } from '@/hooks/use-user'
 import { TeamCreateDialog } from '@/components/pages/teams/TeamCreateDialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Eye } from 'lucide-react'
-import { api, endpoints } from '@/lib/api'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardContent } from '@/components/ui/card'
+import { Eye, Users, Building2 } from 'lucide-react'
 import type { TeamResponse } from '@/lib/types/aisam-types'
-import type { UserResponseDto } from '@/lib/types/user'
 
 function TeamsPageContent() {
-  const router = useRouter()
-  const [vendorId, setVendorId] = useState('')
-  const [loading, setLoading] = useState(true)
-  const { data, isLoading, isError } = useTeamsByVendor(vendorId || undefined)
-
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await api.get<UserResponseDto>(endpoints.userProfile)
-        if (response.data.role === 'Vendor') {
-          setVendorId(response.data.id)
-        }
-        setLoading(false)
-      } catch (error) {
-        console.error('Failed to fetch user profile:', error)
-        setLoading(false)
-      }
-    }
-
-    fetchUserProfile()
-  }, [])
+  const { data: user, isLoading: userLoading } = useUser()
+  const { data, isLoading, isError } = useTeamsByVendor(user?.id || undefined)
   const [openCreate, setOpenCreate] = useState(false)
 
   // Helper function để xác định status của team
@@ -45,109 +26,212 @@ function TeamsPageContent() {
 
   const rows = useMemo(() => data || [], [data])
 
+  // Skeleton component for teams table
+  const TeamsTableSkeleton = () => (
+    <div className="bg-card rounded-lg border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Team Name</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Members</TableHead>
+            <TableHead>Created</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {[...Array(3)].map((_, i) => (
+            <TableRow key={i}>
+              <TableCell>
+                <Skeleton className="h-4 w-32" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-6 w-16 rounded-full" />
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <Skeleton className="h-4 w-8" />
+                </div>
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-20" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-8 w-8 rounded" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  )
+
   return (
-    <div className="p-4 space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 className="text-xl font-semibold">Teams</h1>
-        <Button size="sm" className="h-8 text-xs w-full sm:w-auto" disabled={!vendorId} onClick={() => setOpenCreate(true)}>
-          Create Team
-        </Button>
+    <div className="w-full max-w-full overflow-x-hidden">
+      <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
+      {/* Header */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Teams</h1>
+            <p className="text-muted-foreground">
+              Manage your teams and team members
+            </p>
+          </div>
+          {/* Only show Create Team button when user has teams */}
+          {!userLoading && !isLoading && rows.length > 0 && (
+            <Button onClick={() => setOpenCreate(true)}>
+              Create Team
+            </Button>
+          )}
+        </div>
       </div>
 
-      {loading && (
-        <div className="rounded-lg border p-4 text-sm text-muted-foreground bg-background/50">Loading vendor information...</div>
-      )}
-
-      {!loading && !vendorId && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/5 border border-destructive/20 text-sm">
-          <div>Unable to load vendor information. Please try logging in again.</div>
+      {/* Content */}
+      {userLoading || isLoading ? (
+        <TeamsTableSkeleton />
+      ) : isError ? (
+        <div className="text-center py-12">
+          <div className="text-destructive">Error loading teams</div>
         </div>
-      )}
-
-      {!loading && vendorId && (
-        <div className="overflow-x-auto border rounded-lg">
-          <Table className="w-full">
+      ) : user?.role !== 'Vendor' ? (
+        <div className="text-center py-12">
+          <div className="text-muted-foreground">Only vendors can manage teams</div>
+        </div>
+      ) : rows.length === 0 ? (
+        <Card className="border border-dashed border-border/50 bg-card/50 backdrop-blur-sm">
+          <CardContent className="p-6 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
+              <Building2 className="h-6 w-6 text-primary" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">No teams yet</h3>
+            <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
+              Create your first team to start collaborating with your team members and managing projects together.
+            </p>
+            <Button 
+              onClick={() => setOpenCreate(true)} 
+              size="sm" 
+              className="h-8 text-xs"
+            >
+              <Building2 className="mr-1 h-3 w-3" />
+              Create Your First Team
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="bg-card rounded-lg border">
+          <Table>
             <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="py-2 px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide w-auto">Name</TableHead>
-                <TableHead className="hidden sm:table-cell py-2 px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide w-auto">Status</TableHead>
-                <TableHead className="py-2 px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide w-auto">Members</TableHead>
-                <TableHead className="hidden md:table-cell py-2 px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide w-auto">Created</TableHead>
-                <TableHead className="text-right py-2 px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide w-16">Actions</TableHead>
+              <TableRow>
+                <TableHead>Team Name</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Members</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading && (
-                <TableRow>
-                  <TableCell colSpan={5} className="py-6 text-center text-sm text-muted-foreground">Loading...</TableCell>
-                </TableRow>
-              )}
-              {isError && (
-                <TableRow>
-                  <TableCell colSpan={5} className="py-4">
-                    <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
-                      <div className="text-sm text-destructive">Không thể tải danh sách teams.</div>
-                    </div>
+              {rows.map((team) => (
+                <TableRow key={team.id}>
+                  <TableCell className="font-medium">
+                    {team.name}
                   </TableCell>
-                </TableRow>
-              )}
-              {!isLoading && !isError && rows.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} className="py-10 text-center text-sm text-muted-foreground">Chưa có team nào. Hãy tạo team.</TableCell>
-                </TableRow>
-              )}
-              {!isLoading && !isError && rows.map((t) => {
-                const teamStatus = getTeamStatus(t);
-                return (
-                <TableRow key={t.id} className="hover:bg-muted/50">
-                  <TableCell className="py-3 px-3 font-medium truncate">{t.name}</TableCell>
-                  <TableCell className="hidden sm:table-cell py-3 px-3">
-                    <Badge variant={
-                      teamStatus === 'Active' ? 'default' : 
-                      teamStatus === 'Inactive' ? 'secondary' : 
-                      teamStatus === 'Archived' ? 'destructive' : 
-                      'outline'
-                    } className="text-xs">
-                      {teamStatus}
+                  <TableCell>
+                    <Badge variant={getTeamStatus(team) === 'Active' ? 'default' : 'secondary'}>
+                      {getTeamStatus(team)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="py-3 px-3">
-                    <Badge variant="outline" className="text-xs"><MembersCount teamId={t.id} /> Members</Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell py-3 px-3 font-mono text-sm">
-                    {new Date(t.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell className="py-3 px-3 text-right w-16">
-                    <div className="flex items-center justify-end">
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => router.push(`/dashboard/teams/${t.id}`)}>
-                          <Eye className="mr-1 h-3 w-3 sm:mr-1" />
-                          <span className="hidden sm:inline">View</span>
-                        </Button>
-                      </div>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      {team.membersCount || 0}
                     </div>
                   </TableCell>
+                  <TableCell>
+                    {new Date(team.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <Link href={`/dashboard/teams/${team.id}`}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </TableCell>
                 </TableRow>
-                );
-              })}
+              ))}
             </TableBody>
           </Table>
         </div>
       )}
 
-      <TeamCreateDialog
-        open={openCreate}
+      {/* Create Team Dialog */}
+      <TeamCreateDialog 
+        open={openCreate} 
         onOpenChange={setOpenCreate}
-        vendorId={vendorId || ''}
-        onCreated={(teamId) => router.push(`/dashboard/teams/${teamId}`)}
+        vendorId={user?.id || ''}
+        onCreated={() => {
+          // Refresh data after creating team
+          window.location.reload()
+        }}
       />
+      </div>
     </div>
   )
 }
 
+// Loading skeleton for Suspense fallback
+const PageSkeleton = () => (
+  <div className="w-full max-w-full overflow-x-hidden">
+    <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
+      {/* Header Skeleton */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-24" />
+            <Skeleton className="h-4 w-48" />
+          </div>
+          <Skeleton className="h-10 w-32" />
+        </div>
+      </div>
+      
+      {/* Table Skeleton */}
+      <div className="bg-card rounded-lg border">
+        <div className="p-4 border-b">
+          <div className="grid grid-cols-5 gap-4">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-4 w-16" />
+          </div>
+        </div>
+        <div className="p-4 space-y-3">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="grid grid-cols-5 gap-4 items-center">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-6 w-16 rounded-full" />
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <Skeleton className="h-4 w-8" />
+              </div>
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-8 w-8 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+)
+
 export default function TeamsPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<PageSkeleton />}>
       <TeamsPageContent />
     </Suspense>
   )

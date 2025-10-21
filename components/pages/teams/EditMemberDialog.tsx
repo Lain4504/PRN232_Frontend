@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { getPermissionsForRole, getPermissionInfo } from '@/lib/constants/team-roles'
+import { Users } from 'lucide-react'
 
 interface Props {
     open: boolean
@@ -78,7 +79,8 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: Props) 
 
     const isMobile = useIsMobile()
 
-    const content = (
+    // Shared form content component
+    const EditMemberFormContent = ({ onCancel }: { onCancel: () => void }) => (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
                 <Label className="text-sm font-medium text-muted-foreground">Role</Label>
@@ -144,8 +146,21 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: Props) 
                 )}
             </div>
 
-            <div className="flex justify-end gap-2 pt-4">
-                <Button type="submit" disabled={updating} size="sm" className="w-full md:w-auto h-8 text-xs">{updating ? 'Updating...' : 'Update'}</Button>
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
+                <Button type="button" variant="outline" onClick={onCancel} size="lg" className="w-full sm:w-auto">Cancel</Button>
+                <Button type="submit" disabled={updating} size="lg" className="w-full sm:w-auto">
+                    {updating ? (
+                        <>
+                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                            Updating...
+                        </>
+                    ) : (
+                        <>
+                            <Users className="mr-2 h-4 w-4" />
+                            Update Member
+                        </>
+                    )}
+                </Button>
             </div>
         </form>
     )
@@ -158,14 +173,9 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: Props) 
                         <DrawerTitle>Edit Member</DrawerTitle>
                         <DrawerDescription>Change the role and permissions of the member.</DrawerDescription>
                     </DrawerHeader>
-                    <div className="px-4 overflow-y-auto flex-1 pt-2">
-                        {content}
+                    <div className="px-4 overflow-y-auto flex-1">
+                        <EditMemberFormContent onCancel={() => onOpenChange(false)} />
                     </div>
-                    <DrawerFooter className="flex-shrink-0 pt-2">
-                        <DrawerClose asChild>
-                            <Button variant="outline">Cancel</Button>
-                        </DrawerClose>
-                    </DrawerFooter>
                 </DrawerContent>
             </Drawer>
         )
@@ -179,7 +189,7 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: Props) 
                     <DialogDescription>Change the role and permissions of the member.</DialogDescription>
                 </DialogHeader>
                 <div className="overflow-y-auto flex-1">
-                    {content}
+                    <EditMemberFormContent onCancel={() => onOpenChange(false)} />
                 </div>
             </DialogContent>
         </Dialog>

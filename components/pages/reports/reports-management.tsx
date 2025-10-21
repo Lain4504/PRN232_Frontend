@@ -25,9 +25,10 @@ import {
   SiYoutube, 
   SiTiktok 
 } from "@icons-pack/react-simple-icons";
-import { authApi, reportsApi } from "@/lib/mock-api";
+// Removed mock-api import - using real API instead
 import { User, PerformanceReport } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
+import { api, endpoints } from "@/lib/api";
 
 export function ReportsManagement() {
   const [user, setUser] = useState<User | null>(null);
@@ -41,13 +42,13 @@ export function ReportsManagement() {
         setLoading(true);
         
         // Get current user
-        const userResponse = await authApi.getCurrentUser();
+        const userResponse = await api.get<User>(endpoints.userProfile);
         if (userResponse.success && userResponse.data) {
           setUser(userResponse.data);
         }
         
-        // Get performance report
-        const reportResponse = await reportsApi.getPerformanceReport(`Last ${selectedPeriod} days`);
+        // Get performance report - using a custom endpoint
+        const reportResponse = await api.get<PerformanceReport>(`/reports/performance?period=${selectedPeriod}`);
         if (reportResponse.success) {
           setReport(reportResponse.data);
         }

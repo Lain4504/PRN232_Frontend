@@ -47,10 +47,11 @@ export function useCreateProfile(userId: string) {
   return useMutation({
     mutationFn: async (data: CreateProfileForm): Promise<Profile> => {
       const fd = new FormData()
-      fd.append('ProfileType', data.profile_type === 'business' ? 'Business' : 'Personal')
+      fd.append('ProfileType', data.profile_type === 'business' ? '1' : '0')
       if (data.company_name) fd.append('CompanyName', data.company_name)
       if (data.bio) fd.append('Bio', data.bio)
       if (data.avatar) fd.append('AvatarFile', data.avatar)
+      if (data.avatarUrl) fd.append('AvatarUrl', data.avatarUrl)
       const res = await api.postForm<Profile>(endpoints.createProfile(userId), fd)
       return res.data
     },
@@ -65,10 +66,11 @@ export function useUpdateProfile(id: string) {
   return useMutation({
     mutationFn: async (data: Partial<CreateProfileForm>): Promise<Profile> => {
       const fd = new FormData()
-      if (data.profile_type) fd.append('ProfileType', data.profile_type === 'business' ? 'Business' : 'Personal')
+      if (data.profile_type) fd.append('ProfileType', data.profile_type === 'business' ? '1' : '0')
       if (data.company_name !== undefined) fd.append('CompanyName', data.company_name ?? '')
       if (data.bio !== undefined) fd.append('Bio', data.bio ?? '')
       if (data.avatar) fd.append('AvatarFile', data.avatar)
+      if (data.avatarUrl !== undefined) fd.append('AvatarUrl', data.avatarUrl ?? '')
       const res = await api.putForm<Profile>(endpoints.updateProfile(id), fd)
       return res.data
     },
