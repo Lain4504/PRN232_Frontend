@@ -15,15 +15,76 @@ export function useBrands() {
   return useQuery({
     queryKey: brandKeys.lists(),
     queryFn: async (): Promise<Brand[]> => {
-      const resp = await api.get<any>(endpoints.brands())
-      // Backend returns paginated response, extract the data array
-      return resp.data?.data || resp.data || []
+      try {
+        const resp = await api.get<any>(endpoints.brands())
+        console.log('Brands API response:', resp); // Debug log
+        
+        // Handle different response formats
+        let brandsArray = [];
+        if (resp.data) {
+          // If it's a paginated response
+          if (resp.data.data && Array.isArray(resp.data.data)) {
+            brandsArray = resp.data.data;
+          }
+          // If it's a direct array
+          else if (Array.isArray(resp.data)) {
+            brandsArray = resp.data;
+          }
+          // If it's wrapped in another structure
+          else if (resp.data.brands && Array.isArray(resp.data.brands)) {
+            brandsArray = resp.data.brands;
+          }
+        }
+        
+        console.log('Processed brands array:', brandsArray); // Debug log
+        return brandsArray;
+      } catch (error) {
+        console.error('Error fetching brands:', error);
+        return [];
+      }
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
 
-// Get brand by ID
+// Get brands by team ID
+export function useBrandsByTeam(teamId?: string) {
+  return useQuery({
+    queryKey: [...brandKeys.lists(), 'team', teamId],
+    queryFn: async (): Promise<Brand[]> => {
+      if (!teamId) return [];
+      try {
+        const resp = await api.get<any>(endpoints.brandsByTeam(teamId))
+        console.log('Brands by team API response:', resp); // Debug log
+
+        // Handle different response formats
+        let brandsArray = [];
+        if (resp.data) {
+          // If it's a paginated response
+          if (resp.data.data && Array.isArray(resp.data.data)) {
+            brandsArray = resp.data.data;
+          }
+          // If it's a direct array
+          else if (Array.isArray(resp.data)) {
+            brandsArray = resp.data;
+          }
+          // If it's wrapped in another structure
+          else if (resp.data.brands && Array.isArray(resp.data.brands)) {
+            brandsArray = resp.data.brands;
+          }
+        }
+
+        console.log('Processed brands by team array:', brandsArray); // Debug log
+        return brandsArray;
+      } catch (error) {
+        console.error('Error fetching brands by team:', error);
+        return [];
+      }
+    },
+    enabled: !!teamId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
 export function useBrand(brandId?: string) {
   return useQuery({
     queryKey: brandId ? brandKeys.detail(brandId) : brandKeys.details(),
