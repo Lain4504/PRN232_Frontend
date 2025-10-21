@@ -13,12 +13,11 @@ import {
   Calendar,
   Mail,
   User,
-  Users,
   Target,
-  Package,
   CheckCircle,
   Share2,
   PanelLeftDashed,
+  Sparkles,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -61,6 +60,11 @@ const mainNavItems: NavItem[] = [
     title: "Contents",
     url: "/dashboard/contents",
     icon: FileText,
+  },
+  {
+    title: "AI Generator",
+    url: "/dashboard/contents/new",
+    icon: Sparkles,
   },
   {
     title: "Social Accounts",

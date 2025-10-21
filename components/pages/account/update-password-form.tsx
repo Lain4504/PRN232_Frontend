@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, Lock, CheckCircle } from "lucide-react";
 import { useUpdatePassword } from "@/hooks/use-auth";
 
@@ -68,7 +67,7 @@ export function UpdatePasswordForm() {
         newPassword: data.newPassword,
       });
       reset();
-    } catch (error) {
+    } catch (_error) {
       // Error is handled by the mutation
     }
   };

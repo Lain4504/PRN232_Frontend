@@ -15,10 +15,11 @@ import {
   Users,
   Loader2
 } from "lucide-react";
-import { User as UserType, Profile, Brand, CreateBrandForm as CreateBrandFormType } from "@/lib/types/aisam-types";
+import { Brand, CreateBrandForm as CreateBrandFormType } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
-import { useUserProfile, useProfiles } from "@/hooks/use-profile";
+import { useProfiles } from "@/hooks/use-profile";
 import { useCreateBrand, useUpdateBrand } from "@/hooks/use-brands";
+import Link from "next/link";
 
 interface BrandFormProps {
   mode: 'create' | 'edit';
@@ -41,7 +42,6 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
   const [linkToProfile, setLinkToProfile] = useState<boolean>(false);
 
   // Hooks
-  const { data: user } = useUserProfile();
   const { data: profiles = [], isLoading: profilesLoading } = useProfiles();
   const createBrandMutation = useCreateBrand();
   const updateBrandMutation = useUpdateBrand(brand?.id || '');
@@ -200,9 +200,9 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
                         Bạn chưa có profile nào. Hãy tạo profile trước khi liên kết với brand.
                       </p>
                       <Button asChild size="sm" variant="outline">
-                        <a href="/dashboard/profile/create">
+                        <Link href="/dashboard/profile/create">
                           Tạo Profile
-                        </a>
+                        </Link>
                       </Button>
                     </div>
                   )}

@@ -3,35 +3,59 @@
 
 import {
   User,
-  Profile,
   Brand,
   Product,
   Content,
-  SocialAccount,
   SocialIntegration,
   Approval,
   ScheduledPost,
   Post,
-  PerformanceMetrics,
   DashboardStats,
   RecentActivity,
   CalendarEvent,
   PerformanceReport,
-  CreateProfileForm,
-  CreateBrandForm,
-  CreateProductForm,
-  CreateContentForm,
-  CreateSocialIntegrationForm,
   SchedulePostForm,
   ContentFilters,
-  ProductFilters,
   PostFilters,
   ApiResponse,
-  PaginatedResponse
 } from './types/aisam-types';
 
 // Utility functions
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+// AI Content Generation Helpers
+const generateTextOnlyContent = (prompt: string, brand?: Brand | null, product?: Product | null, styleContext?: string): string => {
+  const templates = [
+    `✨ ${brand?.name || 'Your Brand'} presents: ${prompt}. ${styleContext ? `In a ${styleContext} style.` : ''} #Innovation #Quality`,
+    `🚀 Discover the power of ${brand?.name || 'excellence'}: ${prompt}. ${product?.name ? `Featuring ${product.name}.` : ''} Experience the difference!`,
+    `🌟 Transform your experience with ${brand?.name || 'our brand'}. ${prompt}. ${styleContext || 'Professional and engaging'}. #Premium #Lifestyle`,
+    `💫 ${brand?.name || 'We'} bring you: ${prompt}. ${product?.name ? `Showcasing ${product.name}.` : ''} Elevate your standards today!`,
+    `🎯 Excellence redefined: ${brand?.name || 'Our brand'} delivers ${prompt}. ${styleContext ? `With a ${styleContext} approach.` : ''} #Leadership #Quality`
+  ];
+  return templates[Math.floor(Math.random() * templates.length)];
+};
+
+const generateImageTextContent = (prompt: string, brand?: Brand | null, product?: Product | null, styleContext?: string): string => {
+  const templates = [
+    `📸 Stunning visuals meet exceptional quality! ${brand?.name || 'Our brand'} showcases ${prompt}. ${product?.name ? `Featuring ${product.name}.` : ''} See the difference! #VisualStorytelling`,
+    `🎨 Beauty in every detail. ${brand?.name || 'We'} present ${prompt} in our latest collection. ${styleContext ? `Captured in ${styleContext} style.` : ''} #Aesthetic #Quality`,
+    `🖼️ Picture perfect! ${brand?.name || 'Our brand'} brings you ${prompt}. ${product?.name ? `Highlighting ${product.name}.` : ''} Experience excellence visually.`,
+    `📷 Capturing excellence: ${brand?.name || 'We'} unveil ${prompt}. ${styleContext || 'Professional photography'} that tells your story. #VisualExcellence`,
+    `🌈 Colors of success! ${brand?.name || 'Our brand'} demonstrates ${prompt} through stunning imagery. ${product?.name ? `Showcasing ${product.name}.` : ''} #VisualImpact`
+  ];
+  return templates[Math.floor(Math.random() * templates.length)];
+};
+
+const generateVideoTextContent = (prompt: string, brand?: Brand | null, product?: Product | null, styleContext?: string): string => {
+  const templates = [
+    `🎥 Watch and be amazed! ${brand?.name || 'Our brand'} unveils ${prompt}. ${product?.name ? `Featuring ${product.name}.` : ''} Don't miss this! #VideoContent`,
+    `📹 Motion meets emotion. ${brand?.name || 'We'} bring ${prompt} to life. ${styleContext ? `In ${styleContext} style.` : ''} Watch now! #Dynamic #Engaging`,
+    `🎬 Lights, camera, action! ${brand?.name || 'Our brand'} stars in ${prompt}. ${product?.name ? `Showcasing ${product.name}.` : ''} Experience the magic!`,
+    `📺 Visual storytelling at its finest: ${brand?.name || 'We'} present ${prompt}. ${styleContext || 'Cinematic quality'} that captivates. #VideoExcellence`,
+    `🎪 Experience the spectacle! ${brand?.name || 'Our brand'} delivers ${prompt} through compelling video. ${product?.name ? `Highlighting ${product.name}.` : ''} #Entertainment #Quality`
+  ];
+  return templates[Math.floor(Math.random() * templates.length)];
+};
 
 const getFromStorage = <T>(key: string, defaultValue: T): T => {
   if (typeof window === 'undefined') return defaultValue;
@@ -59,11 +83,6 @@ const createSuccessResponse = <T>(data: T, message: string = 'Success'): ApiResp
   success: true
 });
 
-const createErrorResponse = (message: string): ApiResponse<null> => ({
-  data: null,
-  message,
-  success: false
-});
 
 // Authentication API
 export const authApi = {
@@ -97,49 +116,6 @@ export const authApi = {
     };
   },
 
-  async register(userData: {
-    email: string;
-    password: string;
-    first_name: string;
-    last_name: string;
-    phone?: string;
-  }): Promise<ApiResponse<{ user: User; token: string }>> {
-    await delay(1200);
-
-    // Mock validation
-    if (userData.email && userData.password && userData.first_name && userData.last_name) {
-      const user: User = {
-        id: 'user-' + Date.now(),
-        email: userData.email,
-        first_name: userData.first_name,
-        last_name: userData.last_name,
-        phone: userData.phone,
-        role: 'user',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-
-      const token = 'mock_jwt_token_' + Date.now();
-      saveToStorage('auth_token', token);
-      saveToStorage('current_user', user);
-
-      return createSuccessResponse({ user, token }, 'Account created successfully');
-    }
-
-    return {
-      data: null as unknown as { user: User; token: string },
-      message: 'Missing required fields',
-      success: false
-    };
-  },
-
-  async logout(): Promise<ApiResponse<null>> {
-    await delay(500);
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('current_user');
-    return createSuccessResponse(null, 'Logged out successfully');
-  },
-
   async getCurrentUser(): Promise<ApiResponse<User | null>> {
     await delay(300);
     const user = getFromStorage<User | null>('current_user', null);
@@ -147,215 +123,6 @@ export const authApi = {
   }
 };
 
-// Profile API
-export const profileApi = {
-  async getProfiles(userId: string): Promise<ApiResponse<Profile[]>> {
-    await delay(800);
-    const profiles = getFromStorage<Profile[]>('profiles', []);
-    const userProfiles = profiles.filter(p => p.user_id === userId);
-    return createSuccessResponse(userProfiles);
-  },
-
-  async createProfile(userId: string, formData: CreateProfileForm): Promise<ApiResponse<Profile>> {
-    await delay(1000);
-
-    const profile: Profile = {
-      id: 'profile-' + Date.now(),
-      user_id: userId,
-      profile_type: formData.profile_type,
-      company_name: formData.company_name,
-      bio: formData.bio,
-      avatar_url: formData.avatar ? URL.createObjectURL(formData.avatar) : undefined,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    const profiles = getFromStorage<Profile[]>('profiles', []);
-    profiles.push(profile);
-    saveToStorage('profiles', profiles);
-
-    return createSuccessResponse(profile, 'Profile created successfully');
-  },
-
-  async updateProfile(id: string, formData: Partial<CreateProfileForm>): Promise<ApiResponse<Profile>> {
-    await delay(1000);
-
-    const profiles = getFromStorage<Profile[]>('profiles', []);
-    const index = profiles.findIndex(p => p.id === id);
-
-    if (index === -1) {
-      return {
-        data: null as unknown as Profile,
-        message: 'Profile not found',
-        success: false
-      };
-    }
-
-    profiles[index] = {
-      ...profiles[index],
-      ...formData,
-      updated_at: new Date().toISOString()
-    };
-
-    saveToStorage('profiles', profiles);
-    return createSuccessResponse(profiles[index], 'Profile updated successfully');
-  }
-};
-
-// Brand API
-export const brandApi = {
-  async getBrands(profileId?: string): Promise<ApiResponse<Brand[]>> {
-    await delay(800);
-    const brands = getFromStorage<Brand[]>('brands', []);
-    const filteredBrands = profileId ? brands.filter(b => b.profile_id === profileId) : brands;
-    return createSuccessResponse(filteredBrands);
-  },
-
-  async createBrand(formData: CreateBrandForm): Promise<ApiResponse<Brand>> {
-    await delay(1000);
-
-    const brand: Brand = {
-      id: 'brand-' + Date.now(),
-      profile_id: formData.profile_id,
-      name: formData.name,
-      description: formData.description,
-      logo_url: formData.logo ? URL.createObjectURL(formData.logo) : undefined,
-      slogan: formData.slogan,
-      usp: formData.usp,
-      target_audience: formData.target_audience,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    const brands = getFromStorage<Brand[]>('brands', []);
-    brands.push(brand);
-    saveToStorage('brands', brands);
-
-    return createSuccessResponse(brand, 'Brand created successfully');
-  },
-
-  async updateBrand(id: string, formData: Partial<CreateBrandForm>): Promise<ApiResponse<Brand>> {
-    await delay(1000);
-
-    const brands = getFromStorage<Brand[]>('brands', []);
-    const index = brands.findIndex(b => b.id === id);
-
-    if (index === -1) {
-      return {
-        data: null as unknown as Brand,
-        message: 'Brand not found',
-        success: false
-      };
-    }
-
-    brands[index] = {
-      ...brands[index],
-      ...formData,
-      updated_at: new Date().toISOString()
-    };
-
-    saveToStorage('brands', brands);
-    return createSuccessResponse(brands[index], 'Brand updated successfully');
-  },
-
-  async deleteBrand(id: string): Promise<ApiResponse<null>> {
-    await delay(800);
-
-    const brands = getFromStorage<Brand[]>('brands', []);
-    const filteredBrands = brands.filter(b => b.id !== id);
-    saveToStorage('brands', filteredBrands);
-
-    return createSuccessResponse(null, 'Brand deleted successfully');
-  }
-};
-
-// Product API
-export const productApi = {
-  async getProducts(filters?: ProductFilters): Promise<ApiResponse<Product[]>> {
-    await delay(800);
-    let products = getFromStorage<Product[]>('products', []);
-
-    if (filters?.brand_id) {
-      products = products.filter(p => p.brand_id === filters.brand_id);
-    }
-
-    if (filters?.search) {
-      const searchLower = filters.search.toLowerCase();
-      products = products.filter(p =>
-        p.name.toLowerCase().includes(searchLower) ||
-        p.description?.toLowerCase().includes(searchLower)
-      );
-    }
-
-    return createSuccessResponse(products);
-  },
-
-  async createProduct(formData: CreateProductForm): Promise<ApiResponse<Product>> {
-    await delay(1200);
-
-    const product: Product = {
-      id: 'product-' + Date.now(),
-      brand_id: formData.brand_id,
-      name: formData.name,
-      description: formData.description,
-      price: formData.price,
-      images: formData.images ? formData.images.map(img => URL.createObjectURL(img)) : [],
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    const products = getFromStorage<Product[]>('products', []);
-    products.push(product);
-    saveToStorage('products', products);
-
-    return createSuccessResponse(product, 'Product created successfully');
-  },
-
-  async updateProduct(id: string, formData: Partial<CreateProductForm>): Promise<ApiResponse<Product>> {
-    await delay(1000);
-
-    const products = getFromStorage<Product[]>('products', []);
-    const index = products.findIndex(p => p.id === id);
-
-    if (index === -1) {
-      return {
-        data: null as unknown as Product,
-        message: 'Product not found',
-        success: false
-      };
-    }
-
-    const { images, ...formDataWithoutImages } = formData;
-
-    const updateData: Partial<Product> = {
-      ...formDataWithoutImages,
-      updated_at: new Date().toISOString()
-    };
-
-    // Convert File[] to string[] if images are provided
-    if (images) {
-      updateData.images = images.map(img => URL.createObjectURL(img));
-    }
-
-    products[index] = {
-      ...products[index],
-      ...updateData
-    };
-
-    saveToStorage('products', products);
-    return createSuccessResponse(products[index], 'Product updated successfully');
-  },
-
-  async deleteProduct(id: string): Promise<ApiResponse<null>> {
-    await delay(800);
-
-    const products = getFromStorage<Product[]>('products', []);
-    const filteredProducts = products.filter(p => p.id !== id);
-    saveToStorage('products', filteredProducts);
-
-    return createSuccessResponse(null, 'Product deleted successfully');
-  }
-};
 
 // Content API
 export const contentApi = {
@@ -388,55 +155,6 @@ export const contentApi = {
     }
 
     return createSuccessResponse(contents);
-  },
-
-  async createContent(formData: CreateContentForm): Promise<ApiResponse<Content>> {
-    await delay(1200);
-
-    const content: Content = {
-      id: 'content-' + Date.now(),
-      brand_id: formData.brand_id,
-      product_id: formData.product_id,
-      ad_type: formData.ad_type,
-      title: formData.title,
-      text_content: formData.text_content,
-      style_context_character: formData.style_context_character,
-      image_url: formData.image ? URL.createObjectURL(formData.image) : undefined,
-      video_url: formData.video ? URL.createObjectURL(formData.video) : undefined,
-      status: 'draft',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    const contents = getFromStorage<Content[]>('contents', []);
-    contents.push(content);
-    saveToStorage('contents', contents);
-
-    return createSuccessResponse(content, 'Content created successfully');
-  },
-
-  async updateContent(id: string, formData: Partial<CreateContentForm>): Promise<ApiResponse<Content>> {
-    await delay(1000);
-
-    const contents = getFromStorage<Content[]>('contents', []);
-    const index = contents.findIndex(c => c.id === id);
-
-    if (index === -1) {
-      return {
-        data: null as unknown as Content,
-        message: 'Content not found',
-        success: false
-      };
-    }
-
-    contents[index] = {
-      ...contents[index],
-      ...formData,
-      updated_at: new Date().toISOString()
-    };
-
-    saveToStorage('contents', contents);
-    return createSuccessResponse(contents[index], 'Content updated successfully');
   },
 
   async submitForApproval(id: string): Promise<ApiResponse<Content>> {
@@ -474,61 +192,7 @@ export const contentApi = {
     return createSuccessResponse(contents[index], 'Content submitted for approval');
   },
 
-  async generateAIContent(prompt: string): Promise<ApiResponse<{ text: string; image?: string }>> {
-    await delay(2000); // Simulate AI processing time
-
-    // Mock AI response
-    const aiResponse = {
-      text: `AI-generated content based on: "${prompt}". This is a mock response that would be generated by AI based on your brand guidelines, target audience, and content requirements.`,
-      image: undefined // Could be a generated image URL
-    };
-
-    return createSuccessResponse(aiResponse, 'AI content generated successfully');
-  }
 };
-
-// Social Account API
-export const socialAccountApi = {
-  async getSocialAccounts(userId: string): Promise<ApiResponse<SocialAccount[]>> {
-    await delay(800);
-    const accounts = getFromStorage<SocialAccount[]>('social_accounts', []);
-    const userAccounts = accounts.filter(a => a.user_id === userId);
-    return createSuccessResponse(userAccounts);
-  },
-
-  async connectAccount(platform: string, accountData: Record<string, unknown>): Promise<ApiResponse<SocialAccount>> {
-    await delay(1500); // Simulate OAuth flow
-
-    const account: SocialAccount = {
-      id: 'social-' + Date.now(),
-      user_id: accountData.user_id as string,
-      platform: platform as 'facebook' | 'instagram' | 'tiktok' | 'twitter' | 'linkedin',
-      account_id: accountData.account_id as string,
-      account_name: accountData.account_name as string,
-      access_token: accountData.access_token as string,
-      status: 'active',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    const accounts = getFromStorage<SocialAccount[]>('social_accounts', []);
-    accounts.push(account);
-    saveToStorage('social_accounts', accounts);
-
-    return createSuccessResponse(account, 'Account connected successfully');
-  },
-
-  async disconnectAccount(id: string): Promise<ApiResponse<null>> {
-    await delay(800);
-
-    const accounts = getFromStorage<SocialAccount[]>('social_accounts', []);
-    const filteredAccounts = accounts.filter(a => a.id !== id);
-    saveToStorage('social_accounts', filteredAccounts);
-
-    return createSuccessResponse(null, 'Account disconnected successfully');
-  }
-};
-
 // Social Integration API
 export const socialIntegrationApi = {
   async getSocialIntegrations(brandId?: string): Promise<ApiResponse<SocialIntegration[]>> {
@@ -538,24 +202,7 @@ export const socialIntegrationApi = {
     return createSuccessResponse(filteredIntegrations);
   },
 
-  async createSocialIntegration(formData: CreateSocialIntegrationForm): Promise<ApiResponse<SocialIntegration>> {
-    await delay(1000);
 
-    const integration: SocialIntegration = {
-      id: 'integration-' + Date.now(),
-      brand_id: formData.brand_id,
-      social_account_id: formData.social_account_id,
-      platform: 'facebook', // Mock platform
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    const integrations = getFromStorage<SocialIntegration[]>('social_integrations', []);
-    integrations.push(integration);
-    saveToStorage('social_integrations', integrations);
-
-    return createSuccessResponse(integration, 'Social integration created successfully');
-  }
 };
 
 // Approval API
@@ -680,26 +327,7 @@ export const postApi = {
     return createSuccessResponse(posts);
   },
 
-  async publishPost(contentId: string, socialIntegrationId: string): Promise<ApiResponse<Post>> {
-    await delay(1500); // Simulate publishing time
 
-    const post: Post = {
-      id: 'post-' + Date.now(),
-      content_id: contentId,
-      social_integration_id: socialIntegrationId,
-      external_post_id: 'ext_' + Date.now(),
-      published_at: new Date().toISOString(),
-      status: 'published',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    const posts = getFromStorage<Post[]>('posts', []);
-    posts.push(post);
-    saveToStorage('posts', posts);
-
-    return createSuccessResponse(post, 'Post published successfully');
-  }
 };
 
 // Dashboard API

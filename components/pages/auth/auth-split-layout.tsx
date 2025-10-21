@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Sparkles, Shield, Zap } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 export function AuthSplitLayout({
   children,

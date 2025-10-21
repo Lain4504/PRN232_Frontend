@@ -21,7 +21,7 @@ export interface PaginatedResponse<T> {
 }
 
 // Environment
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api'
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5283/api'
 
 // Options for API methods
 export interface ApiRequestOptions {
@@ -31,16 +31,16 @@ export interface ApiRequestOptions {
 
 // Auth fetch helper
 async function fetchWithAuth(url: string, options: RequestInit = {}, reqOptions: ApiRequestOptions = {}) {
-  const { requireAuth = true } = reqOptions
+   const { requireAuth = true } = reqOptions
 
-  const authHeader: Record<string, string> = {}
-  if (requireAuth) {
-    const supabase = createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    if (session?.access_token) {
-      authHeader['Authorization'] = `Bearer ${session.access_token}`
-    }
-  }
+   const authHeader: Record<string, string> = {}
+   if (requireAuth) {
+     const supabase = createClient()
+     const { data: { session } } = await supabase.auth.getSession()
+     if (session?.access_token) {
+       authHeader['Authorization'] = `Bearer ${session.access_token}`
+     }
+   }
 
   const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData
   const defaultHeaders: Record<string, string> = isFormData ? {} : { 'Content-Type': 'application/json' }
@@ -200,6 +200,16 @@ export const api = {
     }
     return response.json()
   },
+  
+  // PATCH
+  patch: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
+    const response = await fetchWithAuth(url, {
+      method: 'PATCH',
+      body: data ? JSON.stringify(data) : undefined,
+    }, options)
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    return response.json()
+  },
 }
 
 // Endpoints
@@ -278,4 +288,21 @@ export const endpoints = {
   contentSubmit: (contentId: string) => `/content/${contentId}/submit`,
   contentPublish: (contentId: string, integrationId: string) => `/content/${contentId}/publish/${integrationId}`,
   contentRestore: (contentId: string) => `/content/${contentId}/restore`,
+  // AI Chat endpoints
+  aiChat: () => '/ai/chat',
+
+  // Conversation Management endpoints
+  conversations: () => '/conversations',
+  conversationById: (id: string) => `/conversations/${id}`,
+  profilesByUser: (userId: string, search?: string, isDeleted?: boolean) => {
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (isDeleted !== undefined) params.append('isDeleted', isDeleted.toString());
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+    return `/profile/user/${userId}${queryString}`;
+  },
+  createProfile: (userId: string) => `/profile/user/${userId}`,
+  updateProfile: (profileId: string) => `/profile/${profileId}`,
+  deleteProfile: (profileId: string) => `/profile/${profileId}`,
+  restoreProfile: (profileId: string) => `/profile/${profileId}/restore`,
 }
