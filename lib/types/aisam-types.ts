@@ -15,7 +15,8 @@ export interface User {
 export interface Profile {
   id: string;
   userId: string;
-  profileType: number; // 0 = personal, 1 = business
+  name: string;
+  profileType: 'Free' | 'Basic' | 'Pro';
   company_name?: string;
   bio?: string;
   avatarUrl?: string;
@@ -151,22 +152,17 @@ export interface SocialAuthUrlResponse {
 }
 
 export interface SocialCallbackRequest {
-  userId: string;
   code: string;
   state: string;
 }
 
 export interface SocialCallbackResponse {
-  user: {
-    id: string;
-    email: string;
-  };
   socialAccount: SocialAccountDto;
   availableTargets: AvailableTargetDto[];
 }
 
 export interface LinkTargetsRequest {
-  userId: string;
+  profileId: string;
   provider: string;
   providerTargetIds: string[];
   brandId: string;
@@ -213,14 +209,13 @@ export interface ScheduledPost {
 
 export interface Post {
   id: string;
-  content_id: string;
-  social_integration_id: string;
-  external_post_id: string; // Platform-specific post ID
-  published_at: string;
-  status: 'published' | 'failed' | 'deleted';
-  created_at: string;
-  updated_at: string;
-  metrics?: PostMetrics;
+  contentId: string;
+  integrationId: string;
+  externalPostId: string; // Platform-specific post ID
+  publishedAt: string;
+  status: string;
+  isDeleted: boolean;
+  link?: string;
 }
 
 export interface PerformanceMetrics {
@@ -239,11 +234,11 @@ export interface PerformanceMetrics {
 
 // Form types for creating/editing entities
 export interface CreateProfileForm {
-  profile_type: 'personal' | 'business';
+  name: string;
+  profile_type: 'Free' | 'Basic' | 'Pro';
   company_name?: string;
   bio?: string;
   avatar?: File;
-  avatarUrl?: string;
 }
 
 export interface CreateBrandForm {
@@ -339,6 +334,14 @@ export interface DashboardStats {
   scheduled_posts: number;
 }
 
+export interface ProfileStats {
+  total_profiles: number;
+  total_teams: number;
+  total_contents: number;
+  active_profiles: number;
+  team_memberships: number;
+}
+
 export interface RecentActivity {
   id: string;
   type: 'content_created' | 'post_published' | 'approval_requested' | 'brand_created';
@@ -365,6 +368,17 @@ export interface PaginatedResponse<T> {
   };
 }
 
+// API response structure that matches the actual API
+export interface ApiPaginatedResponse<T> {
+  data: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
 // Filter and search types (legacy)
 export interface ContentFiltersLegacy {
   brand_id?: string;
@@ -384,6 +398,13 @@ export interface PostFilters {
   status?: string;
   date_from?: string;
   date_to?: string;
+  brandId?: string;
+  page?: number;
+  pageSize?: number;
+  searchTerm?: string;
+  platform?: string;
+  contentId?: string;
+  integrationId?: string;
 }
 
 // Calendar types
@@ -436,6 +457,12 @@ export interface CreateTeamRequest {
   description?: string;
 }
 
+export interface UpdateTeamRequest {
+  name?: string;
+  description?: string;
+  status?: 'Active' | 'Inactive' | 'Archived';
+}
+
 export interface UpdateTeamStatusRequest {
   status: 'Active' | 'Inactive' | 'Archived';
 }
@@ -486,13 +513,21 @@ export interface ApprovalResponseDto {
   id: string;
   contentId: string;
   approverId: string;
+  approverProfileId: string;
   status: ContentStatusEnum;
   notes?: string;
+  approvedAt?: string;
   createdAt: string;
   updatedAt?: string;
-  approverEmail?: string;
+  // Flattened convenience properties
   contentTitle?: string;
   brandName?: string;
+  brandId?: string;
+  approverEmail?: string;
+  approverName?: string;
+  // Nested objects (optional)
+  content?: ContentResponseDto;
+  approverProfile?: any;
 }
 
 export interface CreateApprovalRequest {
@@ -542,6 +577,9 @@ export interface ContentResponseDto {
   brandName?: string;
   productId?: string;
   productName?: string;
+  styleDescription?: string;
+  contextDescription?: string;
+  representativeCharacter?: string;
 }
 
 export interface CreateContentRequest {
@@ -621,7 +659,7 @@ export interface AIChatResponse {
     errorCode: string;
     errorMessage: string;
     stackTrace?: string;
-    validationErrors?: any;
+    validationErrors?: Record<string, string | string[]>;
   };
   timestamp: string;
 }
@@ -630,7 +668,7 @@ export interface AIChatError {
   errorCode: string;
   errorMessage: string;
   stackTrace?: string;
-  validationErrors?: any;
+  validationErrors?: Record<string, string | string[]>;
 }
 
 // Conversation Management Types
@@ -727,6 +765,9 @@ export interface NotificationStats {
 export interface ContentCalendar {
   id: string;
   contentId: string;
+  contentTitle: string;
+  brandId: string;
+  brandName: string;
   scheduledDate: string;
   scheduledTime?: string;
   timezone: string;
@@ -769,4 +810,5 @@ export interface PostFilters {
   platform?: string;
   contentId?: string;
   integrationId?: string;
+  brandId?: string;
 }

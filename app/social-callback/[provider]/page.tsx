@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, Suspense } from 'react'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 import { Loader2, CheckCircle, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,7 +15,6 @@ type LoadState = 'loading' | 'success' | 'error'
 function GenericCallbackContent() {
   const { provider } = useParams<{ provider: string }>()
   const searchParams = useSearchParams()
-  const router = useRouter()
   const [status, setStatus] = useState<LoadState>('loading')
   const [message, setMessage] = useState('')
   const [data, setData] = useState<SocialCallbackResponse | null>(null)
@@ -38,20 +37,10 @@ function GenericCallbackContent() {
           throw new Error('Authorization code is missing')
         }
 
-        // Get user ID from Supabase session
-        const supabase = createClient()
-        const { data: { session } } = await supabase.auth.getSession()
-        const userId = session?.user?.id
-
-        if (!userId) {
-          throw new Error('User is not authenticated')
-        }
-
         // Call the connect social account mutation
         const result = await connectSocialAccountMutation.mutateAsync({
           provider: provider as 'facebook' | 'tiktok' | 'instagram',
           data: {
-            userId,
             code,
             state
           }
@@ -65,7 +54,7 @@ function GenericCallbackContent() {
 
         // Redirect to social accounts page after a short delay
         setTimeout(() => {
-          router.push('/dashboard/social-accounts')
+          window.location.href = '/dashboard/social-accounts'
         }, 2000)
 
       } catch (error) {
@@ -82,7 +71,7 @@ function GenericCallbackContent() {
   }, [searchParams, provider])
 
   const handleClose = () => {
-    router.push('/dashboard/social-accounts')
+    window.location.href = '/dashboard/social-accounts'
   }
 
   const title = `${provider?.toString().charAt(0).toUpperCase()}${provider?.toString().slice(1)} Account Linking`

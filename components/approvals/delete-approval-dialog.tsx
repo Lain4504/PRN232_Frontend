@@ -36,7 +36,7 @@ export function DeleteApprovalDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Approval</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete this approval for "{approval.contentTitle}"?
+            Are you sure you want to delete this approval for &ldquo;{approval.contentTitle}&rdquo;?
             <br />
             <br />
             This action cannot be undone. The approval will be permanently removed from the system.

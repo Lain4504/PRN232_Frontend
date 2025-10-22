@@ -4,6 +4,7 @@ import type {
   AssignBrandToTeamRequest,
   UnassignBrandFromTeamRequest,
   CreateTeamRequest,
+  UpdateTeamRequest,
   PaginationRequest,
   TeamMemberCreateRequest,
   TeamMemberResponseDto,
@@ -103,23 +104,6 @@ export function useCreateTeam() {
   })
 }
 
-// Update team (reuse CreateTeamRequest)
-export function useUpdateTeam(teamId: string) {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: async (payload: CreateTeamRequest): Promise<TeamResponse> => {
-      const resp = await api.put<TeamResponse>(endpoints.teamById(teamId), payload)
-      return resp.data
-    },
-    onSuccess: (updated) => {
-      qc.invalidateQueries({ queryKey: teamKeys.detail(teamId) })
-      qc.invalidateQueries({ queryKey: teamKeys.lists() })
-      if (updated.vendorId) {
-        qc.invalidateQueries({ queryKey: teamKeys.listByVendor(updated.vendorId) })
-      }
-    },
-  })
-}
 
 // Delete team (soft delete)
 export function useDeleteTeam(teamId: string) {
@@ -151,7 +135,22 @@ export function useRestoreTeam(teamId: string) {
   })
 }
 
-// Update team status
+// Update team (name, description, status)
+export function useUpdateTeam(teamId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (payload: UpdateTeamRequest): Promise<TeamResponse> => {
+      const resp = await api.put<TeamResponse>(endpoints.teamById(teamId), payload)
+      return resp.data
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: teamKeys.detail(teamId) })
+      qc.invalidateQueries({ queryKey: teamKeys.lists() })
+    },
+  })
+}
+
+// Update team status (deprecated - use useUpdateTeam instead)
 export function useUpdateTeamStatus(teamId: string) {
   const qc = useQueryClient()
   return useMutation({
@@ -293,5 +292,30 @@ export function usePagedTeamMembers(params?: PaginationRequest) {
       const resp = await api.get<PaginatedResponse<TeamMemberResponseDto>>(url)
       return resp.data
     },
+  })
+}
+
+// Get current user's team membership details
+export function useCurrentTeamMember(teamId: string) {
+  return useQuery({
+    queryKey: teamKeys.currentMember(teamId),
+    queryFn: async (): Promise<TeamMemberResponseDto | null> => {
+      try {
+        const resp = await api.get<TeamMemberResponseDto[]>(endpoints.teamMembers(teamId))
+        const members = resp.data
+        
+        // Get current user ID from localStorage or context
+        const userId = localStorage.getItem('userId') // You might need to adjust this based on your auth setup
+        
+        if (!userId) return null
+        
+        const currentMember = members.find(member => member.userId === userId)
+        return currentMember || null
+      } catch (error) {
+        console.error('Error fetching current team member:', error)
+        return null
+      }
+    },
+    enabled: !!teamId,
   })
 }

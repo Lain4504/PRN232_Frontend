@@ -147,8 +147,8 @@ export function useUnlinkAccount() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: async ({ userId, socialAccountId }: { userId: string; socialAccountId: string }): Promise<void> => {
-      await api.delete(endpoints.socialUnlinkAccount(userId, socialAccountId))
+    mutationFn: async ({ socialAccountId }: { socialAccountId: string }): Promise<void> => {
+      await api.delete(endpoints.socialUnlinkAccount(socialAccountId))
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: socialAccountKeys.all })
@@ -161,8 +161,8 @@ export function useUnlinkTarget() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: async ({ userId, socialIntegrationId }: { userId: string; socialIntegrationId: string }): Promise<void> => {
-      await api.delete(endpoints.unlinkTarget(userId, socialIntegrationId))
+    mutationFn: async ({ socialIntegrationId }: { socialIntegrationId: string }): Promise<void> => {
+      await api.delete(endpoints.unlinkTarget(socialIntegrationId))
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: socialAccountKeys.all })
@@ -175,7 +175,7 @@ export function useGetBrands() {
   return useQuery({
     queryKey: ['brands'],
     queryFn: async (): Promise<Brand[]> => {
-      const response = await api.get<PaginatedResponse<Brand>>(endpoints.brands())
+      const response = await api.get<{ data: Brand[] }>(endpoints.brands())
       return response.data.data
     },
   })

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -218,7 +218,7 @@ export function ContentCard({
                     <AlertDialogHeader>
                       <AlertDialogTitle>Delete Content</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to delete "{content.title}"? This action cannot be undone.
+                        Are you sure you want to delete &ldquo;{content.title}&rdquo;? This action cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

@@ -83,9 +83,9 @@ export function ContentModal({
         textContent: content.textContent || '',
         imageUrl: content.imageUrl || undefined,
         videoUrl: content.videoUrl || undefined,
-        styleDescription: undefined,
-        contextDescription: undefined,
-        representativeCharacter: undefined,
+        styleDescription: content.styleDescription || undefined,
+        contextDescription: content.contextDescription || undefined,
+        representativeCharacter: content.representativeCharacter || undefined,
         publishImmediately: false,
         integrationId: undefined,
       });

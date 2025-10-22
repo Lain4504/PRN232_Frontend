@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, FileText, Brain, Sparkles, AlertCircle, Search, Filter, X } from "lucide-react";
+import { Plus, FileText, Brain, AlertCircle, Search, Filter, X } from "lucide-react";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
@@ -20,7 +20,6 @@ import {
 import { useBrands } from "@/hooks/use-brands";
 import { useProducts } from "@/hooks/use-products";
 import { 
-  useContents, 
   useCreateContent, 
   useUpdateContent, 
   useDeleteContent,
@@ -32,16 +31,15 @@ import {
   ContentResponseDto, 
   ContentStatusEnum,
   AdTypeEnum,
-  ContentFilters,
   CreateContentRequest,
   UpdateContentRequest
 } from "@/lib/types/aisam-types";
-import { ContentFilters as ContentFiltersComponent } from "@/components/contents/content-filters";
-import { ContentList } from "@/components/contents/content-list";
+// import { ContentFilters as ContentFiltersComponent } from "@/components/contents/content-filters"; // Removed unused import
+// import { ContentList } from "@/components/contents/content-list"; // Removed unused import
 import { ContentModal } from "@/components/contents/content-modal";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Calendar, Eye, TrendingUp, Edit, Trash2, Send, Globe } from "lucide-react";
+import { Calendar, Edit, Trash2, Send, Globe } from "lucide-react";
 
 // TODO: Replace with actual auth hook
 const useCurrentUser = () => {
@@ -51,6 +49,7 @@ const useCurrentUser = () => {
 // Create columns for the data table
 const createColumns = (
   handleEditContent: (contentId: string) => void,
+  handleViewContent: (contentId: string) => void,
   handleDeleteContent: (contentId: string) => void,
   handleSubmitContent: (contentId: string) => void,
   handlePublishContent: (contentId: string, integrationId: string) => void,
@@ -72,7 +71,12 @@ const createColumns = (
             </AvatarFallback>
           </Avatar>
           <div>
-            <div className="font-medium">{row.getValue("title")}</div>
+            <div 
+              className="font-medium cursor-pointer hover:text-primary transition-colors"
+              onClick={() => handleViewContent(row.original.id)}
+            >
+              {row.getValue("title")}
+            </div>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="secondary" className={
                 status === ContentStatusEnum.Published ? "bg-green-100 text-green-800" :
@@ -214,13 +218,13 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
   const [statusFilter, setStatusFilter] = useState<ContentStatusEnum | "all">("all");
   const [adTypeFilter, setAdTypeFilter] = useState<AdTypeEnum | "all">("all");
   const [brandFilter, setBrandFilter] = useState(initialBrandId || "all");
-
+  
   // Update brandFilter when initialBrandId changes
   useEffect(() => {
     if (initialBrandId && initialBrandId !== brandFilter) {
       setBrandFilter(initialBrandId);
     }
-  }, [initialBrandId]);
+  }, [initialBrandId, brandFilter]);
   const [isCreating, setIsCreating] = useState(false);
   const [selectedContent, setSelectedContent] = useState<ContentResponseDto | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -236,10 +240,8 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
   // Use the specialized hook for better brand filtering
   const { 
     data: contentsData, 
-    isLoading, 
-    filters,
-    queryString,
-    isBrandFiltered 
+    isLoading,
+    error
   } = useContentsByBrandFilter({
     brandId: brandFilter !== "all" ? brandFilter : undefined,
     searchTerm: searchTerm || undefined,
@@ -248,13 +250,14 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
     page: 1,
     pageSize: 50
   });
+  
 
   // Transform brands data to ensure correct format
   const brands = useMemo(() => {
     if (!brandsData) return [];
     // Handle both array and paginated response formats
-    const brandArray = Array.isArray(brandsData) ? brandsData : (brandsData as any).data || [];
-    return brandArray.map((brand: any) => ({
+    const brandArray = Array.isArray(brandsData) ? brandsData : (brandsData as { data?: { id: string; name: string }[] }).data || [];
+    return brandArray.map((brand: { id: string; name: string }) => ({
       id: brand.id,
       name: brand.name
     }));
@@ -268,15 +271,18 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
   const submitContentMutation = useSubmitContent(currentContentId);
   const publishContentMutation = usePublishContent(currentContentId);
 
-  const contents = contentsData?.data || [];
+  // Handle the data structure from API response
+  // From debug info, we see that contentsData is already the array of contents
+  const contents = Array.isArray(contentsData) ? contentsData : (contentsData?.data || []);
+  
 
-  const filteredContents = contents.filter(content => {
+  const filteredContents = contents.filter((content: any) => {
     if (!searchTerm) return true;
     const searchLower = searchTerm.toLowerCase();
     return content.title?.toLowerCase().includes(searchLower) ||
-           content.description?.toLowerCase().includes(searchLower) ||
            content.textContent?.toLowerCase().includes(searchLower) ||
-           content.brandName?.toLowerCase().includes(searchLower);
+           content.styleDescription?.toLowerCase().includes(searchLower) ||
+           content.contextDescription?.toLowerCase().includes(searchLower);
   });
 
   const handleCreateContent = async (data: CreateContentRequest) => {
@@ -342,10 +348,19 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
 
   // Function to open edit modal
   const handleEditContent = (contentId: string) => {
-    const content = contents.find(c => c.id === contentId);
+    const content = contents.find((c: any) => c.id === contentId);
     if (content) {
       setSelectedContent(content);
       setIsEditing(true);
+    }
+  };
+
+  // Function to open view modal
+  const handleViewContent = (contentId: string) => {
+    const content = contents.find((c: any) => c.id === contentId);
+    if (content) {
+      setSelectedContent(content);
+      setIsEditing(false);
     }
   };
 
@@ -358,6 +373,13 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
     }
   };
 
+  // Wrapper function for ContentModal onCreate
+  const handleCreateContentWrapper = async (data: CreateContentRequest) => {
+    await handleCreateContent(data);
+    setIsCreating(false);
+  };
+
+  
   if (isLoading || brandsLoading) {
     return (
       <div className="w-full max-w-full overflow-x-hidden">
@@ -385,7 +407,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
   }
 
   return (
-    <div className="w-full max-w-full overflow-x-hidden">
+    <div className="max-w-7xl mx-auto">
       <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
         {/* Breadcrumb */}
         <Breadcrumb>
@@ -411,12 +433,13 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
             </p>
           </div>
           
+          
           {/* Stats */}
           <div className="flex flex-wrap items-center gap-2 lg:gap-4">
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
               <FileText className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
-              <span className="font-medium">{filteredContents.length}</span>
-              <span className="text-muted-foreground">Content{filteredContents.length !== 1 ? 's' : ''}</span>
+              <span className="font-medium">{contents.length}</span>
+              <span className="text-muted-foreground">Content{contents.length !== 1 ? 's' : ''}</span>
             </div>
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
               <Brain className="h-3 w-3 lg:h-4 lg:w-4 text-primary flex-shrink-0" />
@@ -428,7 +451,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
 
 
         {/* Actions and Search */}
-        {filteredContents.length > 0 ? (
+        {contents.length > 0 ? (
           <Card>
             <CardContent className="pt-6">
               <div className="space-y-4">
@@ -445,12 +468,27 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
                   </div>
                   <div className="flex items-center gap-3">
                     <Badge variant="secondary">
-                      {filteredContents.length} content{filteredContents.length !== 1 ? 's' : ''}
+                      {contents.length} content{contents.length !== 1 ? 's' : ''}
                     </Badge>
-                    <Button onClick={() => setIsCreating(true)} size="sm">
-                      <Plus className="mr-2 h-4 w-4" />
-                      Create Content
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <Button 
+                        onClick={() => setIsCreating(true)} 
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <FileText className="h-4 w-4" />
+                        Create Manual Content
+                      </Button>
+                      <Button 
+                        onClick={() => window.location.href = `/dashboard/brands/${brandFilter}/contents/new`}
+                        size="sm"
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <Brain className="h-4 w-4" />
+                        Create with AI
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
@@ -543,10 +581,25 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
               </p>
               {!searchTerm && brands.length > 0 && (
                 <div className="space-y-3">
-                  <Button onClick={() => setIsCreating(true)} size="sm" className="h-8 text-xs">
-                    <Plus className="mr-1 h-3 w-3" />
-                    Create Your First Content
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                    <Button 
+                      onClick={() => setIsCreating(true)} 
+                      variant="outline"
+                      size="sm" 
+                      className="h-8 text-xs flex items-center justify-center gap-2"
+                    >
+                      <FileText className="h-3 w-3" />
+                      Create Manual Content
+                    </Button>
+                    <Button 
+                      onClick={() => window.location.href = `/dashboard/brands/${brandFilter}/contents/new`}
+                      size="sm" 
+                      className="h-8 text-xs flex items-center justify-center gap-2"
+                    >
+                      <Brain className="h-3 w-3" />
+                      Create with AI
+                    </Button>
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     AI-powered content • Multiple formats • Easy publishing
                   </p>
@@ -557,10 +610,11 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
         )}
 
         {/* Content Table */}
-        {filteredContents.length > 0 && (
+        {contents.length > 0 && (
           <DataTable
             columns={createColumns(
               handleEditContent,
+              handleViewContent,
               handleDeleteContent,
               handleSubmitContent,
               handlePublishContent,
@@ -600,7 +654,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
           isEditing={true}
           open={isCreating}
           onOpenChange={setIsCreating}
-          onCreate={handleCreateContent}
+          onCreate={handleCreateContentWrapper}
           isProcessing={createContentMutation.isPending}
           brands={brands}
           products={products}
@@ -621,7 +675,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
           onSave={handleSaveContent}
           onSubmit={handleSubmitContent}
           onPublish={handlePublishContent}
-          isProcessing={updateContentMutation.isPending}
+          isProcessing={updateContentMutation.isPending || submitContentMutation.isPending || publishContentMutation.isPending}
           brands={brands}
           products={products}
           userId={userId}

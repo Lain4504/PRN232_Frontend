@@ -19,7 +19,8 @@ import {
   CartesianGrid, 
   Tooltip, 
   Legend, 
-  ResponsiveContainer 
+  ResponsiveContainer,
+  LegendPayload
 } from 'recharts';
 import { 
   BarChart3, 
@@ -30,6 +31,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { AnalyticsData, TimeRange } from '@/lib/types/analytics';
+
 import { 
   formatChartData, 
   formatDistributionData, 
@@ -174,7 +176,15 @@ export function AnalyticsCharts({
                 }
               />
               <Legend 
-                content={({ payload }) => generateLegendContent(payload || [])}
+                content={({ payload }) => {
+                  const transformedPayload = (payload || []).map((item: LegendPayload) => ({
+                    value: typeof item.value === 'number' ? item.value : 0,
+                    name: item.value || '',
+                    color: item.color || '#000',
+                    dataKey: String(item.dataKey || '')
+                  }));
+                  return generateLegendContent(transformedPayload);
+                }}
               />
               {metrics.map((metric, index) => (
                 <Line
@@ -213,7 +223,15 @@ export function AnalyticsCharts({
                 }
               />
               <Legend 
-                content={({ payload }) => generateLegendContent(payload || [])}
+                content={({ payload }) => {
+                  const transformedPayload = (payload || []).map((item: LegendPayload) => ({
+                    value: typeof item.value === 'number' ? item.value : 0,
+                    name: item.value || '',
+                    color: item.color || '#000',
+                    dataKey: String(item.dataKey || '')
+                  }));
+                  return generateLegendContent(transformedPayload);
+                }}
               />
               {metrics.map((metric, index) => (
                 <Area
@@ -255,7 +273,15 @@ export function AnalyticsCharts({
                 }
               />
               <Legend 
-                content={({ payload }) => generateLegendContent(payload || [])}
+                content={({ payload }) => {
+                  const transformedPayload = (payload || []).map((item: LegendPayload) => ({
+                    value: typeof item.value === 'number' ? item.value : 0,
+                    name: item.value || '',
+                    color: item.color || '#000',
+                    dataKey: String(item.dataKey || '')
+                  }));
+                  return generateLegendContent(transformedPayload);
+                }}
               />
               {metrics.map((metric, index) => (
                 <Bar
@@ -276,7 +302,7 @@ export function AnalyticsCharts({
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={chartData}
+                data={chartData as Array<{value: number, category: string, color?: string}>}
                 cx="50%"
                 cy="50%"
                 innerRadius={type === 'doughnut' ? 40 : 0}
@@ -285,7 +311,7 @@ export function AnalyticsCharts({
                 dataKey="value"
                 nameKey="category"
               >
-                {chartData.map((entry, index) => (
+                {(chartData as Array<{value: number, category: string, color?: string}>).map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color || colors[index % colors.length]} />
                 ))}
               </Pie>
@@ -309,7 +335,15 @@ export function AnalyticsCharts({
                 }}
               />
               <Legend 
-                content={({ payload }) => generateLegendContent(payload || [])}
+                content={({ payload }) => {
+                  const transformedPayload = (payload || []).map((item: LegendPayload) => ({
+                    value: typeof item.value === 'number' ? item.value : 0,
+                    name: item.value || '',
+                    color: item.color || '#000',
+                    dataKey: String(item.dataKey || '')
+                  }));
+                  return generateLegendContent(transformedPayload);
+                }}
               />
             </PieChart>
           </ResponsiveContainer>

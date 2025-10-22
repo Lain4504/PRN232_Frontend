@@ -1,43 +1,49 @@
 "use client"
 
 import React from "react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Settings, Shield, FileText } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
-interface AccountNavItem {
-  title: string
-  url: string
-  icon: React.ComponentType<{ className?: string }>
-  value: string
-}
+import { CustomTabs } from "@/components/ui/custom-tabs"
 
 // Account navigation items
-const accountNavItems: AccountNavItem[] = [
+const accountNavItems = [
   {
-    title: "Preferences",
-    url: "/account/me",
-    icon: Settings,
-    value: "preferences"
+    label: "Preferences",
+    value: "preferences",
+    url: "/account/me"
   },
   {
-    title: "Security",
-    url: "/account/security",
-    icon: Shield,
-    value: "security"
+    label: "Security", 
+    value: "security",
+    url: "/account/security"
   },
   {
-    title: "Audit Logs",
-    url: "/account/logs",
-    icon: FileText,
-    value: "logs"
+    label: "Audit Logs",
+    value: "logs", 
+    url: "/account/logs"
   },
 ]
 
 export function AccountMobileNav() {
   const pathname = usePathname()
+  const router = useRouter()
+
+  // Determine active tab based on current pathname
+  const getActiveTab = () => {
+    if (pathname === "/account/me") return "preferences"
+    if (pathname === "/account/security") return "security" 
+    if (pathname === "/account/logs") return "logs"
+    return "preferences"
+  }
+
+  const handleTabChange = (value: string) => {
+    const item = accountNavItems.find(item => item.value === value)
+    if (item) {
+      router.push(item.url)
+    }
+  }
 
   return (
     <div className="lg:hidden border-b border-border bg-background">
@@ -57,26 +63,12 @@ export function AccountMobileNav() {
 
       {/* Mobile Tabs Navigation */}
       <div className="p-4">
-        <div className="grid grid-cols-3 gap-1 bg-muted p-1 rounded-lg">
-          {accountNavItems.map((item) => (
-            <Button
-              key={item.value}
-              variant="ghost"
-              asChild
-              size="sm"
-              className={cn(
-                "flex flex-col items-center gap-1 h-auto py-2 px-1 text-xs",
-                pathname === item.url && "bg-background shadow-sm"
-              )}
-            >
-              <Link href={item.url} className="flex flex-col items-center gap-1">
-                <item.icon className="h-4 w-4" />
-                <span className="hidden sm:inline">{item.title}</span>
-                <span className="sm:hidden">{item.title.split(' ')[0]}</span>
-              </Link>
-            </Button>
-          ))}
-        </div>
+        <CustomTabs
+          items={accountNavItems}
+          activeTab={getActiveTab()}
+          onTabChange={handleTabChange}
+          className="mb-0"
+        />
       </div>
     </div>
   )

@@ -42,6 +42,20 @@ async function fetchWithAuth(url: string, options: RequestInit = {}, reqOptions:
      }
    }
 
+  // Add profile and team context headers
+  const contextHeaders: Record<string, string> = {}
+  if (typeof window !== 'undefined') {
+    const activeProfileId = localStorage.getItem('activeProfileId')
+    const activeTeamId = localStorage.getItem('activeTeamId')
+    
+    if (activeProfileId) {
+      contextHeaders['X-Profile-Id'] = activeProfileId
+    }
+    if (activeTeamId) {
+      contextHeaders['X-Team-Id'] = activeTeamId
+    }
+  }
+
   const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData
   const defaultHeaders: Record<string, string> = isFormData ? {} : { 'Content-Type': 'application/json' }
   const headers: Record<string, string> = {
@@ -49,6 +63,7 @@ async function fetchWithAuth(url: string, options: RequestInit = {}, reqOptions:
     ...(options.headers as Record<string, string> || {}),
     ...(reqOptions.headers || {}),
     ...authHeader,
+    ...contextHeaders,
   }
 
   return fetch(`${API_URL}${url}`, {
@@ -273,19 +288,19 @@ export const endpoints = {
   socialAccountsMe: () => '/social/accounts/me',
   socialAccountsUser: (userId: string) => `/social/accounts/user/${userId}`,
   socialAccountsWithTargets: () => '/social/accounts/me/accounts-with-targets',
-  socialUnlinkAccount: (userId: string, socialAccountId: string) => `/social/accounts/unlink/${userId}/${socialAccountId}`,
+  socialUnlinkAccount: (socialAccountId: string) => `/social/accounts/unlink/${socialAccountId}`,
 
   // Social Targets endpoints
   availableTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/available-targets`,
   linkedTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/linked-targets`,
   linkTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/link-targets`,
-  unlinkTarget: (userId: string, socialIntegrationId: string) => `/social/accounts/unlink-target/${userId}/${socialIntegrationId}`,
+  unlinkTarget: (socialIntegrationId: string) => `/social/accounts/unlink-target/${socialIntegrationId}`,
 
   // Ad Accounts endpoints
   adAccounts: (socialAccountId: string) => `/social/accounts/${socialAccountId}/ad-accounts`,
 
   // Brands endpoints
-  brands: () => '/brands/team',
+  brands: () => '/brands',
   brandsByTeam: (teamId: string) => `/brands/team/${teamId}`,
   brandById: (brandId: string) => `/brands/${brandId}`,
 
@@ -319,6 +334,10 @@ export const endpoints = {
   contentSubmit: (contentId: string) => `/content/${contentId}/submit`,
   contentPublish: (contentId: string, integrationId: string) => `/content/${contentId}/publish/${integrationId}`,
   contentRestore: (contentId: string) => `/content/${contentId}/restore`,
+
+  // Social Integration endpoints
+  socialIntegrations: () => '/social/integrations',
+  socialIntegrationsByBrand: (brandId: string) => `/social/integrations/brand/${brandId}`,
   // AI Chat endpoints
   aiChat: () => '/ai/chat',
 
@@ -419,7 +438,13 @@ export const endpoints = {
     scheduleRecurring: (contentId: string) => `/content-calendar/schedule-recurring/${contentId}`,
     cancelSchedule: (scheduleId: string) => `/content-calendar/schedule/${scheduleId}`,
     updateSchedule: (scheduleId: string) => `/content-calendar/schedule/${scheduleId}`,
-    upcoming: (limit?: number) => `/content-calendar/upcoming${limit ? `?limit=${limit}` : ''}`,
+    upcoming: (limit?: number, brandId?: string) => {
+      const params = new URLSearchParams()
+      if (limit) params.append('limit', limit.toString())
+      if (brandId) params.append('brandId', brandId)
+      return `/content-calendar/upcoming${params.toString() ? `?${params.toString()}` : ''}`
+    },
+    byTeam: (teamId: string, limit?: number) => `/content-calendar/team/${teamId}${limit ? `?limit=${limit}` : ''}`,
   },
 
   // Posts endpoints
@@ -433,6 +458,7 @@ export const endpoints = {
       const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
       return `/posts${queryString}`;
     },
+    byId: (postId: string) => `/posts/${postId}`,
     byContent: (contentId: string) => `/posts/content/${contentId}`,
     byIntegration: (integrationId: string) => `/posts/integration/${integrationId}`,
   },

@@ -127,8 +127,8 @@ export function VerifyEmailStatus({
 
             <div className="space-y-3">
               <Button asChild className="w-full h-10">
-                <Link href="/dashboard">
-                  Continue to Dashboard
+                <Link href="/overview">
+                  Continue to Profiles
                 </Link>
               </Button>
               

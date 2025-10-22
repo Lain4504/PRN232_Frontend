@@ -77,9 +77,10 @@ export function AuditLogsManagement() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
+    <div className="max-w-7xl mx-auto">
+      <div className="space-y-6">
+        {/* Header */}
+        <div>
         <h1 className="text-3xl font-bold tracking-tight">Audit Logs</h1>
         <p className="text-muted-foreground mt-2">
           View a detailed history of account activities and security events.
@@ -209,6 +210,7 @@ export function AuditLogsManagement() {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

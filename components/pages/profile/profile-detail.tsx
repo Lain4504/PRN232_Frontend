@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 import { useDeleteProfile, useGetProfile, useRestoreProfile } from "@/hooks/use-profiles";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,6 @@ import { toast } from "sonner";
 
 export function ProfileDetail() {
   const params = useParams<{ id: string }>()
-  const router = useRouter()
   const id = params?.id as string
   const { data: profile, isLoading, error } = useGetProfile(id)
   const deleteMutation = useDeleteProfile()
@@ -23,7 +23,7 @@ export function ProfileDetail() {
     try {
       await deleteMutation.mutateAsync(id)
       toast.success('Đã chuyển vào thùng rác')
-      router.push('/dashboard/profile')
+      window.location.href = '/dashboard/profile'
     } catch (e) {
       toast.error('Xóa thất bại')
     }
@@ -55,10 +55,12 @@ export function ProfileDetail() {
     return (
       <div className="flex-1 space-y-6 p-6 bg-background">
         <div className="flex items-center justify-between">
-          <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/profile')}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
+          <Link href="/dashboard/profile">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+          </Link>
         </div>
         <Card>
           <CardContent className="py-10 text-center text-muted-foreground">
@@ -72,15 +74,19 @@ export function ProfileDetail() {
   return (
     <div className="flex-1 space-y-6 p-6 bg-background">
       <div className="flex items-center justify-between">
-        <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/profile')}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
-        </Button>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => router.push(`/dashboard/profile/edit/${profile.id}`)}>
-            <Edit className="mr-2 h-4 w-4" />
-            Chỉnh sửa
+        <Link href="/dashboard/profile">
+          <Button variant="outline" size="sm">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
           </Button>
+        </Link>
+        <div className="flex gap-2">
+          <Link href={`/dashboard/profile/edit/${profile.id}`}>
+            <Button variant="outline" size="sm">
+              <Edit className="mr-2 h-4 w-4" />
+              Chỉnh sửa
+            </Button>
+          </Link>
           <Button variant="destructive" size="sm" onClick={handleDelete}>
             <Trash2 className="mr-2 h-4 w-4" />
             Xóa

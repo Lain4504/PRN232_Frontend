@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ApprovalsManagement } from "@/components/pages/approvals/approvals-management";
+import { SharedApprovalManagement } from "@/components/approvals/shared-approval-management";
 
 export const metadata: Metadata = {
   title: "Approvals Management | AISAM",
@@ -7,5 +7,12 @@ export const metadata: Metadata = {
 };
 
 export default function ApprovalsPage() {
-  return <ApprovalsManagement />;
+  return (
+    <SharedApprovalManagement 
+      context="dashboard"
+      title="Content Approvals"
+      description="Review and approve content before publishing"
+      showCreateButton={true}
+    />
+  );
 }

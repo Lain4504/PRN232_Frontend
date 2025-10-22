@@ -49,7 +49,7 @@ export function LoginForm({
       }
       
       toast.success("Welcome back!");
-      router.push("/dashboard");
+      router.push("/overview");
     } catch (error: unknown) {
       const authError: AuthError = {
         message: error instanceof Error ? error.message : "An unexpected error occurred",

@@ -6,9 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Checkbox } from "@/components/ui/checkbox";
 import { FormField } from "@/components/ui/form-field";
-import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 import {
   Target,
   Upload,
@@ -19,9 +17,7 @@ import {
 } from "lucide-react";
 import { Brand, CreateBrandForm as CreateBrandFormType } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
-import { useProfiles } from "@/hooks/use-profile";
 import { useCreateBrand, useUpdateBrand } from "@/hooks/use-brands";
-import Link from "next/link";
 
 interface BrandFormProps {
   mode: 'create' | 'edit';
@@ -38,17 +34,12 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
     slogan: '',
     usp: '',
     target_audience: '',
-    profile_id: undefined,
   });
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [linkToProfile, setLinkToProfile] = useState<boolean>(false);
 
   // Hooks
-  const { data: profiles = [], isLoading: profilesLoading } = useProfiles();
   const createBrandMutation = useCreateBrand();
   const updateBrandMutation = useUpdateBrand(brand?.id || '');
-
-  const loading = profilesLoading;
 
   useEffect(() => {
     // If edit mode, pre-fill form data
@@ -59,14 +50,11 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
         slogan: brand.slogan || '',
         usp: brand.usp || '',
         target_audience: brand.target_audience || '',
-        profile_id: brand.profile_id || undefined,
       });
       
       if (brand.logo_url) {
         setLogoPreview(brand.logo_url);
       }
-      
-      setLinkToProfile(!!brand.profile_id);
     }
   }, [mode, brand]);
 
@@ -98,13 +86,7 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
     e.preventDefault();
 
     if (!formData.name.trim()) {
-      toast.error('                        The brand name can&apos;t be empty.');
-      return;
-    }
-
-    // Validate profile selection if linking is enabled
-    if (linkToProfile && !formData.profile_id) {
-      toast.error('Vui lòng chọn profile để liên kết');
+      toast.error('The brand name can&apos;t be empty.');
       return;
     }
 
@@ -127,24 +109,6 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
     }
   };
 
-  if (loading) {
-    return (
-      <div className="space-y-6 p-4">
-        <LoadingSkeleton className="h-6 w-48" />
-        <div className="grid gap-6 md:grid-cols-2">
-          <LoadingSkeleton className="h-10 w-full" />
-          <LoadingSkeleton className="h-10 w-full" />
-        </div>
-        <LoadingSkeleton className="h-24 w-full" />
-        <LoadingSkeleton className="h-6 w-32" />
-        <div className="grid gap-6 md:grid-cols-2">
-          <LoadingSkeleton className="h-24 w-full" />
-          <LoadingSkeleton className="h-24 w-full" />
-        </div>
-        <LoadingSkeleton className="h-10 w-32" />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6 p-4">
@@ -167,60 +131,6 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
               />
             </FormField>
 
-            <FormField 
-              label="Link to Profile" 
-              description="Profile helps identify your brand and create more relevant content"
-            >
-              <div className="space-y-3">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="link-profile"
-                    checked={linkToProfile}
-                    onCheckedChange={(checked) => {
-                      setLinkToProfile(checked as boolean);
-                      if (!checked) {
-                        handleInputChange('profile_id', undefined);
-                      }
-                    }}
-                  />
-                  <Label htmlFor="link-profile" className="text-sm font-medium">
-                    Link to your personal/business profile?
-                  </Label>
-                </div>
-
-                {linkToProfile && (
-                  <div className="space-y-2 ml-6">
-                    {profiles.length > 0 ? (
-                      <FormField label="Select Profile" required={linkToProfile}>
-                        <select
-                          value={formData.profile_id || ''}
-                          onChange={(e) => handleInputChange('profile_id', e.target.value === '' ? undefined : e.target.value)}
-                          className="w-full p-2 border rounded-md h-10 sm:h-9"
-                        >
-                          <option value="">Select profile...</option>
-                          {profiles.map((profile) => (
-                            <option key={profile.id} value={profile.id}>
-                              {profile.company_name || `${profile.profile_type} profile`}
-                            </option>
-                          ))}
-                        </select>
-                      </FormField>
-                    ) : (
-                      <div className="p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-md">
-                        <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-2">
-                          You don&apos;t have any profiles yet. Create a profile before linking to a brand.
-                        </p>
-                        <Button asChild size="sm" variant="outline">
-                          <Link href="/dashboard/profile">
-                            Go to Profiles
-                          </Link>
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </FormField>
           </div>
 
           <FormField label="Description">

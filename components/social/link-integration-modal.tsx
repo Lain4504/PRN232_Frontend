@@ -180,10 +180,16 @@ function LinkIntegrationForm({
 
     try {
       setIsLinking(true)
+      // Get active profileId from localStorage (same as API headers)
+      const activeProfileId = localStorage.getItem('activeProfileId')
+      if (!activeProfileId) {
+        throw new Error('No active profile selected')
+      }
+
       await linkTargetsMutation.mutateAsync({
         socialAccountId,
         data: {
-          userId: user.id,
+          profileId: activeProfileId,
           provider,
           providerTargetIds: selectedTargets,
           brandId: selectedBrandId

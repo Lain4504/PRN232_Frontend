@@ -3,14 +3,13 @@
 import React from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
-import { useUser } from '@/hooks/use-user'
-import { useQuery } from '@tanstack/react-query'
-import { api, endpoints } from '@/lib/api'
+import { useProfile } from '@/lib/contexts/profile-context'
+import { usePendingApprovalsCount } from '@/hooks/use-approvals'
+import { useUnreadNotificationsCount } from '@/hooks/use-notifications'
 import {
   Home,
   Settings,
   BarChart3,
-  FileText,
   Calendar,
   Mail,
   User,
@@ -30,7 +29,6 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { CompactSubscriptionStatus } from "@/components/subscription/subscription-status-indicator"
 import {
   Tooltip,
   TooltipContent,
@@ -90,16 +88,6 @@ const mainNavItems: NavItem[] = [
     url: "/dashboard/posts",
     icon: Mail,
   },
-  {
-    title: "Analytics",
-    url: "/dashboard/analytics",
-    icon: TrendingUp,
-  },
-  {
-    title: "Reports",
-    url: "/dashboard/reports",
-    icon: BarChart3,
-  }
 ]
 
 // Dynamic workflow items with API data
@@ -115,19 +103,13 @@ const getWorkflowNavItems = (approvalCount: number, notificationCount: number): 
     url: "/dashboard/teams",
     icon: Users,
   },
-  {
-    title: "Notifications",
-    url: "/dashboard/notifications",
-    icon: Bell,
-    badge: notificationCount > 0 ? notificationCount.toString() : undefined,
-  }
 ]
 
 // System and Support Navigation
 const secondaryNavItems: NavItem[] = [
   {
     title: "Subscription",
-    url: "/subscription",
+    url: "/dashboard/subscription",
     icon: CreditCard,
   },
   {
@@ -136,23 +118,13 @@ const secondaryNavItems: NavItem[] = [
     icon: Settings,
   },
   {
-    title: "Profile",
-    url: "/dashboard/profile",
-    icon: User,
-  },
-  {
-    title: "Account",
-    url: "/account/me",
-    icon: User,
-  },
-  {
     title: "Help & Support",
     url: "/dashboard/help",
     icon: HelpCircle,
   },
   {
     title: "Documentation",
-    url: "/dashboard/docs",
+    url: "/docs",
     icon: BookOpen,
   },
 ]
@@ -160,39 +132,11 @@ const secondaryNavItems: NavItem[] = [
 export function DashboardSidebar() {
   const pathname = usePathname()
   const [sidebarModeState, setSidebarModeState] = React.useState<'expanded' | 'collapsed' | 'hover'>('hover')
-  const { data: user } = useUser()
-  const userRole = user?.role || null
+  const { hasFeatureAccess } = useProfile()
 
-  // API calls for notifications and approvals
-  const { data: approvalCount = 0 } = useQuery({
-    queryKey: ['approvals', 'pending', 'count'],
-    queryFn: async () => {
-      try {
-        const response = await api.get<{ data: number }>('/approvals/pending/count')
-        return response.data.data ?? 0
-      } catch (error) {
-        console.error('Error fetching approval count:', error)
-        return 0
-      }
-    },
-    staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 60 * 1000, // Refetch every minute
-  })
-
-  const { data: notificationCount = 0 } = useQuery({
-    queryKey: ['notifications', 'unread', 'count'],
-    queryFn: async () => {
-      try {
-        const response = await api.get<{ data: number }>('/notifications/unread/count')
-        return response.data.data ?? 0
-      } catch (error) {
-        console.error('Error fetching notification count:', error)
-        return 0
-      }
-    },
-    staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 60 * 1000, // Refetch every minute
-  })
+  // API calls for notifications and approvals (via hooks)
+  const { data: approvalCount = 0 } = usePendingApprovalsCount()
+  const { data: notificationCount = 0 } = useUnreadNotificationsCount()
 
   const workflowNavItems = getWorkflowNavItems(approvalCount, notificationCount)
 
@@ -355,9 +299,9 @@ export function DashboardSidebar() {
               <div className="space-y-1">
                 {workflowNavItems
                   .filter((item) => {
-                    // Hide Teams menu if user is not Vendor
+                    // Show Teams only if current profile has access to 'teams'
                     if (item.title === "Team") {
-                      return userRole === "Vendor"
+                      return hasFeatureAccess('teams')
                     }
                     return true
                   })
@@ -482,10 +426,6 @@ export function DashboardSidebar() {
 
         {/* Footer with subscription status and mode switcher - hidden on mobile */}
         <div className="p-2 border-t border-sidebar-border hidden lg:block space-y-2">
-          {/* Subscription Status */}
-          <div className="px-2">
-            <CompactSubscriptionStatus />
-          </div>
 
           {/* Mode Switcher */}
           <DropdownMenu>

@@ -11,7 +11,7 @@ export default function ContentsRedirectPage() {
   useEffect(() => {
     if (brands && brands.length > 0) {
       // Redirect to the first brand's content page
-      const firstBrand = Array.isArray(brands) ? brands[0] : (brands as any)?.data?.[0];
+      const firstBrand = Array.isArray(brands) ? brands[0] : (brands as { data?: { id: string; name: string }[] })?.data?.[0];
       if (firstBrand) {
         router.replace(`/dashboard/brands/${firstBrand.id}/contents`);
       }

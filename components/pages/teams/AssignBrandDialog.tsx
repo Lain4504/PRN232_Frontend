@@ -38,8 +38,12 @@ export function AssignBrandDialog({ open, onOpenChange, teamId, currentBrands = 
   const loadAvailableBrands = async () => {
     try {
       setLoading(true)
-      const resp = await api.get<{ id: string; name: string }[]>(endpoints.brands())
-      setAvailableBrands(Array.isArray(resp.data) ? resp.data : [])
+      const resp = await api.get<{ data: { data: { id: string; name: string }[] } }>(endpoints.brands())
+      if (resp.data && resp.data.data && Array.isArray(resp.data.data)) {
+        setAvailableBrands(resp.data.data)
+      } else {
+        setAvailableBrands([])
+      }
     } catch (err) {
       console.error('Failed to load brands:', err)
       setError('Failed to load available brands')

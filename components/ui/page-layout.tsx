@@ -40,7 +40,9 @@ const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
         className={cn(pageLayoutVariants({ variant, padding, className }))}
         {...props}
       >
-        {children}
+        <div className="max-w-7xl mx-auto">
+          {children}
+        </div>
       </div>
     );
   }

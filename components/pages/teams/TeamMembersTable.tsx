@@ -45,15 +45,14 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember }: Pro
           return
         }
 
-        // Check if user is in team members and has ADD_MEMBER permission or is Vendor
+        // Check if user is in team members and has ADD_MEMBER permission
         const currentUserMember = data?.find(member =>
           member.userEmail === session?.user?.email
         )
 
         if (currentUserMember) {
-          // If user is Vendor role or has ADD_MEMBER permission, allow
-          if (currentUserMember.role === 'Vendor' ||
-            currentUserMember.permissions?.includes('ADD_MEMBER')) {
+          // If user has ADD_MEMBER permission, allow
+          if (currentUserMember.permissions?.includes('ADD_MEMBER')) {
             setAllowed(true)
             return
           }

@@ -13,6 +13,7 @@ export const approvalKeys = {
   all: ['approvals'] as const,
   lists: () => [...approvalKeys.all, 'list'] as const,
   pending: () => [...approvalKeys.all, 'pending'] as const,
+  pendingCount: () => [...approvalKeys.all, 'pending', 'count'] as const,
   details: () => [...approvalKeys.all, 'detail'] as const,
   detail: (approvalId: string) => [...approvalKeys.details(), approvalId] as const,
   byContent: (contentId: string) => [...approvalKeys.all, 'content', contentId] as const,
@@ -34,6 +35,19 @@ export function usePendingApprovals(page = 1, pageSize = 10) {
       )
       return resp.data
     },
+  })
+}
+
+// Get pending approvals count
+export function usePendingApprovalsCount() {
+  return useQuery({
+    queryKey: approvalKeys.pendingCount(),
+    queryFn: async (): Promise<number> => {
+      const resp = await api.get<{ data: number }>(`/approvals/pending/count`)
+      return resp.data?.data ?? 0
+    },
+    staleTime: 30 * 1000,
+    refetchInterval: 60 * 1000,
   })
 }
 
@@ -208,6 +222,9 @@ export function useApproveApproval(approvalId: string) {
       if (updated?.contentId) {
         qc.invalidateQueries({ queryKey: approvalKeys.byContent(updated.contentId) })
         qc.invalidateQueries({ queryKey: approvalKeys.contentPending(updated.contentId) })
+        // Invalidate content queries to refresh content status
+        qc.invalidateQueries({ queryKey: ['contents'] })
+        qc.invalidateQueries({ queryKey: ['team-contents'] })
       }
       if (updated?.approverId) {
         qc.invalidateQueries({ queryKey: approvalKeys.byApprover(updated.approverId) })
@@ -249,6 +266,9 @@ export function useRejectApproval(approvalId: string) {
       if (updated?.contentId) {
         qc.invalidateQueries({ queryKey: approvalKeys.byContent(updated.contentId) })
         qc.invalidateQueries({ queryKey: approvalKeys.contentPending(updated.contentId) })
+        // Invalidate content queries to refresh content status
+        qc.invalidateQueries({ queryKey: ['contents'] })
+        qc.invalidateQueries({ queryKey: ['team-contents'] })
       }
       if (updated?.approverId) {
         qc.invalidateQueries({ queryKey: approvalKeys.byApprover(updated.approverId) })

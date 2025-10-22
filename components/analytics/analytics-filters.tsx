@@ -26,7 +26,6 @@ import {
   SiX, 
   SiYoutube, 
   SiTiktok,
-  SiLinkedin,
   SiPinterest
 } from '@icons-pack/react-simple-icons';
 import { AnalyticsFilters as AnalyticsFiltersType } from '@/lib/types/analytics';
@@ -59,7 +58,7 @@ export function AnalyticsFilters({
     twitter: <SiX className="h-4 w-4" color="#000000" />,
     youtube: <SiYoutube className="h-4 w-4" color="#FF0000" />,
     tiktok: <SiTiktok className="h-4 w-4" color="#000000" />,
-    linkedin: <SiLinkedin className="h-4 w-4" color="#0077B5" />,
+    linkedin: <Globe className="h-4 w-4" color="#0077B5" />,
     pinterest: <SiPinterest className="h-4 w-4" color="#E60023" />,
   };
 

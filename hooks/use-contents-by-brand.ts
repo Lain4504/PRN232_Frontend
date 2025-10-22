@@ -36,6 +36,9 @@ export function useContentsByBrandFilter(options: UseContentsByBrandOptions = {}
 
   return {
     ...result,
+    // Transform the data to match the expected structure
+    // From debug info, we see that result.data is already the array of contents
+    data: result.data,
     filters,
     // Helper to check if brand filter is active
     isBrandFiltered: !!brandId,

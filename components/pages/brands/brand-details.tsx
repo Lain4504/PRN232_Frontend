@@ -17,7 +17,6 @@ import {
 import { Brand, Profile } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useBrand } from "@/hooks/use-brands";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { BrandModal } from "@/components/brands/brand-modal";
 
@@ -27,7 +26,6 @@ interface BrandDetailsProps {
 
 export function BrandDetails({ brandId }: BrandDetailsProps) {
   const [_profile, setProfile] = useState<Profile | null>(null);
-  const router = useRouter();
 
   // Hooks
   const { data: brand, isLoading: loading, error } = useBrand(brandId);
@@ -35,9 +33,9 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
   useEffect(() => {
     if (error) {
       toast.error('Brand not found');
-      router.push('/dashboard/brands');
+      window.location.href = '/dashboard/brands';
     }
-  }, [error, router]);
+  }, [error]);
 
   if (loading) {
     return (
