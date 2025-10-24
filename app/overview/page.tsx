@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useUser } from '@/hooks/use-user'
-import { useProfiles } from '@/hooks/use-profile'
+import { useGetProfiles } from '@/hooks/use-profiles'
 import { useProfile } from '@/lib/contexts/profile-context'
 import { PROFILE_TYPE_LABELS, PROFILE_TYPE_COLORS, ProfileTypeEnum } from '@/lib/utils/profile-utils'
 import { Button } from '@/components/ui/button'
@@ -16,7 +16,7 @@ import Link from 'next/link'
 export default function OverviewPage() {
   const router = useRouter()
   const { data: user, isLoading: userLoading } = useUser()
-  const { data: profiles = [], isLoading: profilesLoading, error: profilesError } = useProfiles(user?.id)
+  const { data: profiles = [], isLoading: profilesLoading, error: profilesError } = useGetProfiles(user?.id || '')
   const { setActiveProfile } = useProfile()
   const [searchQuery, setSearchQuery] = useState('')
 

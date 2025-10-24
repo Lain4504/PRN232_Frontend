@@ -1,17 +1,25 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { SubscriptionPlansPage } from "@/components/subscription/subscription-plans-page"
-import type { SubscriptionPlan } from "@/lib/types/subscription"
 import { Building2, ArrowLeft, CheckCircle, User, CreditCard } from "lucide-react"
 import Link from "next/link"
+import { useCreateProfile } from "@/hooks/use-profiles"
+import { useUser } from "@/hooks/use-user"
+import { CreateProfileForm } from "@/lib/types/aisam-types"
+import { toast } from "sonner"
 
 export default function CreateProfilePage() {
+  const router = useRouter()
+  const { data: user } = useUser()
+  const createProfile = useCreateProfile(user?.id || '')
+  
   const [step, setStep] = useState<1 | 2>(1)
   const [form, setForm] = useState({
     name: "",
@@ -31,10 +39,37 @@ export default function CreateProfilePage() {
     }
   }
 
-  const handlePlanSelect = (plan: SubscriptionPlan) => {
-    // Redirect to payments after choosing a plan
-    const search = new URLSearchParams({ planId: String(plan.id) }).toString()
-    window.location.href = `/(dashboard)/payments?${search}`
+  const handlePlanSelect = async (plan: { id: number; name: string; price: number }) => {
+    try {
+      if (!user?.id) {
+        toast.error('Please login to create a profile')
+        return
+      }
+
+      const profileData: CreateProfileForm = {
+        name: form.name,
+        profile_type: plan.id === 0 ? '0' : '1', // Free = '0', Paid = '1'
+        company_name: form.companyName || undefined,
+        bio: form.bio || undefined,
+        avatar: undefined, // Optional
+        avatarUrl: undefined // Optional
+      }
+      
+      const profile = await createProfile.mutateAsync(profileData)
+      
+      // Redirect to checkout with real profile ID
+      const params = new URLSearchParams({
+        planId: plan.id.toString(),
+        planName: plan.name,
+        price: plan.price.toString(),
+        profileId: profile.id
+      })
+      
+      router.push(`/subscription/checkout?${params.toString()}`)
+    } catch (error) {
+      console.error('Error creating profile:', error)
+      toast.error('Failed to create profile. Please try again.')
+    }
   }
 
 

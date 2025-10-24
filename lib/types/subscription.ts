@@ -1,7 +1,14 @@
 import { z } from 'zod'
 
+// Subscription plan enum matching backend
+export enum SubscriptionPlanEnum {
+  Free = 0,
+  Basic = 1,
+  Pro = 2
+}
+
 // Subscription plan types
-export type SubscriptionTier = 'free' | 'pro' | 'enterprise'
+export type SubscriptionTier = 'free' | 'basic' | 'pro'
 export type BillingCycle = 'monthly' | 'yearly'
 export type SubscriptionStatus = 'active' | 'cancelled' | 'past_due' | 'trialing' | 'incomplete'
 
@@ -38,11 +45,63 @@ export interface SubscriptionPlan {
   description: string
 }
 
-// Current subscription interface
-export interface Subscription {
+// Backend DTO types matching API
+export interface SubscriptionResponseDto {
+  id: string
+  profileId: string
+  plan: SubscriptionPlanEnum
+  quotaPostsPerMonth: number
+  quotaStorageGb: number
+  startDate: string
+  endDate?: string
+  isActive: boolean
+  createdAt: string
+  stripeSubscriptionId?: string
+  stripeCustomerId?: string
+}
+
+// Create subscription request
+export interface CreateSubscriptionRequest {
+  profileId: string
+  plan: SubscriptionPlanEnum
+  paymentMethodId?: string
+  isRecurring: boolean
+}
+
+// Payment intent request
+export interface CreatePaymentIntentRequest {
+  amount: number
+  currency: string
+  subscriptionPlanId: number
+  description?: string
+}
+
+// Payment intent response
+export interface CreatePaymentIntentResponse {
+  clientSecret: string
+  paymentIntentId: string
+  amount: number
+  currency: string
+  status: string
+}
+
+// Payment response
+export interface PaymentResponseDto {
   id: string
   userId: string
-  planId: string
+  amount: number
+  currency: string
+  status: string
+  transactionId: string
+  paymentMethod: string
+  createdAt: string
+}
+
+// Current subscription interface (for UI)
+export interface Subscription {
+  id: string
+  profileId: string
+  plan: SubscriptionPlanEnum
   planName: string
   tier: SubscriptionTier
   status: SubscriptionStatus
@@ -67,6 +126,8 @@ export interface Subscription {
     storage: number
     apiCalls: number
   }
+  stripeSubscriptionId?: string
+  stripeCustomerId?: string
 }
 
 // Billing information interface
