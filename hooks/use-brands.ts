@@ -16,26 +16,16 @@ export function useBrands() {
     queryKey: brandKeys.lists(),
     queryFn: async (): Promise<Brand[]> => {
       try {
-        const resp = await api.get<any>(endpoints.brands())
+        const resp = await api.get<{ data: { data: Brand[] } }>(endpoints.brands())
         
-        // Handle different response formats
-        let brandsArray = [];
-        if (resp.data) {
-          // If it's a paginated response
-          if (resp.data.data && Array.isArray(resp.data.data)) {
-            brandsArray = resp.data.data;
-          }
-          // If it's a direct array
-          else if (Array.isArray(resp.data)) {
-            brandsArray = resp.data;
-          }
-          // If it's wrapped in another structure
-          else if (resp.data.brands && Array.isArray(resp.data.brands)) {
-            brandsArray = resp.data.brands;
-          }
+        // Handle the actual API response format: 
+        // { success: true, data: { data: [brands] } }
+        
+        if (resp.data && resp.data.data && Array.isArray(resp.data.data)) {
+          return resp.data.data;
         }
         
-        return brandsArray;
+        return [];
       } catch (error) {
         console.error('Error fetching brands:', error);
         return [];
@@ -52,26 +42,14 @@ export function useBrandsByTeam(teamId?: string) {
     queryFn: async (): Promise<Brand[]> => {
       if (!teamId) return [];
       try {
-        const resp = await api.get<any>(endpoints.brandsByTeam(teamId))
+        const resp = await api.get<Brand[]>(endpoints.brandsByTeam(teamId))
 
-        // Handle different response formats
-        let brandsArray = [];
-        if (resp.data) {
-          // If it's a paginated response
-          if (resp.data.data && Array.isArray(resp.data.data)) {
-            brandsArray = resp.data.data;
-          }
-          // If it's a direct array
-          else if (Array.isArray(resp.data)) {
-            brandsArray = resp.data;
-          }
-          // If it's wrapped in another structure
-          else if (resp.data.brands && Array.isArray(resp.data.brands)) {
-            brandsArray = resp.data.brands;
-          }
+        // Handle response format - direct array from API response
+        if (resp.data && Array.isArray(resp.data)) {
+          return resp.data;
         }
 
-        return brandsArray;
+        return [];
       } catch (error) {
         console.error('Error fetching brands by team:', error);
         return [];
@@ -85,8 +63,8 @@ export function useBrand(brandId?: string) {
   return useQuery({
     queryKey: brandId ? brandKeys.detail(brandId) : brandKeys.details(),
     queryFn: async (): Promise<Brand> => {
-      const resp = await api.get<Brand>(endpoints.brandById(brandId!))
-      return resp.data
+      const resp = await api.get<{ data: Brand }>(endpoints.brandById(brandId!))
+      return resp.data.data
     },
     enabled: !!brandId,
     retry: (count, err) => {
@@ -103,8 +81,8 @@ export function useCreateBrand() {
     mutationFn: async (payload: CreateBrandForm): Promise<Brand> => {
       // Remove file from payload for now (backend might not support multipart)
       const { logo, ...jsonPayload } = payload
-      const resp = await api.post<Brand>(endpoints.brands(), jsonPayload)
-      return resp.data
+      const resp = await api.post<{ data: Brand }>(endpoints.brands(), jsonPayload)
+      return resp.data.data
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: brandKeys.lists() })
@@ -117,8 +95,8 @@ export function useUpdateBrand(brandId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (payload: CreateBrandForm): Promise<Brand> => {
-      const resp = await api.put<Brand>(endpoints.brandById(brandId), payload)
-      return resp.data
+      const resp = await api.put<{ data: Brand }>(endpoints.brandById(brandId), payload)
+      return resp.data.data
     },
     onSuccess: (updated) => {
       qc.invalidateQueries({ queryKey: brandKeys.detail(brandId) })
@@ -132,8 +110,8 @@ export function useDeleteBrand() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (brandId: string): Promise<boolean> => {
-      const resp = await api.delete<boolean>(endpoints.brandById(brandId))
-      return resp.data
+      const resp = await api.delete<{ data: boolean }>(endpoints.brandById(brandId))
+      return resp.data.data
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: brandKeys.lists() })

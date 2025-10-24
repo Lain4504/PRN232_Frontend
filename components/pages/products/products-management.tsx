@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,7 +37,7 @@ import { useProducts, useDeleteProduct } from "@/hooks/use-products";
 import { useParams } from "next/navigation";
 import { ProductModal } from "@/components/products/product-modal";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { FormField } from "@/components/ui/form-field";
+// import { FormField } from "@/components/ui/form-field"; // Removed unused import
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 import Link from "next/link";
 
@@ -255,7 +255,7 @@ export function ProductsManagement() {
   }
 
   return (
-    <div className="w-full max-w-full overflow-x-hidden">
+    <div className="max-w-7xl mx-auto">
       <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
         {/* Breadcrumb */}
         <Breadcrumb>
@@ -362,7 +362,7 @@ export function ProductsManagement() {
                   No Products for {currentBrand?.name || 'This Brand'}
                 </h4>
                 <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-                  This brand doesn't have any products yet. Start by adding your first product to create content and campaigns around it.
+                  This brand doesn&apos;t have any products yet. Start by adding your first product to create content and campaigns around it.
                 </p>
                 <ProductModal
                   mode="create"

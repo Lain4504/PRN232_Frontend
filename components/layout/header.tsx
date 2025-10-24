@@ -207,7 +207,7 @@ export function Header() {
                          {user ? (
                             <div className="flex items-center space-x-3">
                                 <Button asChild className="hidden sm:flex bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md text-sm font-medium">
-                                    <Link href="/dashboard">
+                                    <Link href="/overview">
                                         Dashboard
                                     </Link>
                                 </Button>
@@ -290,7 +290,7 @@ export function Header() {
                                     <div className="p-6 border-t">
                                         {user ? (
                                             <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-md font-medium">
-                                                <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                                                <Link href="/overview" onClick={() => setMobileMenuOpen(false)}>
                                                     Dashboard
                                                 </Link>
                                             </Button>

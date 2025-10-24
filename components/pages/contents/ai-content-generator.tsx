@@ -1,36 +1,29 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   Sparkles,
-  Wand2,
   Save,
-  RefreshCw,
-  CheckCircle,
   XCircle,
-  Clock,
   Copy,
-  Download,
-  AlertCircle,
   Send,
   Bot,
   User,
   Settings,
-  Brain,
-  FileText,
   Plus,
+  Menu,
+  MessageSquare,
 } from "lucide-react";
-// Removed mock-api import - using real API instead
 import { Brand, Product, ConversationSummary, ConversationDetails, ConversationsResponse } from "@/lib/types/aisam-types";
 import { useAIChat, AdTypes } from "@/hooks/use-ai-chat";
 import { api, endpoints } from "@/lib/api";
@@ -72,6 +65,7 @@ interface ChatSession {
   id: string;
   brand_id?: string;
   product_id?: string;
+  conversationId?: string;
   messages: ChatMessage[];
   created_at: string;
   updated_at: string;
@@ -86,21 +80,12 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
   const [products, setProducts] = useState<Product[]>([]);
   const [generations, setGenerations] = useState<AIContentGeneration[]>([]);
   const [loading, setLoading] = useState(false);
-  const [generating, setGenerating] = useState(false);
-  const [selectedGeneration, setSelectedGeneration] = useState<AIContentGeneration | null>(null);
-
-  // Chat state
-  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [currentSession, setCurrentSession] = useState<ChatSession | null>(null);
   const [chatInput, setChatInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement>(null);
-
-  // Conversation management state
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
-  const [loadingConversations, setLoadingConversations] = useState(false);
-
-  // AI Chat hook
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const aiChatMutation = useAIChat();
 
   const [form, setForm] = useState<GenerationForm>({
@@ -116,7 +101,6 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
       try {
         setLoading(true);
 
-        // Load products from real API (no auth required)
         console.log('Loading products from API...');
         try {
           const productsResponse = await api.get<{
@@ -139,7 +123,6 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
           console.error('Products API error:', error);
         }
 
-        // Load brands from real API (requires auth)
         console.log('Loading brands from API...');
         try {
           const supabase = createClient();
@@ -177,7 +160,6 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
             }
           } else {
             console.error('Failed to load brands:', brandsResponse);
-            // If brands fail due to auth, show a message
             if (brandsResponse.statusCode === 401 || brandsResponse.statusCode === 403) {
               console.warn('Brands require authentication - user may not be logged in');
               toast.error('Authentication required to load brands');
@@ -190,7 +172,6 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
           toast.error('Failed to load brands from server');
         }
 
-        // Load conversations from backend
         console.log('Loading conversations from API...');
         try {
           const supabase = createClient();
@@ -198,7 +179,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
 
           if (session?.access_token) {
             const conversationsResponse = await api.get<ConversationsResponse>(
-              `${endpoints.conversations()}?page=1&pageSize=50&sortBy=updatedAt&sortDescending=true`
+                `${endpoints.conversations()}?page=1&pageSize=50&sortBy=updatedAt&sortDescending=true`
             );
             console.log('Conversations response:', conversationsResponse);
             if (conversationsResponse.success && conversationsResponse.data) {
@@ -212,10 +193,8 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
           }
         } catch (error) {
           console.error('Conversations API error:', error);
-          // Don't show error for conversations as it's not critical
         }
 
-        // Load previous generations (will be empty initially)
         setGenerations([]);
       } catch (error) {
         console.error('Failed to load data:', error);
@@ -228,45 +207,31 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
     loadData();
   }, []);
 
-  const handleBrandChange = (brandId: string) => {
-    setForm(prev => ({ ...prev, brand_id: brandId, product_id: '' }));
-    // Filter products by selected brand
-    const brandProducts = products.filter(p => p.brandId === brandId);
-    setProducts(brandProducts);
-  };
-
   const handleChatBrandChange = (brandId: string) => {
     setForm(prev => ({ ...prev, brand_id: brandId, product_id: '' }));
-    // Filter products by selected brand
     const brandProducts = products.filter(p => p.brandId === brandId);
     setProducts(brandProducts);
-
-    // Update current session if exists
     updateChatContext(brandId, undefined);
   };
 
   const handleChatProductChange = (productId: string) => {
     const newValue = productId === "none" ? "" : productId;
     setForm(prev => ({ ...prev, product_id: newValue }));
-
-    // Update current session if exists
     updateChatContext(form.brand_id, newValue || undefined);
   };
 
-  // Removed handleGenerate function - now using AI chat for content generation
-
-  // Chat functions
   const createNewChatSession = () => {
     const newSession: ChatSession = {
       id: Date.now().toString(),
       brand_id: form.brand_id || undefined,
       product_id: form.product_id || undefined,
+      conversationId: undefined, // Clear conversationId for new session
       messages: [],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
-    setChatSessions(prev => [newSession, ...prev]);
     setCurrentSession(newSession);
+    setSidebarOpen(false);
   };
 
   const updateChatContext = (brandId?: string, productId?: string) => {
@@ -287,7 +252,6 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
       return;
     }
 
-    // Get current user ID
     const supabase = createClient();
     const { data: { session } } = await supabase.auth.getSession();
     if (!session?.user?.id) {
@@ -309,19 +273,18 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
     };
 
     setCurrentSession(updatedSession);
-    setChatSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
     setChatInput('');
     setIsTyping(true);
 
     try {
-      // Call real AI API - match backend expected format
       const requestData = {
         userId: session.user.id,
+        profileId: session.user.id, // Add profileId for the request
         brandId: currentSession.brand_id || null,
         productId: currentSession.product_id || null,
-        adType: AdTypes.TextOnly, // Default to text-only for chat
+        adType: AdTypes.TextOnly,
         message: chatInput,
-        // conversationId: currentSession.id, // Remove conversationId for now as backend expects null
+        conversationId: currentSession.conversationId || null,
       };
 
       console.log('Sending AI chat request:', requestData);
@@ -330,23 +293,21 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
 
       console.log('AI chat response:', response);
 
-      // Update conversation list if this is a new conversation
       if (response.success && response.data?.conversationId) {
-        // Update current session with the conversation ID from backend
         const sessionWithConversationId = {
           ...updatedSession,
-          id: response.data.conversationId, // Use backend conversation ID
+          id: response.data.conversationId,
+          conversationId: response.data.conversationId,
         };
         setCurrentSession(sessionWithConversationId);
 
-        // Refresh conversations list to include the new/updated conversation
         try {
           const supabase = createClient();
           const { data: { session } } = await supabase.auth.getSession();
 
           if (session?.access_token) {
             const conversationsResponse = await api.get<ConversationsResponse>(
-              `${endpoints.conversations()}?page=1&pageSize=50&sortBy=updatedAt&sortDescending=true`
+                `${endpoints.conversations()}?page=1&pageSize=50&sortBy=updatedAt&sortDescending=true`
             );
             if (conversationsResponse.success && conversationsResponse.data) {
               setConversations(conversationsResponse.data.data);
@@ -361,7 +322,6 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
         let aiMessage: ChatMessage;
 
         if (response.data.isContentGenerated && response.data.generatedContent) {
-          // Content was generated - create generation object
           const generation: AIContentGeneration = {
             id: response.data.aiGenerationId || Date.now().toString(),
             prompt: chatInput,
@@ -383,10 +343,8 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
             generation: generation,
           };
 
-          // Add to generations list
           setGenerations(prev => [generation, ...prev]);
         } else {
-          // Chat-only response
           aiMessage = {
             id: (Date.now() + 1).toString(),
             role: 'assistant',
@@ -402,7 +360,6 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
         };
 
         setCurrentSession(finalSession);
-        setChatSessions(prev => prev.map(s => s.id === finalSession.id ? finalSession : s));
 
         toast.success('AI response received');
       } else {
@@ -412,7 +369,6 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
       console.error('Failed to generate chat response:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to generate response');
 
-      // Add error message to chat
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -427,31 +383,23 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
       };
 
       setCurrentSession(finalSession);
-      setChatSessions(prev => prev.map(s => s.id === finalSession.id ? finalSession : s));
     } finally {
       setIsTyping(false);
     }
   };
 
-  const selectChatSession = async (session: ChatSession) => {
-    setCurrentSession(session);
-  };
-
   const selectConversation = async (conversation: ConversationSummary) => {
     try {
-      setLoadingConversations(true);
-
-      // Load full conversation details with messages
       const response = await api.get<ConversationDetails>(
-        endpoints.conversationById(conversation.id)
+          endpoints.conversationById(conversation.id)
       );
 
       if (response.success && response.data) {
-        // Convert backend conversation to frontend chat session format
         const chatSession: ChatSession = {
           id: response.data.id,
           brand_id: response.data.brandId || undefined,
           product_id: response.data.productId || undefined,
+          conversationId: response.data.id, // Set conversationId to the conversation ID
           messages: response.data.messages.map(msg => ({
             id: msg.id,
             role: msg.senderType === 'User' ? 'user' : 'assistant',
@@ -463,7 +411,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
               brand_id: response.data.brandId || '',
               product_id: response.data.productId || undefined,
               style_context: '',
-              generated_content: '', // Would need to fetch from content API
+              generated_content: '',
               status: 'completed',
               created_at: msg.createdAt,
               brand_name: response.data.brandName || undefined,
@@ -475,21 +423,19 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
         };
 
         setCurrentSession(chatSession);
-        // Update form context to match the conversation
         if (response.data.brandId) {
           setForm(prev => ({ ...prev, brand_id: response.data.brandId! }));
         }
         if (response.data.productId) {
           setForm(prev => ({ ...prev, product_id: response.data.productId! }));
         }
+        setSidebarOpen(false);
       } else {
         toast.error('Failed to load conversation');
       }
     } catch (error) {
       console.error('Failed to load conversation:', error);
       toast.error('Failed to load conversation details');
-    } finally {
-      setLoadingConversations(false);
     }
   };
 
@@ -498,10 +444,8 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
       const response = await api.delete(endpoints.conversationById(conversationId));
 
       if (response.success) {
-        // Remove from conversations list
         setConversations(prev => prev.filter(c => c.id !== conversationId));
 
-        // If current session is the deleted conversation, clear it
         if (currentSession?.id === conversationId) {
           setCurrentSession(null);
         }
@@ -522,7 +466,6 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
     }
   }, [currentSession?.messages]);
 
-
   const handleSaveToLibrary = async (generation: AIContentGeneration) => {
     try {
       const response = await api.post(endpoints.contents(), {
@@ -530,9 +473,9 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
         brand_id: generation.brand_id,
         product_id: generation.product_id,
         style_context: generation.style_context,
-        ad_type: 'text_only', // Default to text_only, could be enhanced
+        ad_type: 'text_only',
         generated_content: generation.generated_content,
-        image_url: undefined, // Could be enhanced for image/video content
+        image_url: undefined,
       });
 
       if (response.success) {
@@ -551,434 +494,427 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
     toast.success('Content copied to clipboard!');
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'pending':
-        return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'failed':
-        return <XCircle className="h-4 w-4 text-red-500" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-500" />;
-    }
-  };
-
   if (loading) {
     return (
-      <div className="w-full max-w-full overflow-x-hidden">
-        <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <div>
-                <Skeleton className="h-10 w-64 mb-3" />
-                <Skeleton className="h-5 w-80" />
-              </div>
-              <div className="flex items-center gap-4">
-                <Skeleton className="h-8 w-32" />
-                <Skeleton className="h-8 w-28" />
-              </div>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} className="h-32 w-full" />
-              ))}
-            </div>
+        <div className="flex h-screen items-center justify-center">
+          <div className="space-y-4 text-center">
+            <Skeleton className="h-12 w-12 rounded-full mx-auto" />
+            <Skeleton className="h-4 w-48 mx-auto" />
           </div>
         </div>
-      </div>
     );
   }
 
   return (
-    <div className="w-full max-w-full overflow-x-hidden">
-      <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
-        {/* Header */}
-        <div className="space-y-3 lg:space-y-6">
-          <div>
-            <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground flex items-center gap-3">
-              <Sparkles className="h-6 w-6 lg:h-8 lg:w-8 text-primary" />
-              AI Content Generator
-            </h1>
-            <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
-              Chat with AI to generate engaging social media content for your campaigns
-            </p>
-          </div>
-          
-          {/* Stats */}
-          <div className="flex flex-wrap items-center gap-2 lg:gap-4">
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <Brain className="h-3 w-3 lg:h-4 lg:w-4 text-primary flex-shrink-0" />
-              <span className="font-medium">AI Powered</span>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <FileText className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
-              <span className="font-medium">{generations.length}</span>
-              <span className="text-muted-foreground">Generated</span>
-            </div>
+      <div className="flex h-screen overflow-hidden bg-background">
+        {/* Sidebar - Desktop */}
+        <aside className="hidden lg:flex lg:w-80 xl:w-96 border-r flex-col">
+          <div className="p-4 border-b">
             <Button
-              variant="outline"
-              onClick={createNewChatSession}
-              size="sm"
-              className="h-8 text-xs"
+                onClick={createNewChatSession}
+                className="w-full"
+                size="lg"
             >
-              <Plus className="mr-1 h-3 w-3" />
+              <Plus className="mr-2 h-4 w-4" />
               New Chat
             </Button>
           </div>
-        </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Chat Interface */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="h-[600px] flex flex-col">
-            <CardHeader className="flex-shrink-0">
-              <CardTitle className="flex items-center gap-2">
-                <Bot className="h-5 w-5" />
-                AI Content Assistant
-              </CardTitle>
-              <CardDescription>
-                Chat with AI to generate and refine your social media content
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
-              {/* Chat Messages */}
-              <div className="flex-1 overflow-y-auto p-4" ref={chatScrollRef}>
-                <div className="space-y-4">
-                  {currentSession?.messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                    >
-                      {message.role === 'assistant' && (
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-primary text-primary-foreground">
-                            <Bot className="h-4 w-4" />
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
-                      <div
-                        className={`max-w-[70%] rounded-lg px-4 py-2 ${
-                          message.role === 'user'
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted'
-                        }`}
-                      >
-                        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                        {message.generation && (
-                          <div className="mt-3 p-3 bg-background/50 rounded border">
-                            <p className="text-xs text-muted-foreground mb-2">Generated Content:</p>
-                            <p className="text-sm">{message.generation.generated_content}</p>
-                            <div className="flex gap-2 mt-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleCopyContent(message.generation!.generated_content)}
-                              >
-                                <Copy className="h-3 w-3 mr-1" />
-                                Copy
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleSaveToLibrary(message.generation!)}
-                              >
-                                <Save className="h-3 w-3 mr-1" />
-                                Save
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      {message.role === 'user' && (
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback>
-                            <User className="h-4 w-4" />
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
-                    </div>
-                  ))}
-                  {isTyping && (
-                    <div className="flex gap-3 justify-start">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-primary text-primary-foreground">
-                          <Bot className="h-4 w-4" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="bg-muted rounded-lg px-4 py-2">
-                        <div className="flex gap-1">
-                          <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {!currentSession && (
-                    <div className="text-center py-8">
-                      <Bot className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <h3 className="text-lg font-medium mb-2">Start a conversation</h3>
-                      <p className="text-muted-foreground mb-4">
-                        Describe your content needs and I'll help you create engaging social media posts.
-                      </p>
-                      <Button onClick={createNewChatSession}>
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        Start Chat
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Chat Input */}
-              {currentSession && (
-                <div className="flex-shrink-0 p-4 border-t">
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Describe the content you want to create..."
-                      value={chatInput}
-                      onChange={(e) => setChatInput(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
-                      disabled={isTyping}
-                    />
-                    <Button
-                      onClick={sendChatMessage}
-                      disabled={!chatInput.trim() || isTyping}
-                      size="icon"
-                    >
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Brand/Product Selection for Chat Context */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                Chat Context
-              </CardTitle>
-              <CardDescription>
-                Set your brand and product context for better AI suggestions
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="chat_brand">Brand</Label>
-                  <Select
-                    value={form.brand_id}
-                    onValueChange={handleChatBrandChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a brand" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {brands.length === 0 ? (
-                        <div className="p-2 text-sm text-muted-foreground">
-                          No brands available - please start the backend API
-                        </div>
-                      ) : (
-                        brands.map((brand) => (
-                          <SelectItem key={brand.id} value={brand.id}>
-                            {brand.name}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="chat_product">Product (Optional)</Label>
-                  <Select
-                    value={form.product_id}
-                    onValueChange={handleChatProductChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a product" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">No specific product</SelectItem>
-                      {products.map((product) => (
-                        <SelectItem key={product.id} value={product.id}>
-                          {product.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Current Chat Context Display */}
-              {(form.brand_id || form.product_id) && (
-                <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                  <h4 className="text-sm font-medium mb-2">Current Chat Context:</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {form.brand_id && (
-                      <Badge variant="secondary" className="flex items-center gap-1">
-                        <span className="text-xs">Brand:</span>
-                        {brands.find(b => b.id === form.brand_id)?.name}
-                      </Badge>
-                    )}
-                    {form.product_id && form.product_id !== "none" && (
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        <span className="text-xs">Product:</span>
-                        {products.find(p => p.id === form.product_id)?.name}
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    AI will use this context to generate more relevant content for your brand and products.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Generated Content Display */}
-          {selectedGeneration && (
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-500" />
-                    Generated Content
-                  </CardTitle>
-                  <Badge variant="secondary" className="flex items-center gap-1">
-                    {getStatusIcon(selectedGeneration.status)}
-                    {selectedGeneration.status}
-                  </Badge>
-                </div>
-                <CardDescription>
-                  Created {new Date(selectedGeneration.created_at).toLocaleString()}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-4 bg-muted rounded-lg">
-                  <p className="text-sm whitespace-pre-wrap">{selectedGeneration.generated_content}</p>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => handleCopyContent(selectedGeneration.generated_content)}>
-                    <Copy className="mr-2 h-4 w-4" />
-                    Copy
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Download className="mr-2 h-4 w-4" />
-                    Download
-                  </Button>
-                  <Button size="sm" onClick={() => handleSaveToLibrary(selectedGeneration)}>
-                    <Save className="mr-2 h-4 w-4" />
-                    Save to Library
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
-        {/* Chat Sessions & Generation History */}
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Chat Sessions</CardTitle>
-              <CardDescription>
-                Your AI conversations and content generations
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {conversations.map((conversation) => (
-                  <div
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {conversations.map((conversation) => (
+                <Card
                     key={conversation.id}
-                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                      currentSession?.id === conversation.id ? 'bg-primary/5 border-primary' : 'hover:bg-muted/50'
+                    className={`cursor-pointer transition-all hover:shadow-md ${
+                        currentSession?.id === conversation.id ? 'ring-2 ring-primary' : ''
                     }`}
                     onClick={() => selectConversation(conversation)}
-                  >
+                >
+                  <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <Bot className="h-4 w-4" />
-                        <span className="text-sm font-medium">
-                          {conversation.brandName || conversation.title}
-                        </span>
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <MessageSquare className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <span className="text-sm font-medium truncate">
+                      {conversation.brandName || conversation.title}
+                    </span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(conversation.updatedAt).toLocaleDateString()}
-                        </span>
-                        <Button
+                      <Button
                           variant="ghost"
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
                             deleteConversation(conversation.id);
                           }}
-                          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-                        >
-                          <XCircle className="h-4 w-4" />
-                        </Button>
-                      </div>
+                          className="h-6 w-6 p-0 flex-shrink-0"
+                      >
+                        <XCircle className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground line-clamp-2">
                       {conversation.lastMessage || `${conversation.messageCount} messages`}
                     </p>
-                    {conversation.productName && (
-                      <Badge variant="outline" className="text-xs mt-1">
-                        {conversation.productName}
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-2 mt-2">
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(conversation.updatedAt).toLocaleDateString()}
+                  </span>
+                      {conversation.productName && (
+                          <Badge variant="outline" className="text-xs">
+                            {conversation.productName}
+                          </Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+            ))}
+
+             {conversations.length === 0 && (
+                 <div className="text-center py-12 flex flex-col items-center justify-center h-full">
+                   <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+                     <MessageSquare className="h-8 w-8 text-muted-foreground" />
+                   </div>
+                   <h3 className="text-lg font-semibold mb-2">No conversations yet</h3>
+                   <p className="text-sm text-muted-foreground mb-6 max-w-sm">
+                     Start chatting with AI to create engaging social media content
+                   </p>
+                   <Button
+                       onClick={() => {
+                         createNewChatSession();
+                         setSidebarOpen(false);
+                       }}
+                       className="w-full max-w-xs"
+                       size="lg"
+                   >
+                     <Plus className="h-4 w-4 mr-2" />
+                     Start Your First Chat
+                   </Button>
+                 </div>
+             )}
+          </div>
+        </aside>
+
+        {/* Main Chat Area */}
+        <main className="flex-1 flex flex-col min-w-0">
+          {/* Header */}
+          <header className="border-b p-3 sm:p-4 flex items-center justify-between gap-2 sm:gap-4">
+            <div className="flex items-center gap-3">
+              {/* Mobile Chat History Drawer */}
+              <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="lg:hidden">
+                    <MessageSquare className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                 <SheetContent side="bottom" className="h-[80vh] p-0 overflow-hidden flex flex-col">
+                   <SheetHeader className="p-4 border-b flex-shrink-0">
+                     <SheetTitle className="text-base sm:text-lg flex items-center gap-2">
+                       <MessageSquare className="h-5 w-5" />
+                       Chat History
+                     </SheetTitle>
+                   </SheetHeader>
+                   <div className="p-4 border-b flex-shrink-0">
+                     <Button
+                         onClick={() => {
+                           createNewChatSession();
+                           setSidebarOpen(false); // Close drawer after creating new chat
+                         }}
+                         className="w-full h-11"
+                         size="lg"
+                     >
+                       <Plus className="mr-2 h-4 w-4" />
+                       New Chat
+                     </Button>
+                   </div>
+                   <div className="overflow-y-auto p-3 sm:p-4 space-y-2 flex-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                    {conversations.map((conversation) => (
+                        <Card
+                            key={conversation.id}
+                            className={`cursor-pointer transition-all hover:shadow-md ${
+                                currentSession?.id === conversation.id ? 'ring-2 ring-primary' : ''
+                            }`}
+                            onClick={() => {
+                              selectConversation(conversation);
+                              setSidebarOpen(false); // Close drawer after selecting conversation
+                            }}
+                        >
+                           <CardContent className="p-3 sm:p-4">
+                             <div className="flex items-start justify-between mb-2">
+                               <div className="flex items-center gap-2 min-w-0 flex-1">
+                                 <MessageSquare className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                 <span className="text-sm font-medium truncate">
+                               {conversation.brandName || conversation.title}
+                             </span>
+                               </div>
+                               <Button
+                                   variant="ghost"
+                                   size="sm"
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     deleteConversation(conversation.id);
+                                   }}
+                                   className="h-8 w-8 p-0 flex-shrink-0 touch-manipulation"
+                               >
+                                 <XCircle className="h-4 w-4" />
+                               </Button>
+                             </div>
+                             <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+                               {conversation.lastMessage || `${conversation.messageCount} messages`}
+                             </p>
+                             <div className="flex items-center justify-between">
+                               <span className="text-xs text-muted-foreground">
+                                 {new Date(conversation.updatedAt).toLocaleDateString()}
+                               </span>
+                               {conversation.productName && (
+                                   <Badge variant="outline" className="text-xs">
+                                     {conversation.productName}
+                                   </Badge>
+                               )}
+                             </div>
+                           </CardContent>
+                        </Card>
+                     ))}
+                     
+                     {conversations.length === 0 && (
+                         <div className="text-center py-8">
+                           <MessageSquare className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                           <p className="text-sm text-muted-foreground mb-4">
+                             No conversations yet
+                           </p>
+                           <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => {
+                                 createNewChatSession();
+                                 setSidebarOpen(false);
+                               }}
+                               className="w-full"
+                           >
+                             <Plus className="h-4 w-4 mr-2" />
+                             Start Your First Chat
+                           </Button>
+                         </div>
+                     )}
+                   </div>
+                 </SheetContent>
+              </Sheet>
+
+               <div className="flex items-center gap-2 min-w-0 flex-1">
+                 <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
+                 <h1 className="text-base sm:text-lg font-semibold truncate">AI Content Generator</h1>
+               </div>
+            </div>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="flex-shrink-0">
+                  <Settings className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Settings</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="w-[95vw] max-w-md mx-auto">
+                <DialogHeader>
+                  <DialogTitle>Chat Context Settings</DialogTitle>
+                  <DialogDescription>
+                    Configure your brand and product context for better AI responses
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="brand">Brand</Label>
+                    <Select
+                        value={form.brand_id}
+                        onValueChange={handleChatBrandChange}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a brand" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {brands.length === 0 ? (
+                            <div className="p-2 text-sm text-muted-foreground">
+                              No brands available
+                            </div>
+                        ) : (
+                            brands.map((brand) => (
+                                <SelectItem key={brand.id} value={brand.id}>
+                                  {brand.name}
+                                </SelectItem>
+                            ))
+                        )}
+                      </SelectContent>
+                    </Select>
                   </div>
-                ))}
 
-                {conversations.length === 0 && (
-                  <div className="text-center py-8">
-                    <Bot className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">
-                      No conversations yet. Start your first chat!
-                    </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="product">Product (Optional)</Label>
+                    <Select
+                        value={form.product_id}
+                        onValueChange={handleChatProductChange}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a product" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No specific product</SelectItem>
+                        {products.map((product) => (
+                            <SelectItem key={product.id} value={product.id}>
+                              {product.name}
+                            </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
 
+                  {(form.brand_id || form.product_id) && (
+                      <div className="p-3 bg-muted rounded-lg space-y-2">
+                        <p className="text-sm font-medium">Current Context:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {form.brand_id && (
+                              <Badge variant="secondary">
+                                {brands.find(b => b.id === form.brand_id)?.name}
+                              </Badge>
+                          )}
+                          {form.product_id && form.product_id !== "none" && (
+                              <Badge variant="outline">
+                                {products.find(p => p.id === form.product_id)?.name}
+                              </Badge>
+                          )}
+                        </div>
+                      </div>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </header>
 
-          {/* Tips Card */}
-          <Card className="border border-blue-200 dark:border-blue-800">
-            <CardContent className="p-3">
-              <div className="flex items-start gap-2">
-                <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                <div className="min-w-0 flex-1">
-                  <h3 className="font-semibold text-blue-900 dark:text-blue-100 text-xs mb-2">
-                    AI Generation Tips
-                  </h3>
-                  <div className="space-y-2 text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
-                    <div>
-                      <strong>Be specific:</strong> Include details about tone, target audience, and key messages.
+          {/* Chat Messages */}
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4" ref={chatScrollRef}>
+            {!currentSession ? (
+                <div className="h-full flex items-center justify-center px-4">
+                  <div className="text-center max-w-md space-y-4 sm:space-y-6">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+                      <Bot className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
                     </div>
-                    <div>
-                      <strong>Use context:</strong> Mention your brand personality and unique selling points.
+                    <div className="space-y-2">
+                      <h2 className="text-xl sm:text-2xl font-bold">Start a new conversation</h2>
+                      <p className="text-sm sm:text-base text-muted-foreground">
+                        Describe your content needs and I&apos;ll help you create engaging social media posts
+                      </p>
                     </div>
-                    <div>
-                      <strong>Specify format:</strong> Choose the right content type for your platform.
-                    </div>
-                    <div>
-                      <strong>Review & edit:</strong> AI content is a starting point - customize for your voice.
-                    </div>
+                    <Button onClick={createNewChatSession} size="lg" className="w-full sm:w-auto">
+                      <Sparkles className="mr-2 h-5 w-5" />
+                      Start Chatting
+                    </Button>
+                  </div>
+                </div>
+            ) : (
+                <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
+                  {currentSession.messages.map((message) => (
+                      <div
+                          key={message.id}
+                          className={`flex gap-2 sm:gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        {message.role === 'assistant' && (
+                            <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
+                              <AvatarFallback className="bg-primary text-primary-foreground">
+                                <Bot className="h-3 w-3 sm:h-4 sm:w-4" />
+                              </AvatarFallback>
+                            </Avatar>
+                        )}
+                        <div className={`flex flex-col gap-1 sm:gap-2 max-w-[85%] sm:max-w-[80%] ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
+                          <div
+                              className={`rounded-2xl px-3 py-2 sm:px-4 sm:py-3 ${
+                                  message.role === 'user'
+                                      ? 'bg-primary text-primary-foreground'
+                                      : 'bg-muted'
+                              }`}
+                          >
+                            <p className="text-sm sm:text-base whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
+                          </div>
+                          {message.generation && (
+                              <Card className="w-full">
+                                <CardContent className="p-3 sm:p-4 space-y-3">
+                                  <div className="flex items-center gap-2">
+                                    <Sparkles className="h-4 w-4 text-primary" />
+                                    <span className="text-xs font-medium text-muted-foreground">Generated Content</span>
+                                  </div>
+                                  <p className="text-sm sm:text-base leading-relaxed">{message.generation.generated_content}</p>
+                                  <div className="flex gap-2 flex-wrap">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleCopyContent(message.generation!.generated_content)}
+                                        className="flex-1 sm:flex-none"
+                                    >
+                                      <Copy className="h-3 w-3 mr-1" />
+                                      Copy
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleSaveToLibrary(message.generation!)}
+                                        className="flex-1 sm:flex-none"
+                                    >
+                                      <Save className="h-3 w-3 mr-1" />
+                                      Save
+                                    </Button>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                          )}
+                        </div>
+                        {message.role === 'user' && (
+                            <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
+                              <AvatarFallback>
+                                <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                              </AvatarFallback>
+                            </Avatar>
+                        )}
+                      </div>
+                  ))}
+                  {isTyping && (
+                      <div className="flex gap-2 sm:gap-3 justify-start">
+                        <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
+                          <AvatarFallback className="bg-primary text-primary-foreground">
+                            <Bot className="h-3 w-3 sm:h-4 sm:w-4" />
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="bg-muted rounded-2xl px-3 py-2 sm:px-4 sm:py-3">
+                          <div className="flex gap-1">
+                            <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                            <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          </div>
+                        </div>
+                      </div>
+                  )}
+                </div>
+            )}
+          </div>
+
+          {/* Chat Input */}
+          {currentSession && (
+              <div className="border-t p-3 sm:p-4">
+                <div className="max-w-3xl mx-auto">
+                  <div className="flex gap-2">
+                    <Input
+                        placeholder="Type your message..."
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendChatMessage()}
+                        disabled={isTyping}
+                        className="flex-1 text-base sm:text-sm"
+                    />
+                    <Button
+                        onClick={sendChatMessage}
+                        disabled={!chatInput.trim() || isTyping}
+                        size="icon"
+                        className="flex-shrink-0 h-10 w-10 sm:h-9 sm:w-9"
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+          )}
+        </main>
       </div>
-      </div>
-    </div>
   );
 }

@@ -115,6 +115,11 @@ export function useGetUnreadNotificationCount() {
   })
 }
 
+// Lightweight alias for components expecting `useUnreadNotificationsCount`
+export function useUnreadNotificationsCount() {
+  return useGetUnreadNotificationCount()
+}
+
 // Legacy hook for backward compatibility
 export function useNotifications(filters?: NotificationFilters & { page?: number; pageSize?: number }) {
   const { data, isLoading, error, refetch } = useGetNotifications(filters)

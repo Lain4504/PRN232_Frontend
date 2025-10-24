@@ -7,6 +7,7 @@ import type {
   ContentFilters,
   PublishResultDto,
   ApprovalResponseDto,
+  ApiPaginatedResponse,
 } from '@/lib/types/aisam-types'
 
 // Query Keys
@@ -43,6 +44,34 @@ export function useContents(filters?: ContentFilters) {
   })
 }
 
+// Get contents by multiple brand IDs
+export function useContentsByBrands(brandIds: string[], filters?: Omit<ContentFilters, 'brandId'>) {
+  const params = new URLSearchParams()
+  if (filters?.page) params.set('page', filters.page.toString())
+  if (filters?.pageSize) params.set('pageSize', filters.pageSize.toString())
+  if (filters?.searchTerm) params.set('searchTerm', filters.searchTerm)
+  if (filters?.sortBy) params.set('sortBy', filters.sortBy)
+  if (filters?.sortDescending !== undefined) params.set('sortDescending', filters.sortDescending.toString())
+  if (filters?.adType) params.set('adType', filters.adType)
+  if (filters?.onlyDeleted !== undefined) params.set('onlyDeleted', filters.onlyDeleted.toString())
+  if (filters?.status) params.set('status', filters.status)
+
+  // Add brand IDs as separate parameters
+  brandIds.forEach(brandId => params.append('brandId', brandId))
+
+  const queryString = params.toString()
+
+  return useQuery({
+    queryKey: [...contentKeys.lists(), 'brands', brandIds.join(','), queryString],
+    queryFn: async (): Promise<PaginatedResponse<ContentResponseDto>> => {
+      const url = queryString ? `${endpoints.contents()}?${queryString}` : endpoints.contents()
+      const resp = await api.get<ApiResponse<PaginatedResponse<ContentResponseDto>>>(url)
+      return resp.data.data
+    },
+    enabled: brandIds.length > 0,
+  })
+}
+
 // Get content by ID
 export function useContent(contentId?: string) {
   return useQuery({
@@ -68,7 +97,7 @@ export function useContentsByBrand(brandId?: string, filters?: Omit<ContentFilte
 
   return useQuery({
     queryKey: brandId ? [...contentKeys.byBrand(brandId), filters] : contentKeys.lists(),
-    queryFn: async (): Promise<PaginatedResponse<ContentResponseDto>> => {
+    queryFn: async (): Promise<ApiPaginatedResponse<ContentResponseDto>> => {
       const params = new URLSearchParams()
       if (brandId) params.set('brandId', brandId)
       if (filters?.page) params.set('page', filters.page.toString())
@@ -82,7 +111,7 @@ export function useContentsByBrand(brandId?: string, filters?: Omit<ContentFilte
 
       const queryString = params.toString()
       const url = queryString ? `${endpoints.contents()}?${queryString}` : endpoints.contents()
-      const resp = await api.get<ApiResponse<PaginatedResponse<ContentResponseDto>>>(url)
+      const resp = await api.get<ApiResponse<ApiPaginatedResponse<ContentResponseDto>>>(url)
       return resp.data.data
     },
     enabled: !!brandId,

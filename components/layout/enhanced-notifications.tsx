@@ -14,7 +14,6 @@ import {
 import { useNotifications, useGetUnreadNotificationCount } from "@/hooks/use-notifications"
 import { Notification } from "@/lib/types/aisam-types"
 import { formatDistanceToNow } from "date-fns"
-import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { NotificationSkeleton } from "@/components/ui/notification-skeleton"
 
@@ -69,7 +68,6 @@ const NotificationItem = ({
   notification: Notification
   onMarkAsRead: (id: string) => void
 }) => {
-  const router = useRouter()
   const priority = getNotificationPriority(notification.type)
 
   const handleClick = () => {
@@ -79,7 +77,7 @@ const NotificationItem = ({
     // Handle navigation based on notification type/target
     if (notification.targetType && notification.targetId) {
       // Navigate to relevant page based on target
-      router.push(`/dashboard/${notification.targetType.toLowerCase()}s/${notification.targetId}`)
+      window.location.href = `/dashboard/${notification.targetType.toLowerCase()}s/${notification.targetId}`
     }
   }
 
@@ -129,10 +127,9 @@ const NotificationItem = ({
 export function EnhancedNotifications() {
   const { notifications, loading, markAsRead } = useNotifications({ pageSize: 20 })
   const { data: unreadCount = 0, isLoading: unreadCountLoading } = useGetUnreadNotificationCount()
-  const router = useRouter()
 
   const handleViewAll = () => {
-    router.push('/dashboard/notifications')
+    window.location.href = '/dashboard/notifications'
   }
 
   return (

@@ -39,14 +39,29 @@ export function useUserProfile() {
 }
 
 // Get user's profiles
-export function useProfiles() {
+export function useProfiles(userId?: string) {
   return useQuery({
     queryKey: profileKeys.lists(),
     queryFn: async (): Promise<Profile[]> => {
-      const resp = await api.get<Profile[]>(endpoints.profilesMe())
-      return resp.data
+      if (!userId) {
+        console.warn('No userId provided for profiles query')
+        return []
+      }
+      
+      try {
+        console.log('Fetching profiles for userId:', userId)
+        const resp = await api.get<Profile[]>(endpoints.profilesByUser(userId))
+        console.log('Profiles API response:', resp)
+        return resp.data
+      } catch (error) {
+        // Fallback for development when backend is not available
+        console.warn('Backend not available, using fallback profiles data', error)
+        return []
+      }
     },
+    enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false, // Don't retry when backend is not available
   })
 }
 
@@ -72,15 +87,13 @@ export function useCreateProfile(userId?: string) {
   return useMutation({
     mutationFn: async (payload: CreateProfileForm): Promise<Profile> => {
       const formData = new FormData()
-      formData.append('ProfileType', payload.profile_type === 'business' ? '1' : '0')
+      formData.append('Name', payload.name)
+      formData.append('ProfileType', payload.profile_type)
       if (payload.company_name) formData.append('CompanyName', payload.company_name)
       if (payload.bio) formData.append('Bio', payload.bio)
       if (payload.avatar) formData.append('AvatarFile', payload.avatar)
-      if (payload.avatarUrl !== undefined) formData.append('AvatarUrl', payload.avatarUrl ?? '')
       
-      const resp = await api.post<Profile>(endpoints.profilesByUser(userId!), formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
+      const resp = await api.postMultipart<Profile>(endpoints.profilesByUser(userId!), formData)
       return resp.data
     },
     onSuccess: () => {
@@ -95,15 +108,13 @@ export function useUpdateProfile(profileId: string) {
   return useMutation({
     mutationFn: async (payload: CreateProfileForm): Promise<Profile> => {
       const formData = new FormData()
-      formData.append('ProfileType', payload.profile_type === 'business' ? '1' : '0')
+      formData.append('Name', payload.name)
+      formData.append('ProfileType', payload.profile_type)
       if (payload.company_name) formData.append('CompanyName', payload.company_name)
       if (payload.bio) formData.append('Bio', payload.bio)
       if (payload.avatar) formData.append('AvatarFile', payload.avatar)
-      if (payload.avatarUrl !== undefined) formData.append('AvatarUrl', payload.avatarUrl ?? '')
       
-      const resp = await api.put<Profile>(endpoints.profileById(profileId), formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
+      const resp = await api.putMultipart<Profile>(endpoints.profileById(profileId), formData)
       return resp.data
     },
     onSuccess: () => {

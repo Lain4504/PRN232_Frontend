@@ -22,7 +22,7 @@ export function PostsFilters({ filters, onFiltersChange, totalCount }: PostsFilt
     if (value === '' || value === undefined) {
       delete newFilters[key];
     } else {
-      newFilters[key] = value as any;
+      (newFilters as Record<string, string | number>)[key] = value;
     }
     onFiltersChange(newFilters);
   };
@@ -37,8 +37,8 @@ export function PostsFilters({ filters, onFiltersChange, totalCount }: PostsFilt
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search posts..."
-              value={filters?.searchTerm || ''}
-              onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
+              value={(filters as Record<string, string>)?.searchTerm || ''}
+              onChange={(e) => handleFilterChange('searchTerm' as keyof PostFilters, e.target.value)}
               className="pl-10"
             />
           </div>

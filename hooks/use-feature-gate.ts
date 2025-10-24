@@ -1,5 +1,7 @@
 import { useMemo } from 'react'
 import { useSubscription } from './use-subscription'
+import { useProfile } from '@/lib/contexts/profile-context'
+import { checkFeatureAccess, ProfileTypeEnum } from '@/lib/utils/profile-utils'
 import type { FeatureGate } from '@/lib/types/subscription'
 import { 
   canAccessFeature, 
@@ -11,6 +13,7 @@ import {
 
 export const useFeatureGate = (featureId: string) => {
   const { data: subscription, isLoading, error } = useSubscription()
+  const { profileType } = useProfile()
 
   const featureGate = useMemo((): FeatureGate | null => {
     if (!subscription || isLoading || error) {
@@ -21,12 +24,18 @@ export const useFeatureGate = (featureId: string) => {
   }, [subscription, featureId, isLoading, error])
 
   const canAccess = useMemo(() => {
+    // First check profile-based access
+    if (!checkFeatureAccess(profileType, featureId)) {
+      return false
+    }
+
+    // Then check subscription-based access if available
     if (!subscription || isLoading || error) {
       return false
     }
 
     return canAccessFeature(subscription, featureId)
-  }, [subscription, featureId, isLoading, error])
+  }, [profileType, subscription, featureId, isLoading, error])
 
   const usagePercentage = useMemo(() => {
     if (!subscription || isLoading || error) {

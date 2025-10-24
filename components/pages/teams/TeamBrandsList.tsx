@@ -4,12 +4,15 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { DataTable } from '@/components/ui/data-table'
+import { ColumnDef } from '@tanstack/react-table'
 import { 
   Building2, 
   Plus, 
   Trash2, 
   MoreHorizontal,
-  AlertTriangle
+  AlertTriangle,
+  ExternalLink
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -80,19 +83,11 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
     return (
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Team Brands</CardTitle>
-              <CardDescription>
-                Manage brands associated with this team
-              </CardDescription>
-            </div>
-            {canManage && (
-              <Button onClick={onAddBrand} size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Brand
-              </Button>
-            )}
+          <div>
+            <CardTitle>Team Brands</CardTitle>
+            <CardDescription>
+              Manage brands associated with this team
+            </CardDescription>
           </div>
         </CardHeader>
         <CardContent>
@@ -114,6 +109,99 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
     )
   }
 
+  // Define table columns
+  const columns: ColumnDef<Brand>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Brand Name',
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+            <Building2 className="h-4 w-4 text-primary" />
+          </div>
+          <div>
+            <div className="font-medium">{row.getValue('name')}</div>
+            {row.original.description && (
+              <div className="text-sm text-muted-foreground line-clamp-1">
+                {row.original.description}
+              </div>
+            )}
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'slogan',
+      header: 'Slogan',
+      cell: ({ row }) => {
+        const slogan = row.getValue('slogan') as string
+        return slogan ? (
+          <Badge variant="secondary">{slogan}</Badge>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        )
+      },
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => {
+        const status = row.getValue('status') as string
+        return (
+          <Badge variant={status === 'Active' ? 'default' : 'secondary'}>
+            {status}
+          </Badge>
+        )
+      },
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Created',
+      cell: ({ row }) => {
+        const date = row.getValue('createdAt') as string
+        return (
+          <span className="text-sm text-muted-foreground">
+            {date ? new Date(date).toLocaleDateString() : '-'}
+          </span>
+        )
+      },
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => window.open(`/dashboard/brands/${row.original.id}`, '_blank')}
+          >
+            <ExternalLink className="h-3 w-3 mr-1" />
+            View
+          </Button>
+          {canManage && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => setUnassigningBrand(row.original)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Remove from team
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+      ),
+    },
+  ]
+
   return (
     <>
       <Card>
@@ -134,52 +222,15 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
-            {brands.map((brand) => (
-              <div
-                key={brand.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Building2 className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">{brand.name}</h4>
-                    {brand.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-1">
-                        {brand.description}
-                      </p>
-                    )}
-                    {brand.slogan && (
-                      <Badge variant="secondary" className="mt-1">
-                        {brand.slogan}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-                
-                {canManage && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() => setUnassigningBrand(brand)}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Remove from team
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </div>
-            ))}
-          </div>
+          <DataTable
+            columns={columns}
+            data={brands}
+            loading={isLoading}
+            emptyMessage="No brands found"
+            emptyDescription="No brands are associated with this team yet."
+            searchPlaceholder="Search brands by name or description..."
+            filterColumn="name"
+          />
         </CardContent>
       </Card>
 

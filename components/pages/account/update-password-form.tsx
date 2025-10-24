@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,7 +29,6 @@ const passwordSchema = z.object({
 type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export function UpdatePasswordForm() {
-  const router = useRouter();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -241,14 +240,15 @@ export function UpdatePasswordForm() {
 
       {/* Submit Button */}
       <div className="flex justify-end space-x-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.push('/account/me')}
-          disabled={isSubmitting}
-        >
-          Cancel
-        </Button>
+        <Link href="/account/me">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+        </Link>
         <Button
           type="submit"
           disabled={isSubmitting || updatePasswordMutation.isPending}

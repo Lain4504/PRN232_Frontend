@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { 
   Sparkles, 
   Brain, 
@@ -24,15 +24,12 @@ import {
   Globe,
   MessageSquare,
   Heart,
-  ThumbsUp,
   Award,
   Rocket,
   Lightbulb,
   Palette,
-  BarChart,
   Smartphone,
-  Laptop,
-  Monitor
+  Laptop
 } from "lucide-react";
 
 export function HomeContent() {
@@ -334,8 +331,8 @@ export function HomeContent() {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
-                  "AISAM has completely transformed how we manage advertising. From content creation to performance analysis, 
-                  everything is automated and optimized."
+                  &ldquo;AISAM has completely transformed how we manage advertising. From content creation to performance analysis, 
+                  everything is automated and optimized.&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
@@ -358,8 +355,8 @@ export function HomeContent() {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
-                  "AISAM's AI content creation feature is truly impressive. We save 70% of content creation time 
-                  and the quality is even better than before."
+                  &ldquo;AISAM&apos;s AI content creation feature is truly impressive. We save 70% of content creation time 
+                  and the quality is even better than before.&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
@@ -382,8 +379,8 @@ export function HomeContent() {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
-                  "User-friendly interface, easy to use and perfect integration with social media platforms. 
-                  The support team is also very professional and enthusiastic."
+                  &ldquo;User-friendly interface, easy to use and perfect integration with social media platforms. 
+                  The support team is also very professional and enthusiastic.&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">

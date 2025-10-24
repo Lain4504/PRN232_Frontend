@@ -9,7 +9,7 @@ function TeamContent() {
   const teamId = params.teamId || 'team-1'; // Default fallback
   
   return (
-    <div className="w-full max-w-full overflow-x-hidden">
+    <div className="max-w-7xl mx-auto">
       <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
         <TeamManagement teamId={teamId} canManage={true} />
       </div>

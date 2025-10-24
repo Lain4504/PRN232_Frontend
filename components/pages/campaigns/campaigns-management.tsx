@@ -343,7 +343,7 @@ export function CampaignsManagement() {
   const totalBudget = campaigns.reduce((sum, c) => sum + (c.budget || 0), 0);
 
   return (
-    <div className="w-full max-w-full overflow-x-hidden">
+    <div className="max-w-7xl mx-auto">
       <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
         {/* Breadcrumb */}
         <Breadcrumb>

@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import { 
   Search, 
@@ -228,12 +227,11 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ children, className }: CommandPaletteProps) {
   const [open, setOpen] = React.useState(false)
-  const router = useRouter()
   const { theme, setTheme } = useTheme()
 
   const handleSelect = (url: string) => {
     setOpen(false)
-    router.push(url)
+    window.location.href = url
   }
 
   const handleThemeToggle = (newTheme: string) => {

@@ -75,10 +75,10 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
 
   // Calculate campaign performance metrics
   const performanceMetrics = useMemo(() => {
-    if (!campaignData) return null;
+    if (!campaignData?.data) return null;
 
-    const metrics = campaignData.metrics;
-    const performance = campaignData.performance;
+    const metrics = campaignData.data.metrics;
+    const performance = campaignData.data.performance;
     
     return {
       budgetUtilization: performance.budget > 0 ? (performance.spent / performance.budget) * 100 : 0,
@@ -173,7 +173,7 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
     );
   }
 
-  if (campaignError || !campaignData) {
+  if (campaignError || !campaignData?.data) {
     return (
       <div className="flex-1 space-y-6 p-6 bg-background">
         <div className="flex items-center justify-center h-64">
@@ -184,7 +184,7 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
               </svg>
             </div>
             <p className="text-red-600 mb-2">Failed to load campaign analytics</p>
-            <Button onClick={refetchCampaign} variant="outline" size="sm">
+            <Button onClick={() => refetchCampaign()} variant="outline" size="sm">
               <RefreshCw className="mr-2 h-4 w-4" />
               Retry
             </Button>
@@ -201,7 +201,7 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Campaign Analytics</h1>
           <p className="text-muted-foreground">
-            Detailed performance insights for {campaignData.campaignName}
+            Detailed performance insights for {campaignData.data.campaignName}
           </p>
         </div>
         <div className="flex gap-2">
@@ -213,7 +213,7 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
             <Zap className="mr-2 h-4 w-4" />
             {isRealTime ? 'Real-time ON' : 'Real-time OFF'}
           </Button>
-          <Button variant="outline" onClick={refetchCampaign}>
+          <Button variant="outline" onClick={() => refetchCampaign()}>
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
@@ -231,8 +231,8 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
           <CardContent className="pt-6">
             <div className="space-y-2">
               <label className="text-sm font-medium">Campaign Status</label>
-              <Badge className={`${getStatusColor(campaignData.performance.status)} text-xs`}>
-                {campaignData.performance.status.toUpperCase()}
+              <Badge className={`${getStatusColor(campaignData.data.performance.status)} text-xs`}>
+                {campaignData.data.performance.status.toUpperCase()}
               </Badge>
             </div>
           </CardContent>
@@ -265,11 +265,11 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
               <div className="text-sm">
                 <div className="flex justify-between">
                   <span>Spent:</span>
-                  <span className="font-medium">{formatCurrency(campaignData.performance.spent)}</span>
+                  <span className="font-medium">{formatCurrency(campaignData.data.performance.spent)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Remaining:</span>
-                  <span className="font-medium">{formatCurrency(campaignData.performance.remaining)}</span>
+                  <span className="font-medium">{formatCurrency(campaignData.data.performance.remaining)}</span>
                 </div>
               </div>
             </div>
@@ -283,11 +283,11 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
               <div className="text-sm">
                 <div className="flex justify-between">
                   <span>ROI:</span>
-                  <span className="font-medium text-green-600">{formatPercentage(campaignData.metrics.roi * 100)}</span>
+                  <span className="font-medium text-green-600">{formatPercentage(campaignData.data.metrics.roi * 100)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>CTR:</span>
-                  <span className="font-medium">{formatPercentage(campaignData.metrics.ctr)}</span>
+                  <span className="font-medium">{formatPercentage(campaignData.data.metrics.ctr)}</span>
                 </div>
               </div>
             </div>
@@ -303,17 +303,17 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatNumber(campaignData.metrics.impressions)}</div>
+            <div className="text-2xl font-bold">{formatNumber(campaignData.data.metrics.impressions)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
-              {campaignData.trends.find(t => t.metric === 'impressions') && (
+              {campaignData.data.trends.find(t => t.metric === 'impressions') && (
                 <>
-                  {campaignData.trends.find(t => t.metric === 'impressions')?.changeType === 'increase' ? (
+                  {campaignData.data.trends.find(t => t.metric === 'impressions')?.changeType === 'increase' ? (
                     <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
                   ) : (
                     <TrendingDown className="h-3 w-3 text-red-600 mr-1" />
                   )}
-                  <span className={campaignData.trends.find(t => t.metric === 'impressions')?.changeType === 'increase' ? 'text-green-600' : 'text-red-600'}>
-                    {formatPercentage(Math.abs(campaignData.trends.find(t => t.metric === 'impressions')?.change || 0))}
+                  <span className={campaignData.data.trends.find(t => t.metric === 'impressions')?.changeType === 'increase' ? 'text-green-600' : 'text-red-600'}>
+                    {formatPercentage(Math.abs(campaignData.data.trends.find(t => t.metric === 'impressions')?.change || 0))}
                   </span>
                   <span className="ml-1">from last period</span>
                 </>
@@ -328,17 +328,17 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatNumber(campaignData.metrics.clicks)}</div>
+            <div className="text-2xl font-bold">{formatNumber(campaignData.data.metrics.clicks)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
-              {campaignData.trends.find(t => t.metric === 'clicks') && (
+              {campaignData.data.trends.find(t => t.metric === 'clicks') && (
                 <>
-                  {campaignData.trends.find(t => t.metric === 'clicks')?.changeType === 'increase' ? (
+                  {campaignData.data.trends.find(t => t.metric === 'clicks')?.changeType === 'increase' ? (
                     <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
                   ) : (
                     <TrendingDown className="h-3 w-3 text-red-600 mr-1" />
                   )}
-                  <span className={campaignData.trends.find(t => t.metric === 'clicks')?.changeType === 'increase' ? 'text-green-600' : 'text-red-600'}>
-                    {formatPercentage(Math.abs(campaignData.trends.find(t => t.metric === 'clicks')?.change || 0))}
+                  <span className={campaignData.data.trends.find(t => t.metric === 'clicks')?.changeType === 'increase' ? 'text-green-600' : 'text-red-600'}>
+                    {formatPercentage(Math.abs(campaignData.data.trends.find(t => t.metric === 'clicks')?.change || 0))}
                   </span>
                   <span className="ml-1">from last period</span>
                 </>
@@ -353,9 +353,9 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatNumber(campaignData.metrics.conversions)}</div>
+            <div className="text-2xl font-bold">{formatNumber(campaignData.data.metrics.conversions)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
-              <span>Conversion Rate: {formatPercentage((campaignData.metrics.conversions / campaignData.metrics.clicks) * 100)}</span>
+              <span>Conversion Rate: {formatPercentage((campaignData.data.metrics.conversions / campaignData.data.metrics.clicks) * 100)}</span>
             </div>
           </CardContent>
         </Card>
@@ -366,9 +366,9 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(campaignData.metrics.cpc)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(campaignData.data.metrics.cpc)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
-              <span>Total Spend: {formatCurrency(campaignData.performance.spent)}</span>
+              <span>Total Spend: {formatCurrency(campaignData.data.performance.spent)}</span>
             </div>
           </CardContent>
         </Card>
@@ -434,11 +434,11 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <div className="text-muted-foreground">Total Budget</div>
-                      <div className="font-medium">{formatCurrency(campaignData.performance.budget)}</div>
+                      <div className="font-medium">{formatCurrency(campaignData.data.performance.budget)}</div>
                     </div>
                     <div>
                       <div className="text-muted-foreground">Remaining</div>
-                      <div className="font-medium">{formatCurrency(campaignData.performance.remaining)}</div>
+                      <div className="font-medium">{formatCurrency(campaignData.data.performance.remaining)}</div>
                     </div>
                   </div>
                 </div>
@@ -459,20 +459,20 @@ export function CampaignAnalytics({ campaignId, className }: CampaignAnalyticsPr
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {campaignData.alerts.length === 0 ? (
+              {campaignData.data.alerts.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>No alerts at this time</p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {campaignData.alerts.map((alert) => (
+                  {campaignData.data.alerts.map((alert) => (
                     <div key={alert.id} className={`p-4 rounded-lg border ${getAlertColor(alert.severity)}`}>
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <AlertTriangle className="h-4 w-4" />
-                            <span className="font-medium text-sm">{alert.title}</span>
+                            <span className="font-medium text-sm">{alert.type.charAt(0).toUpperCase() + alert.type.slice(1)} Alert</span>
                             <Badge variant="outline" className="text-xs">
                               {alert.severity}
                             </Badge>

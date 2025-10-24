@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { Button } from "@/components/ui/button"
 import { EnhancedUserMenu } from "@/components/layout/enhanced-user-menu"
 import { EnhancedNotifications } from "@/components/layout/enhanced-notifications"
+import { ProfileSwitcher } from "@/components/profiles/profile-switcher"
 
 interface DashboardHeaderProps {
   user?: User | null
@@ -38,6 +39,16 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
           <div className="flex items-center gap-2">
             <Zap className="size-4 lg:size-5 text-primary" />
             <span className="font-semibold text-sm lg:text-base">AISAM</span>
+          </div>
+
+          {/* Profile Switcher moved next to logo */}
+          <div className="hidden lg:block">
+            <ProfileSwitcher />
+          </div>
+          
+          {/* Profile Switcher for mobile - smaller version */}
+          <div className="lg:hidden">
+            <ProfileSwitcher />
           </div>
         </div>
 

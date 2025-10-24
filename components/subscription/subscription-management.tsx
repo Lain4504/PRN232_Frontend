@@ -27,9 +27,10 @@ import type { SubscriptionPlan } from '@/lib/types/subscription'
 
 interface SubscriptionManagementProps {
   className?: string
+  profileId?: string
 }
 
-export function SubscriptionManagement({ className = '' }: SubscriptionManagementProps) {
+export function SubscriptionManagement({ className = '', profileId }: SubscriptionManagementProps) {
   const [showPlanChangeDialog, setShowPlanChangeDialog] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null)
   const { data: subscription, isLoading } = useSubscription()

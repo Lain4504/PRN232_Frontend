@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { CustomTabs, CustomTabItem } from '@/components/ui/custom-tabs';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 import {
   Users, 
   UserPlus, 
@@ -37,7 +39,7 @@ interface TeamManagementProps {
 }
 
 export function TeamManagement({ teamId, canManage = true }: TeamManagementProps) {
-  const [activeTab, setActiveTab] = useState('members');
+  const [activeTab, setActiveTab] = useState('overview');
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [addBrandOpen, setAddBrandOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMemberResponseDto | null>(null);
@@ -86,8 +88,38 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
   const activeMembers = members?.filter(m => m.isActive).length || 0;
   const pendingInvitations = 0; // TODO: Implement invitation count
 
+  // Tab configuration
+  const tabItems: CustomTabItem[] = [
+    {
+      value: 'overview',
+      label: 'Overview',
+    },
+    {
+      value: 'members',
+      label: 'Members',
+    },
+    {
+      value: 'brands',
+      label: 'Brands',
+    },
+  ];
+
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      <div>
+        <Link href="/dashboard/teams">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Teams
+          </Button>
+        </Link>
+      </div>
+
       {/* Team Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -98,10 +130,6 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
         </div>
         {canManage && (
           <div className="flex items-center gap-2">
-            <Button onClick={() => setAddMemberOpen(true)}>
-              <UserPlus className="h-4 w-4 mr-2" />
-              Invite Member
-            </Button>
             <Button variant="outline" size="sm">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
@@ -109,81 +137,184 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
         )}
       </div>
 
-      {/* Team Stats */}
-      {/*<div className="grid grid-cols-1 md:grid-cols-4 gap-6">*/}
-      {/*  <Card>*/}
-      {/*    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">*/}
-      {/*      <CardTitle className="text-sm font-medium">Total Members</CardTitle>*/}
-      {/*      <Users className="h-4 w-4 text-muted-foreground" />*/}
-      {/*    </CardHeader>*/}
-      {/*    <CardContent>*/}
-      {/*      <div className="text-2xl font-bold">{totalMembers}</div>*/}
-      {/*      <p className="text-xs text-muted-foreground">*/}
-      {/*        {formatTeamSize(totalMembers)}*/}
-      {/*      </p>*/}
-      {/*    </CardContent>*/}
-      {/*  </Card>*/}
+      {/* Enhanced Team Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 hover:scale-105 hover:-translate-y-1">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Users className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{totalMembers}</p>
+                <p className="text-sm text-muted-foreground">Total Members</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/*  <Card>*/}
-      {/*    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">*/}
-      {/*      <CardTitle className="text-sm font-medium">Active Members</CardTitle>*/}
-      {/*      <Shield className="h-4 w-4 text-muted-foreground" />*/}
-      {/*    </CardHeader>*/}
-      {/*    <CardContent>*/}
-      {/*      <div className="text-2xl font-bold">{activeMembers}</div>*/}
-      {/*      <p className="text-xs text-muted-foreground">*/}
-      {/*        {totalMembers > 0 ? Math.round((activeMembers / totalMembers) * 100) : 0}% of total*/}
-      {/*      </p>*/}
-      {/*    </CardContent>*/}
-      {/*  </Card>*/}
+        <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 hover:scale-105 hover:-translate-y-1">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-chart-2/20 to-chart-2/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Shield className="h-5 w-5 text-chart-2" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{activeMembers}</p>
+                <p className="text-sm text-muted-foreground">Active Members</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/*  <Card>*/}
-      {/*    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">*/}
-      {/*      <CardTitle className="text-sm font-medium">Pending Invites</CardTitle>*/}
-      {/*      <Mail className="h-4 w-4 text-muted-foreground" />*/}
-      {/*    </CardHeader>*/}
-      {/*    <CardContent>*/}
-      {/*      <div className="text-2xl font-bold">{pendingInvitations}</div>*/}
-      {/*      <p className="text-xs text-muted-foreground">*/}
-      {/*        Awaiting response*/}
-      {/*      </p>*/}
-      {/*    </CardContent>*/}
-      {/*  </Card>*/}
+        <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 hover:scale-105 hover:-translate-y-1">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-chart-3/20 to-chart-3/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Mail className="h-5 w-5 text-chart-3" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{pendingInvitations}</p>
+                <p className="text-sm text-muted-foreground">Pending Invites</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/*  <Card>*/}
-      {/*    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">*/}
-      {/*      <CardTitle className="text-sm font-medium">Team Status</CardTitle>*/}
-      {/*      <Activity className="h-4 w-4 text-muted-foreground" />*/}
-      {/*    </CardHeader>*/}
-      {/*    <CardContent>*/}
-      {/*      <div className="text-2xl font-bold">*/}
-      {/*        <Badge variant={team.status === 'Active' ? 'default' : 'secondary'}>*/}
-      {/*          {team.status}*/}
-      {/*        </Badge>*/}
-      {/*      </div>*/}
-      {/*      <p className="text-xs text-muted-foreground">*/}
-      {/*        Created {formatDate(team.createdAt)}*/}
-      {/*      </p>*/}
-      {/*    </CardContent>*/}
-      {/*  </Card>*/}
-      {/*</div>*/}
+        <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 hover:scale-105 hover:-translate-y-1">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-chart-4/20 to-chart-4/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Activity className="h-5 w-5 text-chart-4" />
+              </div>
+              <div>
+                <Badge variant={team.status === 'Active' ? 'default' : 'secondary'} className="text-xs font-medium">
+                  {team.status}
+                </Badge>
+                <p className="text-sm text-muted-foreground mt-1">Team Status</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Team Management Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <div className="overflow-x-auto">
-          <TabsList className="inline-flex w-max min-w-full">
-            <TabsTrigger value="members" className="whitespace-nowrap">Members</TabsTrigger>
-            <TabsTrigger value="brands" className="whitespace-nowrap">Brands</TabsTrigger>
-          </TabsList>
-        </div>
+      <div className="space-y-6">
+        <CustomTabs
+          items={tabItems}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
-        <TabsContent value="members" className="space-y-6">
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
+            {/* Enhanced Quick Actions */}
+            <Card className="border border-primary/20 group hover:shadow-lg transition-all duration-300">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-chart-3/20 to-chart-3/10 rounded-lg flex items-center justify-center">
+                    <Activity className="h-4 w-4 text-chart-3" />
+                  </div>
+                  <CardTitle className="text-lg font-semibold">Quick Actions</CardTitle>
+                </div>
+                <CardDescription className="text-sm text-muted-foreground">
+                  Common management actions for this team
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <Button 
+                    variant="outline" 
+                    className="h-auto p-4 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary/30 transition-all duration-200 group/action"
+                    onClick={() => setAddMemberOpen(true)}
+                    disabled={!canManage}
+                  >
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center group-hover/action:scale-110 transition-transform duration-200">
+                      <UserPlus className="h-5 w-5 text-primary" />
+                    </div>
+                    <span className="text-sm font-medium">Invite Member</span>
+                    <span className="text-xs text-muted-foreground text-center">Add new team member</span>
+                  </Button>
+
+                  <Button 
+                    variant="outline" 
+                    className="h-auto p-4 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary/30 transition-all duration-200 group/action"
+                    onClick={() => setAddBrandOpen(true)}
+                    disabled={!canManage}
+                  >
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center group-hover/action:scale-110 transition-transform duration-200">
+                      <Plus className="h-5 w-5 text-primary" />
+                    </div>
+                    <span className="text-sm font-medium">Add Brand</span>
+                    <span className="text-xs text-muted-foreground text-center">Assign brand to team</span>
+                  </Button>
+
+                  <Button 
+                    variant="outline" 
+                    className="h-auto p-4 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary/30 transition-all duration-200 group/action"
+                    onClick={() => setActiveTab('members')}
+                  >
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center group-hover/action:scale-110 transition-transform duration-200">
+                      <Users className="h-5 w-5 text-primary" />
+                    </div>
+                    <span className="text-sm font-medium">Manage Members</span>
+                    <span className="text-xs text-muted-foreground text-center">View all team members</span>
+                  </Button>
+
+                  <Button 
+                    variant="outline" 
+                    className="h-auto p-4 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary/30 transition-all duration-200 group/action"
+                    onClick={() => setActiveTab('brands')}
+                  >
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center group-hover/action:scale-110 transition-transform duration-200">
+                      <Building2 className="h-5 w-5 text-primary" />
+                    </div>
+                    <span className="text-sm font-medium">Manage Brands</span>
+                    <span className="text-xs text-muted-foreground text-center">View team brands</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Team Information Card */}
+            <Card className="border border-blue-200 dark:border-blue-800">
+              <CardContent className="p-3">
+                <div className="flex items-start gap-2">
+                  <div className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0">
+                    <Shield className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold text-blue-900 dark:text-blue-100 text-xs mb-1">
+                      Team Management Dashboard
+                    </h3>
+                    <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
+                      Manage your team members, assign brands, and monitor team activity. 
+                      Use the quick actions above to perform common management tasks.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'members' && (
           <Card>
             <CardHeader>
-              <CardTitle>Team Members</CardTitle>
-              <CardDescription>
-                Manage your team members and their permissions
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Team Members</CardTitle>
+                  <CardDescription>
+                    Manage your team members and their permissions
+                  </CardDescription>
+                </div>
+                {canManage && (
+                  <Button onClick={() => setAddMemberOpen(true)}>
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Invite Member
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               <TeamMembersTable
@@ -193,16 +324,16 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
               />
             </CardContent>
           </Card>
-        </TabsContent>
+        )}
 
-        <TabsContent value="brands" className="space-y-6">
+        {activeTab === 'brands' && (
           <TeamBrandsList 
             teamId={teamId} 
             canManage={canManage} 
             onAddBrand={() => setAddBrandOpen(true)} 
           />
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
 
       {/* Add Member Dialog */}
       <AddMemberDialog
@@ -229,6 +360,7 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
           // You can add refresh logic here when backend is ready
         }}
       />
+
     </div>
   );
 }

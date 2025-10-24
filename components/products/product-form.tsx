@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FormField } from "@/components/ui/form-field";
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
-import { Brand, Product, CreateProductForm } from "@/lib/types/aisam-types";
+import { Product, CreateProductForm } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useBrands } from "@/hooks/use-brands";
 import { useCreateProduct, useUpdateProduct } from "@/hooks/use-products";
@@ -26,7 +26,7 @@ interface ProductFormProps {
 export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel }: ProductFormProps) {
   const [brandContextProcessed, setBrandContextProcessed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null); // Removed unused variable
   const [formData, setFormData] = useState<CreateProductForm>({
     brand_id: '',
     name: '',
@@ -288,14 +288,6 @@ export function ProductForm({ mode, product, defaultBrandId, onSuccess, onCancel
             </div>
           </div>
         </div>
-
-
-
-        {error && (
-          <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-            <p className="text-sm text-destructive">{error}</p>
-          </div>
-        )}
 
         <div className="flex flex-col sm:flex-row gap-3 pt-4">
           <Button type="submit" className="flex-1" disabled={isLoading}>

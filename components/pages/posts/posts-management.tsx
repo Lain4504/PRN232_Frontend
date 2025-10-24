@@ -16,8 +16,9 @@ export function PostsManagement() {
 
   return (
     <div className="flex-1 space-y-6 p-6 bg-background">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Published Posts</h1>
           <p className="text-muted-foreground">
@@ -40,6 +41,7 @@ export function PostsManagement() {
         onFiltersChange={handleFiltersChange}
         showFilters={true}
       />
+      </div>
     </div>
   );
 }

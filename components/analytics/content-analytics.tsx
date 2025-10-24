@@ -108,10 +108,10 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
 
   // Calculate content performance score
   const performanceScore = useMemo(() => {
-    if (!contentData) return 0;
+    if (!contentData?.data) return 0;
     
-    const metrics = contentData.metrics;
-    const engagement = contentData.engagement;
+    const metrics = contentData.data.metrics;
+    const engagement = contentData.data.engagement;
     
     // Simple scoring algorithm (0-100)
     const engagementScore = Math.min(engagement.rate * 10, 50); // Max 50 points
@@ -171,7 +171,7 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
     );
   }
 
-  if (contentError || !contentData) {
+  if (contentError || !contentData?.data) {
     return (
       <div className="flex-1 space-y-6 p-6 bg-background">
         <div className="flex items-center justify-center h-64">
@@ -182,7 +182,7 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
               </svg>
             </div>
             <p className="text-red-600 mb-2">Failed to load content analytics</p>
-            <Button onClick={refetchContent} variant="outline" size="sm">
+            <Button onClick={() => refetchContent()} variant="outline" size="sm">
               <RefreshCw className="mr-2 h-4 w-4" />
               Retry
             </Button>
@@ -199,7 +199,7 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Content Analytics</h1>
           <p className="text-muted-foreground">
-            Performance insights for {contentData.contentTitle}
+            Performance insights for {contentData.data.contentTitle}
           </p>
         </div>
         <div className="flex gap-2">
@@ -211,7 +211,7 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
             <Zap className="mr-2 h-4 w-4" />
             {isRealTime ? 'Real-time ON' : 'Real-time OFF'}
           </Button>
-          <Button variant="outline" onClick={refetchContent}>
+          <Button variant="outline" onClick={() => refetchContent()}>
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
@@ -230,8 +230,8 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
             <div className="space-y-2">
               <label className="text-sm font-medium">Content Type</label>
               <div className="flex items-center gap-2">
-                {getContentTypeIcon(contentData.contentType)}
-                <span className="text-sm capitalize">{contentData.contentType}</span>
+                {getContentTypeIcon(contentData.data.contentType)}
+                <span className="text-sm capitalize">{contentData.data.contentType}</span>
               </div>
             </div>
           </CardContent>
@@ -253,8 +253,8 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
           <CardContent className="pt-6">
             <div className="space-y-2">
               <label className="text-sm font-medium">Sentiment</label>
-              <Badge className={`${getSentimentColor(contentData.engagement.sentiment)} text-xs`}>
-                {contentData.engagement.sentiment.toUpperCase()}
+              <Badge className={`${getSentimentColor(contentData.data.engagement.sentiment)} text-xs`}>
+                {contentData.data.engagement.sentiment.toUpperCase()}
               </Badge>
             </div>
           </CardContent>
@@ -289,7 +289,7 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatNumber(contentData.metrics.impressions)}</div>
+            <div className="text-2xl font-bold">{formatNumber(contentData.data.metrics.impressions)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
               <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
               <span className="text-green-600">+12.5%</span>
@@ -304,9 +304,9 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
             <Heart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatPercentage(contentData.engagement.rate)}</div>
+            <div className="text-2xl font-bold">{formatPercentage(contentData.data.engagement.rate)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
-              <span>Total: {formatNumber(contentData.engagement.total)}</span>
+              <span>Total: {formatNumber(contentData.data.engagement.total)}</span>
             </div>
           </CardContent>
         </Card>
@@ -317,9 +317,9 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatNumber(contentData.reach.total)}</div>
+            <div className="text-2xl font-bold">{formatNumber(contentData.data.reach.total)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
-              <span>Organic: {formatNumber(contentData.reach.organic)}</span>
+              <span>Organic: {formatNumber(contentData.data.reach.organic)}</span>
             </div>
           </CardContent>
         </Card>
@@ -330,9 +330,9 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
             <Share className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatNumber(contentData.metrics.shares)}</div>
+            <div className="text-2xl font-bold">{formatNumber(contentData.data.metrics.shares)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
-              <span>Viral: {formatNumber(contentData.reach.viral)}</span>
+              <span>Viral: {formatNumber(contentData.data.reach.viral)}</span>
             </div>
           </CardContent>
         </Card>
@@ -384,22 +384,22 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
                       <Heart className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-                      <div className="text-lg font-bold">{formatNumber(contentData.engagement.breakdown.likes)}</div>
+                      <div className="text-lg font-bold">{formatNumber(contentData.data.engagement.breakdown.likes)}</div>
                       <div className="text-xs text-muted-foreground">Likes</div>
                     </div>
                     <div className="text-center p-3 bg-green-50 rounded-lg">
                       <MessageCircle className="h-6 w-6 text-green-600 mx-auto mb-2" />
-                      <div className="text-lg font-bold">{formatNumber(contentData.engagement.breakdown.comments)}</div>
+                      <div className="text-lg font-bold">{formatNumber(contentData.data.engagement.breakdown.comments)}</div>
                       <div className="text-xs text-muted-foreground">Comments</div>
                     </div>
                     <div className="text-center p-3 bg-purple-50 rounded-lg">
                       <Share className="h-6 w-6 text-purple-600 mx-auto mb-2" />
-                      <div className="text-lg font-bold">{formatNumber(contentData.engagement.breakdown.shares)}</div>
+                      <div className="text-lg font-bold">{formatNumber(contentData.data.engagement.breakdown.shares)}</div>
                       <div className="text-xs text-muted-foreground">Shares</div>
                     </div>
                     <div className="text-center p-3 bg-orange-50 rounded-lg">
                       <Bookmark className="h-6 w-6 text-orange-600 mx-auto mb-2" />
-                      <div className="text-lg font-bold">{formatNumber(contentData.engagement.breakdown.saves)}</div>
+                      <div className="text-lg font-bold">{formatNumber(contentData.data.engagement.breakdown.saves)}</div>
                       <div className="text-xs text-muted-foreground">Saves</div>
                     </div>
                   </div>
@@ -443,7 +443,7 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {contentData.engagement.topComments.map((comment, index) => (
+                  {contentData.data.engagement.topComments.map((comment, index) => (
                     <div key={index} className="p-3 bg-gray-50 rounded-lg">
                       <p className="text-sm">{comment}</p>
                     </div>
@@ -509,7 +509,7 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {Object.entries(contentData.reach.demographics.locations).map(([location, count]) => (
+                {Object.entries(contentData.data.reach.demographics.locations).map(([location, count]) => (
                   <div key={location} className="flex items-center justify-between">
                     <span className="text-sm font-medium">{location}</span>
                     <div className="flex items-center gap-2">
@@ -517,7 +517,7 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
                         <div 
                           className="bg-blue-600 h-2 rounded-full" 
                           style={{ 
-                            width: `${(count / Math.max(...Object.values(contentData.reach.demographics.locations))) * 100}%` 
+                            width: `${(count / Math.max(...Object.values(contentData.data.reach.demographics.locations))) * 100}%` 
                           }}
                         ></div>
                       </div>
@@ -545,7 +545,7 @@ export function ContentAnalytics({ contentId, className }: ContentAnalyticsProps
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
-                {contentData.insights.map((insight) => (
+                {contentData.data.insights.map((insight) => (
                   <div key={insight.id} className={`p-4 rounded-lg border ${
                     insight.impact === 'high' ? 'bg-green-50 border-green-200' :
                     insight.impact === 'medium' ? 'bg-blue-50 border-blue-200' :

@@ -65,7 +65,7 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
 
   const handleDeleteAccount = async (accountId: string) => {
     try {
-      await unlinkAccountMutation.mutateAsync({ userId, socialAccountId: accountId })
+      await unlinkAccountMutation.mutateAsync({ socialAccountId: accountId })
       toast.success('Account unlinked successfully')
       onRefresh?.()
     } catch (error) {
@@ -79,7 +79,7 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
 
   const handleDeleteTarget = async (targetId: string) => {
     try {
-      await unlinkTargetMutation.mutateAsync({ userId, socialIntegrationId: targetId })
+      await unlinkTargetMutation.mutateAsync({ socialIntegrationId: targetId })
       toast.success('Integration unlinked successfully')
       onRefresh?.()
       // Close integrations modal after successful unlink

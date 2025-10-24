@@ -1,6 +1,6 @@
 "use client"
 
-import { User } from "@supabase/supabase-js"
+import type { UserResponseDto } from "@/lib/types/user"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useTheme } from "next-themes"
@@ -27,7 +27,6 @@ import {
   Sun, 
   Monitor,
   Shield,
-  Zap,
   Crown,
   ChevronRight
 } from "lucide-react"
@@ -39,7 +38,7 @@ type ViewTransitionDoc = Document & {
 }
 
 interface EnhancedUserMenuProps {
-  user?: User | null
+  user?: UserResponseDto | null
 }
 
 export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
@@ -60,8 +59,6 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
     vtDoc.startViewTransition(() => setTheme(nextTheme))
   }
 
-  const userRole = user?.user_metadata?.role || "User"
-  const isPremium = user?.user_metadata?.subscription === "premium"
 
   return (
     <DropdownMenu>
@@ -69,22 +66,13 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <AvatarImage
-              src={user?.user_metadata?.avatar_url}
-              alt={user?.user_metadata?.full_name}
+              src={user?.socialAccounts?.[0]?.avatarUrl}
+              alt={user?.email}
             />
             <AvatarFallback className="text-xs">
-              {user?.user_metadata?.full_name
-                ? user.user_metadata.full_name
-                    .split(" ")
-                    .map((n: string) => n[0])
-                    .join("")
-                    .toUpperCase()
-                : user?.email?.[0]?.toUpperCase() || "U"}
+              {user?.email?.[0]?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
-          {isPremium && (
-            <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 border-2 border-background" />
-          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-80" align="end" forceMount>
@@ -93,68 +81,26 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
           <div className="flex items-center gap-3">
             <Avatar className="h-12 w-12">
               <AvatarImage
-                src={user?.user_metadata?.avatar_url}
-                alt={user?.user_metadata?.full_name}
+                src={user?.socialAccounts?.[0]?.avatarUrl}
+                alt={user?.email}
               />
               <AvatarFallback>
-                {user?.user_metadata?.full_name
-                  ? user.user_metadata.full_name
-                      .split(" ")
-                      .map((n: string) => n[0])
-                      .join("")
-                      .toUpperCase()
-                  : user?.email?.[0]?.toUpperCase() || "U"}
+                {user?.email?.[0]?.toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <p className="text-sm font-medium leading-none truncate">
-                  {user?.user_metadata?.full_name || "User"}
+                  {user?.email}
                 </p>
-                {isPremium && (
-                  <Badge variant="secondary" className="text-xs bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-800 border-orange-200">
-                    <Crown className="h-3 w-3 mr-1" />
-                    Pro
-                  </Badge>
-                )}
               </div>
               <p className="text-xs leading-none text-muted-foreground mt-1 truncate">
                 {user?.email}
-              </p>
-              <p className="text-xs leading-none text-muted-foreground mt-1">
-                {userRole} • {isPremium ? "Premium Plan" : "Free Plan"}
               </p>
             </div>
           </div>
         </DropdownMenuLabel>
         
-        <DropdownMenuSeparator />
-
-        {/* Quick Actions */}
-        <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard/profile" className="flex items-center gap-3 p-2">
-              <UserIcon className="h-4 w-4" />
-              <span>Profile</span>
-              <ChevronRight className="h-3 w-3 ml-auto" />
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard/notifications" className="flex items-center gap-3 p-2">
-              <Bell className="h-4 w-4" />
-              <span>Notifications</span>
-              <Badge variant="secondary" className="ml-auto text-xs">5</Badge>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard/settings" className="flex items-center gap-3 p-2">
-              <Settings className="h-4 w-4" />
-              <span>Settings</span>
-              <ChevronRight className="h-3 w-3 ml-auto" />
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-
         <DropdownMenuSeparator />
 
         {/* Account & Billing */}
@@ -170,11 +116,6 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
             <Link href="/dashboard/billing" className="flex items-center gap-3 p-2">
               <CreditCard className="h-4 w-4" />
               <span>Billing & Plans</span>
-              {!isPremium && (
-                <Badge variant="outline" className="ml-auto text-xs bg-primary/10 text-primary border-primary/20">
-                  Upgrade
-                </Badge>
-              )}
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
