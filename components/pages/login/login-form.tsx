@@ -8,7 +8,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mail, Lock, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -22,6 +22,17 @@ export function LoginForm({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    const supabase = createClient();
+    const getSession = async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (session.session) {
+        console.log('Session Info on page load:', session);
+      }
+    };
+    getSession();
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
@@ -34,6 +45,11 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
+
+      // Log full session info to console
+      const { data: session } = await supabase.auth.getSession();
+      console.log('Session Info:', session);
+
       // Update this route to redirect to an authenticated route. The user already has an active session.
       router.push("/dashboard");
     } catch (error: unknown) {

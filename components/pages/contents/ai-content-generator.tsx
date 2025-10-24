@@ -32,6 +32,8 @@ import { useAIChat, AdTypes } from "@/hooks/use-ai-chat";
 import { api, endpoints } from "@/lib/api";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { useCanUseAI } from "@/hooks/use-subscription";
+import { UpgradePrompt } from "@/components/subscription/upgrade-prompt";
 
 // Types for AI content generation
 interface AIContentGeneration {
@@ -74,6 +76,8 @@ interface ChatSession {
 }
 
 export function AIContentGenerator() {
+  const canUseAI = useCanUseAI();
+
   const [brands, setBrands] = useState<Brand[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [generations, setGenerations] = useState<AIContentGeneration[]>([]);
@@ -565,6 +569,31 @@ export function AIContentGenerator() {
             <p className="text-muted-foreground">Loading AI Content Generator...</p>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  // Show upgrade prompt if user doesn't have AI access
+  if (!canUseAI) {
+    return (
+      <div className="flex-1 space-y-6 p-6 bg-background">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+              <Sparkles className="h-8 w-8 text-primary" />
+              AI Content Generator
+            </h1>
+            <p className="text-muted-foreground">
+              Chat with AI to generate engaging social media content
+            </p>
+          </div>
+        </div>
+
+        <UpgradePrompt
+          title="Unlock AI Content Generation"
+          description="Get unlimited access to our AI assistant that helps you create engaging social media content tailored to your brand."
+          feature="AI Content Generation"
+        />
       </div>
     );
   }

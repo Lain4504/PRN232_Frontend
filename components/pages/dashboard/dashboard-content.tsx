@@ -21,6 +21,8 @@ import {
 } from "lucide-react"
 import { authApi, dashboardApi } from "@/lib/mock-api"
 import { User, DashboardStats, RecentActivity } from "@/lib/types/aisam-types"
+import { useSubscriptionStatus, useAIUsageStats } from "@/hooks/use-subscription"
+import { Crown, Zap } from "lucide-react"
 
 // Stats Cards Data - will be populated from API
 const getStatsData = (stats: DashboardStats) => [
@@ -65,6 +67,10 @@ const DashboardContent = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Subscription hooks
+  const { data: subscriptionStatus } = useSubscriptionStatus()
+  const aiUsage = useAIUsageStats()
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -292,9 +298,19 @@ const DashboardContent = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">AI Generation</span>
-                <Badge variant="secondary" className="bg-chart-2/10 text-chart-2">
-                  Active
-                </Badge>
+                <div className="flex items-center gap-2">
+                  {subscriptionStatus?.hasActiveSubscription ? (
+                    <Badge variant="secondary" className="bg-green-100 text-green-800">
+                      <Crown className="w-3 h-3 mr-1" />
+                      {subscriptionStatus.currentPlan}
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+                      <Zap className="w-3 h-3 mr-1" />
+                      Upgrade Needed
+                    </Badge>
+                  )}
+                </div>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Social Accounts</span>
@@ -302,6 +318,29 @@ const DashboardContent = () => {
                   Connected
                 </Badge>
               </div>
+
+              {/* AI Usage Stats */}
+              {subscriptionStatus?.hasActiveSubscription && (
+                <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">AI Generations</span>
+                    <span className="text-sm text-muted-foreground">
+                      {aiUsage.used} / {aiUsage.limit}
+                    </span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div
+                      className="bg-primary h-2 rounded-full transition-all duration-300"
+                      style={{
+                        width: `${Math.min((aiUsage.used / aiUsage.limit) * 100, 100)}%`
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {aiUsage.remaining} generations remaining this month
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
 

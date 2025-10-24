@@ -708,3 +708,65 @@ export interface NotificationStats {
   total: number;
   unread: number;
 }
+
+// Subscription and Payment Types
+export interface CreatePaymentIntentRequest {
+  amount: number;
+  currency: string;
+  description: string;
+  subscriptionPlanId: number;
+}
+
+export interface CreatePaymentIntentResponse {
+  clientSecret: string;
+  paymentIntentId: string;
+}
+
+export interface CreateSubscriptionRequest {
+  plan: 'Basic' | 'Pro';
+  isRecurring: boolean;
+}
+
+export interface SubscriptionResponseDto {
+  id: string;
+  userId: string;
+  plan: 'Basic' | 'Pro';
+  status: 'Active' | 'Inactive' | 'Cancelled' | 'Expired';
+  startDate: string;
+  endDate?: string;
+  isRecurring: boolean;
+  stripeSubscriptionId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentResponseDto {
+  id: string;
+  userId: string;
+  amount: number;
+  currency: string;
+  status: 'Pending' | 'Completed' | 'Failed' | 'Refunded';
+  stripePaymentIntentId: string;
+  description?: string;
+  createdAt: string;
+}
+
+export interface SubscriptionPlan {
+  id: number;
+  name: 'Basic' | 'Pro';
+  price: number;
+  currency: string;
+  interval: 'month' | 'year';
+  features: string[];
+  aiGenerationsPerMonth: number;
+  description: string;
+}
+
+export interface UserSubscriptionStatus {
+  hasActiveSubscription: boolean;
+  currentPlan?: 'Basic' | 'Pro';
+  subscriptionEndDate?: string;
+  aiGenerationsUsed: number;
+  aiGenerationsLimit: number;
+  canUseAI: boolean;
+}
