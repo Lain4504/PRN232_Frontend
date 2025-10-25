@@ -67,7 +67,7 @@ const createColumns = (
           )}
         </Avatar>
         <div>
-          <div className="font-medium">{row.getValue("name")}</div>
+          <div className="font-semibold text-gray-800">{row.getValue("name")}</div>
         </div>
       </div>
     ),
@@ -76,7 +76,7 @@ const createColumns = (
     accessorKey: "description",
     header: "Description",
     cell: ({ row }) => (
-      <div className="text-muted-foreground line-clamp-2 max-w-xs">
+      <div className="text-muted-foreground line-clamp-2 max-w-xs text-center">
         {row.getValue("description") || 'No description'}
       </div>
     ),
@@ -88,7 +88,7 @@ const createColumns = (
       const profileId = row.getValue("profile_id") as string;
       const profile = profiles.find(p => p.id === profileId);
       return (
-        <div className="text-sm">
+        <div className="text-sm text-center">
           {profile ? (
             <Badge variant="outline">
               {profile.company_name || profile.profileType}
@@ -103,7 +103,9 @@ const createColumns = (
 
   {
     id: "actions",
-    header: "Actions",
+    header: "",
+    size: 50,
+    maxSize: 50,
     cell: ({ row }) => {
       const actions: ActionItem[] = [
         {
@@ -130,7 +132,11 @@ const createColumns = (
         },
       ];
 
-      return <ActionsDropdown actions={actions} disabled={isDeleting} />;
+      return (
+        <div className="flex justify-center">
+          <ActionsDropdown actions={actions} disabled={isDeleting} />
+        </div>
+      );
     },
   },
 ];

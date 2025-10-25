@@ -299,39 +299,36 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
         )}
 
         {activeTab === 'members' && (
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Team Members</CardTitle>
-                  <CardDescription>
-                    Manage your team members and their permissions
-                  </CardDescription>
-                </div>
-                {canManage && (
-                  <Button onClick={() => setAddMemberOpen(true)}>
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Invite Member
-                  </Button>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <TeamMembersTable
-                teamId={teamId}
-                canManage={canManage}
-                onEditMember={handleEditMember}
-              />
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold">Team Members</h2>
+              <p className="text-muted-foreground text-sm">
+                Manage your team members and their permissions
+              </p>
+            </div>
+            <TeamMembersTable
+              teamId={teamId}
+              canManage={canManage}
+              onEditMember={handleEditMember}
+              onInviteMember={() => setAddMemberOpen(true)}
+            />
+          </div>
         )}
 
         {activeTab === 'brands' && (
-          <TeamBrandsList 
-            teamId={teamId} 
-            canManage={canManage} 
-            onAddBrand={() => setAddBrandOpen(true)} 
-          />
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold">Team Brands</h2>
+              <p className="text-muted-foreground text-sm">
+                Manage brands associated with this team
+              </p>
+            </div>
+            <TeamBrandsList 
+              teamId={teamId} 
+              canManage={canManage} 
+              onAddBrand={() => setAddBrandOpen(true)} 
+            />
+          </div>
         )}
       </div>
 

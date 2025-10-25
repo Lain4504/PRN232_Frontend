@@ -72,7 +72,6 @@ const createColumns = (
       header: "Content Title",
       cell: ({ row }) => {
         const approval = row.original;
-        const status = approval.status;
 
         return (
           <div className="flex items-center gap-3">
@@ -83,23 +82,31 @@ const createColumns = (
             </Avatar>
             <div>
               <div
-                className="font-medium cursor-pointer hover:text-primary transition-colors"
+                className="font-semibold text-gray-800 cursor-pointer hover:text-primary transition-colors"
                 onClick={() => handleReview(approval)}
               >
                 {row.getValue("contentTitle")}
               </div>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant="secondary" className={
-                  status === ContentStatusEnum.Approved ? "bg-green-100 text-green-800" :
-                    status === ContentStatusEnum.PendingApproval ? "bg-yellow-100 text-yellow-800" :
-                      status === ContentStatusEnum.Rejected ? "bg-red-100 text-red-800" :
-                        "bg-gray-100 text-gray-800"
-                }>
-                  {status}
-                </Badge>
-
-              </div>
             </div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.getValue("status") as ContentStatusEnum;
+        return (
+          <div className="text-center">
+            <Badge variant="secondary" className={
+              status === ContentStatusEnum.Approved ? "bg-green-100 text-green-800" :
+                status === ContentStatusEnum.PendingApproval ? "bg-yellow-100 text-yellow-800" :
+                  status === ContentStatusEnum.Rejected ? "bg-red-100 text-red-800" :
+                    "bg-gray-100 text-gray-800"
+            }>
+              {status}
+            </Badge>
           </div>
         );
       },
@@ -110,7 +117,7 @@ const createColumns = (
       cell: ({ row }) => {
         const brandName = row.getValue("brandName") as string;
         return (
-          <div className="text-sm">
+          <div className="text-sm text-center">
             {brandName ? (
               <Badge variant="outline">
                 {brandName}
@@ -128,7 +135,7 @@ const createColumns = (
       cell: ({ row }) => {
         const approverEmail = row.getValue("approverEmail") as string;
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             <Avatar className="h-6 w-6">
               <AvatarFallback className="text-xs">
                 <User className="h-3 w-3" />
@@ -146,9 +153,9 @@ const createColumns = (
         const createdAt = row.getValue("createdAt") as string;
 
         return (
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground text-center">
             {createdAt ? (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center justify-center gap-1">
                 <Calendar className="h-3 w-3" />
                 <div>
                   <div>{new Date(createdAt).toLocaleDateString()}</div>
@@ -163,8 +170,10 @@ const createColumns = (
       },
     },
     {
-      accessorKey: "status",
-      header: "Actions",
+      id: "actions",
+      header: "",
+      size: 50,
+      maxSize: 50,
       cell: ({ row }) => {
         const approval = row.original;
         const canApprove = approval.status === ContentStatusEnum.PendingApproval;
@@ -204,7 +213,11 @@ const createColumns = (
           disabled: isProcessing,
         });
 
-        return <ActionsDropdown actions={actions} disabled={isProcessing} />;
+        return (
+          <div className="flex justify-center">
+            <ActionsDropdown actions={actions} disabled={isProcessing} />
+          </div>
+        );
       },
     },
   ];

@@ -1,26 +1,22 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { DataTable } from '@/components/ui/data-table'
 import { ColumnDef } from '@tanstack/react-table'
 import { 
-  Building2, 
   Plus, 
   Trash2, 
-  MoreHorizontal,
   AlertTriangle,
-  ExternalLink
+  ExternalLink,
+  Search,
+  Target
 } from 'lucide-react'
 import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +27,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useBrandsByTeam } from '@/hooks/use-brands'
 import { useUnassignBrand } from '@/hooks/use-teams'
 import { toast } from 'sonner'
@@ -42,188 +45,246 @@ interface TeamBrandsListProps {
   onAddBrand?: () => void
 }
 
-export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBrandsListProps) {
-  const [unassigningBrand, setUnassigningBrand] = useState<Brand | null>(null)
-  
-  const { data: brands = [], isLoading } = useBrandsByTeam(teamId)
-  const { mutateAsync: unassignBrand, isPending: unassigning } = useUnassignBrand(teamId)
+// Create columns for the data table
+const createColumns = (
+  handleUnassignBrand: (brand: Brand) => void,
+  canManage: boolean,
+  isUnassigning: boolean
+): ColumnDef<Brand>[] => [
+  {
+    accessorKey: "name",
+    header: "Brand Name",
+    cell: ({ row }) => (
+      <div className="flex items-center gap-3">
+        <Avatar className="h-10 w-10">
+          {row.original.logo_url ? (
+            <AvatarImage src={row.original.logo_url} alt={row.getValue("name")} />
+          ) : (
+            <AvatarFallback>
+              <Target className="h-4 w-4" />
+            </AvatarFallback>
+          )}
+        </Avatar>
+        <div>
+          <div className="font-semibold text-gray-800">{row.getValue("name")}</div>
+          {row.original.description && (
+            <div className="text-sm text-muted-foreground line-clamp-1">
+              {row.original.description}
+            </div>
+          )}
+        </div>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => (
+      <div className="text-muted-foreground line-clamp-2 max-w-xs text-center">
+        {row.getValue("description") || 'No description'}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string;
+      return (
+        <div className="text-center">
+          <Badge variant={status === 'Active' ? 'default' : 'secondary'}>
+            {status || 'Active'}
+          </Badge>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created",
+    cell: ({ row }) => {
+      const date = row.getValue("createdAt") as string;
+      return (
+        <span className="text-sm text-muted-foreground text-center block">
+          {date ? new Date(date).toLocaleDateString() : '-'}
+        </span>
+      );
+    },
+  },
+  {
+    id: "actions",
+    header: "",
+    size: 50,
+    maxSize: 50,
+    cell: ({ row }) => {
+      const actions: ActionItem[] = [
+        {
+          label: "View Brand",
+          icon: <ExternalLink className="h-4 w-4" />,
+          onClick: () => window.open(`/dashboard/brands/${row.original.id}`, '_blank'),
+        },
+      ];
 
-  const handleUnassign = async (brand: Brand) => {
+      if (canManage) {
+        actions.push({
+          label: "Remove from team",
+          icon: <Trash2 className="h-4 w-4" />,
+          onClick: () => handleUnassignBrand(row.original),
+          variant: "destructive" as const,
+          disabled: isUnassigning,
+        });
+      }
+
+      return (
+        <div className="flex justify-center">
+          <ActionsDropdown actions={actions} disabled={isUnassigning} />
+        </div>
+      );
+    },
+  },
+];
+
+export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBrandsListProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [unassigningBrand, setUnassigningBrand] = useState<Brand | null>(null);
+  
+  const { data: brands = [], isLoading } = useBrandsByTeam(teamId);
+  const { mutateAsync: unassignBrand, isPending: unassigning } = useUnassignBrand(teamId);
+
+  const filteredBrands = brands.filter(brand =>
+    brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    brand.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleUnassignBrand = (brand: Brand) => {
+    setUnassigningBrand(brand);
+  };
+
+  const confirmUnassignBrand = async () => {
+    if (!unassigningBrand) return;
+
     try {
-      await unassignBrand({ brandId: brand.id })
-      toast.success('Brand removed successfully!', {
-        description: `${brand.name} has been removed from the team.`,
-        duration: 3000,
-      })
-      setUnassigningBrand(null)
+      await unassignBrand({ brandId: unassigningBrand.id });
+      toast.success(`Brand "${unassigningBrand.name}" has been removed from the team successfully`);
+      setUnassigningBrand(null);
     } catch (error) {
-      toast.error('Could not remove brand', {
-        description: error instanceof Error ? error.message : 'Please try again later.',
-        duration: 4000,
-      })
+      console.error('Failed to remove brand:', error);
+      toast.error('Failed to remove brand from team');
     }
-  }
+  };
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Team Brands</CardTitle>
-          <CardDescription>Loading brands...</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="flex-1 space-y-8 p-6 lg:p-8 bg-background">
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <div>
+              <div className="h-10 w-64 mb-3 bg-muted animate-pulse rounded" />
+              <div className="h-5 w-80 bg-muted animate-pulse rounded" />
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="h-8 w-32 bg-muted animate-pulse rounded" />
+              <div className="h-8 w-28 bg-muted animate-pulse rounded" />
+            </div>
           </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  if (brands.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <div>
-            <CardTitle>Team Brands</CardTitle>
-            <CardDescription>
-              Manage brands associated with this team
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-12">
-            <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">No brands yet</h3>
-            <p className="text-muted-foreground mb-4">
-              Add brands to this team to start managing them together.
-            </p>
-            {canManage && (
-              <Button onClick={onAddBrand}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Your First Brand
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  // Define table columns
-  const columns: ColumnDef<Brand>[] = [
-    {
-      accessorKey: 'name',
-      header: 'Brand Name',
-      cell: ({ row }) => (
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-            <Building2 className="h-4 w-4 text-primary" />
-          </div>
-          <div>
-            <div className="font-medium">{row.getValue('name')}</div>
-            {row.original.description && (
-              <div className="text-sm text-muted-foreground line-clamp-1">
-                {row.original.description}
-              </div>
-            )}
-          </div>
+          <div className="h-64 bg-muted animate-pulse rounded" />
         </div>
-      ),
-    },
-    {
-      accessorKey: 'slogan',
-      header: 'Slogan',
-      cell: ({ row }) => {
-        const slogan = row.getValue('slogan') as string
-        return slogan ? (
-          <Badge variant="secondary">{slogan}</Badge>
-        ) : (
-          <span className="text-muted-foreground">-</span>
-        )
-      },
-    },
-    {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => {
-        const status = row.getValue('status') as string
-        return (
-          <Badge variant={status === 'Active' ? 'default' : 'secondary'}>
-            {status}
-          </Badge>
-        )
-      },
-    },
-    {
-      accessorKey: 'createdAt',
-      header: 'Created',
-      cell: ({ row }) => {
-        const date = row.getValue('createdAt') as string
-        return (
-          <span className="text-sm text-muted-foreground">
-            {date ? new Date(date).toLocaleDateString() : '-'}
-          </span>
-        )
-      },
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }) => {
-        const actions: ActionItem[] = [
-          {
-            label: "View Brand",
-            icon: <ExternalLink className="h-4 w-4" />,
-            onClick: () => window.open(`/dashboard/brands/${row.original.id}`, '_blank'),
-          },
-        ];
+      </div>
+    );
+  }
 
-        if (canManage) {
-          actions.push({
-            label: "Remove from team",
-            icon: <Trash2 className="h-4 w-4" />,
-            onClick: () => setUnassigningBrand(row.original),
-            variant: "destructive" as const,
-          });
-        }
-
-        return <ActionsDropdown actions={actions} />;
-      },
-    },
-  ]
+  const totalBrands = brands.length;
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Team Brands</CardTitle>
-              <CardDescription>
-                {brands.length} brand{brands.length !== 1 ? 's' : ''} associated with this team
-              </CardDescription>
-            </div>
-            {canManage && (
-              <Button onClick={onAddBrand} size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Brand
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <DataTable
-            columns={columns}
-            data={brands}
-            loading={isLoading}
-            emptyMessage="No brands found"
-            emptyDescription="No brands are associated with this team yet."
-            searchPlaceholder="Search brands by name or description..."
-            filterColumn="name"
+      {/* Single Row Layout - Stats, Rows, Search, Add Button */}
+      <div className="flex items-center gap-4">
+        {/* Stats */}
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 rounded-xl border border-gray-200 text-sm shadow-sm">
+          <Target className="h-4 w-4 text-gray-500 flex-shrink-0" />
+          <span className="font-semibold text-gray-700">{totalBrands}</span>
+          <span className="text-gray-500">Brands</span>
+        </div>
+
+        {/* Page Size Selector */}
+        <Select
+          value={String(pageSize)}
+          onValueChange={(value) => setPageSize(Number(value))}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue placeholder="Rows" />
+          </SelectTrigger>
+          <SelectContent>
+            {[5, 10, 20, 30, 40, 50].map((size) => (
+              <SelectItem key={size} value={String(size)}>
+                {size} rows
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Search */}
+        <div className="relative w-80">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search brands..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 h-9"
           />
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Add Button */}
+        {canManage && (
+          <div className="ml-auto">
+            <Button onClick={onAddBrand} size="sm">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Brand
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Brands Table */}
+      {filteredBrands.length > 0 ? (
+        <DataTable
+          columns={createColumns(
+            handleUnassignBrand,
+            canManage,
+            unassigning
+          )}
+          data={filteredBrands}
+          pageSize={pageSize}
+          showSearch={false}
+          showPageSize={false}
+        />
+      ) : (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center py-6">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
+                <Target className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">
+                {searchTerm ? 'No brands found' : 'No brands yet'}
+              </h3>
+              <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
+                {searchTerm
+                  ? 'Try adjusting your search terms'
+                  : 'Add brands to this team to start managing them together'
+                }
+              </p>
+              {!searchTerm && canManage && (
+                <Button onClick={onAddBrand}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Your First Brand
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Unassign Confirmation Dialog */}
       <AlertDialog open={!!unassigningBrand} onOpenChange={() => setUnassigningBrand(null)}>
@@ -231,7 +292,7 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              Remove Brand from Team
+              Remove Brand from Team?
             </AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to remove <strong>{unassigningBrand?.name}</strong> from this team? 
@@ -243,11 +304,21 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => unassigningBrand && handleUnassign(unassigningBrand)}
+              onClick={confirmUnassignBrand}
               disabled={unassigning}
-              className="bg-destructive hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {unassigning ? 'Removing...' : 'Remove Brand'}
+              {unassigning ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  Removing...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Remove Brand
+                </>
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

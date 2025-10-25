@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   useDeleteTeamMember,
   useTeamMembers,
@@ -11,27 +11,148 @@ import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Input } from '@/components/ui/input'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Card, CardContent } from '@/components/ui/card'
+import { DataTable } from '@/components/ui/data-table'
+import { ColumnDef } from '@tanstack/react-table'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Trash2, User2, Edit } from 'lucide-react'
+import { Trash2, User2, Edit, Search, Users } from 'lucide-react'
 import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
-import { getPermissionInfo } from '@/lib/constants/team-roles'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface Props {
   teamId: string
   canManage?: boolean
   paged?: boolean
   onEditMember?: (member: TeamMemberResponseDto) => void
+  onInviteMember?: () => void
 }
 
-export function TeamMembersTable({ teamId, canManage = true, onEditMember }: Props) {
+// Create columns for the data table
+const createColumns = (
+  handleEditMember: (member: TeamMemberResponseDto) => void,
+  handleDeleteMember: (memberId: string) => void,
+  canManage: boolean,
+  isDeleting: boolean
+): ColumnDef<TeamMemberResponseDto>[] => [
+  {
+    accessorKey: "userEmail",
+    header: "Member",
+    cell: ({ row }) => (
+      <div className="flex items-center gap-3">
+        <Avatar className="h-10 w-10">
+          <AvatarFallback>
+            <User2 className="h-4 w-4" />
+          </AvatarFallback>
+        </Avatar>
+        <div>
+          <div className="font-semibold text-gray-800">{row.original.userEmail || '(no email)'}</div>
+          <div className="text-sm text-muted-foreground">
+            {row.original.userEmail ? row.original.userEmail.split('@')[0] : `User-${row.original.userId.slice(0, 8)}`}
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "role",
+    header: "Role",
+    cell: ({ row }) => (
+      <div className="text-center">
+        <Badge variant="outline" className="text-xs">
+          {row.getValue("role") || 'member'}
+        </Badge>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "permissions",
+    header: "Permissions",
+    cell: ({ row }) => {
+      const permissions = row.getValue("permissions") as string[] || [];
+      return (
+        <div className="text-center">
+          <Badge variant="outline" className="text-xs">
+            {permissions.length} permission{permissions.length !== 1 ? 's' : ''}
+          </Badge>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "isActive",
+    header: "Status",
+    cell: ({ row }) => (
+      <div className="text-center">
+        <Badge variant={row.getValue("isActive") ? 'default' : 'secondary'} className="text-xs">
+          {row.getValue("isActive") ? 'Active' : 'Inactive'}
+        </Badge>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "joinedAt",
+    header: "Joined",
+    cell: ({ row }) => {
+      const date = row.getValue("joinedAt") as string;
+      return (
+        <span className="text-sm text-muted-foreground text-center block">
+          {date ? new Date(date).toLocaleDateString() : '-'}
+        </span>
+      );
+    },
+  },
+  {
+    id: "actions",
+    header: "",
+    size: 50,
+    maxSize: 50,
+    cell: ({ row }) => {
+      if (!canManage) return null;
+      
+      const actions: ActionItem[] = [
+        {
+          label: "Edit",
+          icon: <Edit className="h-4 w-4" />,
+          onClick: () => handleEditMember(row.original),
+        },
+        {
+          label: "Delete",
+          icon: <Trash2 className="h-4 w-4" />,
+          onClick: () => handleDeleteMember(row.original.id),
+          variant: "destructive" as const,
+          disabled: isDeleting,
+        },
+      ];
+
+      return (
+        <div className="flex justify-center">
+          <ActionsDropdown actions={actions} disabled={isDeleting} />
+        </div>
+      );
+    },
+  },
+];
+
+export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInviteMember }: Props) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [deleteMemberId, setDeleteMemberId] = useState<string | null>(null);
+
   const listQuery = useTeamMembers(teamId)
   const teamQuery = useTeam(teamId)
+  const deleteMemberMutation = useDeleteTeamMember(teamId, deleteMemberId || '');
 
   const isLoading = listQuery.isLoading
   const isError = listQuery.isError
-  const data = listQuery.data
+  const data = listQuery.data || []
   const [, setAllowed] = useState(canManage)
 
   useEffect(() => {
@@ -67,213 +188,183 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember }: Pro
 
     checkPermissions()
   }, [canManage, teamQuery.data, data])
-  const rows = useMemo(() => {
-    const items = (data || []) as TeamMemberResponseDto[]
-    return items.map((m) => ({
-      id: m.id,
-      displayName: m.userEmail ? m.userEmail.split('@')[0] : `User-${m.userId.slice(0, 8)}`,
-      email: m.userEmail || '(no email)',
-      role: m.role || 'member',
-      status: m.isActive ? 'active' : 'inactive',
-      joinedAt: m.joinedAt,
-      permissions: m.permissions || [],
-    }))
-  }, [data])
 
-  return (
-    <div className="space-y-4">
-      <div className="overflow-x-auto border rounded-lg">
-        <Table className="min-w-[600px] w-full">
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Email</TableHead>
-              <TableHead className="py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Role</TableHead>
-              <TableHead className="hidden md:table-cell py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Permissions</TableHead>
-              <TableHead className="hidden lg:table-cell py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Status</TableHead>
-              <TableHead className="hidden md:table-cell py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Joined</TableHead>
-              <TableHead className="text-right py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading && (
-              <TableRow>
-                <TableCell colSpan={7} className="py-6 text-center text-sm text-muted-foreground">Loading...</TableCell>
-              </TableRow>
-            )}
-            {isError && (
-              <TableRow>
-                <TableCell colSpan={7} className="py-4">
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                    <div className="text-sm text-destructive">Unable to load list.</div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-            {!isLoading && !isError && rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={7} className="py-10 text-center">
-                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <User2 className="h-6 w-6" />
-                    <div className="text-sm">No members found.</div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-            {!isLoading && !isError && rows.map((m) => (
-              <MemberRow
-                key={m.id}
-                teamId={teamId}
-                memberId={m.id}
-                email={m.email}
-                role={m.role}
-                permissions={m.permissions}
-                status={m.status}
-                canManage={canManage}
-                joinedAt={m.joinedAt}
-                onEditMember={onEditMember}
-                member={data?.find(d => d.id === m.id)}
-              />
-            ))}
-          </TableBody>
-        </Table>
+  const filteredMembers = data.filter(member =>
+    member.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    member.role?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleDeleteMember = (memberId: string) => {
+    setDeleteMemberId(memberId);
+  };
+
+  const confirmDeleteMember = async () => {
+    if (!deleteMemberId) return;
+    
+    const memberToDelete = data.find(m => m.id === deleteMemberId);
+    const memberEmail = memberToDelete?.userEmail || 'this member';
+
+    try {
+      await deleteMemberMutation.mutateAsync();
+      toast.success(`Member "${memberEmail}" has been removed from the team successfully`);
+      setDeleteMemberId(null);
+    } catch (error) {
+      console.error('Failed to delete member:', error);
+      toast.error('Failed to remove member');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 space-y-8 p-6 lg:p-8 bg-background">
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <div>
+              <div className="h-10 w-64 mb-3 bg-muted animate-pulse rounded" />
+              <div className="h-5 w-80 bg-muted animate-pulse rounded" />
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="h-8 w-32 bg-muted animate-pulse rounded" />
+              <div className="h-8 w-28 bg-muted animate-pulse rounded" />
+            </div>
+          </div>
+          <div className="h-64 bg-muted animate-pulse rounded" />
+        </div>
       </div>
-    </div>
-  )
-}
+    );
+  }
 
-function MemberRow({ teamId, memberId, email, role, permissions, status, joinedAt, canManage, onEditMember, member }: {
-  teamId: string;
-  memberId: string;
-  email: string;
-  role: string;
-  permissions: string[];
-  status: string;
-  joinedAt?: string;
-  canManage?: boolean;
-  onEditMember?: (member: TeamMemberResponseDto) => void;
-  member?: TeamMemberResponseDto;
-}) {
-  const { mutateAsync: deleteMember, isPending: deleting } = useDeleteTeamMember(teamId, memberId)
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [permissionsDialog, setPermissionsDialog] = useState<{ open: boolean; permissions: string[] }>({ open: false, permissions: [] })
+  if (isError) {
+    return (
+      <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
+        <Trash2 className="h-4 w-4 text-destructive" />
+        <div className="text-sm text-destructive">Unable to load members list.</div>
+      </div>
+    );
+  }
+
+  const totalMembers = data.length;
 
   return (
     <>
-      <TableRow className="hover:bg-muted/50">
-        <TableCell className="py-3 px-2 lg:px-3 font-mono text-xs truncate">{email}</TableCell>
-        <TableCell className="py-3 px-2 lg:px-3">
-          <Badge variant="outline" className="text-xs">{role || '-'}</Badge>
-        </TableCell>
-        <TableCell className="hidden md:table-cell py-3 px-2 lg:px-3">
-          <Badge variant="outline" className="text-xs cursor-pointer hover:bg-muted" onClick={() => setPermissionsDialog({ open: true, permissions })}>
-            {permissions.length} permission{permissions.length !== 1 ? 's' : ''}
-          </Badge>
-        </TableCell>
-        <TableCell className="hidden lg:table-cell py-3 px-2 lg:px-3">
-          <Badge variant={status === 'active' ? 'default' : 'secondary'} className="text-xs">
-            {status === 'active' ? 'Active' : 'Inactive'}
-          </Badge>
-        </TableCell>
-        <TableCell className="hidden md:table-cell py-3 px-2 lg:px-3 font-mono text-sm">
-          {joinedAt ? new Date(joinedAt).toLocaleDateString() : '-'}
-        </TableCell>
-        <TableCell className="py-3 px-2 lg:px-3 text-right">
-          {canManage ? (
-            <ActionsDropdown
-              actions={[
-                {
-                  label: "Edit",
-                  icon: <Edit className="h-4 w-4" />,
-                  onClick: () => member && onEditMember?.(member),
-                },
-                {
-                  label: "Delete",
-                  icon: <Trash2 className="h-4 w-4" />,
-                  onClick: () => setConfirmOpen(true),
-                  variant: "destructive" as const,
-                  disabled: deleting,
-                },
-              ]}
-              disabled={deleting}
-            />
-          ) : null}
-        </TableCell>
-      </TableRow>
+      {/* Single Row Layout - Stats, Rows, Search */}
+      <div className="flex items-center gap-4">
+        {/* Stats */}
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 rounded-xl border border-gray-200 text-sm shadow-sm">
+          <Users className="h-4 w-4 text-gray-500 flex-shrink-0" />
+          <span className="font-semibold text-gray-700">{totalMembers}</span>
+          <span className="text-gray-500">Members</span>
+        </div>
 
+        {/* Page Size Selector */}
+        <Select
+          value={String(pageSize)}
+          onValueChange={(value) => setPageSize(Number(value))}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue placeholder="Rows" />
+          </SelectTrigger>
+          <SelectContent>
+            {[5, 10, 20, 30, 40, 50].map((size) => (
+              <SelectItem key={size} value={String(size)}>
+                {size} rows
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <AlertDialogContent className="sm:max-w-md">
+        {/* Search */}
+        <div className="relative w-80">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search members..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 h-9"
+          />
+        </div>
+
+        {/* Invite Button */}
+        {canManage && (
+          <div className="ml-auto">
+            <Button size="sm" onClick={onInviteMember}>
+              <User2 className="mr-2 h-4 w-4" />
+              Invite Member
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Members Table */}
+      {filteredMembers.length > 0 ? (
+        <DataTable
+          columns={createColumns(
+            onEditMember || (() => {}),
+            handleDeleteMember,
+            canManage,
+            deleteMemberMutation.isPending
+          )}
+          data={filteredMembers}
+          pageSize={pageSize}
+          showSearch={false}
+          showPageSize={false}
+        />
+      ) : (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center py-6">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
+                <User2 className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">
+                {searchTerm ? 'No members found' : 'No members yet'}
+              </h3>
+              <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
+                {searchTerm
+                  ? 'Try adjusting your search terms'
+                  : 'Invite team members to get started'
+                }
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteMemberId} onOpenChange={() => setDeleteMemberId(null)}>
+        <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <Trash2 className="h-5 w-5 text-destructive" />
-              Delete Member
+              Remove Member?
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm text-muted-foreground">
+            <AlertDialogDescription>
               Are you sure you want to remove this member from the team? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex-col-reverse sm:flex-row gap-2">
-            <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={async () => {
-                try {
-                  await deleteMember()
-                  toast.success('Delete member successful!', {
-                    description: 'The member has been removed from the team.',
-                    duration: 3000,
-                  })
-                } catch {
-                  toast.error('Delete failed', {
-                    description: 'Unable to delete this member.',
-                    duration: 4000,
-                  })
-                } finally {
-                  setConfirmOpen(false)
-                }
-              }}
-              className="w-full sm:w-auto bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Xoá
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog open={permissionsDialog.open} onOpenChange={(open) => setPermissionsDialog({ open, permissions: [] })}>
-        <AlertDialogContent className="sm:max-w-md">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Permissions</AlertDialogTitle>
-            <AlertDialogDescription className="text-sm text-muted-foreground">
-              List of permissions for this member:
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="max-h-60 overflow-y-auto">
-            <TooltipProvider>
-              <div className="space-y-2">
-                {permissionsDialog.permissions.map((permission, index) => {
-                  const info = getPermissionInfo(permission)
-                  return (
-                    <Tooltip key={index}>
-                      <TooltipTrigger asChild>
-                        <div className="text-sm p-2 bg-muted rounded cursor-pointer">
-                          {info?.label || permission}
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{info?.description || permission}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  )
-                })}
-              </div>
-            </TooltipProvider>
-          </div>
           <AlertDialogFooter>
-            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteMember}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteMemberMutation.isPending}
+            >
+              {deleteMemberMutation.isPending ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  Removing...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Remove Member
+                </>
+              )}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
   )
 }
+

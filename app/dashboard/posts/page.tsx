@@ -90,7 +90,7 @@ export default function PostsPage() {
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <Mail className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">{row.getValue('externalPostId')}</span>
+          <span className="font-semibold text-gray-800">{row.getValue('externalPostId')}</span>
         </div>
       ),
     },
@@ -98,17 +98,19 @@ export default function PostsPage() {
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => (
-        <Badge className={getStatusColor(row.getValue('status'))}>
-          {(row.getValue('status') as string).charAt(0).toUpperCase() + 
-           (row.getValue('status') as string).slice(1)}
-        </Badge>
+        <div className="text-center">
+          <Badge className={getStatusColor(row.getValue('status'))}>
+            {(row.getValue('status') as string).charAt(0).toUpperCase() + 
+             (row.getValue('status') as string).slice(1)}
+          </Badge>
+        </div>
       ),
     },
     {
       accessorKey: 'content_id',
       header: 'Content ID',
       cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground text-center block">
           {row.getValue('content_id')}
         </span>
       ),
@@ -117,7 +119,7 @@ export default function PostsPage() {
       accessorKey: 'social_integration_id',
       header: 'Integration',
       cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground text-center block">
           {row.getValue('social_integration_id')}
         </span>
       ),
@@ -128,7 +130,7 @@ export default function PostsPage() {
       cell: ({ row }) => {
         const date = row.getValue('published_at') as string
         return (
-          <div className="flex items-center gap-1 text-sm">
+          <div className="flex items-center justify-center gap-1 text-sm">
             <Calendar className="h-3 w-3 text-muted-foreground" />
             <span>{date ? new Date(date).toLocaleDateString() : 'N/A'}</span>
           </div>
@@ -141,7 +143,7 @@ export default function PostsPage() {
       cell: ({ row }) => {
         const date = row.getValue('created_at') as string
         return (
-          <div className="flex items-center gap-1 text-sm">
+          <div className="flex items-center justify-center gap-1 text-sm">
             <Calendar className="h-3 w-3 text-muted-foreground" />
             <span>{new Date(date).toLocaleDateString()}</span>
           </div>
@@ -150,7 +152,9 @@ export default function PostsPage() {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: '',
+      size: 50,
+      maxSize: 50,
       cell: ({ row }) => {
         const actions: ActionItem[] = [
           {
@@ -165,7 +169,11 @@ export default function PostsPage() {
           },
         ];
 
-        return <ActionsDropdown actions={actions} />;
+        return (
+          <div className="flex justify-center">
+            <ActionsDropdown actions={actions} />
+          </div>
+        );
       },
     },
   ]

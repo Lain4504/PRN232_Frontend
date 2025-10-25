@@ -47,37 +47,33 @@ function TeamsPageContent() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Team Name</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Members</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead className="text-center">Team Name</TableHead>
+            <TableHead className="text-center">Status</TableHead>
+            <TableHead className="text-center">Members</TableHead>
+            <TableHead className="text-center">Created</TableHead>
+            <TableHead className="w-[50px] text-center"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {[...Array(3)].map((_, i) => (
             <TableRow key={i}>
-              <TableCell>
-                <Skeleton className="h-4 w-32" />
+              <TableCell className="text-center">
+                <Skeleton className="h-4 w-32 mx-auto" />
               </TableCell>
-              <TableCell>
-                <Skeleton className="h-6 w-16 rounded-full" />
+              <TableCell className="text-center">
+                <Skeleton className="h-6 w-16 rounded-full mx-auto" />
               </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
+              <TableCell className="text-center">
+                <div className="flex items-center justify-center gap-2">
                   <Users className="h-4 w-4 text-muted-foreground" />
                   <Skeleton className="h-4 w-8" />
                 </div>
               </TableCell>
-              <TableCell>
-                <Skeleton className="h-4 w-20" />
+              <TableCell className="text-center">
+                <Skeleton className="h-4 w-20 mx-auto" />
               </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-8 w-12 rounded" />
-                  <Skeleton className="h-8 w-12 rounded" />
-                  <Skeleton className="h-8 w-12 rounded" />
-                </div>
+              <TableCell className="w-16 px-4 py-3 text-center">
+                <Skeleton className="h-8 w-8 rounded mx-auto" />
               </TableCell>
             </TableRow>
           ))}
@@ -139,38 +135,38 @@ function TeamsPageContent() {
           </CardContent>
         </Card>
       ) : (
-        <div className="bg-card rounded-lg border">
+        <div className="bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200/60 shadow-sm">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Team Name</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Members</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead className="text-center">Team Name</TableHead>
+                <TableHead className="text-center">Status</TableHead>
+                <TableHead className="text-center">Members</TableHead>
+                <TableHead className="text-center">Created</TableHead>
+                <TableHead className="w-[50px] text-center"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows.map((team) => (
                 <TableRow key={team.id}>
-                  <TableCell className="font-medium">
+                  <TableCell className="font-medium text-center">
                     {team.name}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     <Badge variant={getTeamStatus(team) === 'Active' ? 'default' : 'secondary'}>
                       {getTeamStatus(team)}
                     </Badge>
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center gap-2">
                       <Users className="h-4 w-4 text-muted-foreground" />
                       {team.membersCount || 0}
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     {new Date(team.createdAt).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="w-16 px-4 py-3 text-center">
                     <ActionsDropdown
                       actions={[
                         {

@@ -40,11 +40,11 @@ export function ActionsDropdown({
                 <Button
                     variant="ghost"
                     size={size}
-                    className="h-8 w-8 p-0 hover:bg-muted data-[state=open]:bg-muted"
+                    className="h-8 w-8 p-0 rounded-lg border border-gray-200/60 bg-white/60 backdrop-blur-sm hover:bg-gray-50/60 data-[state=open]:bg-gray-50/60 shadow-sm"
                     disabled={disabled}
                 >
                     <span className="sr-only">Open menu</span>
-                    <MoreVertical className="h-4 w-4" />
+                    <MoreVertical className="h-4 w-4 text-gray-500" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">

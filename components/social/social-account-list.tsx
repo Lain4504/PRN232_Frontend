@@ -202,7 +202,7 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
               <TableHead className="hidden md:table-cell py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Created</TableHead>
               <TableHead className="hidden lg:table-cell py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Expires</TableHead>
               <TableHead className="py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Integrations</TableHead>
-              <TableHead className="text-right py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Actions</TableHead>
+              <TableHead className="w-16 px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide text-center"></TableHead>
             </TableRow>
           </TableHeader>
             <TableBody>
@@ -274,7 +274,7 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
                       </Badge>
                     </TableCell>
                     
-                    <TableCell className="py-3 px-2 lg:px-3 text-right">
+                    <TableCell className="w-16 px-4 py-3 text-center">
                       <ActionsDropdown
                         actions={[
                           ...(account.targets?.length ? [{
