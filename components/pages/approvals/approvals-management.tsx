@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DataTable } from "@/components/ui/data-table";
+import { CustomTable } from "@/components/ui/custom-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { useBrands } from "@/hooks/use-brands";
 import { 
@@ -449,7 +449,7 @@ export function ApprovalsManagement() {
 
         {/* Approvals Table or Empty State */}
         {filteredApprovals.length > 0 ? (
-          <DataTable
+          <CustomTable
             columns={createColumns(
               setSelectedApproval,
               handleQuickApprove,
@@ -459,8 +459,6 @@ export function ApprovalsManagement() {
             )}
             data={filteredApprovals}
             pageSize={pageSize}
-            showSearch={false}
-            showPageSize={false}
           />
         ) : (
           <Card>

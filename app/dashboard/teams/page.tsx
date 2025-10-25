@@ -11,11 +11,12 @@ import { TeamDeleteDialog } from '@/components/pages/teams/TeamDeleteDialog'
 import { EditTeamDialog } from '@/components/teams/edit-team-dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { CustomTable } from '@/components/ui/custom-table'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent } from '@/components/ui/card'
 import { Eye, Users, Building2, Trash2, Edit } from 'lucide-react'
 import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
+import { ColumnDef } from '@tanstack/react-table'
 import type { TeamResponse } from '@/lib/types/aisam-types'
 
 function TeamsPageContent() {
@@ -41,45 +42,91 @@ function TeamsPageContent() {
 
   const rows = useMemo(() => data || [], [data])
 
+  // Define columns for the teams table
+  const columns: ColumnDef<TeamResponse>[] = useMemo(() => [
+    {
+      accessorKey: "name",
+      header: "Team Name",
+      cell: ({ row }) => (
+        <div className="font-medium text-center">
+          {row.getValue("name")}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = getTeamStatus(row.original);
+        return (
+          <div className="text-center">
+            <Badge variant={status === 'Active' ? 'default' : 'secondary'}>
+              {status}
+            </Badge>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "membersCount",
+      header: "Members",
+      cell: ({ row }) => (
+        <div className="flex items-center justify-center gap-2">
+          <Users className="h-4 w-4 text-muted-foreground" />
+          {row.original.membersCount || 0}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created",
+      cell: ({ row }) => (
+        <div className="text-center">
+          {new Date(row.getValue("createdAt")).toLocaleDateString()}
+        </div>
+      ),
+    },
+    {
+      id: "actions",
+      header: "",
+      cell: ({ row }) => {
+        const actions: ActionItem[] = [
+          {
+            label: "View Team",
+            icon: <Eye className="h-4 w-4" />,
+            onClick: () => window.open(`/dashboard/teams/${row.original.id}`, '_self'),
+          },
+          {
+            label: "Edit",
+            icon: <Edit className="h-4 w-4" />,
+            onClick: () => setEditDialog({ open: true, team: row.original }),
+          },
+          {
+            label: "Delete",
+            icon: <Trash2 className="h-4 w-4" />,
+            onClick: () => setDeleteDialog({ open: true, teamId: row.original.id, teamName: row.original.name }),
+            variant: "destructive" as const,
+          },
+        ];
+
+        return (
+          <div className="flex justify-center">
+            <ActionsDropdown actions={actions} />
+          </div>
+        );
+      },
+    },
+  ], []);
+
   // Skeleton component for teams table
   const TeamsTableSkeleton = () => (
-    <div className="bg-card rounded-lg border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="text-center">Team Name</TableHead>
-            <TableHead className="text-center">Status</TableHead>
-            <TableHead className="text-center">Members</TableHead>
-            <TableHead className="text-center">Created</TableHead>
-            <TableHead className="w-[50px] text-center"></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {[...Array(3)].map((_, i) => (
-            <TableRow key={i}>
-              <TableCell className="text-center">
-                <Skeleton className="h-4 w-32 mx-auto" />
-              </TableCell>
-              <TableCell className="text-center">
-                <Skeleton className="h-6 w-16 rounded-full mx-auto" />
-              </TableCell>
-              <TableCell className="text-center">
-                <div className="flex items-center justify-center gap-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <Skeleton className="h-4 w-8" />
-                </div>
-              </TableCell>
-              <TableCell className="text-center">
-                <Skeleton className="h-4 w-20 mx-auto" />
-              </TableCell>
-              <TableCell className="w-16 px-4 py-3 text-center">
-                <Skeleton className="h-8 w-8 rounded mx-auto" />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <CustomTable
+      columns={columns}
+      data={[]}
+      isLoading={true}
+      loadingRows={3}
+      pageSize={10}
+    />
   )
 
   return (
@@ -135,64 +182,12 @@ function TeamsPageContent() {
           </CardContent>
         </Card>
       ) : (
-        <div className="bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200/60 shadow-sm">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-center">Team Name</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-                <TableHead className="text-center">Members</TableHead>
-                <TableHead className="text-center">Created</TableHead>
-                <TableHead className="w-[50px] text-center"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map((team) => (
-                <TableRow key={team.id}>
-                  <TableCell className="font-medium text-center">
-                    {team.name}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge variant={getTeamStatus(team) === 'Active' ? 'default' : 'secondary'}>
-                      {getTeamStatus(team)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                      {team.membersCount || 0}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {new Date(team.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell className="w-16 px-4 py-3 text-center">
-                    <ActionsDropdown
-                      actions={[
-                        {
-                          label: "View Team",
-                          icon: <Eye className="h-4 w-4" />,
-                          onClick: () => window.open(`/dashboard/teams/${team.id}`, '_self'),
-                        },
-                        {
-                          label: "Edit",
-                          icon: <Edit className="h-4 w-4" />,
-                          onClick: () => setEditDialog({ open: true, team }),
-                        },
-                        {
-                          label: "Delete",
-                          icon: <Trash2 className="h-4 w-4" />,
-                          onClick: () => setDeleteDialog({ open: true, teamId: team.id, teamName: team.name }),
-                          variant: "destructive" as const,
-                        },
-                      ]}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <CustomTable
+          columns={columns}
+          data={rows}
+          pageSize={10}
+          emptyMessage="No teams found"
+        />
       )}
 
       {/* Create Team Dialog */}

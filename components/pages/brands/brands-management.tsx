@@ -35,7 +35,7 @@ import { useBrands, useDeleteBrand } from "@/hooks/use-brands";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { BrandModal } from "@/components/brands/brand-modal";
-import { DataTable } from "@/components/ui/data-table";
+import { CustomTable } from "@/components/ui/custom-table";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   Select,
@@ -146,7 +146,6 @@ export function BrandsManagement() {
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteBrandId, setDeleteBrandId] = useState<string | null>(null);
-  const [pageSize, setPageSize] = useState(10);
 
   // Hooks
   const { data: user } = useUserProfile();
@@ -158,10 +157,14 @@ export function BrandsManagement() {
   const safeBrands = Array.isArray(brands) ? brands : [];
   const safeProfiles = Array.isArray(profiles) ? profiles : [];
 
-  const filteredBrands = safeBrands.filter(brand =>
-    brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    brand.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter brands based on search term
+  const filteredBrands = safeBrands.filter(brand => {
+    if (!searchTerm) return true;
+    return brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           brand.description?.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
+  const [pageSize, setPageSize] = useState(10);
 
 
   const handleRefresh = () => {
@@ -311,7 +314,7 @@ export function BrandsManagement() {
 
         {/* Brands Table */}
         {filteredBrands.length > 0 ? (
-          <DataTable
+          <CustomTable
             columns={createColumns(
               handleEditBrand,
               handleDeleteBrand,
@@ -320,8 +323,6 @@ export function BrandsManagement() {
             )}
             data={filteredBrands}
             pageSize={pageSize}
-            showSearch={false}
-            showPageSize={false}
           />
         ) : (
           <Card>

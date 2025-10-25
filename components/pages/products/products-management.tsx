@@ -29,7 +29,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
-import { DataTable } from "@/components/ui/data-table";
+import { CustomTable } from "@/components/ui/custom-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Product, Brand } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
@@ -329,12 +329,10 @@ export function ProductsManagement() {
 
         {/* Products Table */}
         {filteredProducts.length > 0 ? (
-          <DataTable
+          <CustomTable
             columns={createColumns(handleEditProduct, handleDeleteProduct, handleRefresh, safeBrands, deleteProductMutation.isPending)}
             data={filteredProducts}
             pageSize={pageSize}
-            showSearch={false}
-            showPageSize={false}
           />
         ) : (
           <Card>

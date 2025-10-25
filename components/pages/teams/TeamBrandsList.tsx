@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { DataTable } from '@/components/ui/data-table'
+import { CustomTable } from '@/components/ui/custom-table'
 import { ColumnDef } from '@tanstack/react-table'
 import { 
   Plus, 
@@ -248,7 +248,7 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
 
       {/* Brands Table */}
       {filteredBrands.length > 0 ? (
-        <DataTable
+        <CustomTable
           columns={createColumns(
             handleUnassignBrand,
             canManage,
@@ -256,8 +256,6 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
           )}
           data={filteredBrands}
           pageSize={pageSize}
-          showSearch={false}
-          showPageSize={false}
         />
       ) : (
         <Card>

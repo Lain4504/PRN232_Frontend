@@ -4,7 +4,7 @@ import React from "react";
 import { ActionsDropdown } from "./actions-dropdown";
 import { Edit, Trash2, Eye, Package, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
-import { DataTable } from "./data-table";
+import { CustomTable } from "./custom-table";
 import { ColumnDef } from "@tanstack/react-table";
 
 interface DemoData {
@@ -116,10 +116,10 @@ export function ActionsDropdownDemo() {
           <CardTitle>Table with Actions Dropdown</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTable 
+          <CustomTable 
             columns={columns} 
             data={demoData}
-            searchPlaceholder="Search for a table..."
+            pageSize={10}
           />
         </CardContent>
       </Card>

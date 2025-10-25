@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, FileText, Brain, AlertCircle, Search, Filter, X } from "lucide-react";
 import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { DataTable } from "@/components/ui/data-table";
+import { CustomTable } from "@/components/ui/custom-table";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   Select,
@@ -503,7 +503,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
 
         {/* Content Table or Empty State */}
         {contents.length > 0 ? (
-          <DataTable
+          <CustomTable
             columns={createColumns(
               handleEditContent,
               handleViewContent,
@@ -519,8 +519,6 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
             )}
             data={filteredContents}
             pageSize={10}
-            showSearch={false}
-            showPageSize={false}
           />
         ) : (
           <Card>

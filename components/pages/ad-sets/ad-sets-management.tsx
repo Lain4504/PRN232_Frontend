@@ -19,7 +19,7 @@ import { useCampaign } from "@/hooks/use-campaigns";
 import { getAdSetStatus, getAdSetStatusColor, type AdSetResponse } from "@/lib/types/ad-sets";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { DataTable } from "@/components/ui/data-table";
+import { CustomTable } from "@/components/ui/custom-table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
@@ -386,11 +386,10 @@ export function AdSetsManagement({ campaignId }: AdSetsManagementProps) {
                 </Button>
               </div>
             ) : (
-              <DataTable
+              <CustomTable
                 columns={columns}
                 data={adSets}
                 pageSize={20}
-                showSearch={false}
                 emptyMessage="No ad sets found"
                 emptyDescription="Create your first ad set to get started"
               />

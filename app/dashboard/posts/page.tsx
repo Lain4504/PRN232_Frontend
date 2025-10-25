@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { DataTable } from '@/components/ui/data-table'
+import { CustomTable } from '@/components/ui/custom-table'
 import { ColumnDef } from '@tanstack/react-table'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
@@ -267,15 +267,13 @@ export default function PostsPage() {
       </div>
 
       {/* Posts Table */}
-      <DataTable
+      <CustomTable
         columns={columns}
         data={postsData?.data || []}
-        loading={isLoading}
+        isLoading={isLoading}
         emptyMessage="No posts found"
         emptyDescription="No social media posts have been published yet."
         pageSize={pageSize}
-        showPageSize={false}
-        showSearch={false}
       />
 
       {/* Post Details Modal */}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import {
   useDeleteTeamMember,
   useTeamMembers,
@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
-import { DataTable } from '@/components/ui/data-table'
+import { CustomTable } from '@/components/ui/custom-table'
 import { ColumnDef } from '@tanstack/react-table'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Trash2, User2, Edit, Search, Users } from 'lucide-react'
@@ -132,18 +132,13 @@ const createColumns = (
         },
       ];
 
-      return (
-        <div className="flex justify-center">
-          <ActionsDropdown actions={actions} disabled={isDeleting} />
-        </div>
-      );
+      return <ActionsDropdown actions={actions} disabled={isDeleting} />;
     },
   },
 ];
 
 export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInviteMember }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [pageSize, setPageSize] = useState(10);
   const [deleteMemberId, setDeleteMemberId] = useState<string | null>(null);
 
   const listQuery = useTeamMembers(teamId)
@@ -154,6 +149,17 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
   const isError = listQuery.isError
   const data = listQuery.data || []
   const [, setAllowed] = useState(canManage)
+
+  // Filter members based on search term
+  const filteredMembers = useMemo(() => {
+    return data.filter(member => {
+      if (!searchTerm) return true;
+      return member.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+             member.role?.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+  }, [data, searchTerm]);
+
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     const checkPermissions = async () => {
@@ -186,13 +192,12 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
       }
     }
 
-    checkPermissions()
-  }, [canManage, teamQuery.data, data])
+    if (data) {
+      checkPermissions()
+    }
+  }, [canManage, teamQuery.data, data.length]) // Use data.length instead of data to prevent infinite loop
 
-  const filteredMembers = data.filter(member =>
-    member.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.role?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
 
   const handleDeleteMember = (memberId: string) => {
     setDeleteMemberId(memberId);
@@ -297,7 +302,7 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
 
       {/* Members Table */}
       {filteredMembers.length > 0 ? (
-        <DataTable
+        <CustomTable
           columns={createColumns(
             onEditMember || (() => {}),
             handleDeleteMember,
@@ -306,8 +311,6 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
           )}
           data={filteredMembers}
           pageSize={pageSize}
-          showSearch={false}
-          showPageSize={false}
         />
       ) : (
         <Card>

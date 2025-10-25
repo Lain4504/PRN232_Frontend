@@ -39,7 +39,7 @@ import { useBrands } from "@/hooks/use-brands";
 import { useCampaigns, useDeleteCampaign } from "@/hooks/use-campaigns";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { DataTable } from "@/components/ui/data-table";
+import { CustomTable } from "@/components/ui/custom-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { getCampaignStatus, getCampaignStatusColor, CAMPAIGN_OBJECTIVES } from "@/lib/types/campaigns";
 import { CampaignModal } from "@/components/campaigns/campaign-modal";
@@ -441,7 +441,7 @@ export function CampaignsManagement() {
 
         {/* Campaigns Table or Empty State */}
         {filteredCampaigns.length > 0 ? (
-          <DataTable
+          <CustomTable
             columns={createColumns(
               handleEditCampaign,
               handleDeleteCampaign,
@@ -450,8 +450,6 @@ export function CampaignsManagement() {
             )}
             data={filteredCampaigns}
             pageSize={10}
-            showSearch={false}
-            showPageSize={false}
           />
         ) : (
           <Card>
