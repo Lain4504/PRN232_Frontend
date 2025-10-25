@@ -102,7 +102,7 @@ export function AdSetsManagement({ campaignId }: AdSetsManagementProps) {
           </Avatar>
           <div>
             <div className="font-medium">{row.original.name}</div>
-            <div className="text-sm text-muted-foreground">ID: {row.original.id.slice(0, 8)}</div>
+
           </div>
         </div>
       ),

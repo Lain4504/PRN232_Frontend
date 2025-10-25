@@ -79,9 +79,7 @@ const createColumns = (
                 <Badge variant="secondary" className={statusColor}>
                   {status}
                 </Badge>
-                <span className="text-xs text-muted-foreground">
-                  ID: {row.original.id.slice(0, 8)}
-                </span>
+
               </div>
             </div>
           </div>
@@ -417,12 +415,12 @@ export function CampaignsManagement() {
 
           {/* Search */}
           <div className="relative w-80">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search campaigns..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-9"
+              className="pl-10 h-10 border-gray-200 rounded-lg bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 placeholder:text-gray-400"
             />
           </div>
 

@@ -68,7 +68,6 @@ const createColumns = (
         </Avatar>
         <div>
           <div className="font-medium">{row.getValue("name")}</div>
-          <div className="text-sm text-muted-foreground">ID: {row.original.id.slice(0, 8)}</div>
         </div>
       </div>
     ),
@@ -251,15 +250,15 @@ export function BrandsManagement() {
         {/* Single Row Layout - Stats, Rows, Search, Brands, Create Button */}
         <div className="flex items-center gap-4">
           {/* Stats */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <Target className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
-              <span className="font-medium">{totalBrands}</span>
-              <span className="text-muted-foreground">Brands</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 rounded-xl border border-gray-200 text-sm shadow-sm">
+              <Target className="h-4 w-4 text-gray-500 flex-shrink-0" />
+              <span className="font-semibold text-gray-700">{totalBrands}</span>
+              <span className="text-gray-500">Brands</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <span className="font-medium">{totalProfiles}</span>
-              <span className="text-muted-foreground">Profiles</span>
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 rounded-xl border border-gray-200 text-sm shadow-sm">
+              <span className="font-semibold text-gray-700">{totalProfiles}</span>
+              <span className="text-gray-500">Profiles</span>
             </div>
           </div>
 

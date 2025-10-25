@@ -222,9 +222,7 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
                           <div className="font-semibold capitalize text-sm lg:text-base truncate">
                             {account.provider} Account
                           </div>
-                          <div className="text-xs lg:text-sm text-muted-foreground font-mono truncate">
-                            ID: {account.providerUserId}
-                          </div>
+
                           {/* Mobile: Show status inline */}
                           <div className="sm:hidden flex items-center gap-1 mt-1">
                             <Badge 

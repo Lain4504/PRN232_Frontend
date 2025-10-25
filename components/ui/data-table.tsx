@@ -159,14 +159,14 @@ export function DataTable<TData, TValue>({
       )}
 
       {/* Table */}
-      <div className="rounded-lg border border-gray-200 overflow-hidden">
+      <div className="rounded-xl border border-gray-200 overflow-hidden bg-white shadow-sm">
         <div className="min-w-[640px] sm:min-w-0">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="bg-gray-50 hover:bg-gray-50 border-b border-gray-200">
+              <TableRow key={headerGroup.id} className="bg-gray-50/80 hover:bg-gray-50/80 border-b border-gray-200">
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="text-gray-600 font-medium text-sm py-4 px-6">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -180,13 +180,17 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row, index) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className={cn(
+                    "hover:bg-gray-50/50 transition-colors border-b border-gray-100 last:border-b-0",
+                    index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="py-4 px-6 text-gray-700">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -199,13 +203,13 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-32 text-center py-12"
                 >
-                  <div className="flex flex-col items-center justify-center py-8">
-                    <p className="text-sm font-medium text-muted-foreground mb-1">
+                  <div className="flex flex-col items-center justify-center">
+                    <p className="text-sm font-medium text-gray-500 mb-1">
                       {emptyMessage}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-gray-400">
                       {emptyDescription}
                     </p>
                   </div>
@@ -219,8 +223,8 @@ export function DataTable<TData, TValue>({
 
       {/* Pagination */}
       {showPagination && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+        <div className="text-sm text-gray-500 font-medium">
           Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
           {Math.min(
             (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
@@ -228,27 +232,27 @@ export function DataTable<TData, TValue>({
           )}{" "}
           of {totalItems} entries
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <Button
             variant="outline"
             size="sm"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
-            className="h-10 sm:h-8"
+            className="h-9 w-9 p-0 rounded-lg border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <ChevronsLeft className="h-4 w-4" />
+            <ChevronsLeft className="h-4 w-4 text-gray-600" />
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-            className="h-10 sm:h-8"
+            className="h-9 w-9 p-0 rounded-lg border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4 text-gray-600" />
           </Button>
-          <div className="flex items-center gap-1">
-            <span className="text-sm">
+          <div className="flex items-center gap-1 px-3">
+            <span className="text-sm text-gray-600 font-medium">
               Page {currentPage} of {totalPages}
             </span>
           </div>
@@ -257,18 +261,18 @@ export function DataTable<TData, TValue>({
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-            className="h-10 sm:h-8"
+            className="h-9 w-9 p-0 rounded-lg border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4 text-gray-600" />
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
-            className="h-10 sm:h-8"
+            className="h-9 w-9 p-0 rounded-lg border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <ChevronsRight className="h-4 w-4" />
+            <ChevronsRight className="h-4 w-4 text-gray-600" />
           </Button>
         </div>
       </div>

@@ -88,9 +88,7 @@ const createColumns = (
               }>
                 {status}
               </Badge>
-              <span className="text-xs text-muted-foreground">
-                ID: {row.original.id.slice(0, 8)}
-              </span>
+
             </div>
           </div>
         </div>
