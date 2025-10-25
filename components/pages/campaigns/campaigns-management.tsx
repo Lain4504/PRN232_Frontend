@@ -32,6 +32,7 @@ import {
   Filter,
   X,
 } from "lucide-react";
+import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import { AdCampaignResponse } from "@/lib/types/campaigns";
 import { toast } from "sonner";
 import { useBrands } from "@/hooks/use-brands";
@@ -57,180 +58,173 @@ const createColumns = (
   brands: { id: string; name: string }[] = [],
   isDeleting: boolean
 ): ColumnDef<AdCampaignResponse>[] => [
-  {
-    accessorKey: "name",
-    header: "Campaign Name",
-    cell: ({ row }) => {
-      const campaign = row.original;
-      const status = getCampaignStatus(campaign);
-      const statusColor = getCampaignStatusColor(status);
-      
-      return (
-        <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarFallback>
-              <Megaphone className="h-4 w-4" />
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="font-medium">{row.getValue("name")}</div>
-            <div className="flex items-center gap-2 mt-1">
-              <Badge variant="secondary" className={statusColor}>
-                {status}
-              </Badge>
-              <span className="text-xs text-muted-foreground">
-                ID: {row.original.id.slice(0, 8)}
-              </span>
-            </div>
-          </div>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "objective",
-    header: "Objective",
-    cell: ({ row }) => {
-      const objective = row.getValue("objective") as string;
-      return (
-        <div className="text-sm">
-          {objective ? (
-            <Badge variant="outline">
-              {objective.replace(/_/g, ' ')}
-            </Badge>
-          ) : (
-            <span className="text-muted-foreground">No objective</span>
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "brandId",
-    header: "Brand",
-    cell: ({ row }) => {
-      const brandId = row.getValue("brandId") as string;
-      const brand = brands.find(b => b.id === brandId);
-      return (
-        <div className="text-sm">
-          {brand ? (
-            <Badge variant="outline">
-              {brand.name}
-            </Badge>
-          ) : (
-            <span className="text-muted-foreground">No brand</span>
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "budget",
-    header: "Budget",
-    cell: ({ row }) => {
-      const budget = row.getValue("budget") as number;
-      return (
-        <div className="text-sm font-medium">
-          {budget ? (
-            <div className="flex items-center gap-1">
-              <DollarSign className="h-3 w-3" />
-              {budget.toLocaleString()}
-            </div>
-          ) : (
-            <span className="text-muted-foreground">No budget</span>
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "startDate",
-    header: "Duration",
-    cell: ({ row }) => {
-      const startDate = row.getValue("startDate") as string;
-      const endDate = row.original.endDate;
-      
-      return (
-        <div className="text-sm text-muted-foreground">
-          {startDate ? (
-            <div className="flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
-              <div>
-                <div>{new Date(startDate).toLocaleDateString()}</div>
-                {endDate && (
-                  <div className="text-xs">to {new Date(endDate).toLocaleDateString()}</div>
-                )}
+    {
+      accessorKey: "name",
+      header: "Campaign Name",
+      cell: ({ row }) => {
+        const campaign = row.original;
+        const status = getCampaignStatus(campaign);
+        const statusColor = getCampaignStatusColor(status);
+
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10">
+              <AvatarFallback>
+                <Megaphone className="h-4 w-4" />
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-medium">{row.getValue("name")}</div>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant="secondary" className={statusColor}>
+                  {status}
+                </Badge>
+
               </div>
             </div>
-          ) : (
-            <span>No dates set</span>
-          )}
-        </div>
-      );
+          </div>
+        );
+      },
     },
-  },
-  {
-    accessorKey: "metrics",
-    header: "Performance",
-    cell: ({ row }) => {
-      const metrics = row.original.metrics;
-      
-      if (!metrics) {
-        return <span className="text-muted-foreground text-sm">No data</span>;
-      }
-      
-      return (
-        <div className="text-sm">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1">
-              <Eye className="h-3 w-3 text-muted-foreground" />
-              <span>{metrics.totalImpressions.toLocaleString()}</span>
+    {
+      accessorKey: "objective",
+      header: "Objective",
+      cell: ({ row }) => {
+        const objective = row.getValue("objective") as string;
+        return (
+          <div className="text-sm">
+            {objective ? (
+              <Badge variant="outline">
+                {objective.replace(/_/g, ' ')}
+              </Badge>
+            ) : (
+              <span className="text-muted-foreground">No objective</span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "brandId",
+      header: "Brand",
+      cell: ({ row }) => {
+        const brandId = row.getValue("brandId") as string;
+        const brand = brands.find(b => b.id === brandId);
+        return (
+          <div className="text-sm">
+            {brand ? (
+              <Badge variant="outline">
+                {brand.name}
+              </Badge>
+            ) : (
+              <span className="text-muted-foreground">No brand</span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "budget",
+      header: "Budget",
+      cell: ({ row }) => {
+        const budget = row.getValue("budget") as number;
+        return (
+          <div className="text-sm font-medium">
+            {budget ? (
+              <div className="flex items-center gap-1">
+                <DollarSign className="h-3 w-3" />
+                {budget.toLocaleString()}
+              </div>
+            ) : (
+              <span className="text-muted-foreground">No budget</span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "startDate",
+      header: "Duration",
+      cell: ({ row }) => {
+        const startDate = row.getValue("startDate") as string;
+        const endDate = row.original.endDate;
+
+        return (
+          <div className="text-sm text-muted-foreground">
+            {startDate ? (
+              <div className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                <div>
+                  <div>{new Date(startDate).toLocaleDateString()}</div>
+                  {endDate && (
+                    <div className="text-xs">to {new Date(endDate).toLocaleDateString()}</div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <span>No dates set</span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "metrics",
+      header: "Performance",
+      cell: ({ row }) => {
+        const metrics = row.original.metrics;
+
+        if (!metrics) {
+          return <span className="text-muted-foreground text-sm">No data</span>;
+        }
+
+        return (
+          <div className="text-sm">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1">
+                <Eye className="h-3 w-3 text-muted-foreground" />
+                <span>{metrics.totalImpressions.toLocaleString()}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <TrendingUp className="h-3 w-3 text-muted-foreground" />
+                <span>{metrics.totalClicks.toLocaleString()}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <TrendingUp className="h-3 w-3 text-muted-foreground" />
-              <span>{metrics.totalClicks.toLocaleString()}</span>
+            <div className="text-xs text-muted-foreground mt-1">
+              CTR: {metrics.ctr.toFixed(2)}%
             </div>
           </div>
-          <div className="text-xs text-muted-foreground mt-1">
-            CTR: {metrics.ctr.toFixed(2)}%
-          </div>
-        </div>
-      );
+        );
+      },
     },
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <Button
-          asChild
-          variant="outline"
-          size="sm"
-        >
-          <Link href={`/dashboard/campaigns/${row.original.id}`}>
-            <Eye className="h-4 w-4" />
-          </Link>
-        </Button>
-        <Button
-          onClick={() => handleEditCampaign(row.original)}
-          variant="outline"
-          size="sm"
-        >
-          <Edit className="h-4 w-4" />
-        </Button>
-        <Button
-          onClick={() => handleDeleteCampaign(row.original.id)}
-          variant="destructive"
-          size="sm"
-          disabled={isDeleting}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
-    ),
-  },
-];
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const actions: ActionItem[] = [
+          {
+            label: "View Details",
+            icon: <Eye className="h-4 w-4" />,
+            onClick: () => window.open(`/dashboard/campaigns/${row.original.id}`, '_self'),
+          },
+          {
+            label: "Edit",
+            icon: <Edit className="h-4 w-4" />,
+            onClick: () => handleEditCampaign(row.original),
+          },
+          {
+            label: "Delete",
+            icon: <Trash2 className="h-4 w-4" />,
+            onClick: () => handleDeleteCampaign(row.original.id),
+            variant: "destructive" as const,
+            disabled: isDeleting,
+          },
+        ];
+
+        return <ActionsDropdown actions={actions} disabled={isDeleting} />;
+      },
+    },
+  ];
 
 export function CampaignsManagement() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -252,20 +246,20 @@ export function CampaignsManagement() {
 
   const filteredCampaigns = campaigns.filter(campaign => {
     // Search filter
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       campaign.objective?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     // Status filter
     const campaignStatus = getCampaignStatus(campaign);
     const matchesStatus = statusFilter === "all" || campaignStatus === statusFilter;
-    
+
     // Objective filter
     const matchesObjective = objectiveFilter === "all" || campaign.objective === objectiveFilter;
-    
+
     // Brand filter
     const matchesBrand = brandFilter === "all" || campaign.brandId === brandFilter;
-    
+
     return matchesSearch && matchesStatus && matchesObjective && matchesBrand;
   });
 
@@ -273,14 +267,7 @@ export function CampaignsManagement() {
     refetchCampaigns();
   };
 
-  const clearFilters = () => {
-    setSearchTerm("");
-    setStatusFilter("all");
-    setObjectiveFilter("all");
-    setBrandFilter("all");
-  };
 
-  const hasActiveFilters = searchTerm || statusFilter !== "all" || objectiveFilter !== "all" || brandFilter !== "all";
 
   const handleEditCampaign = (campaign: AdCampaignResponse) => {
     setEditingCampaign(campaign);
@@ -298,7 +285,7 @@ export function CampaignsManagement() {
 
   const confirmDeleteCampaign = async () => {
     if (!deleteCampaignId) return;
-    
+
     const campaignToDelete = campaigns.find(c => c.id === deleteCampaignId);
     const campaignName = campaignToDelete?.name || 'this campaign';
 
@@ -359,17 +346,19 @@ export function CampaignsManagement() {
         </Breadcrumb>
 
         {/* Header */}
-        <div className="space-y-3 lg:space-y-6">
-          <div>
-            <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
-              Campaigns
-            </h1>
-            <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
-              Manage your advertising campaigns and track their performance.
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
+            Campaigns
+          </h1>
+          <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
+            Manage your advertising campaigns and track their performance.
+          </p>
+        </div>
+
+        {/* Single Row Layout - Stats, Filters, Search, Campaign Count, Create Button */}
+        <div className="flex items-center gap-4 flex-wrap">
           {/* Stats */}
-          <div className="flex flex-wrap items-center gap-2 lg:gap-4">
+          <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
               <Megaphone className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
               <span className="font-medium">{totalCampaigns}</span>
@@ -380,144 +369,78 @@ export function CampaignsManagement() {
               <span className="font-medium">{activeCampaigns}</span>
               <span className="text-muted-foreground">Active</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <DollarSign className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
-              <span className="font-medium">${totalBudget.toLocaleString()}</span>
-              <span className="text-muted-foreground">Total Budget</span>
-            </div>
+
+          </div>
+
+          {/* Filters */}
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="paused">Paused</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={objectiveFilter} onValueChange={setObjectiveFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Objective" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Objectives</SelectItem>
+              {CAMPAIGN_OBJECTIVES.map((objective) => (
+                <SelectItem key={objective} value={objective}>
+                  {objective.replace(/_/g, ' ')}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={brandFilter} onValueChange={setBrandFilter}>
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Brand" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Brands</SelectItem>
+              {safeBrands.map((brand) => (
+                <SelectItem key={brand.id} value={brand.id}>
+                  {brand.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Search */}
+          <div className="relative w-80">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search campaigns..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 h-10 border-gray-200 rounded-lg bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 placeholder:text-gray-400"
+            />
+          </div>
+
+
+
+
+
+          {/* Create Button */}
+          <div className="ml-auto">
+            <CampaignModal mode="create" onSuccess={handleRefresh}>
+              <Button size="sm">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Campaign
+              </Button>
+            </CampaignModal>
           </div>
         </div>
 
-        {/* Actions and Search */}
+        {/* Campaigns Table or Empty State */}
         {filteredCampaigns.length > 0 ? (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                {/* Search and Create */}
-                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search campaigns..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge variant="secondary">
-                      {filteredCampaigns.length} campaign{filteredCampaigns.length !== 1 ? 's' : ''}
-                    </Badge>
-                    <CampaignModal mode="create" onSuccess={handleRefresh}>
-                      <Button size="sm">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Create Campaign
-                      </Button>
-                    </CampaignModal>
-                  </div>
-                </div>
-
-                {/* Filters */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Filter className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Filters:</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="paused">Paused</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                      </SelectContent>
-                    </Select>
-
-                    <Select value={objectiveFilter} onValueChange={setObjectiveFilter}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Objective" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Objectives</SelectItem>
-                        {CAMPAIGN_OBJECTIVES.map((objective) => (
-                          <SelectItem key={objective} value={objective}>
-                            {objective.replace(/_/g, ' ')}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    <Select value={brandFilter} onValueChange={setBrandFilter}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Brand" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Brands</SelectItem>
-                        {safeBrands.map((brand) => (
-                          <SelectItem key={brand.id} value={brand.id}>
-                            {brand.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {hasActiveFilters && (
-                    <div className="flex justify-end">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={clearFilters}
-                        className="text-muted-foreground"
-                      >
-                        <X className="mr-2 h-4 w-4" />
-                        Clear Filters
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          /* Empty state with beautiful card design */
-          <Card className="border border-dashed border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-6 text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
-                <Megaphone className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">
-                {searchTerm ? 'No campaigns found' : 'No campaigns yet'}
-              </h3>
-              <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
-                {searchTerm
-                  ? 'Try adjusting your search terms or filters to find your campaigns.'
-                  : 'Create your first campaign to start advertising and reach your target audience.'
-                }
-              </p>
-              {!searchTerm && (
-                <div className="space-y-3">
-                  <CampaignModal mode="create" onSuccess={handleRefresh}>
-                    <Button size="sm" className="h-8 text-xs">
-                      <Plus className="mr-1 h-3 w-3" />
-                      Create Your First Campaign
-                    </Button>
-                  </CampaignModal>
-                  <p className="text-xs text-muted-foreground">
-                    Set up campaigns • Target audiences • Track performance
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Campaigns Table */}
-        {filteredCampaigns.length > 0 && (
           <DataTable
             columns={createColumns(
               handleEditCampaign,
@@ -528,7 +451,40 @@ export function CampaignsManagement() {
             data={filteredCampaigns}
             pageSize={10}
             showSearch={false}
+            showPageSize={false}
           />
+        ) : (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center py-6">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
+                  <Megaphone className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">
+                  {searchTerm ? 'No campaigns found' : 'No campaigns yet'}
+                </h3>
+                <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
+                  {searchTerm
+                    ? 'Try adjusting your search terms or filters to find your campaigns.'
+                    : 'Create your first campaign to start advertising and reach your target audience.'
+                  }
+                </p>
+                {!searchTerm && (
+                  <div className="space-y-3">
+                    <CampaignModal mode="create" onSuccess={handleRefresh}>
+                      <Button size="sm" className="h-8 text-xs">
+                        <Plus className="mr-1 h-3 w-3" />
+                        Create Your First Campaign
+                      </Button>
+                    </CampaignModal>
+                    <p className="text-xs text-muted-foreground">
+                      Set up campaigns • Target audiences • Track performance
+                    </p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Help Section */}
@@ -541,7 +497,7 @@ export function CampaignsManagement() {
                   About Campaign Management
                 </h3>
                 <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
-                  Campaigns are the foundation of your advertising strategy. Each campaign contains ad sets and individual ads. 
+                  Campaigns are the foundation of your advertising strategy. Each campaign contains ad sets and individual ads.
                   Use filters to organize your campaigns by status, objective, or brand for better management.
                 </p>
               </div>

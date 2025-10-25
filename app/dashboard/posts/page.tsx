@@ -6,13 +6,23 @@ import { ProfileBrandSelector } from '@/components/profiles/profile-brand-select
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { DataTable } from '@/components/ui/data-table'
 import { ColumnDef } from '@tanstack/react-table'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Mail, Edit, Eye, Calendar, User, ExternalLink, Clock, CheckCircle, XCircle } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Mail, Edit, Eye, Calendar, User, ExternalLink, Clock, CheckCircle, XCircle, Search } from 'lucide-react'
+import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
 import type { Post } from '@/lib/types/aisam-types'
 
 export default function PostsPage() {
+  const [pageSize, setPageSize] = useState(10)
   const [filters, setFilters] = useState({
     page: 1,
     pageSize: 10,
@@ -75,12 +85,12 @@ export default function PostsPage() {
   // Define table columns
   const columns: ColumnDef<Post>[] = [
     {
-      accessorKey: 'external_post_id',
+      accessorKey: 'externalPostId',
       header: 'Post ID',
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <Mail className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">{row.getValue('external_post_id')}</span>
+          <span className="font-medium">{row.getValue('externalPostId')}</span>
         </div>
       ),
     },
@@ -141,26 +151,22 @@ export default function PostsPage() {
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => handleViewPost(row.original)}
-          >
-            <Eye className="h-3 w-3 mr-1" />
-            View
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => handleViewPost(row.original)}
-          >
-            <Edit className="h-3 w-3 mr-1" />
-            Details
-          </Button>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const actions: ActionItem[] = [
+          {
+            label: "View Details",
+            icon: <Eye className="h-4 w-4" />,
+            onClick: () => handleViewPost(row.original),
+          },
+          {
+            label: "Edit",
+            icon: <Edit className="h-4 w-4" />,
+            onClick: () => handleViewPost(row.original),
+          },
+        ];
+
+        return <ActionsDropdown actions={actions} />;
+      },
     },
   ]
 
@@ -181,88 +187,88 @@ export default function PostsPage() {
     <div className="max-w-7xl mx-auto">
       <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Social Media Posts Log</h1>
-          <p className="text-muted-foreground">
-            View published posts and their status across social media platforms
-          </p>
+      <div>
+        <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
+          Social Media Posts Log
+        </h1>
+        <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
+          View published posts and their status across social media platforms
+        </p>
+      </div>
+
+      {/* Single Row Layout - Status Filter, Brand Selector, Page Size, Search */}
+      <div className="flex items-center gap-4">
+        {/* Status Filter Dropdown */}
+        <Select 
+          value={filters.status || 'all'} 
+          onValueChange={handleStatusFilter}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="published">Published</SelectItem>
+            <SelectItem value="failed">Failed</SelectItem>
+            <SelectItem value="deleted">Deleted</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* Brand Selector */}
+        <div className="w-64">
+          <ProfileBrandSelector
+            selectedBrandId={filters.brandId}
+            onBrandChange={handleBrandChange}
+            placeholder="Select a brand"
+            showAllOption={true}
+          />
+        </div>
+
+        {/* Page Size Selector */}
+        <Select
+          value={String(pageSize)}
+          onValueChange={(value) => setPageSize(Number(value))}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue placeholder="Rows" />
+          </SelectTrigger>
+          <SelectContent>
+            {[5, 10, 20, 30, 40, 50].map((size) => (
+              <SelectItem key={size} value={String(size)}>
+                {size} rows
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Search */}
+        <div className="relative w-80">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search posts..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch(e as any);
+              }
+            }}
+            className="pl-10 h-9"
+          />
         </div>
       </div>
 
-      {/* Brand Selector */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Filter Posts</CardTitle>
-          <CardDescription>
-            Select a brand to view posts for that specific brand
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="max-w-md">
-            <ProfileBrandSelector
-              selectedBrandId={filters.brandId}
-              onBrandChange={handleBrandChange}
-              placeholder="Select a brand to filter posts"
-              showAllOption={true}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Posts Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Posts Log</CardTitle>
-          <CardDescription>
-            View all published posts and their status across social media platforms
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* Status Filter Buttons */}
-          <div className="flex gap-2 mb-6">
-            <Button 
-              variant={filters.status === undefined ? "default" : "outline"} 
-              size="sm"
-              onClick={() => handleStatusFilter('all')}
-            >
-              All
-            </Button>
-            <Button 
-              variant={filters.status === 'published' ? "default" : "outline"} 
-              size="sm"
-              onClick={() => handleStatusFilter('published')}
-            >
-              Published
-            </Button>
-            <Button 
-              variant={filters.status === 'failed' ? "default" : "outline"} 
-              size="sm"
-              onClick={() => handleStatusFilter('failed')}
-            >
-              Failed
-            </Button>
-            <Button 
-              variant={filters.status === 'deleted' ? "default" : "outline"} 
-              size="sm"
-              onClick={() => handleStatusFilter('deleted')}
-            >
-              Deleted
-            </Button>
-          </div>
-
-          {/* Data Table */}
-          <DataTable
-            columns={columns}
-            data={postsData?.data || []}
-            loading={isLoading}
-            emptyMessage="No posts found"
-            emptyDescription="No social media posts have been published yet."
-            searchPlaceholder="Search posts by ID, content, or integration..."
-            filterColumn="external_post_id"
-          />
-        </CardContent>
-      </Card>
+      <DataTable
+        columns={columns}
+        data={postsData?.data || []}
+        loading={isLoading}
+        emptyMessage="No posts found"
+        emptyDescription="No social media posts have been published yet."
+        pageSize={pageSize}
+        showPageSize={false}
+        showSearch={false}
+      />
 
       {/* Post Details Modal */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>

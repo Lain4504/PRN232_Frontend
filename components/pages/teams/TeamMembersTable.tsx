@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Trash2, User2, Edit } from 'lucide-react'
+import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
 import { getPermissionInfo } from '@/lib/constants/team-roles'
 
 interface Props {
@@ -179,27 +180,23 @@ function MemberRow({ teamId, memberId, email, role, permissions, status, joinedA
         </TableCell>
         <TableCell className="py-3 px-2 lg:px-3 text-right">
           {canManage ? (
-            <div className="flex items-center justify-end gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 text-xs"
-                onClick={() => member && onEditMember?.(member)}
-              >
-                <Edit className="mr-1 h-3 w-3" />
-                <span className="hidden sm:inline">Edit</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 text-xs border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                onClick={() => setConfirmOpen(true)}
-                disabled={deleting}
-              >
-                <Trash2 className="mr-1 h-3 w-3" />
-                <span className="hidden sm:inline">Delete</span>
-              </Button>
-            </div>
+            <ActionsDropdown
+              actions={[
+                {
+                  label: "Edit",
+                  icon: <Edit className="h-4 w-4" />,
+                  onClick: () => member && onEditMember?.(member),
+                },
+                {
+                  label: "Delete",
+                  icon: <Trash2 className="h-4 w-4" />,
+                  onClick: () => setConfirmOpen(true),
+                  variant: "destructive" as const,
+                  disabled: deleting,
+                },
+              ]}
+              disabled={deleting}
+            />
           ) : null}
         </TableCell>
       </TableRow>

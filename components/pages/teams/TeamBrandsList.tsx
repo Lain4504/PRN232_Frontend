@@ -14,6 +14,7 @@ import {
   AlertTriangle,
   ExternalLink
 } from 'lucide-react'
+import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -169,36 +170,26 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => window.open(`/dashboard/brands/${row.original.id}`, '_blank')}
-          >
-            <ExternalLink className="h-3 w-3 mr-1" />
-            View
-          </Button>
-          {canManage && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => setUnassigningBrand(row.original)}
-                  className="text-destructive focus:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Remove from team
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const actions: ActionItem[] = [
+          {
+            label: "View Brand",
+            icon: <ExternalLink className="h-4 w-4" />,
+            onClick: () => window.open(`/dashboard/brands/${row.original.id}`, '_blank'),
+          },
+        ];
+
+        if (canManage) {
+          actions.push({
+            label: "Remove from team",
+            icon: <Trash2 className="h-4 w-4" />,
+            onClick: () => setUnassigningBrand(row.original),
+            variant: "destructive" as const,
+          });
+        }
+
+        return <ActionsDropdown actions={actions} />;
+      },
     },
   ]
 

@@ -91,8 +91,7 @@ export function SocialAccountsManagement() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
-      {/* Header */}
-      <div className="space-y-3 lg:space-y-6">
+        {/* Header */}
         <div>
           <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
             Social Accounts
@@ -101,55 +100,43 @@ export function SocialAccountsManagement() {
             Connect and manage your social media accounts to streamline your content workflow
           </p>
         </div>
-        
-        {/* Stats */}
-        <div className="flex flex-wrap items-center gap-2 lg:gap-4">
-          <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-            <Users className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
-            <span className="font-medium">{socialAccounts.length}</span>
-            <span className="text-muted-foreground">Connected</span>
+
+        {/* Single Row Layout - Stats, Connect Button */}
+        <div className="flex items-center gap-4">
+          {/* Stats */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
+              <Users className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
+              <span className="font-medium">{socialAccounts.length}</span>
+              <span className="text-muted-foreground">Connected</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
+              <span className="font-medium">{totalIntegrations}</span>
+              <span className="text-muted-foreground">Integrations</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-            <span className="font-medium">{totalIntegrations}</span>
-            <span className="text-muted-foreground">Integrations</span>
+
+          {/* Connect Button */}
+          <div className="ml-auto">
+            <ConnectModal>
+              <Button size="sm">
+                <Plus className="mr-2 h-4 w-4" />
+                Connect Account
+              </Button>
+            </ConnectModal>
           </div>
         </div>
-      </div>
 
-      {/* Social Accounts List */}
-      {socialAccounts.length > 0 ? (
-        <>
-          {/* Connect New Account - Only show when user has at least one account */}
-          <Card className="border border-primary/20">
-            <CardContent className="p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <Plus className="h-4 w-4 text-primary" />
-                <h3 className="text-base font-semibold">Connect New Account</h3>
-              </div>
-              <p className="text-xs text-muted-foreground mb-3">
-                Link additional social media accounts to expand your content management capabilities.
-              </p>
-              <ConnectModal>
-                <Button size="sm" className="w-full sm:w-auto h-8 text-xs">
-                  <Plus className="mr-1 h-3 w-3" />
-                  Choose Platform
-                </Button>
-              </ConnectModal>
-            </CardContent>
-          </Card>
-
-          <div className="space-y-3 lg:space-y-4">
-            <h2 className="text-lg lg:text-xl font-semibold">Connected Accounts</h2>
-            <SocialAccountList 
-              accounts={socialAccounts} 
-              userId={user?.id || ""}
-              onRefresh={handleRefresh}
-            />
-          </div>
-        </>
-      ) : (
-        <EmptyState type="accounts" />
-      )}
+        {/* Social Accounts List */}
+        {socialAccounts.length > 0 ? (
+          <SocialAccountList 
+            accounts={socialAccounts} 
+            userId={user?.id || ""}
+            onRefresh={handleRefresh}
+          />
+        ) : (
+          <EmptyState type="accounts" />
+        )}
 
       {/* Help Section */}
       <Card className="border border-blue-200 dark:border-blue-800">
