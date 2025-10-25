@@ -372,8 +372,10 @@ export function ApprovalsManagement() {
           </p>
         </div>
 
-        {/* Single Row Layout - Stats, Page Size, Search, Approvals */}
-        <div className="flex items-center gap-4">
+
+
+        {/* Single Row Layout - Stats, Filters, Search, Approvals Count */}
+        <div className="flex items-center gap-4 flex-wrap">
           {/* Stats */}
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
@@ -404,6 +406,19 @@ export function ApprovalsManagement() {
             </SelectContent>
           </Select>
 
+          {/* Status Filter */}
+          <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ContentStatusEnum | "all")}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value={ContentStatusEnum.PendingApproval}>Pending</SelectItem>
+              <SelectItem value={ContentStatusEnum.Approved}>Approved</SelectItem>
+              <SelectItem value={ContentStatusEnum.Rejected}>Rejected</SelectItem>
+            </SelectContent>
+          </Select>
+
           {/* Search */}
           <div className="relative w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -419,74 +434,26 @@ export function ApprovalsManagement() {
           <Badge variant="secondary" className="whitespace-nowrap">
             {filteredApprovals.length} approval{filteredApprovals.length !== 1 ? 's' : ''}
           </Badge>
+
+          {/* Clear Filters */}
+          {(searchTerm || statusFilter !== "all") && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSearchTerm("");
+                setStatusFilter("all");
+              }}
+              className="text-muted-foreground"
+            >
+              <X className="mr-2 h-4 w-4" />
+              Clear
+            </Button>
+          )}
         </div>
 
-        {/* Filters */}
-        {filteredApprovals.length > 0 && (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Filter className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Filters:</span>
-                </div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ContentStatusEnum | "all")}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value={ContentStatusEnum.PendingApproval}>Pending Approval</SelectItem>
-                        <SelectItem value={ContentStatusEnum.Approved}>Approved</SelectItem>
-                        <SelectItem value={ContentStatusEnum.Rejected}>Rejected</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {(searchTerm || statusFilter !== "all") && (
-                    <div className="flex justify-end">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setSearchTerm("");
-                          setStatusFilter("all");
-                        }}
-                        className="text-muted-foreground"
-                      >
-                        <X className="mr-2 h-4 w-4" />
-                        Clear Filters
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          /* Empty state with beautiful card design */
-          <Card className="border border-dashed border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-6 text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
-                <CheckCircle className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">
-                {searchTerm || statusFilter !== "all" ? 'No approvals found' : 'All caught up!'}
-              </h3>
-              <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
-                {searchTerm || statusFilter !== "all"
-                  ? 'Try adjusting your search terms or filters to find your approvals.'
-                  : 'There are no pending approvals at the moment.'
-                }
-              </p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Approvals Table */}
-        {filteredApprovals.length > 0 && (
+        {/* Approvals Table or Empty State */}
+        {filteredApprovals.length > 0 ? (
           <DataTable
             columns={createColumns(
               setSelectedApproval,
@@ -496,9 +463,29 @@ export function ApprovalsManagement() {
               approveApprovalMutation.isPending || rejectApprovalMutation.isPending
             )}
             data={filteredApprovals}
-            pageSize={10}
+            pageSize={pageSize}
             showSearch={false}
+            showPageSize={false}
           />
+        ) : (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center py-6">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
+                  <CheckCircle className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">
+                  {searchTerm || statusFilter !== "all" ? 'No approvals found' : 'All caught up!'}
+                </h3>
+                <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
+                  {searchTerm || statusFilter !== "all"
+                    ? 'Try adjusting your search terms or filters to find your approvals.'
+                    : 'There are no pending approvals at the moment.'
+                  }
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Approval Modal */}

@@ -384,136 +384,143 @@ export function CampaignsManagement() {
           </div>
         </div>
 
-        {/* Actions and Search */}
+        {/* Single Row Layout - Stats, Filters, Search, Campaign Count, Create Button */}
+        <div className="flex items-center gap-4 flex-wrap">
+          {/* Stats */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
+              <Megaphone className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
+              <span className="font-medium">{totalCampaigns}</span>
+              <span className="text-muted-foreground">Campaigns</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
+              <Target className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
+              <span className="font-medium">{activeCampaigns}</span>
+              <span className="text-muted-foreground">Active</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
+              <DollarSign className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
+              <span className="font-medium">${totalBudget.toLocaleString()}</span>
+              <span className="text-muted-foreground">Budget</span>
+            </div>
+          </div>
+
+          {/* Filters */}
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="paused">Paused</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={objectiveFilter} onValueChange={setObjectiveFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Objective" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Objectives</SelectItem>
+              {CAMPAIGN_OBJECTIVES.map((objective) => (
+                <SelectItem key={objective} value={objective}>
+                  {objective.replace(/_/g, ' ')}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={brandFilter} onValueChange={setBrandFilter}>
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Brand" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Brands</SelectItem>
+              {safeBrands.map((brand) => (
+                <SelectItem key={brand.id} value={brand.id}>
+                  {brand.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Search */}
+          <div className="relative w-80">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search campaigns..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 h-9"
+            />
+          </div>
+
+          {/* Campaign Count */}
+          <Badge variant="secondary" className="whitespace-nowrap">
+            {filteredCampaigns.length} campaign{filteredCampaigns.length !== 1 ? 's' : ''}
+          </Badge>
+
+          {/* Clear Filters */}
+          {hasActiveFilters && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={clearFilters}
+              className="text-muted-foreground"
+            >
+              <X className="mr-2 h-4 w-4" />
+              Clear
+            </Button>
+          )}
+
+          {/* Create Button */}
+          <div className="ml-auto">
+            <CampaignModal mode="create" onSuccess={handleRefresh}>
+              <Button size="sm">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Campaign
+              </Button>
+            </CampaignModal>
+          </div>
+        </div>
+
+        {/* Campaigns Table */}
         {filteredCampaigns.length > 0 ? (
           <Card>
             <CardContent className="pt-6">
-              <div className="space-y-4">
-                {/* Search and Create */}
-                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                  <div className="relative w-80">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search campaigns..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 h-9"
-                    />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge variant="secondary">
-                      {filteredCampaigns.length} campaign{filteredCampaigns.length !== 1 ? 's' : ''}
-                    </Badge>
+              <div className="text-center py-6">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
+                  <Megaphone className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">
+                  {searchTerm ? 'No campaigns found' : 'No campaigns yet'}
+                </h3>
+                <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
+                  {searchTerm
+                    ? 'Try adjusting your search terms or filters to find your campaigns.'
+                    : 'Create your first campaign to start advertising and reach your target audience.'
+                  }
+                </p>
+                {!searchTerm && (
+                  <div className="space-y-3">
                     <CampaignModal mode="create" onSuccess={handleRefresh}>
-                      <Button size="sm">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Create Campaign
+                      <Button size="sm" className="h-8 text-xs">
+                        <Plus className="mr-1 h-3 w-3" />
+                        Create Your First Campaign
                       </Button>
                     </CampaignModal>
+                    <p className="text-xs text-muted-foreground">
+                      Set up campaigns • Target audiences • Track performance
+                    </p>
                   </div>
-                </div>
-
-                {/* Filters */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Filter className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Filters:</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="paused">Paused</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                      </SelectContent>
-                    </Select>
-
-                    <Select value={objectiveFilter} onValueChange={setObjectiveFilter}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Objective" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Objectives</SelectItem>
-                        {CAMPAIGN_OBJECTIVES.map((objective) => (
-                          <SelectItem key={objective} value={objective}>
-                            {objective.replace(/_/g, ' ')}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    <Select value={brandFilter} onValueChange={setBrandFilter}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Brand" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Brands</SelectItem>
-                        {safeBrands.map((brand) => (
-                          <SelectItem key={brand.id} value={brand.id}>
-                            {brand.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {hasActiveFilters && (
-                    <div className="flex justify-end">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={clearFilters}
-                        className="text-muted-foreground"
-                      >
-                        <X className="mr-2 h-4 w-4" />
-                        Clear Filters
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
-            </CardContent>
-          </Card>
-        ) : (
-          /* Empty state with beautiful card design */
-          <Card className="border border-dashed border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-6 text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
-                <Megaphone className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">
-                {searchTerm ? 'No campaigns found' : 'No campaigns yet'}
-              </h3>
-              <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
-                {searchTerm
-                  ? 'Try adjusting your search terms or filters to find your campaigns.'
-                  : 'Create your first campaign to start advertising and reach your target audience.'
-                }
-              </p>
-              {!searchTerm && (
-                <div className="space-y-3">
-                  <CampaignModal mode="create" onSuccess={handleRefresh}>
-                    <Button size="sm" className="h-8 text-xs">
-                      <Plus className="mr-1 h-3 w-3" />
-                      Create Your First Campaign
-                    </Button>
-                  </CampaignModal>
-                  <p className="text-xs text-muted-foreground">
-                    Set up campaigns • Target audiences • Track performance
-                  </p>
-                </div>
-              )}
             </CardContent>
           </Card>
         )}
 
-        {/* Campaigns Table */}
-        {filteredCampaigns.length > 0 && (
           <DataTable
             columns={createColumns(
               handleEditCampaign,
@@ -524,8 +531,9 @@ export function CampaignsManagement() {
             data={filteredCampaigns}
             pageSize={10}
             showSearch={false}
+            showPageSize={false}
           />
-        )}
+        ) : (
 
         {/* Help Section */}
         <Card className="border border-blue-200 dark:border-blue-800">
