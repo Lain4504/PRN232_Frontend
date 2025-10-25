@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, FileText, Brain, AlertCircle, Search, Filter, X } from "lucide-react";
+import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
@@ -166,45 +167,42 @@ const createColumns = (
       const canSubmit = content.status === ContentStatusEnum.Draft;
       const canPublish = content.status === ContentStatusEnum.Approved;
       
-      return (
-        <div className="flex items-center gap-2">
-          {canSubmit && (
-            <Button
-              onClick={() => handleSubmitContent(content.id)}
-              variant="outline"
-              size="sm"
-              disabled={isProcessing}
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          )}
-          {canPublish && (
-            <Button
-              onClick={() => handlePublishContent(content.id, "integration-id")}
-              variant="outline"
-              size="sm"
-              disabled={isProcessing}
-            >
-              <Globe className="h-4 w-4" />
-            </Button>
-          )}
-          <Button
-            onClick={() => handleEditContent(content.id)}
-            variant="outline"
-            size="sm"
-          >
-            <Edit className="h-4 w-4" />
-          </Button>
-          <Button
-            onClick={() => handleDeleteContent(content.id)}
-            variant="destructive"
-            size="sm"
-            disabled={isProcessing}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
+      const actions: ActionItem[] = [];
+      
+      if (canSubmit) {
+        actions.push({
+          label: "Submit for Approval",
+          icon: <Send className="h-4 w-4" />,
+          onClick: () => handleSubmitContent(content.id),
+          disabled: isProcessing,
+        });
+      }
+      
+      if (canPublish) {
+        actions.push({
+          label: "Publish",
+          icon: <Globe className="h-4 w-4" />,
+          onClick: () => handlePublishContent(content.id, "integration-id"),
+          disabled: isProcessing,
+        });
+      }
+      
+      actions.push(
+        {
+          label: "Edit",
+          icon: <Edit className="h-4 w-4" />,
+          onClick: () => handleEditContent(content.id),
+        },
+        {
+          label: "Delete",
+          icon: <Trash2 className="h-4 w-4" />,
+          onClick: () => handleDeleteContent(content.id),
+          variant: "destructive" as const,
+          disabled: isProcessing,
+        }
       );
+      
+      return <ActionsDropdown actions={actions} disabled={isProcessing} />;
     },
   },
 ];
@@ -457,13 +455,13 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
               <div className="space-y-4">
                 {/* Search and Create */}
                 <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                  <div className="relative flex-1">
+                  <div className="relative w-80">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Search content..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 h-9"
                     />
                   </div>
                   <div className="flex items-center gap-3">

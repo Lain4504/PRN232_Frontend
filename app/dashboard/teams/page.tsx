@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent } from '@/components/ui/card'
 import { Eye, Users, Building2, Trash2, Edit } from 'lucide-react'
+import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
 import type { TeamResponse } from '@/lib/types/aisam-types'
 
 function TeamsPageContent() {
@@ -170,38 +171,26 @@ function TeamsPageContent() {
                     {new Date(team.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Link href={`/dashboard/teams/${team.id}`}>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-8 px-3 text-blue-600 border-blue-600 hover:bg-blue-50 hover:text-blue-700"
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          Xem
-                        </Button>
-                      </Link>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 px-3 text-orange-600 border-orange-600 hover:bg-orange-50 hover:text-orange-700"
-                        onClick={() => setEditDialog({ open: true, team })}
-                        aria-label="Chỉnh sửa team"
-                      >
-                        <Edit className="h-4 w-4 mr-1" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 px-3 text-destructive border-destructive hover:bg-destructive/10"
-                        onClick={() => setDeleteDialog({ open: true, teamId: team.id, teamName: team.name })}
-                        aria-label="Xóa team"
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Xóa
-                      </Button>
-                    </div>
+                    <ActionsDropdown
+                      actions={[
+                        {
+                          label: "View Team",
+                          icon: <Eye className="h-4 w-4" />,
+                          onClick: () => window.open(`/dashboard/teams/${team.id}`, '_self'),
+                        },
+                        {
+                          label: "Edit",
+                          icon: <Edit className="h-4 w-4" />,
+                          onClick: () => setEditDialog({ open: true, team }),
+                        },
+                        {
+                          label: "Delete",
+                          icon: <Trash2 className="h-4 w-4" />,
+                          onClick: () => setDeleteDialog({ open: true, teamId: team.id, teamName: team.name }),
+                          variant: "destructive" as const,
+                        },
+                      ]}
+                    />
                   </TableCell>
                 </TableRow>
               ))}

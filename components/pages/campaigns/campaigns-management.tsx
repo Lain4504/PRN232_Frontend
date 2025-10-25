@@ -32,6 +32,7 @@ import {
   Filter,
   X,
 } from "lucide-react";
+import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import { AdCampaignResponse } from "@/lib/types/campaigns";
 import { toast } from "sonner";
 import { useBrands } from "@/hooks/use-brands";
@@ -201,34 +202,29 @@ const createColumns = (
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <Button
-          asChild
-          variant="outline"
-          size="sm"
-        >
-          <Link href={`/dashboard/campaigns/${row.original.id}`}>
-            <Eye className="h-4 w-4" />
-          </Link>
-        </Button>
-        <Button
-          onClick={() => handleEditCampaign(row.original)}
-          variant="outline"
-          size="sm"
-        >
-          <Edit className="h-4 w-4" />
-        </Button>
-        <Button
-          onClick={() => handleDeleteCampaign(row.original.id)}
-          variant="destructive"
-          size="sm"
-          disabled={isDeleting}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
-    ),
+    cell: ({ row }) => {
+      const actions: ActionItem[] = [
+        {
+          label: "View Details",
+          icon: <Eye className="h-4 w-4" />,
+          onClick: () => window.open(`/dashboard/campaigns/${row.original.id}`, '_self'),
+        },
+        {
+          label: "Edit",
+          icon: <Edit className="h-4 w-4" />,
+          onClick: () => handleEditCampaign(row.original),
+        },
+        {
+          label: "Delete",
+          icon: <Trash2 className="h-4 w-4" />,
+          onClick: () => handleDeleteCampaign(row.original.id),
+          variant: "destructive" as const,
+          disabled: isDeleting,
+        },
+      ];
+
+      return <ActionsDropdown actions={actions} disabled={isDeleting} />;
+    },
   },
 ];
 
@@ -395,13 +391,13 @@ export function CampaignsManagement() {
               <div className="space-y-4">
                 {/* Search and Create */}
                 <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                  <div className="relative flex-1">
+                  <div className="relative w-80">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Search campaigns..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 h-9"
                     />
                   </div>
                   <div className="flex items-center gap-3">

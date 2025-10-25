@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle, Search, Filter, X, Calendar, User, FileText, Eye, Check, X as XIcon, Trash2, Plus } from "lucide-react";
+import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import {
   Dialog,
   DialogContent,
@@ -171,47 +172,41 @@ const createColumns = (
       const canApprove = approval.status === ContentStatusEnum.PendingApproval;
       const canReject = approval.status === ContentStatusEnum.PendingApproval;
       
-      return (
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={() => handleReview(approval)}
-            variant="outline"
-            size="sm"
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
-          {canApprove && (
-            <Button
-              onClick={() => handleQuickApprove(approval.id)}
-              variant="outline"
-              size="sm"
-              disabled={isProcessing}
-              className="text-green-600 hover:text-green-700"
-            >
-              <Check className="h-4 w-4" />
-            </Button>
-          )}
-          {canReject && (
-            <Button
-              onClick={() => handleQuickReject(approval.id)}
-              variant="outline"
-              size="sm"
-              disabled={isProcessing}
-              className="text-red-600 hover:text-red-700"
-            >
-              <XIcon className="h-4 w-4" />
-            </Button>
-          )}
-          <Button
-            onClick={() => handleDelete(approval)}
-            variant="destructive"
-            size="sm"
-            disabled={isProcessing}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      );
+      const actions: ActionItem[] = [
+        {
+          label: "Review",
+          icon: <Eye className="h-4 w-4" />,
+          onClick: () => handleReview(approval),
+        },
+      ];
+
+      if (canApprove) {
+        actions.push({
+          label: "Quick Approve",
+          icon: <Check className="h-4 w-4" />,
+          onClick: () => handleQuickApprove(approval.id),
+          disabled: isProcessing,
+        });
+      }
+
+      if (canReject) {
+        actions.push({
+          label: "Quick Reject",
+          icon: <XIcon className="h-4 w-4" />,
+          onClick: () => handleQuickReject(approval.id),
+          disabled: isProcessing,
+        });
+      }
+
+      actions.push({
+        label: "Delete",
+        icon: <Trash2 className="h-4 w-4" />,
+        onClick: () => handleDelete(approval),
+        variant: "destructive" as const,
+        disabled: isProcessing,
+      });
+
+      return <ActionsDropdown actions={actions} disabled={isProcessing} />;
     },
   },
 ];

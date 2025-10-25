@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle, Search, Filter, X, Calendar, User, FileText, Eye, Check, X as XIcon, Trash2 } from "lucide-react";
+import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import {
   Dialog,
   DialogContent,
@@ -163,47 +164,41 @@ const createColumns = (
       const canApprove = approval.status === ContentStatusEnum.PendingApproval;
       const canReject = approval.status === ContentStatusEnum.PendingApproval;
       
-      return (
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={() => handleReview(approval)}
-            variant="outline"
-            size="sm"
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
-          {canApprove && (
-            <Button
-              onClick={() => handleQuickApprove(approval.id)}
-              variant="outline"
-              size="sm"
-              disabled={isProcessing}
-              className="text-green-600 hover:text-green-700"
-            >
-              <Check className="h-4 w-4" />
-            </Button>
-          )}
-          {canReject && (
-            <Button
-              onClick={() => handleQuickReject(approval.id)}
-              variant="outline"
-              size="sm"
-              disabled={isProcessing}
-              className="text-red-600 hover:text-red-700"
-            >
-              <XIcon className="h-4 w-4" />
-            </Button>
-          )}
-          <Button
-            onClick={() => handleDelete(approval)}
-            variant="destructive"
-            size="sm"
-            disabled={isProcessing}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      );
+      const actions: ActionItem[] = [
+        {
+          label: "Review",
+          icon: <Eye className="h-4 w-4" />,
+          onClick: () => handleReview(approval),
+        },
+      ];
+
+      if (canApprove) {
+        actions.push({
+          label: "Quick Approve",
+          icon: <Check className="h-4 w-4" />,
+          onClick: () => handleQuickApprove(approval.id),
+          disabled: isProcessing,
+        });
+      }
+
+      if (canReject) {
+        actions.push({
+          label: "Quick Reject",
+          icon: <XIcon className="h-4 w-4" />,
+          onClick: () => handleQuickReject(approval.id),
+          disabled: isProcessing,
+        });
+      }
+
+      actions.push({
+        label: "Delete",
+        icon: <Trash2 className="h-4 w-4" />,
+        onClick: () => handleDelete(approval),
+        variant: "destructive" as const,
+        disabled: isProcessing,
+      });
+
+      return <ActionsDropdown actions={actions} disabled={isProcessing} />;
     },
   },
 ];
@@ -215,6 +210,7 @@ export function ApprovalsManagement() {
   const [approvalNotes, setApprovalNotes] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [approvalToDelete, setApprovalToDelete] = useState<ApprovalResponseDto | null>(null);
+  const [pageSize, setPageSize] = useState(10);
 
   // Build filters for approvals query
   const filters: ApprovalFilters = {
@@ -367,62 +363,75 @@ export function ApprovalsManagement() {
         </Breadcrumb>
 
         {/* Header */}
-        <div className="space-y-3 lg:space-y-6">
-          <div>
-            <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
-              Content Approvals
-            </h1>
-            <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
-              Review and approve content before publishing
-            </p>
-          </div>
-          
+        <div>
+          <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
+            Content Approvals
+          </h1>
+          <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
+            Review and approve content before publishing
+          </p>
+        </div>
+
+        {/* Single Row Layout - Stats, Page Size, Search, Approvals */}
+        <div className="flex items-center gap-4">
           {/* Stats */}
-          <div className="flex flex-wrap items-center gap-2 lg:gap-4">
+          <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
               <CheckCircle className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
               <span className="font-medium">{filteredApprovals.length}</span>
               <span className="text-muted-foreground">Approval{filteredApprovals.length !== 1 ? 's' : ''}</span>
             </div>
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <Badge variant="secondary" className="text-green-600">
-                {approvals.filter(a => a.status === ContentStatusEnum.PendingApproval).length} Pending
-              </Badge>
+              <span className="font-medium">{approvals.filter(a => a.status === ContentStatusEnum.PendingApproval).length}</span>
+              <span className="text-muted-foreground">Pending</span>
             </div>
           </div>
+
+          {/* Page Size Selector */}
+          <Select
+            value={String(pageSize)}
+            onValueChange={(value) => setPageSize(Number(value))}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Rows" />
+            </SelectTrigger>
+            <SelectContent>
+              {[5, 10, 20, 30, 40, 50].map((size) => (
+                <SelectItem key={size} value={String(size)}>
+                  {size} rows
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Search */}
+          <div className="relative w-80">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search approvals..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 h-9"
+            />
+          </div>
+
+          {/* Approvals Count */}
+          <Badge variant="secondary" className="whitespace-nowrap">
+            {filteredApprovals.length} approval{filteredApprovals.length !== 1 ? 's' : ''}
+          </Badge>
         </div>
 
-        {/* Actions and Search */}
-        {filteredApprovals.length > 0 ? (
+        {/* Filters */}
+        {filteredApprovals.length > 0 && (
           <Card>
             <CardContent className="pt-6">
-              <div className="space-y-4">
-                {/* Search and Filters */}
-                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search approvals..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge variant="secondary">
-                      {filteredApprovals.length} approval{filteredApprovals.length !== 1 ? 's' : ''}
-                    </Badge>
-                  </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Filters:</span>
                 </div>
-
-                {/* Filters */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Filter className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Filters:</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ContentStatusEnum | "all")}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Status" />

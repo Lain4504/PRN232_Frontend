@@ -27,6 +27,7 @@ import {
   FileText,
   AlertTriangle
 } from "lucide-react";
+import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import { Brand, Profile } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useUserProfile, useProfiles } from "@/hooks/use-profile";
@@ -36,6 +37,13 @@ import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbP
 import { BrandModal } from "@/components/brands/brand-modal";
 import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Create columns for the data table
 const createColumns = (
@@ -93,93 +101,38 @@ const createColumns = (
       );
     },
   },
-  {
-    accessorKey: "created_at",
-    header: "Created",
-    cell: ({ row }) => (
-      <div className="text-sm text-muted-foreground">
-        {new Date(row.getValue("created_at")).toLocaleDateString()}
-      </div>
-    ),
-  },
-  {
-    id: "products",
-    header: "Products",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <Package className="h-4 w-4 text-muted-foreground" />
-        <Button
-          asChild
-          variant="ghost"
-          size="sm"
-          className="h-auto p-0 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <Link href={`/dashboard/brands/${row.original.id}/products`}>
-            View Products
-          </Link>
-        </Button>
-      </div>
-    ),
-  },
-  {
-    id: "content",
-    header: "Content",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <FileText className="h-4 w-4 text-muted-foreground" />
-        <Button
-          asChild
-          variant="ghost"
-          size="sm"
-          className="h-auto p-0 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <Link href={`/dashboard/brands/${row.original.id}/contents`}>
-            Manage Content
-          </Link>
-        </Button>
-      </div>
-    ),
-  },
+
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <Button
-          asChild
-          variant="outline"
-          size="sm"
-        >
-          <Link href={`/dashboard/brands/${row.original.id}/products`}>
-            <Package className="h-4 w-4" />
-          </Link>
-        </Button>
-        <Button
-          asChild
-          variant="outline"
-          size="sm"
-        >
-          <Link href={`/dashboard/brands/${row.original.id}/contents`}>
-            <FileText className="h-4 w-4" />
-          </Link>
-        </Button>
-        <Button
-          onClick={() => handleEditBrand(row.original)}
-          variant="outline"
-          size="sm"
-        >
-          <Edit className="h-4 w-4" />
-        </Button>
-        <Button
-          onClick={() => handleDeleteBrand(row.original.id)}
-          variant="destructive"
-          size="sm"
-          disabled={isDeleting}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
-    ),
+    cell: ({ row }) => {
+      const actions: ActionItem[] = [
+        {
+          label: "View Products",
+          icon: <Package className="h-4 w-4" />,
+          onClick: () => window.open(`/dashboard/brands/${row.original.id}/products`, '_self'),
+        },
+        {
+          label: "Manage Content",
+          icon: <FileText className="h-4 w-4" />,
+          onClick: () => window.open(`/dashboard/brands/${row.original.id}/contents`, '_self'),
+        },
+        {
+          label: "Edit",
+          icon: <Edit className="h-4 w-4" />,
+          onClick: () => handleEditBrand(row.original),
+        },
+        {
+          label: "Delete",
+          icon: <Trash2 className="h-4 w-4" />,
+          onClick: () => handleDeleteBrand(row.original.id),
+          variant: "destructive" as const,
+          disabled: isDeleting,
+        },
+      ];
+
+      return <ActionsDropdown actions={actions} disabled={isDeleting} />;
+    },
   },
 ];
 
@@ -188,6 +141,7 @@ export function BrandsManagement() {
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteBrandId, setDeleteBrandId] = useState<string | null>(null);
+  const [pageSize, setPageSize] = useState(10);
 
   // Hooks
   const { data: user } = useUserProfile();
@@ -285,17 +239,19 @@ export function BrandsManagement() {
         </Breadcrumb>
 
         {/* Header */}
-        <div className="space-y-3 lg:space-y-6">
-          <div>
-            <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
-              Brands
-            </h1>
-            <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
-              Manage your brands and their assets in one place.
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
+            Brands
+          </h1>
+          <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
+            Manage your brands and their assets in one place.
+          </p>
+        </div>
+
+        {/* Single Row Layout - Stats, Rows, Search, Brands, Create Button */}
+        <div className="flex items-center gap-4">
           {/* Stats */}
-          <div className="flex flex-wrap items-center gap-2 lg:gap-4">
+          <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
               <Target className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
               <span className="font-medium">{totalBrands}</span>
@@ -306,35 +262,50 @@ export function BrandsManagement() {
               <span className="text-muted-foreground">Profiles</span>
             </div>
           </div>
-        </div>
 
-        {/* Actions and Search */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search brands..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <div className="flex items-center gap-3">
-                <Badge variant="secondary">
-                  {filteredBrands.length} brand{filteredBrands.length !== 1 ? 's' : ''}
-                </Badge>
-                <BrandModal mode="create" onSuccess={handleRefresh}>
-                  <Button size="sm">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Create Brand
-                  </Button>
-                </BrandModal>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Page Size Selector */}
+          <Select
+            value={String(pageSize)}
+            onValueChange={(value) => setPageSize(Number(value))}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Rows" />
+            </SelectTrigger>
+            <SelectContent>
+              {[5, 10, 20, 30, 40, 50].map((size) => (
+                <SelectItem key={size} value={String(size)}>
+                  {size} rows
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Search */}
+          <div className="relative w-80">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search brands..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 h-9"
+            />
+          </div>
+
+          {/* Brands Count */}
+          <Badge variant="secondary" className="whitespace-nowrap">
+            {filteredBrands.length} brand{filteredBrands.length !== 1 ? 's' : ''}
+          </Badge>
+
+          {/* Create Button */}
+          <div className="ml-auto">
+            <BrandModal mode="create" onSuccess={handleRefresh}>
+              <Button size="sm">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Brand
+              </Button>
+            </BrandModal>
+          </div>
+        </div>
 
         {/* Brands Table */}
         {filteredBrands.length > 0 ? (
@@ -346,8 +317,9 @@ export function BrandsManagement() {
               deleteBrandMutation.isPending
             )}
             data={filteredBrands}
-            pageSize={10}
+            pageSize={pageSize}
             showSearch={false}
+            showPageSize={false}
           />
         ) : (
           <Card>

@@ -126,13 +126,13 @@ export function DataTable<TData, TValue>({
       {(showSearch || showPageSize) && (
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           {showSearch && (
-            <div className="relative flex-1">
+            <div className="relative w-80">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder={searchPlaceholder}
                 value={globalFilter ?? ""}
                 onChange={(event) => setGlobalFilter(String(event.target.value))}
-                className="pl-10"
+                className="pl-10 h-9"
               />
             </div>
           )}
@@ -159,12 +159,12 @@ export function DataTable<TData, TValue>({
       )}
 
       {/* Table */}
-      <div className="rounded-md border overflow-x-auto">
+      <div className="rounded-lg border border-gray-200 overflow-hidden">
         <div className="min-w-[640px] sm:min-w-0">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="bg-gray-50 hover:bg-gray-50 border-b border-gray-200">
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
                     {header.isPlaceholder

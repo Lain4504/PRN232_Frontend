@@ -11,6 +11,13 @@ import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/ui/data-table'
 import { ColumnDef } from '@tanstack/react-table'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Mail, Edit, Eye, Calendar, User, ExternalLink, Clock, CheckCircle, XCircle } from 'lucide-react'
 import type { Post } from '@/lib/types/aisam-types'
 
@@ -159,34 +166,49 @@ export default function TeamPostsPage({
       <div className="max-w-7xl mx-auto">
         <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold">Social Media Posts Log</h1>
-            <p className="text-muted-foreground">
-              View published posts and their status across social media platforms
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
+            Social Media Posts Log
+          </h1>
+          <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
+            View published posts and their status across social media platforms
+          </p>
         </div>
 
-        {/* Brand Selector */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Filter Posts</CardTitle>
-            <CardDescription>
-              Select a brand to view posts for that specific brand
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="max-w-md">
-              <TeamBrandSelector
-                selectedBrandId={filters.brandId}
-                onBrandChange={handleBrandChange}
-                placeholder="Select a brand to filter posts"
-                showAllOption={true}
-              />
-            </div>
-          </CardContent>
-        </Card>
+        {/* Single Row Layout - Brand Selector, Page Size, Posts Count */}
+        <div className="flex items-center gap-4">
+          {/* Brand Selector */}
+          <div className="w-64">
+            <TeamBrandSelector
+              selectedBrandId={filters.brandId}
+              onBrandChange={handleBrandChange}
+              placeholder="Select a brand"
+              showAllOption={true}
+            />
+          </div>
+
+          {/* Page Size Selector */}
+          <Select
+            value={String(pageSize)}
+            onValueChange={(value) => setPageSize(Number(value))}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Rows" />
+            </SelectTrigger>
+            <SelectContent>
+              {[5, 10, 20, 30, 40, 50].map((size) => (
+                <SelectItem key={size} value={String(size)}>
+                  {size} rows
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Posts Count */}
+          <Badge variant="secondary" className="whitespace-nowrap">
+            {postsData?.data?.length || 0} post{(postsData?.data?.length || 0) !== 1 ? 's' : ''}
+          </Badge>
+        </div>
 
         {/* Posts Table */}
         <Card>

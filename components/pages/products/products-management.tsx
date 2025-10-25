@@ -28,6 +28,7 @@ import {
   Target,
   AlertTriangle
 } from "lucide-react";
+import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Product, Brand } from "@/lib/types/aisam-types";
@@ -37,12 +38,20 @@ import { useProducts, useDeleteProduct } from "@/hooks/use-products";
 import { useParams } from "next/navigation";
 import { ProductModal } from "@/components/products/product-modal";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 // import { FormField } from "@/components/ui/form-field"; // Removed unused import
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 import Link from "next/link";
 
 // Create columns function to access component state
 const createColumns = (
+  handleEditProduct: (product: Product) => void,
   handleDeleteProduct: (productId: string, productName: string) => void,
   handleRefresh: () => void,
   brands: Brand[],
@@ -120,65 +129,33 @@ const createColumns = (
     {
       id: "actions",
       header: "Actions",
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <ProductModal mode="edit" product={row.original} onSuccess={handleRefresh}>
-            <Button variant="outline" size="sm">
-              <Pencil className="h-4 w-4" />
-            </Button>
-          </ProductModal>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="destructive"
-                size="sm"
-                disabled={isDeleting}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-destructive" />
-                  Delete Product &ldquo;{row.original.name}&rdquo;?
-                </AlertDialogTitle>
-                <AlertDialogDescription className="text-left space-y-3">
-                  <p>
-                    Are you sure you want to permanently delete this product? This action cannot be undone.
-                  </p>
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => handleDeleteProduct(row.original.id, row.original.name)}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? (
-                    <>
-                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete Product
-                    </>
-                  )}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const actions: ActionItem[] = [
+          {
+            label: "Edit",
+            icon: <Pencil className="h-4 w-4" />,
+            onClick: () => handleEditProduct(row.original),
+          },
+          {
+            label: "Delete",
+            icon: <Trash2 className="h-4 w-4" />,
+            onClick: () => handleDeleteProduct(row.original.id, row.original.name),
+            variant: "destructive" as const,
+            disabled: isDeleting,
+          },
+        ];
+
+        return <ActionsDropdown actions={actions} disabled={isDeleting} />;
+      },
     },
   ];
 
 export function ProductsManagement() {
   const params = useParams();
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [pageSize, setPageSize] = useState(10);
 
   // Get brand ID from route params
   const brandId = params.id as string;
@@ -205,6 +182,16 @@ export function ProductsManagement() {
 
   const handleRefresh = () => {
     refetchProducts();
+  };
+
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEdit = () => {
+    setEditingProduct(null);
+    setIsEditModalOpen(false);
   };
 
   const handleDeleteProduct = async (productId: string, productName: string) => {
@@ -275,17 +262,19 @@ export function ProductsManagement() {
         </Breadcrumb>
 
         {/* Header */}
-        <div className="space-y-3 lg:space-y-6">
-          <div>
-            <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
-              Products - {currentBrand?.name || 'Unknown Brand'}
-            </h1>
-            <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
-              Manage products for {currentBrand?.name || 'this brand'}
-            </p>
-          </div>
-          {/* Stats and Quick Actions */}
-          <div className="flex flex-wrap items-center gap-2 lg:gap-4">
+        <div>
+          <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
+            Products - {currentBrand?.name || 'Unknown Brand'}
+          </h1>
+          <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
+            Manage products for {currentBrand?.name || 'this brand'}
+          </p>
+        </div>
+
+        {/* Single Row Layout - Stats, Page Size, Search, Products, Create Button */}
+        <div className="flex items-center gap-4">
+          {/* Stats */}
+          <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
               <Package className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
               <span className="font-medium">{totalProducts}</span>
@@ -296,7 +285,56 @@ export function ProductsManagement() {
               <span className="font-medium">${avgPrice}</span>
               <span className="text-muted-foreground">Avg Price</span>
             </div>
-            <Button asChild variant="outline" size="sm" className="ml-auto">
+          </div>
+
+          {/* Page Size Selector */}
+          <Select
+            value={String(pageSize)}
+            onValueChange={(value) => setPageSize(Number(value))}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Rows" />
+            </SelectTrigger>
+            <SelectContent>
+              {[5, 10, 20, 30, 40, 50].map((size) => (
+                <SelectItem key={size} value={String(size)}>
+                  {size} rows
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Search */}
+          <div className="relative w-80">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+              className="pl-10 h-9"
+            />
+          </div>
+
+          {/* Products Count */}
+          <Badge variant="secondary" className="whitespace-nowrap">
+            {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
+          </Badge>
+
+          {/* Create Button */}
+          <div className="ml-auto flex items-center gap-2">
+            <ProductModal
+              mode="create"
+              defaultBrandId={brandId}
+              onSuccess={handleRefresh}
+            >
+              <Button size="sm">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Product
+              </Button>
+            </ProductModal>
+
+            {/* Back Button */}
+            <Button asChild variant="outline" size="sm">
               <Link href="/dashboard/brands">
                 <Target className="mr-2 h-4 w-4" />
                 Back to Brands
@@ -305,63 +343,26 @@ export function ProductsManagement() {
           </div>
         </div>
 
-        {/* Actions and Filters */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
-              <div className="flex flex-col sm:flex-row gap-4 flex-1">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search products..."
-                    value={searchTerm}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
+        {/* Products Table */}
+        {filteredProducts.length > 0 ? (
+          <DataTable
+            columns={createColumns(handleEditProduct, handleDeleteProduct, handleRefresh, safeBrands, deleteProductMutation.isPending)}
+            data={filteredProducts}
+            pageSize={pageSize}
+            showSearch={false}
+            showPageSize={false}
+          />
+        ) : (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center py-6">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
+                  <Package className="h-6 w-6 text-primary" />
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Badge variant="secondary">
-                  {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
-                </Badge>
-                <ProductModal
-                  mode="create"
-                  defaultBrandId={brandId}
-                  onSuccess={handleRefresh}
-                >
-                  <Button size="sm">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Product
-                  </Button>
-                </ProductModal>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Products Table/List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Products</CardTitle>
-            <CardDescription>A list of all your products in the catalog.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {filteredProducts.length > 0 ? (
-              <DataTable 
-                columns={createColumns(handleDeleteProduct, handleRefresh, safeBrands, deleteProductMutation.isPending)} 
-                data={filteredProducts} 
-                filterColumn="name" 
-                showSearch={false}
-              />
-            ) : (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-6">
-                  <Package className="h-10 w-10 text-muted-foreground" />
-                </div>
-                <h4 className="font-semibold text-lg mb-3">
+                <h3 className="text-lg font-semibold mb-2">
                   No Products for {currentBrand?.name || 'This Brand'}
-                </h4>
-                <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
+                </h3>
+                <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
                   This brand doesn&apos;t have any products yet. Start by adding your first product to create content and campaigns around it.
                 </p>
                 <ProductModal
@@ -369,15 +370,15 @@ export function ProductsManagement() {
                   defaultBrandId={brandId}
                   onSuccess={handleRefresh}
                 >
-                  <Button className="mt-6">
+                  <Button>
                     <Plus className="mr-2 h-4 w-4" />
                     Add Product
                   </Button>
                 </ProductModal>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Help Section */}
         <Card className="border border-blue-200 dark:border-blue-800">
@@ -395,6 +396,18 @@ export function ProductsManagement() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Edit Product Modal */}
+        {editingProduct && isEditModalOpen && (
+          <ProductModal
+            mode="edit"
+            product={editingProduct}
+            onSuccess={() => {
+              handleRefresh();
+              handleCloseEdit();
+            }}
+          />
+        )}
       </div>
     </div>
   );
