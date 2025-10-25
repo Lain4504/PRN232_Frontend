@@ -58,175 +58,175 @@ const createColumns = (
   brands: { id: string; name: string }[] = [],
   isDeleting: boolean
 ): ColumnDef<AdCampaignResponse>[] => [
-  {
-    accessorKey: "name",
-    header: "Campaign Name",
-    cell: ({ row }) => {
-      const campaign = row.original;
-      const status = getCampaignStatus(campaign);
-      const statusColor = getCampaignStatusColor(status);
-      
-      return (
-        <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarFallback>
-              <Megaphone className="h-4 w-4" />
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="font-medium">{row.getValue("name")}</div>
-            <div className="flex items-center gap-2 mt-1">
-              <Badge variant="secondary" className={statusColor}>
-                {status}
-              </Badge>
-              <span className="text-xs text-muted-foreground">
-                ID: {row.original.id.slice(0, 8)}
-              </span>
-            </div>
-          </div>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "objective",
-    header: "Objective",
-    cell: ({ row }) => {
-      const objective = row.getValue("objective") as string;
-      return (
-        <div className="text-sm">
-          {objective ? (
-            <Badge variant="outline">
-              {objective.replace(/_/g, ' ')}
-            </Badge>
-          ) : (
-            <span className="text-muted-foreground">No objective</span>
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "brandId",
-    header: "Brand",
-    cell: ({ row }) => {
-      const brandId = row.getValue("brandId") as string;
-      const brand = brands.find(b => b.id === brandId);
-      return (
-        <div className="text-sm">
-          {brand ? (
-            <Badge variant="outline">
-              {brand.name}
-            </Badge>
-          ) : (
-            <span className="text-muted-foreground">No brand</span>
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "budget",
-    header: "Budget",
-    cell: ({ row }) => {
-      const budget = row.getValue("budget") as number;
-      return (
-        <div className="text-sm font-medium">
-          {budget ? (
-            <div className="flex items-center gap-1">
-              <DollarSign className="h-3 w-3" />
-              {budget.toLocaleString()}
-            </div>
-          ) : (
-            <span className="text-muted-foreground">No budget</span>
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "startDate",
-    header: "Duration",
-    cell: ({ row }) => {
-      const startDate = row.getValue("startDate") as string;
-      const endDate = row.original.endDate;
-      
-      return (
-        <div className="text-sm text-muted-foreground">
-          {startDate ? (
-            <div className="flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
-              <div>
-                <div>{new Date(startDate).toLocaleDateString()}</div>
-                {endDate && (
-                  <div className="text-xs">to {new Date(endDate).toLocaleDateString()}</div>
-                )}
+    {
+      accessorKey: "name",
+      header: "Campaign Name",
+      cell: ({ row }) => {
+        const campaign = row.original;
+        const status = getCampaignStatus(campaign);
+        const statusColor = getCampaignStatusColor(status);
+
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10">
+              <AvatarFallback>
+                <Megaphone className="h-4 w-4" />
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-medium">{row.getValue("name")}</div>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant="secondary" className={statusColor}>
+                  {status}
+                </Badge>
+                <span className="text-xs text-muted-foreground">
+                  ID: {row.original.id.slice(0, 8)}
+                </span>
               </div>
             </div>
-          ) : (
-            <span>No dates set</span>
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "metrics",
-    header: "Performance",
-    cell: ({ row }) => {
-      const metrics = row.original.metrics;
-      
-      if (!metrics) {
-        return <span className="text-muted-foreground text-sm">No data</span>;
-      }
-      
-      return (
-        <div className="text-sm">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1">
-              <Eye className="h-3 w-3 text-muted-foreground" />
-              <span>{metrics.totalImpressions.toLocaleString()}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <TrendingUp className="h-3 w-3 text-muted-foreground" />
-              <span>{metrics.totalClicks.toLocaleString()}</span>
-            </div>
           </div>
-          <div className="text-xs text-muted-foreground mt-1">
-            CTR: {metrics.ctr.toFixed(2)}%
-          </div>
-        </div>
-      );
+        );
+      },
     },
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => {
-      const actions: ActionItem[] = [
-        {
-          label: "View Details",
-          icon: <Eye className="h-4 w-4" />,
-          onClick: () => window.open(`/dashboard/campaigns/${row.original.id}`, '_self'),
-        },
-        {
-          label: "Edit",
-          icon: <Edit className="h-4 w-4" />,
-          onClick: () => handleEditCampaign(row.original),
-        },
-        {
-          label: "Delete",
-          icon: <Trash2 className="h-4 w-4" />,
-          onClick: () => handleDeleteCampaign(row.original.id),
-          variant: "destructive" as const,
-          disabled: isDeleting,
-        },
-      ];
+    {
+      accessorKey: "objective",
+      header: "Objective",
+      cell: ({ row }) => {
+        const objective = row.getValue("objective") as string;
+        return (
+          <div className="text-sm">
+            {objective ? (
+              <Badge variant="outline">
+                {objective.replace(/_/g, ' ')}
+              </Badge>
+            ) : (
+              <span className="text-muted-foreground">No objective</span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "brandId",
+      header: "Brand",
+      cell: ({ row }) => {
+        const brandId = row.getValue("brandId") as string;
+        const brand = brands.find(b => b.id === brandId);
+        return (
+          <div className="text-sm">
+            {brand ? (
+              <Badge variant="outline">
+                {brand.name}
+              </Badge>
+            ) : (
+              <span className="text-muted-foreground">No brand</span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "budget",
+      header: "Budget",
+      cell: ({ row }) => {
+        const budget = row.getValue("budget") as number;
+        return (
+          <div className="text-sm font-medium">
+            {budget ? (
+              <div className="flex items-center gap-1">
+                <DollarSign className="h-3 w-3" />
+                {budget.toLocaleString()}
+              </div>
+            ) : (
+              <span className="text-muted-foreground">No budget</span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "startDate",
+      header: "Duration",
+      cell: ({ row }) => {
+        const startDate = row.getValue("startDate") as string;
+        const endDate = row.original.endDate;
 
-      return <ActionsDropdown actions={actions} disabled={isDeleting} />;
+        return (
+          <div className="text-sm text-muted-foreground">
+            {startDate ? (
+              <div className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                <div>
+                  <div>{new Date(startDate).toLocaleDateString()}</div>
+                  {endDate && (
+                    <div className="text-xs">to {new Date(endDate).toLocaleDateString()}</div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <span>No dates set</span>
+            )}
+          </div>
+        );
+      },
     },
-  },
-];
+    {
+      accessorKey: "metrics",
+      header: "Performance",
+      cell: ({ row }) => {
+        const metrics = row.original.metrics;
+
+        if (!metrics) {
+          return <span className="text-muted-foreground text-sm">No data</span>;
+        }
+
+        return (
+          <div className="text-sm">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1">
+                <Eye className="h-3 w-3 text-muted-foreground" />
+                <span>{metrics.totalImpressions.toLocaleString()}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <TrendingUp className="h-3 w-3 text-muted-foreground" />
+                <span>{metrics.totalClicks.toLocaleString()}</span>
+              </div>
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
+              CTR: {metrics.ctr.toFixed(2)}%
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const actions: ActionItem[] = [
+          {
+            label: "View Details",
+            icon: <Eye className="h-4 w-4" />,
+            onClick: () => window.open(`/dashboard/campaigns/${row.original.id}`, '_self'),
+          },
+          {
+            label: "Edit",
+            icon: <Edit className="h-4 w-4" />,
+            onClick: () => handleEditCampaign(row.original),
+          },
+          {
+            label: "Delete",
+            icon: <Trash2 className="h-4 w-4" />,
+            onClick: () => handleDeleteCampaign(row.original.id),
+            variant: "destructive" as const,
+            disabled: isDeleting,
+          },
+        ];
+
+        return <ActionsDropdown actions={actions} disabled={isDeleting} />;
+      },
+    },
+  ];
 
 export function CampaignsManagement() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -248,20 +248,20 @@ export function CampaignsManagement() {
 
   const filteredCampaigns = campaigns.filter(campaign => {
     // Search filter
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       campaign.objective?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     // Status filter
     const campaignStatus = getCampaignStatus(campaign);
     const matchesStatus = statusFilter === "all" || campaignStatus === statusFilter;
-    
+
     // Objective filter
     const matchesObjective = objectiveFilter === "all" || campaign.objective === objectiveFilter;
-    
+
     // Brand filter
     const matchesBrand = brandFilter === "all" || campaign.brandId === brandFilter;
-    
+
     return matchesSearch && matchesStatus && matchesObjective && matchesBrand;
   });
 
@@ -269,14 +269,7 @@ export function CampaignsManagement() {
     refetchCampaigns();
   };
 
-  const clearFilters = () => {
-    setSearchTerm("");
-    setStatusFilter("all");
-    setObjectiveFilter("all");
-    setBrandFilter("all");
-  };
 
-  const hasActiveFilters = searchTerm || statusFilter !== "all" || objectiveFilter !== "all" || brandFilter !== "all";
 
   const handleEditCampaign = (campaign: AdCampaignResponse) => {
     setEditingCampaign(campaign);
@@ -294,7 +287,7 @@ export function CampaignsManagement() {
 
   const confirmDeleteCampaign = async () => {
     if (!deleteCampaignId) return;
-    
+
     const campaignToDelete = campaigns.find(c => c.id === deleteCampaignId);
     const campaignName = campaignToDelete?.name || 'this campaign';
 
@@ -355,33 +348,13 @@ export function CampaignsManagement() {
         </Breadcrumb>
 
         {/* Header */}
-        <div className="space-y-3 lg:space-y-6">
-          <div>
-            <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
-              Campaigns
-            </h1>
-            <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
-              Manage your advertising campaigns and track their performance.
-            </p>
-          </div>
-          {/* Stats */}
-          <div className="flex flex-wrap items-center gap-2 lg:gap-4">
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <Megaphone className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
-              <span className="font-medium">{totalCampaigns}</span>
-              <span className="text-muted-foreground">Campaigns</span>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <Target className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
-              <span className="font-medium">{activeCampaigns}</span>
-              <span className="text-muted-foreground">Active</span>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <DollarSign className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
-              <span className="font-medium">${totalBudget.toLocaleString()}</span>
-              <span className="text-muted-foreground">Total Budget</span>
-            </div>
-          </div>
+        <div>
+          <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
+            Campaigns
+          </h1>
+          <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
+            Manage your advertising campaigns and track their performance.
+          </p>
         </div>
 
         {/* Single Row Layout - Stats, Filters, Search, Campaign Count, Create Button */}
@@ -398,11 +371,7 @@ export function CampaignsManagement() {
               <span className="font-medium">{activeCampaigns}</span>
               <span className="text-muted-foreground">Active</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <DollarSign className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
-              <span className="font-medium">${totalBudget.toLocaleString()}</span>
-              <span className="text-muted-foreground">Budget</span>
-            </div>
+
           </div>
 
           {/* Filters */}
@@ -457,23 +426,9 @@ export function CampaignsManagement() {
             />
           </div>
 
-          {/* Campaign Count */}
-          <Badge variant="secondary" className="whitespace-nowrap">
-            {filteredCampaigns.length} campaign{filteredCampaigns.length !== 1 ? 's' : ''}
-          </Badge>
 
-          {/* Clear Filters */}
-          {hasActiveFilters && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={clearFilters}
-              className="text-muted-foreground"
-            >
-              <X className="mr-2 h-4 w-4" />
-              Clear
-            </Button>
-          )}
+
+
 
           {/* Create Button */}
           <div className="ml-auto">
@@ -486,8 +441,21 @@ export function CampaignsManagement() {
           </div>
         </div>
 
-        {/* Campaigns Table */}
+        {/* Campaigns Table or Empty State */}
         {filteredCampaigns.length > 0 ? (
+          <DataTable
+            columns={createColumns(
+              handleEditCampaign,
+              handleDeleteCampaign,
+              safeBrands,
+              deleteCampaignMutation.isPending
+            )}
+            data={filteredCampaigns}
+            pageSize={10}
+            showSearch={false}
+            showPageSize={false}
+          />
+        ) : (
           <Card>
             <CardContent className="pt-6">
               <div className="text-center py-6">
@@ -521,20 +489,6 @@ export function CampaignsManagement() {
           </Card>
         )}
 
-          <DataTable
-            columns={createColumns(
-              handleEditCampaign,
-              handleDeleteCampaign,
-              safeBrands,
-              deleteCampaignMutation.isPending
-            )}
-            data={filteredCampaigns}
-            pageSize={10}
-            showSearch={false}
-            showPageSize={false}
-          />
-        ) : (
-
         {/* Help Section */}
         <Card className="border border-blue-200 dark:border-blue-800">
           <CardContent className="p-3">
@@ -545,7 +499,7 @@ export function CampaignsManagement() {
                   About Campaign Management
                 </h3>
                 <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
-                  Campaigns are the foundation of your advertising strategy. Each campaign contains ad sets and individual ads. 
+                  Campaigns are the foundation of your advertising strategy. Each campaign contains ad sets and individual ads.
                   Use filters to organize your campaigns by status, objective, or brand for better management.
                 </p>
               </div>

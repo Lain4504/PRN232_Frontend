@@ -215,14 +215,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ContentStatusEnum | "all">("all");
   const [adTypeFilter, setAdTypeFilter] = useState<AdTypeEnum | "all">("all");
-  const [brandFilter, setBrandFilter] = useState(initialBrandId || "all");
-  
-  // Update brandFilter when initialBrandId changes
-  useEffect(() => {
-    if (initialBrandId && initialBrandId !== brandFilter) {
-      setBrandFilter(initialBrandId);
-    }
-  }, [initialBrandId, brandFilter]);
+
   const [isCreating, setIsCreating] = useState(false);
   const [selectedContent, setSelectedContent] = useState<ContentResponseDto | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -241,7 +234,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
     isLoading,
     error
   } = useContentsByBrandFilter({
-    brandId: brandFilter !== "all" ? brandFilter : undefined,
+    brandId: initialBrandId || undefined,
     searchTerm: searchTerm || undefined,
     status: statusFilter !== "all" ? statusFilter : undefined,
     adType: adTypeFilter !== "all" ? adTypeFilter : undefined,
@@ -441,10 +434,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
               <span className="font-medium">{contents.length}</span>
               <span className="text-muted-foreground">Content{contents.length !== 1 ? 's' : ''}</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <Brain className="h-3 w-3 lg:h-4 lg:w-4 text-primary flex-shrink-0" />
-              <span className="font-medium">AI Powered</span>
-            </div>
+
           </div>
 
           {/* Filters */}
@@ -474,19 +464,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
             </SelectContent>
           </Select>
 
-          <Select value={brandFilter} onValueChange={setBrandFilter}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Brand" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Brands</SelectItem>
-              {brands.map((brand: { id: string; name: string }) => (
-                <SelectItem key={brand.id} value={brand.id}>
-                  {brand.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+
 
           {/* Search */}
           <div className="relative w-80">
@@ -499,28 +477,9 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
             />
           </div>
 
-          {/* Content Count */}
-          <Badge variant="secondary" className="whitespace-nowrap">
-            {filteredContents.length} content{filteredContents.length !== 1 ? 's' : ''}
-          </Badge>
 
-          {/* Clear Filters */}
-          {(searchTerm || statusFilter !== "all" || adTypeFilter !== "all" || brandFilter !== "all") && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setSearchTerm("");
-                setStatusFilter("all");
-                setAdTypeFilter("all");
-                setBrandFilter("all");
-              }}
-              className="text-muted-foreground"
-            >
-              <X className="mr-2 h-4 w-4" />
-              Clear
-            </Button>
-          )}
+
+
 
           {/* Create Buttons */}
           <div className="ml-auto flex items-center gap-2">
@@ -534,7 +493,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
               Manual
             </Button>
             <Button 
-              onClick={() => window.location.href = `/dashboard/brands/${brandFilter}/contents/new`}
+              onClick={() => window.location.href = `/dashboard/brands/${initialBrandId || 'all'}/contents/new`}
               size="sm"
               className="flex items-center justify-center gap-2"
             >
@@ -594,7 +553,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
                         Create Manual Content
                       </Button>
                       <Button 
-                        onClick={() => window.location.href = `/dashboard/brands/${brandFilter}/contents/new`}
+                        onClick={() => window.location.href = `/dashboard/brands/${initialBrandId || 'all'}/contents/new`}
                         size="sm" 
                         className="h-8 text-xs flex items-center justify-center gap-2"
                       >

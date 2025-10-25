@@ -6,6 +6,7 @@ import { ProfileBrandSelector } from '@/components/profiles/profile-brand-select
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { DataTable } from '@/components/ui/data-table'
 import { ColumnDef } from '@tanstack/react-table'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -16,7 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Mail, Edit, Eye, Calendar, User, ExternalLink, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { Mail, Edit, Eye, Calendar, User, ExternalLink, Clock, CheckCircle, XCircle, Search } from 'lucide-react'
+import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
 import type { Post } from '@/lib/types/aisam-types'
 
 export default function PostsPage() {
@@ -83,12 +85,12 @@ export default function PostsPage() {
   // Define table columns
   const columns: ColumnDef<Post>[] = [
     {
-      accessorKey: 'external_post_id',
+      accessorKey: 'externalPostId',
       header: 'Post ID',
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <Mail className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">{row.getValue('external_post_id')}</span>
+          <span className="font-medium">{row.getValue('externalPostId')}</span>
         </div>
       ),
     },
@@ -149,26 +151,22 @@ export default function PostsPage() {
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => handleViewPost(row.original)}
-          >
-            <Eye className="h-3 w-3 mr-1" />
-            View
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => handleViewPost(row.original)}
-          >
-            <Edit className="h-3 w-3 mr-1" />
-            Details
-          </Button>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const actions: ActionItem[] = [
+          {
+            label: "View Details",
+            icon: <Eye className="h-4 w-4" />,
+            onClick: () => handleViewPost(row.original),
+          },
+          {
+            label: "Edit",
+            icon: <Edit className="h-4 w-4" />,
+            onClick: () => handleViewPost(row.original),
+          },
+        ];
+
+        return <ActionsDropdown actions={actions} />;
+      },
     },
   ]
 
@@ -198,8 +196,24 @@ export default function PostsPage() {
         </p>
       </div>
 
-      {/* Single Row Layout - Brand Selector, Page Size, Search, Posts Count */}
+      {/* Single Row Layout - Status Filter, Brand Selector, Page Size, Search */}
       <div className="flex items-center gap-4">
+        {/* Status Filter Dropdown */}
+        <Select 
+          value={filters.status || 'all'} 
+          onValueChange={handleStatusFilter}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="published">Published</SelectItem>
+            <SelectItem value="failed">Failed</SelectItem>
+            <SelectItem value="deleted">Deleted</SelectItem>
+          </SelectContent>
+        </Select>
+
         {/* Brand Selector */}
         <div className="w-64">
           <ProfileBrandSelector
@@ -227,42 +241,21 @@ export default function PostsPage() {
           </SelectContent>
         </Select>
 
-        {/* Posts Count */}
-        <Badge variant="secondary" className="whitespace-nowrap">
-          {postsData?.data?.length || 0} post{(postsData?.data?.length || 0) !== 1 ? 's' : ''}
-        </Badge>
-      </div>
-
-      {/* Status Filter Buttons */}
-      <div className="flex gap-2">
-        <Button 
-          variant={filters.status === undefined ? "default" : "outline"} 
-          size="sm"
-          onClick={() => handleStatusFilter('all')}
-        >
-          All
-        </Button>
-        <Button 
-          variant={filters.status === 'published' ? "default" : "outline"} 
-          size="sm"
-          onClick={() => handleStatusFilter('published')}
-        >
-          Published
-        </Button>
-        <Button 
-          variant={filters.status === 'failed' ? "default" : "outline"} 
-          size="sm"
-          onClick={() => handleStatusFilter('failed')}
-        >
-          Failed
-        </Button>
-        <Button 
-          variant={filters.status === 'deleted' ? "default" : "outline"} 
-          size="sm"
-          onClick={() => handleStatusFilter('deleted')}
-        >
-          Deleted
-        </Button>
+        {/* Search */}
+        <div className="relative w-80">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search posts..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch(e as any);
+              }
+            }}
+            className="pl-10 h-9"
+          />
+        </div>
       </div>
 
       {/* Posts Table */}
@@ -272,10 +265,9 @@ export default function PostsPage() {
         loading={isLoading}
         emptyMessage="No posts found"
         emptyDescription="No social media posts have been published yet."
-        searchPlaceholder="Search posts by ID, content, or integration..."
-        filterColumn="external_post_id"
         pageSize={pageSize}
         showPageSize={false}
+        showSearch={false}
       />
 
       {/* Post Details Modal */}

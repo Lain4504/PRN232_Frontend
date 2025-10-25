@@ -12,12 +12,7 @@ import {
   AlertTriangle,
   Link
 } from 'lucide-react'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu'
+import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
 import { 
   AlertDialog, 
   AlertDialogAction, 
@@ -282,94 +277,33 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
                     </TableCell>
                     
                     <TableCell className="py-3 px-2 lg:px-3 text-right">
-                      <div className="flex items-center justify-end gap-1 lg:gap-2">
-                        {/* Mobile: Only show essential actions */}
-                        <div className="lg:hidden">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-muted">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              {(account.targets?.length || 0) > 0 && (
-                                <DropdownMenuItem 
-                                  onClick={() => setIntegrationsModalOpen({ accountId: account.id, account })}
-                                  className="cursor-pointer"
-                                >
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  View Integrations
-                                </DropdownMenuItem>
-                              )}
-                              <DropdownMenuItem 
-                                onClick={() => handleReAuth(account.provider, account.id)}
-                                disabled={isReAuthing === account.id}
-                                className="cursor-pointer"
-                              >
-                                {isReAuthing === account.id ? (
-                                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                                ) : (
-                                  <RefreshCw className="mr-2 h-4 w-4" />
-                                )}
-                                Re-authenticate
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => setLinkModalOpen({ accountId: account.id, provider: account.provider })}
-                                className="cursor-pointer"
-                              >
-                                <Link className="mr-2 h-4 w-4" />
-                                Link to Brand
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => setDeleteDialogOpen({ accountId: account.id })}
-                                className="text-destructive focus:text-destructive"
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Unlink Account
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                        
-                        {/* Desktop: Show all actions */}
-                        <div className="hidden lg:flex items-center gap-2">
-                          {(account.targets?.length || 0) > 0 && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setIntegrationsModalOpen({ accountId: account.id, account })}
-                              className="h-8 text-xs"
-                            >
-                              <Eye className="mr-1 h-3 w-3" />
-                              View Integrations
-                            </Button>
-                          )}
-
-                          {renderReAuthButton(account)}
-
-                          <LinkIntegrationModal
-                            socialAccountId={account.id}
-                            provider={account.provider}
-                          />
-
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => setDeleteDialogOpen({ accountId: account.id })}
-                                className="text-destructive focus:text-destructive"
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Unlink Account
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </div>
+                      <ActionsDropdown
+                        actions={[
+                          ...(account.targets?.length ? [{
+                            label: "View Integrations",
+                            icon: <Eye className="h-4 w-4" />,
+                            onClick: () => setIntegrationsModalOpen({ accountId: account.id, account }),
+                          }] : []),
+                          {
+                            label: "Re-authenticate",
+                            icon: isReAuthing === account.id ? <RefreshCw className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />,
+                            onClick: () => handleReAuth(account.provider, account.id),
+                            disabled: isReAuthing === account.id,
+                          },
+                          {
+                            label: "Link to Brand",
+                            icon: <Link className="h-4 w-4" />,
+                            onClick: () => setLinkModalOpen({ accountId: account.id, provider: account.provider }),
+                          },
+                          {
+                            label: "Unlink Account",
+                            icon: <Trash2 className="h-4 w-4" />,
+                            onClick: () => setDeleteDialogOpen({ accountId: account.id }),
+                            variant: "destructive" as const,
+                          },
+                        ] as ActionItem[]}
+                        disabled={isReAuthing === account.id}
+                      />
                     </TableCell>
                   </TableRow>
                 )

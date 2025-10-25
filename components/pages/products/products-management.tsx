@@ -220,7 +220,6 @@ export function ProductsManagement() {
 
   // Main UI
   const totalProducts = filteredProducts.length;
-  const avgPrice = filteredProducts.length > 0 ? (filteredProducts.reduce((sum, p) => sum + (p.price || 0), 0) / filteredProducts.length).toFixed(2) : '0.00';
 
   // Redirect to brands if no brand ID provided
   if (!brandId) {
@@ -280,11 +279,7 @@ export function ProductsManagement() {
               <span className="font-medium">{totalProducts}</span>
               <span className="text-muted-foreground">Products</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <DollarSign className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
-              <span className="font-medium">${avgPrice}</span>
-              <span className="text-muted-foreground">Avg Price</span>
-            </div>
+
           </div>
 
           {/* Page Size Selector */}
@@ -315,13 +310,10 @@ export function ProductsManagement() {
             />
           </div>
 
-          {/* Products Count */}
-          <Badge variant="secondary" className="whitespace-nowrap">
-            {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
-          </Badge>
+
 
           {/* Create Button */}
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto">
             <ProductModal
               mode="create"
               defaultBrandId={brandId}
@@ -332,14 +324,6 @@ export function ProductsManagement() {
                 Add Product
               </Button>
             </ProductModal>
-
-            {/* Back Button */}
-            <Button asChild variant="outline" size="sm">
-              <Link href="/dashboard/brands">
-                <Target className="mr-2 h-4 w-4" />
-                Back to Brands
-              </Link>
-            </Button>
           </div>
         </div>
 

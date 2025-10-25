@@ -291,10 +291,7 @@ export function BrandsManagement() {
             />
           </div>
 
-          {/* Brands Count */}
-          <Badge variant="secondary" className="whitespace-nowrap">
-            {filteredBrands.length} brand{filteredBrands.length !== 1 ? 's' : ''}
-          </Badge>
+
 
           {/* Create Button */}
           <div className="ml-auto">

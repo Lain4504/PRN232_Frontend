@@ -430,10 +430,7 @@ export function ApprovalsManagement() {
             />
           </div>
 
-          {/* Approvals Count */}
-          <Badge variant="secondary" className="whitespace-nowrap">
-            {filteredApprovals.length} approval{filteredApprovals.length !== 1 ? 's' : ''}
-          </Badge>
+
 
           {/* Clear Filters */}
           {(searchTerm || statusFilter !== "all") && (
