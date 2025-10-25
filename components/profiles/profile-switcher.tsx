@@ -1,7 +1,7 @@
 "use client"
 
 import { useProfile } from '@/lib/contexts/profile-context'
-import { useProfiles } from '@/hooks/use-profile'
+import { useGetProfiles } from '@/hooks/use-profiles'
 import { useUser } from '@/hooks/use-user'
 import {  PROFILE_TYPE_LABELS, PROFILE_TYPE_COLORS, ProfileTypeEnum } from '@/lib/utils/profile-utils'
 import { Button } from '@/components/ui/button'
@@ -20,7 +20,7 @@ import { Building2, Plus, ChevronsUpDown } from 'lucide-react'
 export function ProfileSwitcher() {
   const { data: user } = useUser()
   const { activeProfile, setActiveProfile } = useProfile()
-  const { data: profiles = [] } = useProfiles(user?.id)
+  const { data: profiles = [] } = useGetProfiles(user?.id || '')
 
   const handleProfileSelect = (profile: { id: string; name?: string; company_name?: string; profileType: string; avatarUrl?: string }) => {
     setActiveProfile(profile.id, {

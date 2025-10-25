@@ -47,6 +47,7 @@ export function useCreateProfile(userId: string) {
   return useMutation({
     mutationFn: async (data: CreateProfileForm): Promise<Profile> => {
       const fd = new FormData()
+      fd.append('Name', data.name)
       fd.append('ProfileType', data.profile_type === 'business' ? '1' : '0')
       if (data.company_name) fd.append('CompanyName', data.company_name)
       if (data.bio) fd.append('Bio', data.bio)
