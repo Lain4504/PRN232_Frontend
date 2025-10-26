@@ -1,11 +1,10 @@
 "use client"
 
-import React, { useState, use } from 'react'
+import React, { useState, use, useMemo } from 'react'
 import { useTeam } from '@/lib/contexts/team-context'
 import { useTeamPosts } from '@/hooks/use-team-posts'
 import { TeamPermissionGate } from '@/components/teams/team-permission-gate'
 import { TeamBrandSelector } from '@/components/teams/team-brand-selector'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { CustomTable } from '@/components/ui/custom-table'
@@ -82,14 +81,13 @@ export default function TeamPostsPage({
   }
 
   // Define table columns
-  const columns: ColumnDef<Post>[] = [
+  const columns: ColumnDef<Post>[] = useMemo(() => [
     {
       accessorKey: 'externalPostId',
       header: 'Post ID',
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <Mail className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">{row.getValue('externalPostId')}</span>
+        <div className="font-medium text-center">
+          {row.getValue('externalPostId')}
         </div>
       ),
     },
@@ -97,28 +95,30 @@ export default function TeamPostsPage({
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => (
-        <Badge className={getStatusColor(row.getValue('status'))}>
-          {(row.getValue('status') as string).charAt(0).toUpperCase() + 
-           (row.getValue('status') as string).slice(1)}
-        </Badge>
+        <div className="text-center">
+          <Badge className={getStatusColor(row.getValue('status'))}>
+            {(row.getValue('status') as string).charAt(0).toUpperCase() + 
+             (row.getValue('status') as string).slice(1)}
+          </Badge>
+        </div>
       ),
     },
     {
       accessorKey: 'contentId',
       header: 'Content ID',
       cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">
+        <div className="text-center text-sm">
           {row.getValue('contentId')}
-        </span>
+        </div>
       ),
     },
     {
       accessorKey: 'integrationId',
       header: 'Integration',
       cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">
+        <div className="text-center text-sm">
           {row.getValue('integrationId')}
-        </span>
+        </div>
       ),
     },
     {
@@ -127,18 +127,17 @@ export default function TeamPostsPage({
       cell: ({ row }) => {
         const date = row.getValue('publishedAt') as string
         return (
-          <div className="flex items-center gap-1 text-sm">
-            <Calendar className="h-3 w-3 text-muted-foreground" />
-            <span>{date ? new Date(date).toLocaleDateString() : 'N/A'}</span>
+          <div className="text-center text-sm">
+            {date ? new Date(date).toLocaleDateString() : 'N/A'}
           </div>
         )
       },
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: '',
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           <Button 
             variant="outline" 
             size="sm"
@@ -159,24 +158,22 @@ export default function TeamPostsPage({
         </div>
       ),
     },
-  ]
+  ], [])
 
   return (
     <TeamPermissionGate permission="VIEW_POSTS">
       <div className="max-w-7xl mx-auto">
         <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
-            Social Media Posts Log
-          </h1>
-          <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold">Posts</h1>
+          <p className="text-muted-foreground">
             View published posts and their status across social media platforms
           </p>
         </div>
 
-        {/* Single Row Layout - Brand Selector, Page Size, Posts Count */}
-        <div className="flex items-center gap-4">
+        {/* Filters Row */}
+        <div className="flex items-center gap-4 mb-4">
           {/* Brand Selector */}
           <div className="w-64">
             <TeamBrandSelector
@@ -189,8 +186,8 @@ export default function TeamPostsPage({
 
           {/* Page Size Selector */}
           <Select
-            value={String(pageSize)}
-            onValueChange={(value) => setPageSize(Number(value))}
+            value={String(filters.pageSize)}
+            onValueChange={(value) => setFilters(prev => ({ ...prev, pageSize: Number(value), page: 1 }))}
           >
             <SelectTrigger className="w-32">
               <SelectValue placeholder="Rows" />
@@ -204,65 +201,47 @@ export default function TeamPostsPage({
             </SelectContent>
           </Select>
 
-          {/* Posts Count */}
-          <Badge variant="secondary" className="whitespace-nowrap">
-            {postsData?.data?.length || 0} post{(postsData?.data?.length || 0) !== 1 ? 's' : ''}
-          </Badge>
+          {/* Status Filter Buttons */}
+          <div className="flex gap-2 ml-auto">
+            <Button 
+              variant={filters.status === undefined ? "default" : "outline"} 
+              size="sm"
+              onClick={() => handleStatusFilter('all')}
+            >
+              All
+            </Button>
+            <Button 
+              variant={filters.status === 'published' ? "default" : "outline"} 
+              size="sm"
+              onClick={() => handleStatusFilter('published')}
+            >
+              Published
+            </Button>
+            <Button 
+              variant={filters.status === 'failed' ? "default" : "outline"} 
+              size="sm"
+              onClick={() => handleStatusFilter('failed')}
+            >
+              Failed
+            </Button>
+            <Button 
+              variant={filters.status === 'deleted' ? "default" : "outline"} 
+              size="sm"
+              onClick={() => handleStatusFilter('deleted')}
+            >
+              Deleted
+            </Button>
+          </div>
         </div>
 
-        {/* Posts Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Posts Log</CardTitle>
-            <CardDescription>
-              View all published posts and their status across social media platforms
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {/* Status Filter Buttons */}
-            <div className="flex gap-2 mb-6">
-              <Button 
-                variant={filters.status === undefined ? "default" : "outline"} 
-                size="sm"
-                onClick={() => handleStatusFilter('all')}
-              >
-                All
-              </Button>
-              <Button 
-                variant={filters.status === 'published' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => handleStatusFilter('published')}
-              >
-                Published
-              </Button>
-              <Button 
-                variant={filters.status === 'failed' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => handleStatusFilter('failed')}
-              >
-                Failed
-              </Button>
-              <Button 
-                variant={filters.status === 'deleted' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => handleStatusFilter('deleted')}
-              >
-                Deleted
-              </Button>
-            </div>
-
-            {/* Data Table */}
-            <CustomTable
-              columns={columns}
-              data={postsData?.data || []}
-              loading={isLoading}
-              emptyMessage="No posts found"
-              emptyDescription="No social media posts have been published yet."
-              searchPlaceholder="Search posts by ID, content, or integration..."
-              filterColumn="externalPostId"
-            />
-          </CardContent>
-        </Card>
+        {/* Data Table */}
+        <CustomTable
+          columns={columns}
+          data={postsData?.data || []}
+          isLoading={isLoading}
+          emptyMessage="No posts found"
+          pageSize={filters.pageSize}
+        />
 
         {/* Post Details Modal */}
         <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
