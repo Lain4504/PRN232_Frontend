@@ -134,11 +134,7 @@ export function ProfileBrandSelector({
         </SelectContent>
       </Select>
       
-      {profileBrands.length > 0 && (
-        <div className="text-xs text-muted-foreground">
-          {profileBrands.length} brand{profileBrands.length !== 1 ? 's' : ''} available
-        </div>
-      )}
+
     </div>
   )
 }

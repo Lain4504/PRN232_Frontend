@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { DataTable } from '@/components/ui/data-table'
+import { CustomTable } from '@/components/ui/custom-table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -149,7 +149,7 @@ export function SubscriptionDataTable<T>({
 
       {/* Data Table */}
       {canAccess ? (
-        <DataTable data={data} columns={columns} />
+        <CustomTable data={data} columns={columns} pageSize={10} />
       ) : showUpgradePrompt ? (
         <UpgradePrompt
           featureId={featureId}

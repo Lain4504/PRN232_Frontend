@@ -230,39 +230,10 @@ export default function TeamSettingsPage({
               {validActiveTab === 'members' && (
             <div className="space-y-6">
               {/* Enhanced Team Members */}
-              <Card className="border border-primary/20 group hover:shadow-lg transition-all duration-300">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-chart-2/20 to-chart-2/10 rounded-lg flex items-center justify-center">
-                          <Users className="h-4 w-4 text-chart-2" />
-                        </div>
-                        <CardTitle className="text-lg font-semibold">Team Members</CardTitle>
-                      </div>
-                      <CardDescription className="text-sm text-muted-foreground">
-                        Manage your team members and their access levels
-                      </CardDescription>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setAddMemberOpen(true)}
-                      disabled={!hasPermission('INVITE_MEMBER')}
-                      className="gap-2 h-8 text-xs hover:bg-primary/5 hover:border-primary/30 transition-all duration-200"
-                    >
-                      <UserPlus className="h-3 w-3" />
-                      Add Member
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <TeamMembersTable 
-                    teamId={teamId}
-                    canManage={hasPermission('INVITE_MEMBER')}
-                  />
-                </CardContent>
-              </Card>
+              <TeamMembersTable 
+                teamId={teamId}
+                canManage={hasPermission('INVITE_MEMBER')}
+              />
             </div>
           )}
 

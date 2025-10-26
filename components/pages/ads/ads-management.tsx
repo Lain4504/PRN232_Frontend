@@ -6,7 +6,7 @@ import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbP
 import { Button } from "@/components/ui/button";
 import { Plus, Megaphone, Filter } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTable } from "@/components/ui/data-table";
+import { CustomTable } from "@/components/ui/custom-table";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useAds } from "@/hooks/use-ads";
@@ -181,11 +181,11 @@ export function AdsManagement({ campaignId, adSetId }: AdsManagementProps) {
               Start Selected
             </Button>
           </div>
-          <DataTable
+          <CustomTable
             columns={columns}
             data={data}
-            loading={isLoading}
-            showSearch={false}
+            pageSize={10}
+            isLoading={isLoading}
             emptyMessage="No ads yet"
             emptyDescription="Create your first ad to start running campaigns in this ad set."
           />

@@ -11,10 +11,12 @@ import { TeamDeleteDialog } from '@/components/pages/teams/TeamDeleteDialog'
 import { EditTeamDialog } from '@/components/teams/edit-team-dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { CustomTable } from '@/components/ui/custom-table'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent } from '@/components/ui/card'
 import { Eye, Users, Building2, Trash2, Edit } from 'lucide-react'
+import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
+import { ColumnDef } from '@tanstack/react-table'
 import type { TeamResponse } from '@/lib/types/aisam-types'
 
 function TeamsPageContent() {
@@ -40,49 +42,91 @@ function TeamsPageContent() {
 
   const rows = useMemo(() => data || [], [data])
 
+  // Define columns for the teams table
+  const columns: ColumnDef<TeamResponse>[] = useMemo(() => [
+    {
+      accessorKey: "name",
+      header: "Team Name",
+      cell: ({ row }) => (
+        <div className="font-medium text-center">
+          {row.getValue("name")}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = getTeamStatus(row.original);
+        return (
+          <div className="text-center">
+            <Badge variant={status === 'Active' ? 'default' : 'secondary'}>
+              {status}
+            </Badge>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "membersCount",
+      header: "Members",
+      cell: ({ row }) => (
+        <div className="flex items-center justify-center gap-2">
+          <Users className="h-4 w-4 text-muted-foreground" />
+          {row.original.membersCount || 0}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created",
+      cell: ({ row }) => (
+        <div className="text-center">
+          {new Date(row.getValue("createdAt")).toLocaleDateString()}
+        </div>
+      ),
+    },
+    {
+      id: "actions",
+      header: "",
+      cell: ({ row }) => {
+        const actions: ActionItem[] = [
+          {
+            label: "View Team",
+            icon: <Eye className="h-4 w-4" />,
+            onClick: () => window.open(`/dashboard/teams/${row.original.id}`, '_self'),
+          },
+          {
+            label: "Edit",
+            icon: <Edit className="h-4 w-4" />,
+            onClick: () => setEditDialog({ open: true, team: row.original }),
+          },
+          {
+            label: "Delete",
+            icon: <Trash2 className="h-4 w-4" />,
+            onClick: () => setDeleteDialog({ open: true, teamId: row.original.id, teamName: row.original.name }),
+            variant: "destructive" as const,
+          },
+        ];
+
+        return (
+          <div className="flex justify-center">
+            <ActionsDropdown actions={actions} />
+          </div>
+        );
+      },
+    },
+  ], []);
+
   // Skeleton component for teams table
   const TeamsTableSkeleton = () => (
-    <div className="bg-card rounded-lg border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Team Name</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Members</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {[...Array(3)].map((_, i) => (
-            <TableRow key={i}>
-              <TableCell>
-                <Skeleton className="h-4 w-32" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-6 w-16 rounded-full" />
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <Skeleton className="h-4 w-8" />
-                </div>
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-4 w-20" />
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-8 w-12 rounded" />
-                  <Skeleton className="h-8 w-12 rounded" />
-                  <Skeleton className="h-8 w-12 rounded" />
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <CustomTable
+      columns={columns}
+      data={[]}
+      isLoading={true}
+      loadingRows={3}
+      pageSize={10}
+    />
   )
 
   return (
@@ -138,76 +182,12 @@ function TeamsPageContent() {
           </CardContent>
         </Card>
       ) : (
-        <div className="bg-card rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Team Name</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Members</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map((team) => (
-                <TableRow key={team.id}>
-                  <TableCell className="font-medium">
-                    {team.name}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={getTeamStatus(team) === 'Active' ? 'default' : 'secondary'}>
-                      {getTeamStatus(team)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                      {team.membersCount || 0}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(team.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Link href={`/dashboard/teams/${team.id}`}>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-8 px-3 text-blue-600 border-blue-600 hover:bg-blue-50 hover:text-blue-700"
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          Xem
-                        </Button>
-                      </Link>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 px-3 text-orange-600 border-orange-600 hover:bg-orange-50 hover:text-orange-700"
-                        onClick={() => setEditDialog({ open: true, team })}
-                        aria-label="Chỉnh sửa team"
-                      >
-                        <Edit className="h-4 w-4 mr-1" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 px-3 text-destructive border-destructive hover:bg-destructive/10"
-                        onClick={() => setDeleteDialog({ open: true, teamId: team.id, teamName: team.name })}
-                        aria-label="Xóa team"
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Xóa
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <CustomTable
+          columns={columns}
+          data={rows}
+          pageSize={10}
+          emptyMessage="No teams found"
+        />
       )}
 
       {/* Create Team Dialog */}
