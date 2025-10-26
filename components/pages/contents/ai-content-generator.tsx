@@ -798,18 +798,18 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                       </AvatarFallback>
                     </Avatar>
                   )}
-                  <div className={`flex flex-col gap-1 sm:gap-2 max-w-[85%] sm:max-w-[80%] ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
+                  <div className={`flex flex-col gap-1 sm:gap-2 min-w-0 shrink max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%] ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
                     <div
-                      className={`rounded-2xl px-3 py-2 sm:px-4 sm:py-3 ${message.role === 'user'
+                      className={`rounded-2xl px-3 py-2 sm:px-4 sm:py-3 max-w-full overflow-hidden break-words break-all shrink ${message.role === 'user'
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-muted'
                         }`}
                     >
-                      <p className="text-sm sm:text-base whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
+                      <p className="text-sm sm:text-base whitespace-pre-wrap break-words break-all leading-relaxed max-w-full">{message.content}</p>
                     </div>
                     {message.generation && (
                       <Card className="w-full">
-                        <CardContent className="p-3 sm:p-4 space-y-3">
+                        <CardContent className="p-2 sm:p-3 md:p-4 space-y-3">
                           <div className="flex items-center gap-2">
                             <Sparkles className="h-4 w-4 text-primary" />
                             <span className="text-xs font-medium text-muted-foreground">Generated Content</span>
@@ -840,9 +840,9 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                     )}
                   </div>
                   {message.role === 'user' && (
-                    <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
+                    <Avatar className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 flex-shrink-0">
                       <AvatarFallback>
-                        <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <User className="h-3 w-3 sm:h-3 sm:w-3 md:h-4 md:w-4" />
                       </AvatarFallback>
                     </Avatar>
                   )}
@@ -850,9 +850,9 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
               ))}
               {isTyping && (
                 <div className="flex gap-2 sm:gap-3 justify-start">
-                  <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
+                  <Avatar className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8">
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      <Bot className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <Bot className="h-3 w-3 sm:h-3 sm:w-3 md:h-4 md:w-4" />
                     </AvatarFallback>
                   </Avatar>
                   <div className="bg-muted rounded-2xl px-3 py-2 sm:px-4 sm:py-3">
@@ -870,7 +870,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
 
         {/* Chat Input */}
         {currentSession && (
-          <div className="border-t p-3 sm:p-4">
+          <div className="border-t p-2 sm:p-3 md:p-4">
             <div className="max-w-3xl mx-auto">
               <div className="flex gap-2">
                 <Input
@@ -885,7 +885,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                   onClick={sendChatMessage}
                   disabled={!chatInput.trim() || isTyping}
                   size="icon"
-                  className="flex-shrink-0 h-10 w-10 sm:h-9 sm:w-9"
+                  className="flex-shrink-0 h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10"
                 >
                   <Send className="h-4 w-4" />
                 </Button>
