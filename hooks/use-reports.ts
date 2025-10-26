@@ -12,7 +12,9 @@ import {
   AnalyticsData,
   CampaignAnalytics,
   ContentAnalytics,
-  TeamAnalytics
+  TeamAnalytics,
+  AnalyticsMetrics,
+  AnalyticsDimensions
 } from '@/lib/types/analytics';
 import { ANALYTICS_REPORT_TYPES, ANALYTICS_EXPORT_FORMATS } from '@/lib/constants/analytics-metrics';
 
@@ -136,7 +138,7 @@ const mockReportsApi = {
     
     return {
       format: request.format,
-      data: {},
+      data: {} as AnalyticsData,
       options: request.options,
       status: 'ready',
       downloadUrl: `/api/exports/export-${Date.now()}/download`,
@@ -150,7 +152,7 @@ const mockReportsApi = {
     
     return {
       format: 'pdf',
-      data: {},
+      data: {} as AnalyticsData,
       options: {
         includeCharts: true,
         includeRawData: false,
@@ -325,9 +327,10 @@ export function useExportStatus(exportId: string) {
     queryKey: ['export-status', exportId],
     queryFn: () => mockReportsApi.getExportStatus(exportId),
     enabled: !!exportId,
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
       // Stop polling when export is ready or failed
-      return data?.status === 'ready' || data?.status === 'failed' ? false : 2000;
+      const status = query.state.data?.status;
+      return status === 'ready' || status === 'failed' ? false : 2000;
     },
     staleTime: 0,
   });
@@ -418,7 +421,7 @@ export function useReportBuilder() {
       setSelectedTemplate(templateId);
       setReportConfig({
         name: template.name,
-        type: template.type,
+        type: template.type as ReportData['type'],
       });
       setFilters(template.defaultFilters);
       setTimeRange(template.defaultTimeRange);
@@ -459,8 +462,8 @@ export function useReportBuilder() {
       filters,
       data: {
         id: 'temp-report-data',
-        metrics: {} as any,
-        dimensions: {} as any,
+        metrics: {} as AnalyticsMetrics,
+        dimensions: {} as AnalyticsDimensions,
         timeRange,
         filters,
         aggregations: { sum: [], average: [], count: [], min: [], max: [] },

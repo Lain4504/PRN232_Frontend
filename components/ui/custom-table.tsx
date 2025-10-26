@@ -27,6 +27,7 @@ interface CustomTableProps<TData, TValue> {
   className?: string;
   headerClassName?: string;
   emptyMessage?: string;
+  emptyDescription?: string;
   loadingRows?: number;
   onRowClick?: (row: TData) => void;
 }
@@ -43,6 +44,7 @@ export function CustomTable<TData, TValue>({
   className,
   headerClassName = "bg-gray-50/50 hover:bg-gray-50/50 border-b border-gray-300/60",
   emptyMessage = "No data found",
+  emptyDescription,
   loadingRows = 5,
   onRowClick,
 }: CustomTableProps<TData, TValue>) {
@@ -192,6 +194,11 @@ export function CustomTable<TData, TValue>({
                   <p className="text-sm font-medium text-gray-500 mb-1">
                     {emptyMessage}
                   </p>
+                  {emptyDescription && (
+                    <p className="text-xs text-muted-foreground">
+                      {emptyDescription}
+                    </p>
+                  )}
                 </div>
               </TableCell>
             </TableRow>

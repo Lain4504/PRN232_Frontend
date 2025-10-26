@@ -145,7 +145,7 @@ export function useBillingInfo() {
   });
 }
 
-export function useInvoices(filters?: Record<string, any>) {
+export function useInvoices(filters?: Record<string, unknown>) {
   return useQuery({
     queryKey: [...billingKeys.invoices(), { filters }],
     queryFn: async () => {
@@ -170,7 +170,7 @@ export function useInvoice(id: string) {
   });
 }
 
-export function useTransactions(filters?: Record<string, any>) {
+export function useTransactions(filters?: Record<string, unknown>) {
   return useQuery({
     queryKey: [...billingKeys.transactions(), { filters }],
     queryFn: async () => {
@@ -301,9 +301,9 @@ export function useMarkAllNotificationsAsRead() {
 
 // Utility hooks
 export function useBillingFilters() {
-  const [filters, setFilters] = useState<Record<string, any>>({});
+  const [filters, setFilters] = useState<Record<string, unknown>>({});
 
-  const updateFilter = (key: string, value: any) => {
+  const updateFilter = (key: string, value: unknown) => {
     setFilters(prev => ({
       ...prev,
       [key]: value,

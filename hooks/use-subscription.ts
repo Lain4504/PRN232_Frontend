@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from 'react'
 import { getUserSubscriptions, getActiveSubscription } from '@/lib/api/subscription'
 import { SubscriptionResponseDto } from '@/lib/types/subscription'

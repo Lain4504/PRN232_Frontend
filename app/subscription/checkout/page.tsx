@@ -35,13 +35,7 @@ export default function CheckoutPage() {
   }, [planId, profileId, router])
 
   useEffect(() => {
-    if (!isLoading && profile) {
-      // Check if profile is in pending status
-      if (profile.status !== 0) {
-        toast.error('Profile is not in pending status')
-        router.push('/overview/profile/new')
-      }
-    } else if (!isLoading && !profile) {
+    if (!isLoading && !profile) {
       toast.error('Profile not found')
       router.push('/overview/profile/new')
     }
@@ -108,7 +102,7 @@ export default function CheckoutPage() {
             </Link>
             <h1 className="text-3xl font-bold">Complete Your Subscription</h1>
             <p className="text-muted-foreground mt-2">
-              You're almost ready to get started with your new profile.
+              You&apos;re almost ready to get started with your new profile.
             </p>
           </div>
 
@@ -148,7 +142,7 @@ export default function CheckoutPage() {
               {/* Features */}
               <Card>
                 <CardHeader>
-                  <CardTitle>What's Included</CardTitle>
+                  <CardTitle>What&apos;s Included</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2">

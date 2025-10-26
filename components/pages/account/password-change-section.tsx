@@ -116,9 +116,10 @@ export function PasswordChangeSection() {
       setNewPassword("");
       setConfirmPassword("");
       toast.success("Password updated successfully!");
-    } catch (error: any) {
-      console.error("Password update error:", error);
-      setError(error.message || "Failed to update password. Please try again.");
+    } catch (err: unknown) {
+      console.error("Password update error:", err);
+      const message = err instanceof Error ? err.message : "Failed to update password. Please try again.";
+      setError(message);
       toast.error("Failed to update password");
     } finally {
       setIsLoading(false);
@@ -257,7 +258,7 @@ export function PasswordChangeSection() {
                  ) : (
                    <>
                      <AlertCircle className="h-4 w-4 text-destructive" />
-                     <span className="text-xs text-destructive">Passwords don't match</span>
+                     <p className="text-xs text-destructive">Passwords don&apos;t match</p>
                    </>
                  )}
                </div>

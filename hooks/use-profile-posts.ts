@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api, endpoints, PaginatedResponse } from '@/lib/api'
-import type { Post, PostFilters, Brand } from '@/lib/types/aisam-types'
+import type { Post, PostFilters, Brand, PublishResultDto } from '@/lib/types/aisam-types'
 
 // Query Keys
 export const profilePostKeys = {
@@ -114,8 +114,8 @@ export function useDeleteProfilePost(profileId: string) {
 export function usePublishProfilePost(profileId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ contentId, integrationId }: { contentId: string; integrationId: string }): Promise<any> => {
-      const resp = await api.post<any>(endpoints.contentPublish(contentId, integrationId))
+    mutationFn: async ({ contentId, integrationId }: { contentId: string; integrationId: string }): Promise<PublishResultDto> => {
+      const resp = await api.post<PublishResultDto>(endpoints.contentPublish(contentId, integrationId))
       return resp.data
     },
     onSuccess: () => {

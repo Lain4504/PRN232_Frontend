@@ -9,6 +9,7 @@ import type {
   ApprovalResponseDto,
   ApiPaginatedResponse,
 } from '@/lib/types/aisam-types'
+import { ContentStatusEnum } from '@/lib/types/aisam-types'
 
 // Query Keys
 export const contentKeys = {
@@ -28,7 +29,7 @@ export function useContents(filters?: ContentFilters) {
   if (filters?.searchTerm) params.set('searchTerm', filters.searchTerm)
   if (filters?.sortBy) params.set('sortBy', filters.sortBy)
   if (filters?.sortDescending !== undefined) params.set('sortDescending', filters.sortDescending.toString())
-  if (filters?.adType) params.set('adType', filters.adType)
+  if (filters?.adType !== undefined) params.set('adType', String(filters.adType))
   if (filters?.onlyDeleted !== undefined) params.set('onlyDeleted', filters.onlyDeleted.toString())
   if (filters?.status) params.set('status', filters.status)
 
@@ -105,7 +106,7 @@ export function useContentsByBrand(brandId?: string, filters?: Omit<ContentFilte
       if (filters?.searchTerm) params.set('searchTerm', filters.searchTerm)
       if (filters?.sortBy) params.set('sortBy', filters.sortBy)
       if (filters?.sortDescending !== undefined) params.set('sortDescending', filters.sortDescending.toString())
-      if (filters?.adType) params.set('adType', filters.adType)
+      if (filters?.adType !== undefined) params.set('adType', String(filters.adType))
       if (filters?.onlyDeleted !== undefined) params.set('onlyDeleted', filters.onlyDeleted.toString())
       if (filters?.status) params.set('status', filters.status)
 
@@ -200,7 +201,7 @@ export function useSubmitContent(contentId: string) {
       if (prev) {
         qc.setQueryData<ContentResponseDto>(key, { 
           ...prev, 
-          status: 'PendingApproval' as any
+          status: ContentStatusEnum.PendingApproval
         })
       }
       return { prev }
@@ -234,7 +235,7 @@ export function usePublishContent(contentId: string) {
       if (prev) {
         qc.setQueryData<ContentResponseDto>(key, { 
           ...prev, 
-          status: 'Published' as any
+          status: ContentStatusEnum.Published
         })
       }
       return { prev }

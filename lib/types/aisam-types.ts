@@ -527,7 +527,7 @@ export interface ApprovalResponseDto {
   approverName?: string;
   // Nested objects (optional)
   content?: ContentResponseDto;
-  approverProfile?: any;
+  approverProfile?: unknown;
 }
 
 export interface CreateApprovalRequest {

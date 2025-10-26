@@ -6,9 +6,19 @@ import type {
   CreatePaymentIntentResponse,
   PaymentResponseDto 
 } from '@/lib/types/subscription'
+import type {
+  Stripe,
+  StripeCardElement,
+  StripeCardNumberElement,
+  PaymentMethodCreateParams,
+} from '@stripe/stripe-js'
 
 // Payment Method API - This should be called from within Stripe Elements context
-export const createPaymentMethod = async (stripe: any, cardElement: any, billingDetails: any) => {
+export const createPaymentMethod = async (
+  stripe: Stripe | null,
+  cardElement: StripeCardElement | StripeCardNumberElement,
+  billingDetails: PaymentMethodCreateParams.BillingDetails
+) => {
   if (!stripe) {
     throw new Error('Stripe not initialized')
   }

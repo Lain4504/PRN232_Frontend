@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Mail, Edit, Eye, Calendar, User, ExternalLink, Clock, CheckCircle, XCircle, Search } from 'lucide-react'
+import { Mail, Edit, Eye, Calendar, Search } from 'lucide-react'
 import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
 import type { Post } from '@/lib/types/aisam-types'
 
@@ -107,45 +107,32 @@ export default function PostsPage() {
       ),
     },
     {
-      accessorKey: 'content_id',
+      accessorKey: 'contentId',
       header: 'Content ID',
       cell: ({ row }) => (
         <span className="text-sm text-muted-foreground text-center block">
-          {row.getValue('content_id')}
+          {row.getValue('contentId')}
         </span>
       ),
     },
     {
-      accessorKey: 'social_integration_id',
+      accessorKey: 'integrationId',
       header: 'Integration',
       cell: ({ row }) => (
         <span className="text-sm text-muted-foreground text-center block">
-          {row.getValue('social_integration_id')}
+          {row.getValue('integrationId')}
         </span>
       ),
     },
     {
-      accessorKey: 'published_at',
+      accessorKey: 'publishedAt',
       header: 'Published Date',
       cell: ({ row }) => {
-        const date = row.getValue('published_at') as string
+        const date = row.getValue('publishedAt') as string
         return (
           <div className="flex items-center justify-center gap-1 text-sm">
             <Calendar className="h-3 w-3 text-muted-foreground" />
             <span>{date ? new Date(date).toLocaleDateString() : 'N/A'}</span>
-          </div>
-        )
-      },
-    },
-    {
-      accessorKey: 'created_at',
-      header: 'Created Date',
-      cell: ({ row }) => {
-        const date = row.getValue('created_at') as string
-        return (
-          <div className="flex items-center justify-center gap-1 text-sm">
-            <Calendar className="h-3 w-3 text-muted-foreground" />
-            <span>{new Date(date).toLocaleDateString()}</span>
           </div>
         )
       },
@@ -248,7 +235,6 @@ export default function PostsPage() {
             ))}
           </SelectContent>
         </Select>
-
         {/* Search */}
         <div className="relative w-80">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -258,7 +244,8 @@ export default function PostsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                handleSearch(e as any);
+                e.preventDefault();
+                setFilters(prev => ({ ...prev, searchTerm: searchQuery, page: 1 }));
               }
             }}
             className="pl-10 h-9"
@@ -294,7 +281,7 @@ export default function PostsPage() {
               {/* Post ID and Status */}
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-medium">Post ID: {selectedPost.external_post_id}</h3>
+                  <h3 className="font-medium">Post ID: {selectedPost.externalPostId}</h3>
                   <p className="text-sm text-muted-foreground">Internal ID: {selectedPost.id}</p>
                 </div>
                 <Badge className={getStatusColor(selectedPost.status)}>
@@ -306,11 +293,11 @@ export default function PostsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Content ID</label>
-                  <p className="text-sm">{selectedPost.content_id}</p>
+                  <p className="text-sm">{selectedPost.contentId}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Social Integration ID</label>
-                  <p className="text-sm">{selectedPost.social_integration_id}</p>
+                  <p className="text-sm">{selectedPost.integrationId}</p>
                 </div>
               </div>
 
@@ -319,66 +306,13 @@ export default function PostsPage() {
                 <div>
                   <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    Created Date
-                  </label>
-                  <p className="text-sm">{new Date(selectedPost.created_at).toLocaleString()}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
                     Published Date
                   </label>
                   <p className="text-sm">
-                    {selectedPost.published_at ? new Date(selectedPost.published_at).toLocaleString() : 'N/A'}
+                    {selectedPost.publishedAt ? new Date(selectedPost.publishedAt).toLocaleString() : 'N/A'}
                   </p>
                 </div>
               </div>
-
-              {/* Last Updated */}
-              <div>
-                <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  Last Updated
-                </label>
-                <p className="text-sm">{new Date(selectedPost.updated_at).toLocaleString()}</p>
-              </div>
-
-              {/* Metrics if available */}
-              {selectedPost.metrics && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Post Metrics</label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                    {selectedPost.metrics.likes && (
-                      <div className="text-center p-2 bg-muted rounded">
-                        <CheckCircle className="h-4 w-4 mx-auto mb-1 text-green-600" />
-                        <p className="text-xs text-muted-foreground">Likes</p>
-                        <p className="font-medium">{selectedPost.metrics.likes}</p>
-                      </div>
-                    )}
-                    {selectedPost.metrics.shares && (
-                      <div className="text-center p-2 bg-muted rounded">
-                        <ExternalLink className="h-4 w-4 mx-auto mb-1 text-blue-600" />
-                        <p className="text-xs text-muted-foreground">Shares</p>
-                        <p className="font-medium">{selectedPost.metrics.shares}</p>
-                      </div>
-                    )}
-                    {selectedPost.metrics.comments && (
-                      <div className="text-center p-2 bg-muted rounded">
-                        <User className="h-4 w-4 mx-auto mb-1 text-purple-600" />
-                        <p className="text-xs text-muted-foreground">Comments</p>
-                        <p className="font-medium">{selectedPost.metrics.comments}</p>
-                      </div>
-                    )}
-                    {selectedPost.metrics.views && (
-                      <div className="text-center p-2 bg-muted rounded">
-                        <Eye className="h-4 w-4 mx-auto mb-1 text-orange-600" />
-                        <p className="text-xs text-muted-foreground">Views</p>
-                        <p className="font-medium">{selectedPost.metrics.views}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
 
               {/* Actions */}
               <div className="flex justify-end gap-2 pt-4 border-t">

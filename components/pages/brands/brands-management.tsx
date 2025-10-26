@@ -30,7 +30,8 @@ import {
 import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import { Brand, Profile } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
-import { useUserProfile, useProfiles } from "@/hooks/use-profile";
+import { useUser } from "@/hooks/use-user";
+import { useGetProfiles } from "@/hooks/use-profiles";
 import { useBrands, useDeleteBrand } from "@/hooks/use-brands";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -148,8 +149,8 @@ export function BrandsManagement() {
   const [deleteBrandId, setDeleteBrandId] = useState<string | null>(null);
 
   // Hooks
-  const { data: user } = useUserProfile();
-  const { data: profiles = [] } = useProfiles();
+  const { data: user } = useUser();
+  const { data: profiles = [] } = useGetProfiles(user?.id ?? "");
   const { data: brands = [], isLoading: loading, refetch: refetchBrands } = useBrands();
   const deleteBrandMutation = useDeleteBrand();
 

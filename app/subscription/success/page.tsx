@@ -10,11 +10,12 @@ import { getSubscription } from '@/lib/api/subscription'
 import { formatCurrency } from '@/lib/stripe'
 import { SubscriptionPlanEnum } from '@/lib/types/subscription'
 import Link from 'next/link'
+import type { SubscriptionResponseDto } from '@/lib/types/subscription'
 
 export default function SuccessPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [subscription, setSubscription] = useState<any>(null)
+  const [subscription, setSubscription] = useState<SubscriptionResponseDto | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   const subscriptionId = searchParams.get('subscriptionId')
@@ -130,10 +131,10 @@ export default function SuccessPage() {
             </Card>
           )}
 
-          {/* What's Next */}
+          {/* What\'s Next */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>What's Next?</CardTitle>
+              <CardTitle>What&apos;s Next?</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">

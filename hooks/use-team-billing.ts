@@ -3,7 +3,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, endpoints } from '@/lib/api';
-import { TeamBilling, UpdateTeamBillingFormData } from '@/lib/types/teams';
+import { TeamBilling } from '@/lib/types/teams';
 import { toast } from 'sonner';
 
 // Query Keys
@@ -31,9 +31,9 @@ export function useTeamBilling(teamId?: string) {
 export function useTeamInvoices(teamId?: string) {
   return useQuery({
     queryKey: teamId ? teamBillingKeys.invoices(teamId) : teamBillingKeys.details(),
-    queryFn: async (): Promise<any[]> => {
+    queryFn: async (): Promise<unknown[]> => {
       if (!teamId) return [];
-      const resp = await api.get<any[]>(endpoints.teamInvoices(teamId));
+      const resp = await api.get<unknown[]>(endpoints.teamInvoices(teamId));
       return resp.data;
     },
     enabled: !!teamId,
@@ -45,7 +45,7 @@ export function useUpdateTeamBilling(teamId: string) {
   const qc = useQueryClient();
   
   return useMutation({
-    mutationFn: async (data: UpdateTeamBillingFormData): Promise<TeamBilling> => {
+    mutationFn: async (data: Record<string, unknown>): Promise<TeamBilling> => {
       const resp = await api.put<TeamBilling>(endpoints.updateTeamBilling(teamId), data);
       return resp.data;
     },
@@ -122,9 +122,7 @@ export function useReactivateTeamSubscription(teamId: string) {
 export function useDownloadTeamInvoice() {
   return useMutation({
     mutationFn: async (invoiceId: string): Promise<Blob> => {
-      const resp = await api.get<Blob>(endpoints.downloadTeamInvoice(invoiceId), {
-        responseType: 'blob',
-      });
+      const resp = await api.get<Blob>(endpoints.downloadTeamInvoice(invoiceId));
       return resp.data;
     },
     onSuccess: (blob, invoiceId) => {
