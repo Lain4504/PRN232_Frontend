@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -21,7 +21,7 @@ import { toast } from 'sonner'
 import Link from 'next/link'
 import type { SubscriptionResponseDto } from '@/lib/types/subscription'
 
-export default function CancelSubscriptionPage() {
+function CancelSubscriptionContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [subscription, setSubscription] = useState<SubscriptionResponseDto | null>(null)

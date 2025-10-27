@@ -48,7 +48,7 @@ export default function CreateProfilePage() {
 
       const profileData: CreateProfileForm = {
         name: form.name,
-        profile_type: plan.id === 0 ? '0' : '1', // Free = '0', Paid = '1'
+        profile_type: plan.name as 'Free' | 'Basic' | 'Pro',
         company_name: form.companyName || undefined,
         bio: form.bio || undefined,
         avatar: undefined, // Optional

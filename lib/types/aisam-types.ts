@@ -239,6 +239,7 @@ export interface CreateProfileForm {
   company_name?: string;
   bio?: string;
   avatar?: File;
+  avatarUrl?: string;
 }
 
 export interface CreateBrandForm {
