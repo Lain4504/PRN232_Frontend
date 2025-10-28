@@ -102,7 +102,8 @@ export type InvoiceStatus =
   | 'open'
   | 'paid'
   | 'void'
-  | 'uncollectible';
+  | 'uncollectible'
+  | 'overdue';
 
 export type TransactionType = 
   | 'payment'

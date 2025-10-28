@@ -500,13 +500,13 @@ export function validateAnalyticsFilters(filters: AnalyticsFilters): {
 /**
  * Debounce function for real-time updates
  */
-export function debounce<T extends (...args: unknown[]) => unknown>(
-  func: T,
+export function debounce<A extends unknown[], R>(
+  func: (...args: A) => R,
   wait: number
-): (...args: Parameters<T>) => void {
+): (...args: A) => void {
   let timeout: NodeJS.Timeout;
-  
-  return (...args: Parameters<T>) => {
+
+  return (...args: A) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
@@ -515,13 +515,13 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 /**
  * Throttle function for real-time updates
  */
-export function throttle<T extends (...args: unknown[]) => unknown>(
-  func: T,
+export function throttle<A extends unknown[], R>(
+  func: (...args: A) => R,
   limit: number
-): (...args: Parameters<T>) => void {
+): (...args: A) => void {
   let inThrottle: boolean;
   
-  return (...args: Parameters<T>) => {
+  return (...args: A) => {
     if (!inThrottle) {
       func(...args);
       inThrottle = true;

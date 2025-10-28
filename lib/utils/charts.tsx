@@ -1,3 +1,5 @@
+import React from 'react';
+
 // Chart and Visualization Utilities
 // Based on Story 3.4 requirements
 
@@ -9,8 +11,7 @@ import {
 } from '@/lib/types/analytics';
 import { 
   CHART_COLORS, 
-  CHART_TYPES,
-  ANALYTICS_METRICS 
+  CHART_TYPES
 } from '@/lib/constants/analytics-metrics';
 
 /**
@@ -192,8 +193,7 @@ export function formatDistributionData(
  */
 export function generateTimeSeriesData(
   data: AnalyticsData[],
-  metrics: string[],
-  timeRange: { start: string; end: string; period: string }
+  metrics: string[]
 ): TimeSeriesData[] {
   const timeSeries: TimeSeriesData[] = [];
   
@@ -245,7 +245,7 @@ export function generateTooltipContent(
   payload: Array<{value: number; name: string; color: string; dataKey: string}>,
   label: string,
   formatValue?: (value: number) => string
-): JSX.Element | null {
+): React.ReactNode | null {
   if (!active || !payload || payload.length === 0) {
     return null;
   }
@@ -261,8 +261,7 @@ export function generateTooltipContent(
 
   const formatter = formatValue || defaultFormatValue;
 
-  return {
-    content: (
+  return (
       <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
         <p className="font-medium text-gray-900 mb-2">{label}</p>
         {payload.map((entry, index) => (
@@ -278,17 +277,16 @@ export function generateTooltipContent(
           </div>
         ))}
       </div>
-    )
-  };
+    );
 }
 
 /**
  * Generate chart legend content
  */
 export function generateLegendContent(
-  payload: ReadonlyArray<{value: number; name: string; color: string; dataKey: string}>,
+  payload: ReadonlyArray<{value: string; color: string; dataKey: string}>,
   onClick?: (dataKey: string) => void
-): JSX.Element | null {
+): React.ReactNode | null {
   if (!payload || payload.length === 0) {
     return null;
   }
@@ -390,7 +388,7 @@ export function generateColorPalette(
 /**
  * Validate chart data
  */
-export function validateChartData(data: unknown[]): {
+export function validateChartData(data: (ChartDataPoint | DistributionData)[]): {
   isValid: boolean;
   errors: string[];
 } {
@@ -412,11 +410,11 @@ export function validateChartData(data: unknown[]): {
       return;
     }
 
-    if (typeof item.value !== 'number' || isNaN(item.value)) {
+    if (typeof (item as ChartDataPoint | DistributionData).value !== 'number' || isNaN((item as ChartDataPoint | DistributionData).value)) {
       errors.push(`Data item at index ${index} must have a valid numeric value`);
     }
 
-    if (!item.date && !item.category) {
+    if (!(item as ChartDataPoint).date && !(item as DistributionData).category) {
       errors.push(`Data item at index ${index} must have either a date or category`);
     }
   });
@@ -445,7 +443,7 @@ export function generateChartExportData(
   data.forEach(item => {
     const values = headers.map(header => {
       const value = item[header as keyof typeof item];
-      return typeof value === 'string' && value.includes(',') 
+      return typeof value === 'string' && String(value).includes(',') 
         ? `"${value}"` 
         : value;
     });
@@ -461,7 +459,7 @@ export function generateChartExportData(
 export function generateChartLoadingState(
   width: number = 400,
   height: number = 300
-): JSX.Element {
+): React.ReactNode {
   return (
     <div 
       className="flex items-center justify-center bg-gray-50 rounded-lg animate-pulse"
@@ -483,7 +481,7 @@ export function generateChartErrorState(
   onRetry?: () => void,
   width: number = 400,
   height: number = 300
-): JSX.Element {
+): React.ReactNode {
   return (
     <div 
       className="flex items-center justify-center bg-red-50 rounded-lg border border-red-200"

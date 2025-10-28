@@ -100,7 +100,7 @@ const mockPaymentMethods: PaymentMethod[] = [
 const paymentKeys = {
   all: ['payments'] as const,
   lists: () => [...paymentKeys.all, 'list'] as const,
-  list: (filters: Record<string, any>) => [...paymentKeys.lists(), { filters }] as const,
+  list: (filters: Record<string, string>) => [...paymentKeys.lists(), { filters }] as const,
   details: () => [...paymentKeys.all, 'detail'] as const,
   detail: (id: string) => [...paymentKeys.details(), id] as const,
   methods: () => [...paymentKeys.all, 'methods'] as const,
@@ -108,7 +108,7 @@ const paymentKeys = {
 };
 
 // Payment queries
-export function usePayments(filters?: Record<string, any>) {
+export function usePayments(filters?: Record<string, string>) {
   return useQuery({
     queryKey: paymentKeys.list(filters || {}),
     queryFn: async () => {
@@ -345,9 +345,9 @@ export function usePaymentProcessing() {
 }
 
 export function usePaymentFilters() {
-  const [filters, setFilters] = useState<Record<string, any>>({});
+  const [filters, setFilters] = useState<Record<string, string>>({});
 
-  const updateFilter = (key: string, value: any) => {
+  const updateFilter = (key: string, value: string) => {
     setFilters(prev => ({
       ...prev,
       [key]: value,

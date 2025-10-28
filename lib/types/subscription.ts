@@ -8,7 +8,7 @@ export enum SubscriptionPlanEnum {
 }
 
 // Subscription plan types
-export type SubscriptionTier = 'free' | 'basic' | 'pro'
+export type SubscriptionTier = 'free' | 'basic' | 'pro' | 'enterprise'
 export type BillingCycle = 'monthly' | 'yearly'
 export type SubscriptionStatus = 'active' | 'cancelled' | 'past_due' | 'trialing' | 'incomplete'
 

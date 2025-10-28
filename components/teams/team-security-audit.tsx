@@ -23,7 +23,6 @@ import {
 import { formatDate, formatRelativeTime } from '@/lib/utils/teams';
 
 interface TeamSecurityAuditProps {
-  teamId: string;
   canView?: boolean;
 }
 
@@ -97,7 +96,7 @@ const mockAuditLogs = [
   }
 ];
 
-export function TeamSecurityAudit({ teamId, canView = true }: TeamSecurityAuditProps) {
+export function TeamSecurityAudit({ canView = true }: TeamSecurityAuditProps) {
   const [auditLogs] = useState(mockAuditLogs);
   const [searchQuery, setSearchQuery] = useState('');
   const [severityFilter, setSeverityFilter] = useState<string>('all');

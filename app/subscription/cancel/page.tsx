@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -19,35 +19,35 @@ import { formatCurrency } from '@/lib/stripe'
 import { SubscriptionPlanEnum } from '@/lib/types/subscription'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import type { SubscriptionResponseDto } from '@/lib/types/subscription'
 
-export default function CancelSubscriptionPage() {
+function CancelSubscriptionContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [subscription, setSubscription] = useState<any>(null)
+  const [subscription, setSubscription] = useState<SubscriptionResponseDto | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isCancelling, setIsCancelling] = useState(false)
 
   const subscriptionId = searchParams.get('id')
 
   useEffect(() => {
-    if (subscriptionId) {
-      loadSubscription()
-    } else {
-      setIsLoading(false)
+    async function loadSubscription() {
+      if (subscriptionId) {
+        try {
+          const data = await getSubscription(subscriptionId)
+          setSubscription(data)
+        } catch (error) {
+          console.error('Error loading subscription:', error)
+          toast.error('Failed to load subscription details')
+        } finally {
+          setIsLoading(false)
+        }
+      } else {
+        setIsLoading(false)
+      }
     }
+    loadSubscription()
   }, [subscriptionId])
-
-  const loadSubscription = async () => {
-    try {
-      const data = await getSubscription(subscriptionId!)
-      setSubscription(data)
-    } catch (error) {
-      console.error('Error loading subscription:', error)
-      toast.error('Failed to load subscription details')
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const handleCancel = async () => {
     if (!subscription) return
@@ -92,7 +92,7 @@ export default function CancelSubscriptionPage() {
         <div className="text-center">
           <h2 className="text-2xl font-semibold">Subscription Not Found</h2>
           <p className="text-muted-foreground mt-2">
-            The subscription you're looking for doesn't exist or has been removed.
+            The subscription you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
           <Link href="/subscription">
             <Button className="mt-4">Back to Subscriptions</Button>
@@ -191,7 +191,7 @@ export default function CancelSubscriptionPage() {
                   <div>
                     <p className="font-medium">Immediate access loss</p>
                     <p className="text-sm text-muted-foreground">
-                      You'll lose access to premium features immediately
+                      You&apos;ll lose access to premium features immediately
                     </p>
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export default function CancelSubscriptionPage() {
                   <div>
                     <p className="font-medium">Data retention</p>
                     <p className="text-sm text-muted-foreground">
-                      Your data will be preserved but you won't be able to create new content
+                      Your data will be preserved but you won&apos;t be able to create new content
                     </p>
                   </div>
                 </div>
@@ -211,7 +211,7 @@ export default function CancelSubscriptionPage() {
                   <div>
                     <p className="font-medium">Free plan access</p>
                     <p className="text-sm text-muted-foreground">
-                      You'll still have access to basic features with the Free plan
+                      You&apos;ll still have access to basic features with the Free plan
                     </p>
                   </div>
                 </div>
@@ -260,5 +260,19 @@ export default function CancelSubscriptionPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CancelSubscriptionPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      }
+    >
+      <CancelSubscriptionContent />
+    </Suspense>
   )
 }

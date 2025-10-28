@@ -2,20 +2,20 @@
 
 import { useState, useMemo } from "react";
 
-interface UseTablePaginationProps {
-  data: any[];
+interface UseTablePaginationProps<T extends Record<string, unknown>> {
+  data: T[];
   pageSize?: number;
   searchTerm?: string;
-  filters?: Record<string, any>;
+  filters?: Partial<Record<keyof T, unknown>>;
 }
 
-interface UseTablePaginationReturn {
+interface UseTablePaginationReturn<T extends Record<string, unknown>> {
   currentPage: number;
   pageSize: number;
   totalPages: number;
   totalItems: number;
-  paginatedData: any[];
-  filteredData: any[];
+  paginatedData: T[];
+  filteredData: T[];
   setCurrentPage: (page: number) => void;
   setPageSize: (size: number) => void;
   goToFirstPage: () => void;
@@ -27,12 +27,12 @@ interface UseTablePaginationReturn {
   getItemNumber: (index: number) => number;
 }
 
-export function useTablePagination({
+export function useTablePagination<T extends Record<string, unknown>>({
   data,
   pageSize: initialPageSize = 10,
   searchTerm = "",
   filters = {},
-}: UseTablePaginationProps): UseTablePaginationReturn {
+}: UseTablePaginationProps<T>): UseTablePaginationReturn<T> {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
 
@@ -50,13 +50,14 @@ export function useTablePagination({
     }
 
     // Apply additional filters
-    Object.entries(filters).forEach(([key, value]) => {
+    Object.entries(filters as Record<string, unknown>).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== "") {
         filtered = filtered.filter((item) => {
+          const itemValue = (item as Record<string, unknown>)[key];
           if (typeof value === "string") {
-            return String(item[key]).toLowerCase().includes(value.toLowerCase());
+            return String(itemValue ?? "").toLowerCase().includes(value.toLowerCase());
           }
-          return item[key] === value;
+          return itemValue === value;
         });
       }
     });

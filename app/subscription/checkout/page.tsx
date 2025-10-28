@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Elements } from '@stripe/react-stripe-js'
 import { getStripe } from '@/lib/stripe'
@@ -15,7 +15,7 @@ import Link from 'next/link'
 import { useGetProfile } from '@/hooks/use-profiles'
 import { toast } from 'sonner'
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -35,13 +35,7 @@ export default function CheckoutPage() {
   }, [planId, profileId, router])
 
   useEffect(() => {
-    if (!isLoading && profile) {
-      // Check if profile is in pending status
-      if (profile.status !== 0) {
-        toast.error('Profile is not in pending status')
-        router.push('/overview/profile/new')
-      }
-    } else if (!isLoading && !profile) {
+    if (!isLoading && !profile) {
       toast.error('Profile not found')
       router.push('/overview/profile/new')
     }
@@ -108,7 +102,7 @@ export default function CheckoutPage() {
             </Link>
             <h1 className="text-3xl font-bold">Complete Your Subscription</h1>
             <p className="text-muted-foreground mt-2">
-              You're almost ready to get started with your new profile.
+              You&apos;re almost ready to get started with your new profile.
             </p>
           </div>
 
@@ -148,7 +142,7 @@ export default function CheckoutPage() {
               {/* Features */}
               <Card>
                 <CardHeader>
-                  <CardTitle>What's Included</CardTitle>
+                  <CardTitle>What&apos;s Included</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2">
@@ -245,5 +239,19 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      }
+    >
+      <CheckoutContent />
+    </Suspense>
   )
 }

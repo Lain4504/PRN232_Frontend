@@ -5,13 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, XCircle, Trash2 } from "lucide-react";
 
 interface PostStatusBadgeProps {
-  status: 'published' | 'failed' | 'deleted';
+  status: string;
   showIcon?: boolean;
 }
 
 export function PostStatusBadge({ status, showIcon = false }: PostStatusBadgeProps) {
   const getStatusConfig = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'published':
         return {
           variant: 'default' as const,
@@ -32,6 +32,20 @@ export function PostStatusBadge({ status, showIcon = false }: PostStatusBadgePro
           className: 'bg-muted text-muted-foreground border-muted-foreground/20',
           icon: Trash2,
           label: 'Deleted'
+        };
+      case 'scheduled':
+        return {
+          variant: 'outline' as const,
+          className: 'bg-blue-50 text-blue-700 border-blue-200',
+          icon: CheckCircle,
+          label: 'Scheduled'
+        };
+      case 'pending':
+        return {
+          variant: 'outline' as const,
+          className: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+          icon: CheckCircle,
+          label: 'Pending'
         };
       default:
         return {

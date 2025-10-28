@@ -19,7 +19,7 @@ export default async function AccountLayout({
   return (
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
-      <DashboardHeader user={user} />
+      <DashboardHeader />
       
       {/* Mobile Navigation - Visible on mobile only */}
       <AccountMobileNav />

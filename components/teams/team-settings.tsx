@@ -25,7 +25,6 @@ import { updateTeamSchema, UpdateTeamFormData } from '@/lib/validators/team';
 import { toast } from 'sonner';
 
 interface TeamSettingsProps {
-  teamId: string;
   canManage?: boolean;
 }
 
@@ -47,7 +46,7 @@ const mockTeamSettings = {
   }
 };
 
-export function TeamSettings({ teamId, canManage = true }: TeamSettingsProps) {
+export function TeamSettings({ canManage = true }: TeamSettingsProps) {
   const [settings, setSettings] = useState(mockTeamSettings);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -87,14 +86,18 @@ export function TeamSettings({ teamId, canManage = true }: TeamSettingsProps) {
         ...prev,
         name: data.name || prev.name,
         description: data.description || prev.description,
-        ...data.settings
+        ...data.settings,
+        notificationSettings: {
+          ...prev.notificationSettings,
+          ...data.settings?.notificationSettings,
+        },
       }));
       
       toast.success('Settings saved successfully!', {
         description: 'Your team settings have been updated.',
         duration: 3000,
       });
-    } catch (error) {
+    } catch {
       toast.error('Failed to save settings', {
         description: 'Please try again later.',
         duration: 4000,
@@ -116,7 +119,7 @@ export function TeamSettings({ teamId, canManage = true }: TeamSettingsProps) {
       
       setDeleteDialogOpen(false);
       // TODO: Redirect to teams list or dashboard
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete team', {
         description: 'Please try again later.',
         duration: 4000,

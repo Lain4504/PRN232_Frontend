@@ -51,7 +51,10 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
     if (!confirmed) return
 
     try {
-      await cancelSubscriptionMutation.mutateAsync()
+      await cancelSubscriptionMutation.mutateAsync({
+        subscriptionId: subscription.id,
+        reason: 'User requested cancellation'
+      })
       toast.success('Subscription cancelled successfully')
     } catch (error) {
       console.error('Cancellation error:', error)

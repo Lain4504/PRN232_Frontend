@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { User } from "@supabase/supabase-js"
+import { useUser } from "@/hooks/use-user"
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar"
 import { Zap, Menu } from "lucide-react"
 import { SearchCommand } from "@/components/search/search-command"
@@ -12,11 +12,9 @@ import { EnhancedUserMenu } from "@/components/layout/enhanced-user-menu"
 import { EnhancedNotifications } from "@/components/layout/enhanced-notifications"
 import { ProfileSwitcher } from "@/components/profiles/profile-switcher"
 
-interface DashboardHeaderProps {
-  user?: User | null
-}
 
-export function DashboardHeader({ user }: DashboardHeaderProps) {
+export function DashboardHeader() {
+  const { data: user } = useUser();
 
   return (
     <>
@@ -65,7 +63,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
 
           <EnhancedNotifications />
 
-          <EnhancedUserMenu user={user} />
+          {user && <EnhancedUserMenu user={user} />}
         </div>
       </header>
     </>

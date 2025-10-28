@@ -11,7 +11,7 @@ import { useScheduleContent } from "@/hooks/use-content-calendar";
 import { useContentsByBrand } from "@/hooks/use-contents";
 import { useBrands } from "@/hooks/use-brands";
 import { useGetSocialAccounts } from "@/hooks/use-social-accounts";
-import type { ScheduleContentRequest } from "@/lib/types/aisam-types";
+import type { ScheduleContentRequest, ContentResponseDto } from "@/lib/types/aisam-types";
 import { ContentStatusEnum } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 
@@ -176,8 +176,8 @@ export function ScheduleContentModal({
               </SelectTrigger>
                <SelectContent>
                  {(() => {
-                   const contentArray = Array.isArray(contents) ? contents : contents?.data;
-                   return contentArray?.map((content: any) => (
+                   const contentArray: ContentResponseDto[] | undefined = Array.isArray(contents) ? contents : contents?.data;
+                   return contentArray?.map((content) => (
                      <SelectItem key={content.id} value={content.id}>
                        <div className="flex flex-col">
                          <span className="font-medium">{content.title}</span>
@@ -220,8 +220,8 @@ export function ScheduleContentModal({
              {selectedContentId && (Array.isArray(contents) ? contents : contents?.data) && (
                <div className="mt-2 p-3 bg-muted rounded-lg">
                  {(() => {
-                   const contentArray = Array.isArray(contents) ? contents : contents?.data;
-                   const selectedContent = contentArray?.find((c: any) => c.id === selectedContentId);
+                   const contentArray: ContentResponseDto[] | undefined = Array.isArray(contents) ? contents : contents?.data;
+                   const selectedContent = contentArray?.find((c) => c.id === selectedContentId);
                    return selectedContent ? (
                      <div className="space-y-1">
                        <p className="text-sm font-medium">{selectedContent.title}</p>

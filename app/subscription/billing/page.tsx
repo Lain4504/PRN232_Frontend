@@ -1,14 +1,32 @@
+"use client"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { CreditCard, Download, Calendar, DollarSign } from 'lucide-react'
 import { useSubscription } from '@/hooks/use-subscription'
+import { SubscriptionPlanEnum } from '@/lib/types/subscription'
+import { getPlanPricing } from '@/lib/api/subscription'
 import { formatPrice } from '@/lib/constants/subscription-plans'
 import { formatBillingDate } from '@/lib/utils/subscription'
 
 export default function BillingPage() {
-  const { data: subscription, isLoading } = useSubscription()
+  const { activeSubscription, isLoading } = useSubscription()
+
+  const subscription = activeSubscription
+    ? {
+        tier:
+          activeSubscription.plan === SubscriptionPlanEnum.Free
+            ? 'free'
+            : activeSubscription.plan === SubscriptionPlanEnum.Basic
+            ? 'basic'
+            : 'pro',
+        currentPeriodEnd: activeSubscription.endDate ?? activeSubscription.startDate,
+        planName: getPlanPricing(activeSubscription.plan).name,
+        billingCycle: 'monthly' as const,
+      }
+    : null
 
   // Mock billing history data
   const billingHistory = [

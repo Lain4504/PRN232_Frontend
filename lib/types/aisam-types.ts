@@ -34,6 +34,7 @@ export interface Brand {
   slogan?: string;
   usp?: string; // Unique Selling Proposition
   target_audience?: string;
+  status?: string; // Brand status (Active, Inactive, etc.)
   createdAt?: string; // API uses camelCase
   updatedAt?: string; // API uses camelCase
   created_at?: string; // Keep for backward compatibility
@@ -213,9 +214,11 @@ export interface Post {
   integrationId: string;
   externalPostId: string; // Platform-specific post ID
   publishedAt: string;
+  createdAt: string;
   status: string;
   isDeleted: boolean;
   link?: string;
+  metrics?: PostMetrics;
 }
 
 export interface PerformanceMetrics {
@@ -239,6 +242,7 @@ export interface CreateProfileForm {
   company_name?: string;
   bio?: string;
   avatar?: File;
+  avatarUrl?: string;
 }
 
 export interface CreateBrandForm {
@@ -527,7 +531,7 @@ export interface ApprovalResponseDto {
   approverName?: string;
   // Nested objects (optional)
   content?: ContentResponseDto;
-  approverProfile?: any;
+  approverProfile?: unknown;
 }
 
 export interface CreateApprovalRequest {

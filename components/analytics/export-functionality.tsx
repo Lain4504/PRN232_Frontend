@@ -42,7 +42,7 @@ export function ExportFunctionality({
   className 
 }: ExportFunctionalityProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedFormat, setSelectedFormat] = useState(ANALYTICS_EXPORT_FORMATS.PDF);
+  const [selectedFormat, setSelectedFormat] = useState<string>(ANALYTICS_EXPORT_FORMATS.PDF);
   const [selectedTemplate, setSelectedTemplate] = useState<string>('');
   const [includeCharts, setIncludeCharts] = useState(true);
   const [includeRawData, setIncludeRawData] = useState(false);
@@ -173,7 +173,7 @@ export function ExportFunctionality({
                     <Checkbox
                       id="includeCharts"
                       checked={includeCharts}
-                      onCheckedChange={setIncludeCharts}
+                      onCheckedChange={(checked) => setIncludeCharts(checked as boolean)}
                       disabled={!formats.find(f => f.id === selectedFormat)?.supportsCharts}
                     />
                     <Label htmlFor="includeCharts" className="text-sm">
@@ -185,7 +185,7 @@ export function ExportFunctionality({
                     <Checkbox
                       id="includeRawData"
                       checked={includeRawData}
-                      onCheckedChange={setIncludeRawData}
+                      onCheckedChange={(checked) => setIncludeRawData(checked as boolean)}
                     />
                     <Label htmlFor="includeRawData" className="text-sm">
                       Include raw data

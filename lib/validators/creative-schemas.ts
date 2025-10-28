@@ -10,7 +10,7 @@ const imageFileSchema = z
   .refine((file) => file.size > 0, 'Image file is required')
   .refine((file) => file.size <= CREATIVE_FILE_LIMITS.IMAGE.maxSize, 'Image file size must be less than 30MB')
   .refine(
-    (file) => CREATIVE_FILE_LIMITS.IMAGE.formats.includes(file.name.split('.').pop()?.toLowerCase() || ''),
+    (file) => CREATIVE_FILE_LIMITS.IMAGE.formats.includes(file.name.split('.').pop()?.toLowerCase() as 'jpg' | 'jpeg' | 'png' | 'webp'),
     'Image must be JPG, PNG, or WebP format'
   );
 
@@ -20,7 +20,7 @@ const videoFileSchema = z
   .refine((file) => file.size > 0, 'Video file is required')
   .refine((file) => file.size <= CREATIVE_FILE_LIMITS.VIDEO.maxSize, 'Video file size must be less than 4GB')
   .refine(
-    (file) => CREATIVE_FILE_LIMITS.VIDEO.formats.includes(file.name.split('.').pop()?.toLowerCase() || ''),
+    (file) => CREATIVE_FILE_LIMITS.VIDEO.formats.includes(file.name.split('.').pop()?.toLowerCase() as 'mp4' | 'mov'),
     'Video must be MP4 or MOV format'
   );
 
@@ -47,9 +47,7 @@ export const createCreativeSchema = z.object({
   tags: z
     .array(z.string().max(50, 'Tag must be less than 50 characters'))
     .max(10, 'Maximum 10 tags allowed')
-    .optional()
-    .default([])
-}).refine((data) => {
+    }).refine((data) => {
   // Require media file for IMAGE, VIDEO, and GIF types
   if (['IMAGE', 'VIDEO', 'GIF'].includes(data.type) && !data.mediaFile) {
     return false;

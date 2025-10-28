@@ -79,16 +79,16 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
   const teamMetrics = useMemo(() => {
     if (!teamData) return null;
 
-    const productivity = teamData.productivity;
-    const collaboration = teamData.collaboration;
-    const resourceUsage = teamData.resourceUsage;
+    const productivity = teamData.data.productivity;
+    const collaboration = teamData.data.collaboration;
+    const resourceUsage = teamData.data.resourceUsage;
     
     return {
       overallScore: Math.round((productivity.averageTaskCompletion + productivity.averageCampaignPerformance + productivity.contentQualityScore + productivity.collaborationScore + productivity.efficiency) / 5),
       budgetUtilization: resourceUsage.totalBudget > 0 ? (resourceUsage.usedBudget / resourceUsage.totalBudget) * 100 : 0,
       campaignSuccessRate: resourceUsage.campaigns > 0 ? (resourceUsage.activeCampaigns / resourceUsage.campaigns) * 100 : 0,
-      averageMemberScore: teamData.memberPerformance.length > 0 ? 
-        teamData.memberPerformance.reduce((sum, member) => sum + member.metrics.performanceScore, 0) / teamData.memberPerformance.length : 0,
+      averageMemberScore: teamData.data.memberPerformance.length > 0 ? 
+        teamData.data.memberPerformance.reduce((sum, member) => sum + member.metrics.performanceScore, 0) / teamData.data.memberPerformance.length : 0,
     };
   }, [teamData]);
 
@@ -159,7 +159,7 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
               </svg>
             </div>
             <p className="text-red-600 mb-2">Failed to load team analytics</p>
-            <Button onClick={refetchTeam} variant="outline" size="sm">
+            <Button onClick={() => refetchTeam()} variant="outline" size="sm">
               <RefreshCw className="mr-2 h-4 w-4" />
               Retry
             </Button>
@@ -176,7 +176,7 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Team Analytics</h1>
           <p className="text-muted-foreground">
-            Performance insights for {teamData.teamName}
+            Performance insights for {teamData.data.teamName}
           </p>
         </div>
         <div className="flex gap-2">
@@ -188,7 +188,7 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
             <Zap className="mr-2 h-4 w-4" />
             {isRealTime ? 'Real-time ON' : 'Real-time OFF'}
           </Button>
-          <Button variant="outline" onClick={refetchTeam}>
+          <Button variant="outline" onClick={() => refetchTeam()}>
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
@@ -208,7 +208,7 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
               <label className="text-sm font-medium">Team Members</label>
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
-                <span className="text-sm">{teamData.resourceUsage.teamMembers}</span>
+                <span className="text-sm">{teamData.data.resourceUsage.teamMembers}</span>
               </div>
             </div>
           </CardContent>
@@ -234,7 +234,7 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
               <label className="text-sm font-medium">Active Campaigns</label>
               <div className="flex items-center gap-2">
                 <Target className="h-4 w-4" />
-                <span className="text-sm">{teamData.resourceUsage.activeCampaigns} / {teamData.resourceUsage.campaigns}</span>
+                <span className="text-sm">{teamData.data.resourceUsage.activeCampaigns} / {teamData.data.resourceUsage.campaigns}</span>
               </div>
             </div>
           </CardContent>
@@ -269,7 +269,7 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatPercentage(teamData.productivity.averageTaskCompletion)}</div>
+            <div className="text-2xl font-bold">{formatPercentage(teamData.data.productivity.averageTaskCompletion)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
               <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
               <span className="text-green-600">+5.2%</span>
@@ -284,7 +284,7 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatPercentage(teamData.productivity.averageCampaignPerformance)}</div>
+            <div className="text-2xl font-bold">{formatPercentage(teamData.data.productivity.averageCampaignPerformance)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
               <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
               <span className="text-green-600">+3.1%</span>
@@ -299,7 +299,7 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
             <Award className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatPercentage(teamData.productivity.contentQualityScore)}</div>
+            <div className="text-2xl font-bold">{formatPercentage(teamData.data.productivity.contentQualityScore)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
               <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
               <span className="text-green-600">+2.8%</span>
@@ -314,7 +314,7 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatPercentage(teamData.collaboration.communicationScore)}</div>
+            <div className="text-2xl font-bold">{formatPercentage(teamData.data.collaboration.communicationScore)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
               <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
               <span className="text-green-600">+4.5%</span>
@@ -384,11 +384,11 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <div className="text-muted-foreground">Total Budget</div>
-                      <div className="font-medium">{formatCurrency(teamData.resourceUsage.totalBudget)}</div>
+                      <div className="font-medium">{formatCurrency(teamData.data.resourceUsage.totalBudget)}</div>
                     </div>
                     <div>
                       <div className="text-muted-foreground">Used</div>
-                      <div className="font-medium">{formatCurrency(teamData.resourceUsage.usedBudget)}</div>
+                      <div className="font-medium">{formatCurrency(teamData.data.resourceUsage.usedBudget)}</div>
                     </div>
                   </div>
                 </div>
@@ -410,7 +410,7 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {teamData.memberPerformance.map((member) => (
+                {teamData.data.memberPerformance.map((member) => (
                   <div key={member.userId} className="p-4 border rounded-lg">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
@@ -480,34 +480,34 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">Task Completion Rate</span>
-                    <span className="text-sm font-medium">{formatPercentage(teamData.productivity.averageTaskCompletion)}</span>
+                    <span className="text-sm font-medium">{formatPercentage(teamData.data.productivity.averageTaskCompletion)}</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
                       className="bg-green-600 h-2 rounded-full" 
-                      style={{ width: `${teamData.productivity.averageTaskCompletion}%` }}
+                      style={{ width: `${teamData.data.productivity.averageTaskCompletion}%` }}
                     ></div>
                   </div>
                   
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">Campaign Performance</span>
-                    <span className="text-sm font-medium">{formatPercentage(teamData.productivity.averageCampaignPerformance)}</span>
+                    <span className="text-sm font-medium">{formatPercentage(teamData.data.productivity.averageCampaignPerformance)}</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
                       className="bg-blue-600 h-2 rounded-full" 
-                      style={{ width: `${teamData.productivity.averageCampaignPerformance}%` }}
+                      style={{ width: `${teamData.data.productivity.averageCampaignPerformance}%` }}
                     ></div>
                   </div>
                   
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">Content Quality</span>
-                    <span className="text-sm font-medium">{formatPercentage(teamData.productivity.contentQualityScore)}</span>
+                    <span className="text-sm font-medium">{formatPercentage(teamData.data.productivity.contentQualityScore)}</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
                       className="bg-purple-600 h-2 rounded-full" 
-                      style={{ width: `${teamData.productivity.contentQualityScore}%` }}
+                      style={{ width: `${teamData.data.productivity.contentQualityScore}%` }}
                     ></div>
                   </div>
                 </div>
@@ -527,17 +527,17 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
               <CardContent>
                 <div className="space-y-4">
                   <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">{formatPercentage(teamData.productivity.efficiency)}</div>
+                    <div className="text-2xl font-bold text-green-600">{formatPercentage(teamData.data.productivity.efficiency)}</div>
                     <div className="text-sm text-green-700">Overall Efficiency</div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
-                      <div className="text-lg font-bold text-blue-600">{teamData.resourceUsage.contentPieces}</div>
+                      <div className="text-lg font-bold text-blue-600">{teamData.data.resourceUsage.contentPieces}</div>
                       <div className="text-xs text-blue-700">Content Pieces</div>
                     </div>
                     <div className="text-center p-3 bg-purple-50 rounded-lg">
-                      <div className="text-lg font-bold text-purple-600">{teamData.resourceUsage.campaigns}</div>
+                      <div className="text-lg font-bold text-purple-600">{teamData.data.resourceUsage.campaigns}</div>
                       <div className="text-xs text-purple-700">Total Campaigns</div>
                     </div>
                   </div>
@@ -563,23 +563,23 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">Communication Score</span>
-                    <span className="text-sm font-medium">{formatPercentage(teamData.collaboration.communicationScore)}</span>
+                    <span className="text-sm font-medium">{formatPercentage(teamData.data.collaboration.communicationScore)}</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
                       className="bg-green-600 h-2 rounded-full" 
-                      style={{ width: `${teamData.collaboration.communicationScore}%` }}
+                      style={{ width: `${teamData.data.collaboration.communicationScore}%` }}
                     ></div>
                   </div>
                   
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">Knowledge Sharing</span>
-                    <span className="text-sm font-medium">{formatPercentage(teamData.collaboration.knowledgeSharing)}</span>
+                    <span className="text-sm font-medium">{formatPercentage(teamData.data.collaboration.knowledgeSharing)}</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
                       className="bg-blue-600 h-2 rounded-full" 
-                      style={{ width: `${teamData.collaboration.knowledgeSharing}%` }}
+                      style={{ width: `${teamData.data.collaboration.knowledgeSharing}%` }}
                     ></div>
                   </div>
                 </div>
@@ -587,19 +587,19 @@ export function TeamAnalytics({ teamId, className }: TeamAnalyticsProps) {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="text-center p-3 bg-green-50 rounded-lg">
-                      <div className="text-lg font-bold text-green-600">{teamData.collaboration.teamMeetings}</div>
+                      <div className="text-lg font-bold text-green-600">{teamData.data.collaboration.teamMeetings}</div>
                       <div className="text-xs text-green-700">Team Meetings</div>
                     </div>
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
-                      <div className="text-lg font-bold text-blue-600">{teamData.collaboration.sharedProjects}</div>
+                      <div className="text-lg font-bold text-blue-600">{teamData.data.collaboration.sharedProjects}</div>
                       <div className="text-xs text-blue-700">Shared Projects</div>
                     </div>
                     <div className="text-center p-3 bg-purple-50 rounded-lg">
-                      <div className="text-lg font-bold text-purple-600">{teamData.collaboration.crossTeamCollaboration}</div>
+                      <div className="text-lg font-bold text-purple-600">{teamData.data.collaboration.crossTeamCollaboration}</div>
                       <div className="text-xs text-purple-700">Cross-team Collab</div>
                     </div>
                     <div className="text-center p-3 bg-orange-50 rounded-lg">
-                      <div className="text-lg font-bold text-orange-600">{teamData.collaboration.knowledgeSharing}</div>
+                      <div className="text-lg font-bold text-orange-600">{teamData.data.collaboration.knowledgeSharing}</div>
                       <div className="text-xs text-orange-700">Knowledge Sharing</div>
                     </div>
                   </div>

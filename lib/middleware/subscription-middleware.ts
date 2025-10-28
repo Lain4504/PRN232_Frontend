@@ -40,8 +40,9 @@ export const SUBSCRIPTION_ROUTES: SubscriptionRouteConfig[] = [
 // Tier hierarchy for comparison
 const TIER_HIERARCHY: Record<SubscriptionTier, number> = {
   free: 0,
-  pro: 1,
-  enterprise: 2
+  basic: 1,
+  pro: 2,
+  enterprise: 3
 }
 
 export function hasRequiredTier(

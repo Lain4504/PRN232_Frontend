@@ -68,8 +68,8 @@ export function RealTimeAnalyticsUpdates({ className }: RealTimeAnalyticsUpdates
         setLastUpdate(new Date());
 
         // Show toast for significant changes
-        if (Math.abs(update.data.change) > 15) {
-          toast.info(`Real-time update: ${update.data.metric} ${update.data.change > 0 ? 'increased' : 'decreased'} by ${Math.abs(update.data.change)}%`);
+        if (typeof update.data.change === 'number' && Math.abs(update.data.change) > 15) {
+          toast.info(`Real-time update: ${update.data.metric} ${update.data.change > 0 ? 'increased' : 'decreased'} by ${Math.abs(update.data.change as number)}%`);
         }
       }, updateInterval);
 
@@ -286,17 +286,17 @@ export function RealTimeAnalyticsUpdates({ className }: RealTimeAnalyticsUpdates
                           <div className="text-xs mt-1">
                             {notification.type === 'metric' && (
                               <>
-                                {notification.data.metric}: {notification.data.value.toLocaleString()}
-                                {notification.data.change !== 0 && (
+                                {notification.data.metric}: {notification.data.value?.toLocaleString()}
+                                {typeof notification.data.change === 'number' && notification.data.change !== 0 && (
                                   <span className={`ml-2 ${
-                                    notification.data.change > 0 ? 'text-green-600' : 'text-red-600'
+                                    (notification.data.change ?? 0) > 0 ? 'text-green-600' : 'text-red-600'
                                   }`}>
-                                    {notification.data.change > 0 ? (
+                                    {(notification.data.change ?? 0) > 0 ? (
                                       <TrendingUp className="h-3 w-3 inline mr-1" />
                                     ) : (
                                       <TrendingDown className="h-3 w-3 inline mr-1" />
                                     )}
-                                    {Math.abs(notification.data.change)}%
+                                    {Math.abs(notification.data.change ?? 0)}%
                                   </span>
                                 )}
                               </>

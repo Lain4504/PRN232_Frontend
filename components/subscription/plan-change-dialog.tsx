@@ -64,7 +64,7 @@ export function PlanChangeDialog({
     if (!currentSubscription) return null
     
     const currentPlan = {
-      id: currentSubscription.planId,
+      id: currentSubscription.plan.toString(),
       name: currentSubscription.planName,
       tier: currentSubscription.tier,
       price: { monthly: 0, yearly: 0 },
@@ -104,7 +104,7 @@ export function PlanChangeDialog({
                   <span className="font-medium">{currentSubscription?.planName || 'Free'}</span>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  {formatPrice(currentSubscription?.price || 0)}/month
+                  {formatPrice(0)}/month
                 </div>
               </div>
             </div>
@@ -258,7 +258,7 @@ export function PlanChangeDialog({
             {changePlanMutation.isPending ? (
               'Processing...'
             ) : (
-              `Confirm ${comparison?.isUpgrade ? 'Upgrade' : 'Change'}`
+              `Confirm ${comparison?.data?.isUpgrade ? 'Upgrade' : 'Change'}`
             )}
           </Button>
         </DialogFooter>

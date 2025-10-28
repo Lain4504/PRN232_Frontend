@@ -1,4 +1,4 @@
-import { ROLE_PERMISSIONS, getPermissionsForRole } from '@/lib/constants/team-roles'
+import { getPermissionsForRole } from '@/lib/constants/team-roles'
 
 /**
  * Check if a user has a specific permission based on their role

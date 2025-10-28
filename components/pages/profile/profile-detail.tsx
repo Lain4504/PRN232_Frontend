@@ -109,16 +109,16 @@ export function ProfileDetail() {
         <CardContent className="space-y-6">
           <div className="flex items-center gap-6">
             <Avatar className="h-20 w-20">
-              {profile.avatar_url ? (
-                <AvatarImage src={profile.avatar_url} alt="Avatar" />
+              {profile.avatarUrl ? (
+                <AvatarImage src={profile.avatarUrl} alt="Avatar" />
               ) : (
                 <AvatarFallback>{profile.company_name?.[0] || 'P'}</AvatarFallback>
               )}
             </Avatar>
             <div>
               <div className="flex items-center gap-3">
-                <Badge variant={profile.profile_type === 'business' ? 'default' : 'secondary'}>
-                  {profile.profile_type}
+                <Badge variant={profile.profileType === 'Pro' || profile.profileType === 'Basic' ? 'default' : 'secondary'}>
+                  {profile.profileType}
                 </Badge>
                 {profile.company_name && (
                   <h3 className="font-semibold text-lg">{profile.company_name}</h3>
@@ -134,10 +134,10 @@ export function ProfileDetail() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-muted-foreground">
             <div>
-              <span className="font-medium text-foreground">Created:</span> {new Date(profile.created_at).toLocaleString()}
+              <span className="font-medium text-foreground">Created:</span> {new Date(profile.createdAt).toLocaleString()}
             </div>
             <div>
-              <span className="font-medium text-foreground">Updated:</span> {new Date(profile.updated_at).toLocaleString()}
+              <span className="font-medium text-foreground">Updated:</span> {new Date(profile.updatedAt).toLocaleString()}
             </div>
           </div>
         </CardContent>

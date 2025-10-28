@@ -13,6 +13,7 @@ import { CustomTable } from '@/components/ui/custom-table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { FileText, Plus, Search, Filter, Calendar, User, Edit, Eye, Building2 } from 'lucide-react'
 import { ColumnDef } from '@tanstack/react-table'
+import type { ContentResponseDto, ContentStatusEnum } from '@/lib/types/aisam-types'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 
@@ -20,8 +21,8 @@ interface TeamContentListProps {
   showCreateButton?: boolean
   showFilters?: boolean
   maxItems?: number
-  onEdit?: (content: any) => void
-  onView?: (content: any) => void
+  onEdit?: (content: ContentResponseDto) => void
+  onView?: (content: ContentResponseDto) => void
 }
 
 export function TeamContentList({ 
@@ -40,7 +41,7 @@ export function TeamContentList({
     page: 1,
     pageSize: maxItems,
     searchTerm: '',
-    status: undefined as any,
+    status: undefined as ContentStatusEnum | undefined,
   })
 
   // Use real API data
@@ -54,12 +55,12 @@ export function TeamContentList({
   const handleStatusFilter = (status: string) => {
     setFilters(prev => ({ 
       ...prev, 
-      status: status === 'all' ? undefined : status, 
+      status: status === 'all' ? undefined : (status as ContentStatusEnum), 
       page: 1 
     }))
   }
 
-  const contentItems = contentsData?.data || []
+  const contentItems: ContentResponseDto[] = contentsData?.data || []
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -77,7 +78,7 @@ export function TeamContentList({
   }
 
   // Define table columns
-  const columns: ColumnDef<any>[] = useMemo(() => [
+  const columns: ColumnDef<ContentResponseDto>[] = useMemo(() => [
     {
       accessorKey: 'title',
       header: 'Title',

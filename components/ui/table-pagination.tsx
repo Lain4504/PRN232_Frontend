@@ -16,7 +16,6 @@ interface TablePaginationProps {
   totalPages: number;
   totalItems: number;
   pageSize: number;
-  onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
   canGoToNextPage: boolean;
   canGoToPreviousPage: boolean;
@@ -32,7 +31,6 @@ export function TablePagination({
   totalPages,
   totalItems,
   pageSize,
-  onPageChange,
   onPageSizeChange,
   canGoToNextPage,
   canGoToPreviousPage,

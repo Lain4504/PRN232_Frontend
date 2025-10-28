@@ -115,7 +115,8 @@ export function useSubscriptionErrorHandler() {
   }
 
   const handleApiError = (error: Error | {response?: {data?: {message?: string}}; message?: string}, operation: string) => {
-    const errorMessage = error?.response?.data?.message || error?.message || 'An unexpected error occurred'
+    const hasResponse = 'response' in error
+    const errorMessage = (hasResponse ? error.response?.data?.message : null) || error?.message || 'An unexpected error occurred'
     
     return handleError(new Error(`${operation} failed: ${errorMessage}`), operation)
   }

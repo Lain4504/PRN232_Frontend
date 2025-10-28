@@ -380,10 +380,12 @@ export function ProductsManagement() {
         </Card>
 
         {/* Edit Product Modal */}
-        {editingProduct && isEditModalOpen && (
+        {editingProduct && (
           <ProductModal
             mode="edit"
             product={editingProduct}
+            open={isEditModalOpen}
+            onOpenChange={setIsEditModalOpen}
             onSuccess={() => {
               handleRefresh();
               handleCloseEdit();

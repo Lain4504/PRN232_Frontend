@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api, endpoints, PaginatedResponse } from '@/lib/api'
-import type { Post, PostFilters, BrandResponseDto } from '@/lib/types/aisam-types'
+import type { Post, PostFilters, Brand, PublishResultDto } from '@/lib/types/aisam-types'
 
 // Query Keys
 export const teamPostKeys = {
@@ -36,7 +36,7 @@ export function useTeamPosts(teamId?: string, filters?: PostFilters) {
       }
       
       // Otherwise, get all team brands
-      const brandsResp = await api.get<BrandResponseDto[]>(`/brands/team/${teamId}`)
+      const brandsResp = await api.get<Brand[]>(`/brands/team/${teamId}`)
       const brandIds = brandsResp.data.map(brand => brand.id)
       
       if (brandIds.length === 0) {
@@ -63,7 +63,7 @@ export function useTeamScheduledPosts(teamId?: string) {
       if (!teamId) return []
       
       // Get team brands first
-      const brandsResp = await api.get<BrandResponseDto[]>(`/brands/team/${teamId}`)
+      const brandsResp = await api.get<Brand[]>(`/brands/team/${teamId}`)
       const brandIds = brandsResp.data.map(brand => brand.id)
       
       if (brandIds.length === 0) return []
@@ -114,8 +114,8 @@ export function useDeleteTeamPost(teamId: string) {
 export function usePublishTeamPost(teamId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ contentId, integrationId }: { contentId: string; integrationId: string }): Promise<any> => {
-      const resp = await api.post<any>(endpoints.contentPublish(contentId, integrationId))
+    mutationFn: async ({ contentId, integrationId }: { contentId: string; integrationId: string }): Promise<PublishResultDto> => {
+      const resp = await api.post<PublishResultDto>(endpoints.contentPublish(contentId, integrationId))
       return resp.data
     },
     onSuccess: () => {

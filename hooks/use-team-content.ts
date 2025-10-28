@@ -4,7 +4,7 @@ import type {
   ContentResponseDto,
   CreateContentRequest,
   ContentFilters,
-  BrandResponseDto,
+  Brand,
 } from '@/lib/types/aisam-types'
 
 // Query Keys
@@ -23,7 +23,7 @@ export function useTeamContents(teamId?: string, filters?: ContentFilters) {
   if (filters?.searchTerm) params.set('searchTerm', filters.searchTerm)
   if (filters?.sortBy) params.set('sortBy', filters.sortBy)
   if (filters?.sortDescending !== undefined) params.set('sortDescending', filters.sortDescending.toString())
-  if (filters?.adType) params.set('adType', filters.adType)
+  if (filters?.adType) params.set('adType', String(filters.adType))
   if (filters?.onlyDeleted !== undefined) params.set('onlyDeleted', filters.onlyDeleted.toString())
   if (filters?.status) params.set('status', filters.status)
 
@@ -35,7 +35,7 @@ export function useTeamContents(teamId?: string, filters?: ContentFilters) {
       if (!teamId) return { data: [], totalCount: 0, page: 1, pageSize: 10, totalPages: 0, hasNextPage: false, hasPreviousPage: false }
       
       // First get team brands
-      const brandsResp = await api.get<BrandResponseDto[]>(`/brands/team/${teamId}`)
+      const brandsResp = await api.get<Brand[]>(`/brands/team/${teamId}`)
       const brandIds = brandsResp.data.map(brand => brand.id)
       
       if (brandIds.length === 0) {
@@ -76,7 +76,7 @@ export function useTeamContentStats(teamId?: string) {
       }
 
       // Get team brands first
-      const brandsResp = await api.get<BrandResponseDto[]>(`/brands/team/${teamId}`)
+      const brandsResp = await api.get<Brand[]>(`/brands/team/${teamId}`)
       const brandIds = brandsResp.data.map(brand => brand.id)
       
       if (brandIds.length === 0) {

@@ -14,19 +14,19 @@ export const createTeamSchema = z.object({
     .optional()
     .or(z.literal('')),
   settings: z.object({
-    allowMemberInvites: z.boolean().default(true),
-    requireApprovalForJoins: z.boolean().default(false),
-    defaultRole: z.string().default('Member'),
-    maxMembers: z.number().min(1).max(100).default(10),
-    allowExternalInvites: z.boolean().default(true),
+    allowMemberInvites: z.boolean(),
+    requireApprovalForJoins: z.boolean(),
+    defaultRole: z.string(),
+    maxMembers: z.number().min(1).max(100),
+    allowExternalInvites: z.boolean(),
     notificationSettings: z.object({
-      emailNotifications: z.boolean().default(true),
-      inAppNotifications: z.boolean().default(true),
-      memberJoinNotifications: z.boolean().default(true),
-      roleChangeNotifications: z.boolean().default(true),
-      billingNotifications: z.boolean().default(true),
-    }).default({})
-  }).optional()
+      emailNotifications: z.boolean(),
+      inAppNotifications: z.boolean(),
+      memberJoinNotifications: z.boolean(),
+      roleChangeNotifications: z.boolean(),
+      billingNotifications: z.boolean(),
+    })
+  })
 });
 
 export const updateTeamSchema = z.object({

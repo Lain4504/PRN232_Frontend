@@ -262,10 +262,11 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
 
   // Handle the data structure from API response
   // From debug info, we see that contentsData is already the array of contents
-  const contents = Array.isArray(contentsData) ? contentsData : (contentsData?.data || []);
+  const contents: ContentResponseDto[] = Array.isArray(contentsData) ? contentsData : (contentsData?.data || []);
   
 
-  const filteredContents = contents.filter((content: any) => {
+  const filteredContents = contents.filter((content: ContentResponseDto) => {
+
     if (!searchTerm) return true;
     const searchLower = searchTerm.toLowerCase();
     return content.title?.toLowerCase().includes(searchLower) ||
@@ -337,7 +338,8 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
 
   // Function to open edit modal
   const handleEditContent = (contentId: string) => {
-    const content = contents.find((c: any) => c.id === contentId);
+    const content = contents.find((c) => c.id === contentId);
+
     if (content) {
       setSelectedContent(content);
       setIsEditing(true);
@@ -346,7 +348,8 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
 
   // Function to open view modal
   const handleViewContent = (contentId: string) => {
-    const content = contents.find((c: any) => c.id === contentId);
+    const content = contents.find((c) => c.id === contentId);
+
     if (content) {
       setSelectedContent(content);
       setIsEditing(false);

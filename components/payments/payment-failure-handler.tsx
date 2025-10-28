@@ -4,22 +4,18 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
 import { 
   AlertTriangle, 
   RefreshCw, 
   CreditCard, 
-  Clock, 
-  CheckCircle,
-  XCircle,
+  XCircle, 
   Loader2,
   Info
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Payment, PaymentError } from '@/lib/types/payments';
 import { 
-  useRetryPayment, 
-  usePaymentMethods 
+  useRetryPayment 
 } from '@/hooks/use-payments';
 import { 
   getPaymentErrorMessage, 
@@ -48,8 +44,7 @@ export function PaymentFailureHandler({
   const [isRetrying, setIsRetrying] = useState(false);
   
   const retryPayment = useRetryPayment();
-  const { data: paymentMethods } = usePaymentMethods();
-
+  
   const handleRetryPayment = async () => {
     setIsRetrying(true);
     
@@ -66,10 +61,11 @@ export function PaymentFailureHandler({
         toast.error(getPaymentErrorMessage(result.error!));
         onRetryFailure?.(result.error!);
       }
-    } catch (error) {
+    } catch {
       const paymentError: PaymentError = {
         code: PAYMENT_ERROR_CODES.PROCESSING_ERROR,
         message: 'An unexpected error occurred during retry',
+        details: {},
       };
       toast.error(getPaymentErrorMessage(paymentError));
       onRetryFailure?.(paymentError);
@@ -113,18 +109,18 @@ export function PaymentFailureHandler({
     }
   };
 
-  const canRetry = [
+    const canRetry = [
     PAYMENT_ERROR_CODES.CARD_DECLINED,
     PAYMENT_ERROR_CODES.INSUFFICIENT_FUNDS,
     PAYMENT_ERROR_CODES.NETWORK_ERROR,
     PAYMENT_ERROR_CODES.TIMEOUT,
     PAYMENT_ERROR_CODES.PROCESSING_ERROR,
-  ].includes(error.code);
+  ].includes(error.code as "card_declined" | "insufficient_funds" | "processing_error" | "network_error" | "timeout");
 
-  const needsNewPaymentMethod = [
+    const needsNewPaymentMethod = [
     PAYMENT_ERROR_CODES.EXPIRED_CARD,
     PAYMENT_ERROR_CODES.INCORRECT_CVC,
-  ].includes(error.code);
+  ].includes(error.code as "expired_card" | "incorrect_cvc");
 
   const errorSeverity = getErrorSeverity(error.code);
   const retryRecommendation = getRetryRecommendation(error.code);

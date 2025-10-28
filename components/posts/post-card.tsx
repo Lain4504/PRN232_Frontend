@@ -34,12 +34,12 @@ interface PostCardProps {
 }
 
 export function PostCard({ post }: PostCardProps) {
-  const { data: content } = useContent(post.content_id);
+  const { data: content } = useContent(post.contentId);
   const { data: socialAccounts } = useGetSocialAccounts();
 
   // Find the social integration for this post
   const socialIntegration = socialAccounts?.flatMap(account => 
-    account.targets?.filter(target => target.id === post.social_integration_id) || []
+    account.targets?.filter(target => target.id === post.integrationId) || []
   )?.[0];
 
   const getPlatformIcon = (platform: string) => {
@@ -68,7 +68,7 @@ export function PostCard({ post }: PostCardProps) {
     };
   };
 
-  const { date, time } = formatDate(post.published_at);
+  const { date, time } = formatDate(post.publishedAt);
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -91,7 +91,7 @@ export function PostCard({ post }: PostCardProps) {
           <div className="flex items-center gap-2">
             <PostStatusBadge status={post.status} />
             <Button variant="ghost" size="sm" asChild>
-              <Link href={post.external_post_id ? `https://${socialIntegration?.provider}.com/posts/${post.external_post_id}` : '#'} target="_blank">
+              <Link href={post.externalPostId ? `https://${socialIntegration?.provider}.com/posts/${post.externalPostId}` : '#'} target="_blank">
                 <ExternalLink className="h-4 w-4" />
               </Link>
             </Button>

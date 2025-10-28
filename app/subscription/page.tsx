@@ -24,9 +24,10 @@ import { formatCurrency } from '@/lib/stripe'
 import { SubscriptionPlanEnum } from '@/lib/types/subscription'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import type { SubscriptionResponseDto } from '@/lib/types/subscription'
 
 export default function SubscriptionPage() {
-  const [subscriptions, setSubscriptions] = useState<any[]>([])
+  const [subscriptions, setSubscriptions] = useState<SubscriptionResponseDto[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
 
@@ -237,7 +238,7 @@ export default function SubscriptionPage() {
                 </div>
                 <h3 className="text-lg font-semibold mb-2">No Subscriptions Found</h3>
                 <p className="text-muted-foreground mb-4">
-                  You don't have any subscriptions yet. Create a profile to get started.
+                  You don&apos;t have any subscriptions yet. Create a profile to get started.
                 </p>
                 <Link href="/overview/profile/new">
                   <Button>Create New Profile</Button>

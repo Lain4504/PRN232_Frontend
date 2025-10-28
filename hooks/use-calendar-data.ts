@@ -62,7 +62,7 @@ export function useCalendarData({
     error = isBrandSelected ? brandError : teamError;
   }
 
-  const formattedBrands = availableBrands.map((brand: any) => ({
+  const formattedBrands = availableBrands.map((brand: { id: string; name: string }) => ({
     id: brand.id,
     name: brand.name
   }));

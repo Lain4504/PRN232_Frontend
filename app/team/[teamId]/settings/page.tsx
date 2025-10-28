@@ -217,7 +217,7 @@ export default function TeamSettingsPage({
                   <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-semibold mb-2 text-foreground">No Access</h3>
                   <p className="text-muted-foreground">
-                    You don't have permission to view any team settings sections.
+                    You don&apos;t have permission to view any team settings sections.
                   </p>
                 </div>
               </CardContent>

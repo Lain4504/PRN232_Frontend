@@ -22,7 +22,7 @@ export function useCreativeWithUsage(creativeId: string) {
   return useQuery({
     queryKey: [...creativeKeys.detail(creativeId), 'usage'],
     queryFn: async () => {
-      const response = await api.get<AdCreativeResponse & { usage: any }>(
+      const response = await api.get<AdCreativeResponse & { usage: Record<string, unknown> }>(
         `${endpoints.creativeById(creativeId)}?includeUsage=true`
       );
       return response.data;
