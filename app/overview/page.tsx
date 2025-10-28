@@ -51,10 +51,10 @@ export default function OverviewPage() {
             <div className="h-10 w-64 bg-muted animate-pulse rounded mb-3 mx-auto"></div>
             <div className="h-5 w-80 bg-muted animate-pulse rounded mx-auto"></div>
           </div>
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {[1, 2, 3, 4].map((i) => (
-              <Card key={i} className="animate-pulse bg-gradient-to-br from-background to-muted/20">
-                <CardContent className="p-3">
+              <Card key={i} className="animate-pulse shadow-none border border-neutral-200/40 dark:border-neutral-800/40 bg-gradient-to-br from-background to-muted/20">
+                <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 rounded-full bg-muted ring-1 ring-muted/50"></div>
@@ -121,7 +121,7 @@ export default function OverviewPage() {
 
           {/* Profiles Grid */}
           {filteredProfiles.length === 0 ? (
-              <Card className="border-dashed">
+              <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 border-dashed">
                 <CardContent className="flex flex-col items-center justify-center py-16 text-center">
                   <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4">
                     <Building2 className="h-6 w-6 text-muted-foreground" />
@@ -144,63 +144,63 @@ export default function OverviewPage() {
                 </CardContent>
               </Card>
           ) : (
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
             {filteredProfiles.map((profile) => (
                 <Card
                     key={profile.id}
-                    className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/20 group bg-gradient-to-br from-background to-muted/20"
+                    className="cursor-pointer transition-colors duration-200 shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md group"
                     onClick={() => handleProfileSelect(profile)}
                 >
-                  <CardContent className="p-3 relative">
-                    {/* Header with Avatar and Badge */}
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center shrink-0 ring-1 ring-primary/10 group-hover:ring-primary/20 transition-all">
-                          {profile.avatarUrl ? (
-                              <img
-                                  src={profile.avatarUrl}
-                                  alt=""
-                                  className="h-8 w-8 rounded-full object-cover"
-                              />
-                          ) : profile.profileType === 'Basic' || profile.profileType === 'Pro' ? (
-                              <Building2 className="h-4 w-4 text-primary" />
-                          ) : (
-                              <User className="h-4 w-4 text-primary" />
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h3 className="font-medium text-sm truncate text-foreground group-hover:text-primary transition-colors">
+                  <CardContent className="p-4">
+                    {/* Header with Avatar and Name */}
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="h-10 w-10 rounded-full bg-primary/5 flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
+                        {profile.avatarUrl ? (
+                            <img
+                                src={profile.avatarUrl}
+                                alt=""
+                                className="h-10 w-10 rounded-full object-cover"
+                            />
+                        ) : profile.profileType === 'Basic' || profile.profileType === 'Pro' ? (
+                            <Building2 className="h-5 w-5 text-primary/70" />
+                        ) : (
+                            <User className="h-5 w-5 text-primary/70" />
+                        )}
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h3 className="font-semibold text-sm text-foreground truncate">
                             {profile.name || profile.company_name || 'Unnamed Profile'}
                           </h3>
-                          {profile.company_name && profile.name && (
-                              <p className="text-xs text-muted-foreground truncate">
-                                {profile.company_name}
-                              </p>
-                          )}
+                          <Badge
+                              variant="secondary"
+                              className="shrink-0 text-[10px] px-1.5 py-0 h-4 font-medium"
+                          >
+                            {PROFILE_TYPE_LABELS[profile.profileType]}
+                          </Badge>
                         </div>
+
+                        {profile.company_name && profile.name && (
+                            <p className="text-xs text-muted-foreground/80 truncate">
+                              {profile.company_name}
+                            </p>
+                        )}
                       </div>
-                      <Badge 
-                        variant="secondary" 
-                        className="shrink-0 text-xs px-1.5 py-0.5 bg-primary/10 text-primary border-primary/20 group-hover:bg-primary/20 transition-colors"
-                      >
-                        {PROFILE_TYPE_LABELS[profile.profileType]}
-                      </Badge>
                     </div>
 
                     {/* Bio Section */}
                     {profile.bio && (
-                        <div className="mb-2">
-                          <p className="text-xs text-muted-foreground line-clamp-1 leading-relaxed">
-                            {profile.bio}
-                          </p>
-                        </div>
+                        <p className="text-xs text-muted-foreground/70 line-clamp-2 leading-relaxed mb-3">
+                          {profile.bio}
+                        </p>
                     )}
 
-                    {/* Footer with Arrow */}
-                    <div className="flex items-center justify-end">
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground group-hover:text-primary transition-colors">
-                        <span className="opacity-0 group-hover:opacity-100 transition-opacity">Select</span>
-                        <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                    {/* Divider */}
+                    <div className="border-t border-neutral-200/60 dark:border-neutral-800/60 pt-2">
+                      <div className="flex items-center justify-end text-xs text-muted-foreground/60 group-hover:text-primary transition-colors">
+                        <span className="font-medium">View details</span>
+                        <ArrowRight className="h-3.5 w-3.5 ml-1 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
                   </CardContent>

@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { CustomTabs, CustomTabItem } from '@/components/ui/custom-tabs'
 import { 
   CreditCard, 
   Calendar, 
@@ -23,18 +23,66 @@ import { PlanChangeDialog } from './plan-change-dialog'
 import { formatPrice, getPlanById } from '@/lib/constants/subscription-plans'
 import { getDaysUntilBilling, formatBillingDate } from '@/lib/utils/subscription'
 import { toast } from 'sonner'
-import type { SubscriptionPlan } from '@/lib/types/subscription'
+import type { SubscriptionPlan, Subscription } from '@/lib/types/subscription'
+import { useProfile } from '@/lib/contexts/profile-context'
+import { SubscriptionPlanEnum } from '@/lib/types/subscription'
 
 interface SubscriptionManagementProps {
   className?: string
   profileId?: string
 }
 
+// Helper function to create fallback subscription from profile type
+const createFallbackSubscription = (
+  profileType: number,
+  profileId?: string
+): Subscription | null => {
+  if (!profileId) return null
+
+  const tierMap = ['free', 'basic', 'pro'] as const
+  const tier = tierMap[profileType] || 'free'
+
+  return {
+    id: `profile-${profileId}`,
+    profileId: profileId,
+    plan: profileType,
+    planName: tier.charAt(0).toUpperCase() + tier.slice(1),
+    tier,
+    status: 'active',
+    billingCycle: 'monthly',
+    currentPeriodStart: new Date().toISOString(),
+    currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    cancelAtPeriodEnd: false,
+    features: [],
+    limits: {
+      campaigns: profileType === 2 ? -1 : profileType === 1 ? 15 : 3,
+      adSets: profileType === 2 ? -1 : profileType === 1 ? 50 : 10,
+      ads: profileType === 2 ? -1 : profileType === 1 ? 200 : 50,
+      teamMembers: profileType === 2 ? 20 : profileType === 1 ? 5 : 1,
+      storage: profileType === 2 ? '100' : profileType === 1 ? '25' : '1',
+      apiCalls: profileType === 2 ? -1 : profileType === 1 ? 5000 : 1000
+    },
+    usage: {
+      campaigns: 0,
+      adSets: 0,
+      ads: 0,
+      teamMembers: 0,
+      storage: 0,
+      apiCalls: 0
+    }
+  }
+}
+
 export function SubscriptionManagement({ className = '', profileId }: SubscriptionManagementProps) {
   const [showPlanChangeDialog, setShowPlanChangeDialog] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null)
-  const { data: subscription, isLoading } = useSubscription()
+  const [activeTab, setActiveTab] = useState('overview')
+  const { data: subscription, isLoading } = useSubscription(profileId)
+  const { profileType } = useProfile()
   const cancelSubscriptionMutation = useCancelSubscription()
+
+  // Create fallback subscription if API returns null but we have profile type
+  const effectiveSubscription = subscription || createFallbackSubscription(profileType, profileId)
 
   const handlePlanChange = (plan: SubscriptionPlan) => {
     setSelectedPlan(plan)
@@ -42,7 +90,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
   }
 
   const handleCancelSubscription = async () => {
-    if (!subscription) return
+    if (!effectiveSubscription) return
 
     const confirmed = window.confirm(
       'Are you sure you want to cancel your subscription? You will lose access to premium features at the end of your billing period.'
@@ -52,7 +100,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
 
     try {
       await cancelSubscriptionMutation.mutateAsync({
-        subscriptionId: subscription.id,
+        subscriptionId: effectiveSubscription.id,
         reason: 'User requested cancellation'
       })
       toast.success('Subscription cancelled successfully')
@@ -106,7 +154,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
     )
   }
 
-  if (!subscription) {
+  if (!effectiveSubscription) {
     return (
       <div className={`text-center py-12 ${className}`}>
         <h2 className="text-2xl font-semibold">Unable to load subscription</h2>
@@ -117,8 +165,15 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
     )
   }
 
-  const daysUntilBilling = getDaysUntilBilling(subscription)
-  const nextBillingDate = new Date(subscription.currentPeriodEnd)
+  const daysUntilBilling = getDaysUntilBilling(effectiveSubscription)
+  const nextBillingDate = new Date(effectiveSubscription.currentPeriodEnd)
+
+  const tabItems: CustomTabItem[] = [
+    { value: 'overview', label: 'Overview' },
+    { value: 'billing', label: 'Billing' },
+    { value: 'history', label: 'History' },
+    { value: 'settings', label: 'Settings' }
+  ]
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -134,41 +189,41 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
       <CurrentPlanCard showUsage={true} showActions={false} />
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="billing">Billing</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
-        </TabsList>
+      <div className="space-y-6">
+        <CustomTabs
+          items={tabItems}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
         {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Subscription Status */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  {getStatusIcon(subscription.status)}
+                  {getStatusIcon(effectiveSubscription.status)}
                   <span>Subscription Status</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Status</span>
-                  <Badge className={getStatusColor(subscription.status)}>
-                    {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
+                  <Badge className={getStatusColor(effectiveSubscription.status)}>
+                    {effectiveSubscription.status.charAt(0).toUpperCase() + effectiveSubscription.status.slice(1)}
                   </Badge>
                 </div>
                 
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Plan</span>
-                  <span className="font-medium">{subscription.planName}</span>
+                  <span className="font-medium">{effectiveSubscription.planName}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Billing Cycle</span>
-                  <span className="font-medium capitalize">{subscription.billingCycle}</span>
+                  <span className="font-medium capitalize">{effectiveSubscription.billingCycle}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -176,7 +231,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
                   <span className="font-medium">{formatBillingDate(nextBillingDate)}</span>
                 </div>
 
-                {subscription.cancelAtPeriodEnd && (
+                {effectiveSubscription.cancelAtPeriodEnd && (
                   <Alert variant="destructive">
                     <AlertTriangle className="h-4 w-4" />
                     <AlertDescription>
@@ -221,7 +276,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
                   Download Invoice
                 </Button>
                 
-                {subscription.tier !== 'free' && (
+                {effectiveSubscription.tier !== 'free' && (
                   <Button 
                     onClick={handleCancelSubscription}
                     className="w-full justify-start text-red-600 hover:text-red-700"
@@ -235,10 +290,12 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </div>
+        )}
 
         {/* Billing Tab */}
-        <TabsContent value="billing" className="space-y-6">
+        {activeTab === 'billing' && (
+          <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Billing Information */}
             <Card>
@@ -252,7 +309,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Next Payment</span>
                   <span className="font-medium">
-                    {formatPrice(subscription.tier === 'free' ? 0 : 29)}
+                    {formatPrice(effectiveSubscription.tier === 'free' ? 0 : 29)}
                   </span>
                 </div>
                 
@@ -302,10 +359,12 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </div>
+        )}
 
         {/* History Tab */}
-        <TabsContent value="history" className="space-y-6">
+        {activeTab === 'history' && (
+          <div className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Billing History</CardTitle>
@@ -327,10 +386,12 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
+        )}
 
         {/* Settings Tab */}
-        <TabsContent value="settings" className="space-y-6">
+        {activeTab === 'settings' && (
+          <div className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Subscription Settings</CardTitle>
@@ -348,16 +409,17 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        </div>
+        )}
+      </div>
 
       {/* Plan Change Dialog */}
-      {selectedPlan && (
+      {selectedPlan && effectiveSubscription && (
         <PlanChangeDialog
           open={showPlanChangeDialog}
           onOpenChange={setShowPlanChangeDialog}
           targetPlan={selectedPlan}
-          currentSubscription={subscription}
+          currentSubscription={effectiveSubscription}
         />
       )}
     </div>

@@ -58,7 +58,7 @@ export default function TeamProductsPage({
         </div>
 
         {/* Filters */}
-        <Card>
+        <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
           <CardHeader>
             <CardTitle>Product Catalog</CardTitle>
             <CardDescription>
@@ -96,7 +96,7 @@ export default function TeamProductsPage({
             {isProductsLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <Card key={i} className="hover:shadow-md transition-shadow">
+                  <Card key={i} className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">
@@ -128,7 +128,7 @@ export default function TeamProductsPage({
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {products.map((product) => (
-                  <Card key={product.id} className="hover:shadow-md transition-shadow">
+                  <Card key={product.id} className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">

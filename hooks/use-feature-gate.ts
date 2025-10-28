@@ -12,8 +12,8 @@ import {
 } from '@/lib/utils/subscription'
 
 export const useFeatureGate = (featureId: string) => {
-  const { data: subscription, isLoading, error } = useSubscription()
-  const { profileType } = useProfile()
+  const { activeProfileId, profileType } = useProfile()
+  const { data: subscription, isLoading, error } = useSubscription(activeProfileId || undefined)
 
   const featureGate = useMemo((): FeatureGate | null => {
     if (!subscription || isLoading || error) {
@@ -30,8 +30,9 @@ export const useFeatureGate = (featureId: string) => {
     }
 
     // Then check subscription-based access if available
+    // Fallback to profile gate while subscription is loading or unavailable
     if (!subscription || isLoading || error) {
-      return false
+      return true
     }
 
     return canAccessFeature(subscription, featureId)

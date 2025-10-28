@@ -22,13 +22,15 @@ export default function TeamApprovalPage() {
         </div>
 
         {/* Approval Management */}
-        <SharedApprovalManagement
-          context="team"
-          teamId={teamId}
-          title="Team Approvals"
-          description="Review and approve content for your team"
-          showCreateButton={true}
-        />
+        <div className="rounded-md border border-neutral-200/60 dark:border-neutral-800/60 shadow-none p-4">
+          <SharedApprovalManagement
+            context="team"
+            teamId={teamId}
+            title="Team Approvals"
+            description="Review and approve content for your team"
+            showCreateButton={true}
+          />
+        </div>
       </div>
     </div>
   )

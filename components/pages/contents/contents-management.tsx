@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/select";
 import { useBrands } from "@/hooks/use-brands";
 import { useProducts } from "@/hooks/use-products";
+import { useTeamBrands } from "@/hooks/use-team-brands";
+import { useTeamContents } from "@/hooks/use-team-content";
 import { 
   useCreateContent, 
   useUpdateContent, 
@@ -41,6 +43,9 @@ import { ContentModal } from "@/components/contents/content-modal";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Calendar, Edit, Trash2, Send, Globe } from "lucide-react";
+import { SubmitApprovalDialog } from "@/components/contents/submit-approval-dialog";
+import { useTeamMembers } from "@/hooks/use-teams";
+import { useCreateApproval } from "@/hooks/use-approvals";
 
 // TODO: Replace with actual auth hook
 const useCurrentUser = () => {
@@ -207,9 +212,10 @@ const createColumns = (
 
 interface ContentsManagementProps {
   initialBrandId?: string; // Allow passing brandId from parent component
+  teamId?: string; // When provided, can show all team brands content
 }
 
-export function ContentsManagement({ initialBrandId }: ContentsManagementProps = {}) {
+export function ContentsManagement({ initialBrandId, teamId }: ContentsManagementProps = {}) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ContentStatusEnum | "all">("all");
   const [adTypeFilter, setAdTypeFilter] = useState<AdTypeEnum | "all">("all");
@@ -217,6 +223,7 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
   const [isCreating, setIsCreating] = useState(false);
   const [selectedContent, setSelectedContent] = useState<ContentResponseDto | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isApprovalDialogOpen, setIsApprovalDialogOpen] = useState(false);
 
   // State for current content operations
   const [currentContentId, setCurrentContentId] = useState<string>("");
@@ -224,21 +231,38 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
   // Hooks
   const { userId } = useCurrentUser();
   const { data: brandsData, isLoading: brandsLoading } = useBrands();
+  const { data: teamBrands = [] } = useTeamBrands(teamId || "");
   const { data: products = [] } = useProducts();
   
   // Use the specialized hook for better brand filtering
-  const { 
-    data: contentsData, 
-    isLoading,
-    error
-  } = useContentsByBrandFilter({
-    brandId: initialBrandId || undefined,
+  // Scope selection: when teamId provided, allow selecting All team brands or a specific brand
+  const [scopeBrandId, setScopeBrandId] = useState<string | "team-all">(teamId ? "team-all" : (initialBrandId || ""));
+
+  const byBrand = useContentsByBrandFilter({
+    brandId: scopeBrandId !== "team-all" ? (scopeBrandId || initialBrandId || undefined) : undefined,
     searchTerm: searchTerm || undefined,
     status: statusFilter !== "all" ? statusFilter : undefined,
     adType: adTypeFilter !== "all" ? adTypeFilter : undefined,
     page: 1,
     pageSize: 50
   });
+
+  const teamAll = useTeamContents(
+    teamId && scopeBrandId === "team-all" ? teamId : undefined,
+    {
+      page: 1,
+      pageSize: 50,
+      searchTerm: searchTerm || undefined,
+      status: statusFilter !== "all" ? statusFilter : undefined,
+      adType: adTypeFilter !== "all" ? adTypeFilter : undefined,
+      sortBy: "createdAt",
+      sortDescending: true,
+    }
+  );
+
+  const isLoading = teamId && scopeBrandId === "team-all" ? (teamAll.isLoading) : (byBrand.isLoading);
+  const error = teamId && scopeBrandId === "team-all" ? (undefined) : (byBrand.error);
+  const contentsData = teamId && scopeBrandId === "team-all" ? teamAll.data : (byBrand.data as any);
   
 
   // Transform brands data to ensure correct format
@@ -259,6 +283,16 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
   const deleteContentMutation = useDeleteContent(currentContentId);
   const submitContentMutation = useSubmitContent(currentContentId);
   const publishContentMutation = usePublishContent(currentContentId);
+  const createApprovalMutation = useCreateApproval();
+
+  // Active team for member lookup (from header context)
+  const [activeTeamId, setActiveTeamId] = useState<string | null>(null);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setActiveTeamId(localStorage.getItem('activeTeamId'));
+    }
+  }, []);
+  const { data: teamMembers = [] } = useTeamMembers(activeTeamId || undefined);
 
   // Handle the data structure from API response
   // From debug info, we see that contentsData is already the array of contents
@@ -314,14 +348,8 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
 
   const handleSubmitContent = async (contentId: string) => {
     setCurrentContentId(contentId);
-    try {
-      // Use the mutation that was created with the current content ID
-      await submitContentMutation.mutateAsync();
-      toast.success('Content submitted for approval');
-    } catch (error) {
-      console.error('Failed to submit content:', error);
-      toast.error('Failed to submit content');
-    }
+    // Open approver selection dialog instead of direct submit
+    setIsApprovalDialogOpen(true);
   };
 
   const handlePublishContent = async (contentId: string, integrationId: string) => {
@@ -464,7 +492,23 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
               <SelectItem value={AdTypeEnum.VideoText.toString()}>Video + Text</SelectItem>
             </SelectContent>
           </Select>
-
+          {/* Team scope selector */}
+          {teamId && (
+            <Select
+              value={scopeBrandId}
+              onValueChange={(val) => setScopeBrandId(val as any)}
+            >
+              <SelectTrigger className="w-56">
+                <SelectValue placeholder="Scope" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="team-all">All team brands</SelectItem>
+                {teamBrands.map((b: { id: string; name: string }) => (
+                  <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
 
 
           {/* Search */}
@@ -612,12 +656,31 @@ export function ContentsManagement({ initialBrandId }: ContentsManagementProps =
             }
           }}
           onSave={handleSaveContent}
-          onSubmit={handleSubmitContent}
           onPublish={handlePublishContent}
           isProcessing={updateContentMutation.isPending || submitContentMutation.isPending || publishContentMutation.isPending}
           brands={brands}
           products={products}
           userId={userId}
+          showButtons={isEditing}
+        />
+
+        {/* Submit Approval Dialog */}
+        <SubmitApprovalDialog
+          content={selectedContent || contents.find(c => c.id === currentContentId) || null}
+          isOpen={isApprovalDialogOpen}
+          onClose={() => setIsApprovalDialogOpen(false)}
+          isSubmitting={createApprovalMutation.isPending}
+          approvers={teamMembers.map(m => ({ id: m.userId, email: m.userEmail, name: m.userEmail.split('@')[0], canApproveContent: m.canApproveContent }))}
+          onSubmit={async (approvalData) => {
+            try {
+              await createApprovalMutation.mutateAsync(approvalData)
+              toast.success('Approval request created')
+              setIsApprovalDialogOpen(false)
+            } catch (error) {
+              console.error('Failed to create approval:', error)
+              toast.error('Failed to create approval')
+            }
+          }}
         />
       </div>
     </div>

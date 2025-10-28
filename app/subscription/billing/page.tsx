@@ -77,9 +77,9 @@ export default function BillingPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Payment Method */}
-        <Card>
+        <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <CreditCard className="h-5 w-5" />
@@ -105,7 +105,7 @@ export default function BillingPage() {
               </Button>
             </div>
             
-            <div className="pt-4 border-t">
+            <div className="pt-4 border-t border-neutral-200/60 dark:border-neutral-800/60">
               <Button variant="outline" className="w-full">
                 Add New Payment Method
               </Button>
@@ -114,7 +114,7 @@ export default function BillingPage() {
         </Card>
 
         {/* Next Billing */}
-        <Card>
+        <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Calendar className="h-5 w-5" />
@@ -159,7 +159,7 @@ export default function BillingPage() {
       </div>
 
       {/* Billing History */}
-      <Card>
+      <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <DollarSign className="h-5 w-5" />

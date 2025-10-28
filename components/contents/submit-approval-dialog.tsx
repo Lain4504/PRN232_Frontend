@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { ContentResponseDto, CreateApprovalRequest } from "@/lib/types/aisam-types";
 import { Send, X } from "lucide-react";
 
@@ -31,7 +32,7 @@ interface SubmitApprovalDialogProps {
   onClose: () => void;
   onSubmit: (approvalData: CreateApprovalRequest) => Promise<void>;
   isSubmitting?: boolean;
-  approvers?: Array<{ id: string; name: string; email: string }>;
+  approvers?: Array<{ id: string; name?: string; email: string; canApproveContent?: boolean }>;
 }
 
 function SubmitApprovalForm({ 
@@ -76,7 +77,13 @@ function SubmitApprovalForm({
           <SelectContent>
             {approvers.map((approver) => (
               <SelectItem key={approver.id} value={approver.id}>
-                {approver.name} ({approver.email})
+                <div className="flex items-center gap-2">
+                  <span>{approver.name || approver.email}</span>
+                  <span className="text-muted-foreground">({approver.email})</span>
+                  {approver.canApproveContent && (
+                    <Badge variant="secondary" className="ml-auto">Can approve</Badge>
+                  )}
+                </div>
               </SelectItem>
             ))}
           </SelectContent>

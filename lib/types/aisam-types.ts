@@ -488,6 +488,7 @@ export interface TeamMemberResponseDto {
   joinedAt: string;
   isActive: boolean;
   userEmail: string;
+  canApproveContent?: boolean;
 }
 
 export interface TeamMemberCreateRequest {

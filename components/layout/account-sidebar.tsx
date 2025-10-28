@@ -3,7 +3,7 @@
 import React from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Settings, Shield, FileText } from "lucide-react"
+import { ArrowLeft, Settings, Shield, FileText, History } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -24,6 +24,11 @@ const accountNavItems: AccountNavItem[] = [
     title: "Security",
     url: "/account/security",
     icon: Shield,
+  },
+  {
+    title: "Payment History",
+    url: "/account/payment",
+    icon: History,
   },
 ]
 

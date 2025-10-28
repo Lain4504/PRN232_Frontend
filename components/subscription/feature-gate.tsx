@@ -52,7 +52,7 @@ export function FeatureGate({
     switch (tier) {
       case 'pro':
         return <Crown className="h-5 w-5 text-purple-500" />
-      case 'enterprise':
+      case 'basic':
         return <Building2 className="h-5 w-5 text-orange-500" />
       default:
         return <Zap className="h-5 w-5 text-blue-500" />

@@ -147,9 +147,9 @@ export function CampaignDetails() {
           </div>
         </div>
 
-        {/* Campaign Overview Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
+        {/* Campaign Overview Chips */}
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Budget</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -164,7 +164,7 @@ export function CampaignDetails() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Objective</CardTitle>
               <Target className="h-4 w-4 text-muted-foreground" />
@@ -179,7 +179,7 @@ export function CampaignDetails() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Duration</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -194,7 +194,7 @@ export function CampaignDetails() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Ad Sets</CardTitle>
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
@@ -212,8 +212,8 @@ export function CampaignDetails() {
 
         {/* Performance Metrics */}
         {metrics && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
+          <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="border-0 shadow-none bg-muted/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Impressions</CardTitle>
                 <Eye className="h-4 w-4 text-muted-foreground" />
@@ -228,7 +228,7 @@ export function CampaignDetails() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-0 shadow-none bg-muted/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Clicks</CardTitle>
                 <MousePointer className="h-4 w-4 text-muted-foreground" />
@@ -243,7 +243,7 @@ export function CampaignDetails() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-0 shadow-none bg-muted/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">CTR</CardTitle>
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -258,7 +258,7 @@ export function CampaignDetails() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-0 shadow-none bg-muted/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Spend</CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -276,8 +276,8 @@ export function CampaignDetails() {
         )}
 
         {/* Campaign Details */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader>
               <CardTitle>Campaign Information</CardTitle>
               <CardDescription>
@@ -310,7 +310,7 @@ export function CampaignDetails() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader>
               <CardTitle>Ad Sets</CardTitle>
               <CardDescription>
@@ -321,7 +321,7 @@ export function CampaignDetails() {
               {campaign.adSets && campaign.adSets.length > 0 ? (
                 <div className="space-y-2">
                   {campaign.adSets.map((adSet) => (
-                    <div key={adSet.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div key={adSet.id} className="flex items-center justify-between p-3 rounded-lg bg-background">
                       <div>
                         <p className="font-medium">{adSet.name}</p>
                         <p className="text-sm text-muted-foreground">ID: {adSet.id.slice(0, 8)}</p>

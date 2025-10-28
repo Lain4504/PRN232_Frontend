@@ -22,10 +22,25 @@ export function useAdSets(params: AdSetListParams) {
   return useQuery({
     queryKey: adSetKeys.list(params),
     queryFn: async () => {
-      const response = await api.get<PaginatedResponse<AdSetResponse>>(
-        endpoints.adSets(params)
+      // Backend returns array (no pagination) for campaign listing
+      const response = await api.get<AdSetResponse[]>(
+        endpoints.adSetsByCampaign(params.campaignId as string)
       );
-      return response.data;
+      const items = response.data || [];
+      // Simulate pagination client-side for consistent UI
+      const page = params.page ?? 1;
+      const pageSize = params.pageSize ?? items.length;
+      const start = (page - 1) * pageSize;
+      const slice = items.slice(start, start + pageSize);
+      return {
+        data: slice,
+        totalCount: items.length,
+        page,
+        pageSize,
+        totalPages: Math.max(1, Math.ceil(items.length / pageSize)),
+        hasNextPage: start + pageSize < items.length,
+        hasPreviousPage: page > 1,
+      } as unknown as PaginatedResponse<AdSetResponse>;
     },
     enabled: !!params.campaignId,
   });

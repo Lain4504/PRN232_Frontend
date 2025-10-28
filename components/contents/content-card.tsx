@@ -181,7 +181,7 @@ export function ContentCard({
                   className="bg-blue-600 hover:bg-blue-700 h-7 text-xs"
                 >
                   <Send className="mr-1 h-3 w-3" />
-                  Submit
+                  Submit for Approval
                 </Button>
               )}
               

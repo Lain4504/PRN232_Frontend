@@ -21,17 +21,20 @@ export interface AdResponse {
   id: string;
   adSetId: string;
   creativeId: string;
-  name: string;
-  status: AdStatus;
+  adId?: string;
+  status: AdStatus | string;
+  name?: string;
+  adSetName?: string;
+  // Backend may not include these optional fields
   targeting?: unknown;
   schedule?: {
     startDate?: string;
     endDate?: string;
     timezone?: string;
   };
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
   metrics?: AdMetrics;
   performance?: AdMetrics;
 }

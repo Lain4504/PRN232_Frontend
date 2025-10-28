@@ -233,8 +233,8 @@ export function CreativeDetails({ campaignId, adSetId, creativeId }: CreativeDet
 
         {/* Performance Metrics */}
         {metrics && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
+          <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="border-0 shadow-none bg-muted/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Impressions</CardTitle>
                 <Eye className="h-4 w-4 text-muted-foreground" />
@@ -249,7 +249,7 @@ export function CreativeDetails({ campaignId, adSetId, creativeId }: CreativeDet
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-0 shadow-none bg-muted/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Clicks</CardTitle>
                 <MousePointer className="h-4 w-4 text-muted-foreground" />
@@ -264,7 +264,7 @@ export function CreativeDetails({ campaignId, adSetId, creativeId }: CreativeDet
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-0 shadow-none bg-muted/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">CTR</CardTitle>
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -279,7 +279,7 @@ export function CreativeDetails({ campaignId, adSetId, creativeId }: CreativeDet
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-0 shadow-none bg-muted/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Engagement</CardTitle>
                 <BarChart3 className="h-4 w-4 text-muted-foreground" />
@@ -297,8 +297,8 @@ export function CreativeDetails({ campaignId, adSetId, creativeId }: CreativeDet
         )}
 
         {/* Creative Details */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader>
               <CardTitle>Creative Information</CardTitle>
               <CardDescription>
@@ -342,7 +342,7 @@ export function CreativeDetails({ campaignId, adSetId, creativeId }: CreativeDet
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader>
               <CardTitle>Content & Media</CardTitle>
               <CardDescription>
@@ -388,7 +388,7 @@ export function CreativeDetails({ campaignId, adSetId, creativeId }: CreativeDet
         </div>
 
         {/* Creative Preview */}
-        <Card>
+        <Card className="border-0 shadow-none bg-muted/40">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Eye className="h-5 w-5" />

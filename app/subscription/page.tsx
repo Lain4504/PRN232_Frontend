@@ -131,9 +131,9 @@ export default function SubscriptionPage() {
           {activeSubscriptions.length > 0 && (
             <div className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">Active Subscriptions</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {activeSubscriptions.map((subscription) => (
-                  <Card key={subscription.id} className="relative">
+                  <Card key={subscription.id} className="relative shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -173,7 +173,7 @@ export default function SubscriptionPage() {
                         )}
                       </div>
 
-                      <div className="pt-4 border-t">
+                      <div className="pt-4 border-t border-neutral-200/60 dark:border-neutral-800/60">
                         <Button
                           variant="destructive"
                           size="sm"
@@ -195,9 +195,9 @@ export default function SubscriptionPage() {
           {inactiveSubscriptions.length > 0 && (
             <div className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">Inactive Subscriptions</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {inactiveSubscriptions.map((subscription) => (
-                  <Card key={subscription.id} className="opacity-75">
+                  <Card key={subscription.id} className="opacity-75 shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -231,7 +231,7 @@ export default function SubscriptionPage() {
 
           {/* No Subscriptions */}
           {subscriptions.length === 0 && (
-            <Card>
+            <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
               <CardContent className="text-center py-12">
                 <div className="mb-4">
                   <CreditCard className="h-12 w-12 text-muted-foreground mx-auto" />
@@ -249,7 +249,7 @@ export default function SubscriptionPage() {
 
           {/* Upgrade Options */}
           {activeSubscriptions.length > 0 && (
-            <Card className="mt-8">
+            <Card className="mt-8 shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />

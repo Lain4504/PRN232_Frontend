@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   AlertDialog,
@@ -28,10 +27,9 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
-import { Brand, Profile } from "@/lib/types/aisam-types";
+import { Brand } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useUser } from "@/hooks/use-user";
-import { useGetProfiles } from "@/hooks/use-profiles";
 import { useBrands, useDeleteBrand } from "@/hooks/use-brands";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -50,14 +48,13 @@ import {
 const createColumns = (
   handleEditBrand: (brand: Brand) => void,
   handleDeleteBrand: (brandId: string) => void,
-  profiles: Profile[] = [],
   isDeleting: boolean
 ): ColumnDef<Brand>[] => [
   {
     accessorKey: "name",
     header: "Brand Name",
     cell: ({ row }) => (
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-center gap-3">
         <Avatar className="h-10 w-10">
           {row.original.logo_url ? (
             <AvatarImage src={row.original.logo_url} alt={row.getValue("name")} />
@@ -82,25 +79,7 @@ const createColumns = (
       </div>
     ),
   },
-  {
-    accessorKey: "profile_id",
-    header: "Linked Profile",
-    cell: ({ row }) => {
-      const profileId = row.getValue("profile_id") as string;
-      const profile = profiles.find(p => p.id === profileId);
-      return (
-        <div className="text-sm text-center">
-          {profile ? (
-            <Badge variant="outline">
-              {profile.company_name || profile.profileType}
-            </Badge>
-          ) : (
-            <span className="text-muted-foreground">No profile linked</span>
-          )}
-        </div>
-      );
-    },
-  },
+  // Removed Linked Profile column
 
   {
     id: "actions",
@@ -150,13 +129,12 @@ export function BrandsManagement() {
 
   // Hooks
   const { data: user } = useUser();
-  const { data: profiles = [] } = useGetProfiles(user?.id ?? "");
   const { data: brands = [], isLoading: loading, refetch: refetchBrands } = useBrands();
   const deleteBrandMutation = useDeleteBrand();
 
   // Ensure brands and profiles are always arrays
   const safeBrands = Array.isArray(brands) ? brands : [];
-  const safeProfiles = Array.isArray(profiles) ? profiles : [];
+  // Profiles removed from this page
 
   // Filter brands based on search term
   const filteredBrands = safeBrands.filter(brand => {
@@ -229,7 +207,7 @@ export function BrandsManagement() {
 
   // Main UI
   const totalBrands = safeBrands.length;
-  const totalProfiles = profiles.length;
+  // Profiles stat removed
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -265,10 +243,6 @@ export function BrandsManagement() {
               <Target className="h-4 w-4 text-gray-500 flex-shrink-0" />
               <span className="font-semibold text-gray-700">{totalBrands}</span>
               <span className="text-gray-500">Brands</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 rounded-xl border border-gray-200 text-sm shadow-sm">
-              <span className="font-semibold text-gray-700">{totalProfiles}</span>
-              <span className="text-gray-500">Profiles</span>
             </div>
           </div>
 
@@ -319,7 +293,6 @@ export function BrandsManagement() {
             columns={createColumns(
               handleEditBrand,
               handleDeleteBrand,
-              safeProfiles,
               deleteBrandMutation.isPending
             )}
             data={filteredBrands}

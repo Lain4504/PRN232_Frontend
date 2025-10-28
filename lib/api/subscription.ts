@@ -79,6 +79,12 @@ export const cancelSubscription = async (id: string): Promise<boolean> => {
   return response.data!
 }
 
+// Payment History API
+export const getUserPaymentHistory = async (): Promise<PaymentResponseDto[]> => {
+  const response = await api.get<PaymentResponseDto[]>('/payment/history')
+  return response.data!
+}
+
 // Helper functions
 export const getActiveSubscription = async (profileId: string): Promise<SubscriptionResponseDto | null> => {
   try {

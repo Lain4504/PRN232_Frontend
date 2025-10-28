@@ -30,3 +30,27 @@ export function useCreativeWithUsage(creativeId: string) {
     enabled: !!creativeId,
   });
 }
+
+// Get preview iframe HTML for a creative
+export function useCreativePreview(creativeId: string, adFormat: string = 'DESKTOP_FEED_STANDARD') {
+  return useQuery({
+    queryKey: [...creativeKeys.detail(creativeId), 'preview', adFormat],
+    queryFn: async () => {
+      const resp = await api.get<string>(endpoints.creativePreview(creativeId, adFormat));
+      return resp.data; // HTML string containing <iframe ...>
+    },
+    enabled: !!creativeId,
+  });
+}
+
+// Get creative by contentId
+export function useCreativeByContent(contentId?: string) {
+  return useQuery({
+    queryKey: ['creative-by-content', contentId],
+    queryFn: async () => {
+      const resp = await api.get<AdCreativeResponse>(endpoints.creativeByContent(contentId!));
+      return resp.data;
+    },
+    enabled: !!contentId,
+  });
+}

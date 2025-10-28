@@ -28,7 +28,8 @@ import {
   Monitor,
   Shield,
   Crown,
-  ChevronRight
+  ChevronRight,
+  History
 } from "lucide-react"
 
 type ThemeOption = "light" | "dark" | "system"
@@ -113,9 +114,15 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/dashboard/billing" className="flex items-center gap-3 p-2">
+            <Link href="/dashboard/subscription" className="flex items-center gap-3 p-2">
               <CreditCard className="h-4 w-4" />
               <span>Billing & Plans</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/account/payment" className="flex items-center gap-3 p-2">
+              <History className="h-4 w-4" />
+              <span>Payment History</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>

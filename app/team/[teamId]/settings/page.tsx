@@ -6,7 +6,6 @@ import { useTeam as useTeamQuery, useTeamMembers } from '@/hooks/use-teams'
 import { useUser } from '@/hooks/use-user'
 import { TeamPermissionGate } from '@/components/teams/team-permission-gate'
 import { EditTeamDialog } from '@/components/teams/edit-team-dialog'
-import { TeamInvitationSystem } from '@/components/teams/team-invitation-system'
 import { AddMemberDialog } from '@/components/pages/teams/AddMemberDialog'
 import { TeamMembersTable } from '@/components/pages/teams/TeamMembersTable'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -119,7 +118,7 @@ export default function TeamSettingsPage({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
-              <Card key={i} className="border-0 bg-card/50 backdrop-blur-sm">
+              <Card key={i} className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 bg-card/50">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3">
                     <Skeleton className="w-10 h-10 rounded-lg" />
@@ -142,7 +141,7 @@ export default function TeamSettingsPage({
     return (
       <div className="flex-1 space-y-8 p-6 lg:p-8 bg-background">
         <div className="flex items-center justify-center min-h-[400px]">
-          <Card className="border border-destructive/20">
+          <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60">
             <CardContent className="p-6">
               <div className="text-center">
                 <Shield className="h-12 w-12 text-destructive mx-auto mb-4" />
@@ -162,8 +161,8 @@ export default function TeamSettingsPage({
   if (!team) {
     return (
       <div className="flex-1 space-y-8 p-6 lg:p-8 bg-background">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Card className="border border-muted">
+          <div className="flex items-center justify-center min-h-[400px]">
+          <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60">
             <CardContent className="p-6">
               <div className="text-center">
                 <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -201,7 +200,7 @@ export default function TeamSettingsPage({
               onTabChange={setActiveTab}
             />
           ) : tabItems.length === 1 ? (
-            <div className="border-b border-border">
+            <div className="border-b border-neutral-200/60 dark:border-neutral-800/60">
               <div className="flex items-center space-x-8">
                 <div className="border-b-2 border-primary pb-2">
                   <span className="text-sm font-medium text-primary">
@@ -240,7 +239,7 @@ export default function TeamSettingsPage({
           {validActiveTab === 'permissions' && (
             <div className="space-y-6">
               {/* Enhanced Your Role Card */}
-              <Card className="border border-primary/20 group hover:shadow-lg transition-all duration-300">
+              <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60">
             <CardHeader className="pb-4">
               <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center">
@@ -330,7 +329,7 @@ export default function TeamSettingsPage({
 
           {validActiveTab === 'settings' && (
             <div className="space-y-6">
-              <Card className="border border-primary/20 group hover:shadow-lg transition-all duration-300">
+              <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60">
             <CardHeader className="pb-4">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gradient-to-br from-chart-4/20 to-chart-4/10 rounded-lg flex items-center justify-center">

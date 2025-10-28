@@ -24,10 +24,7 @@ import {
   useBillingAlerts, 
   useBillingStats 
 } from '@/hooks/use-billing';
-import { 
-  mockPaymentProcessing 
-} from '@/lib/utils/mock-payment-processing';
-import { PAYMENT_NOTIFICATION_TYPES } from '@/lib/constants/payment-methods';
+
 
 interface PaymentAlertSystemProps {
   className?: string;

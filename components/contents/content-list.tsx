@@ -145,12 +145,12 @@ export function ContentList({
         onOpenChange={(open) => !open && handleCloseModal()}
         onSave={handleSave}
         onCreate={handleCreateContent}
-        onSubmit={handleSubmitContent}
         onPublish={handlePublishContent}
         isProcessing={isProcessing}
         brands={brands}
         products={products}
         userId={userId}
+        showButtons={isEditing}
       />
     </>
   );

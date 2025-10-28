@@ -28,7 +28,11 @@ export function useSubscription(profileId?: string) {
         setActiveSubscription(active)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load subscriptions')
+      console.error('Subscription loading error:', err)
+      // Don't set error - allow fallback to profile-based subscription
+      setError(null)
+      setActiveSubscription(null)
+      setSubscriptions([])
     } finally {
       setIsLoading(false)
     }

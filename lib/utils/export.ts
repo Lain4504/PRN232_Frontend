@@ -269,7 +269,7 @@ function generateHTMLSummary(
       { label: 'CTR', value: `${campaignData.metrics.ctr.toFixed(2)}%` },
       { label: 'CPC', value: `$${campaignData.metrics.cpc.toFixed(2)}` },
       { label: 'ROI', value: `${(campaignData.metrics.roi * 100).toFixed(1)}%` },
-      { label: 'Budget', value: `$${campaignData.performance.budget.toLocaleString()}` },
+      { label: 'Budget', value: `$${Number(campaignData.performance?.budget ?? 0).toLocaleString()}` },
       { label: 'Spent', value: `$${campaignData.performance.spent.toLocaleString()}` },
       { label: 'Remaining', value: `$${campaignData.performance.remaining.toLocaleString()}` }
     ];

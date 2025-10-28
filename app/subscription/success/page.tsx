@@ -87,7 +87,7 @@ function SuccessContent() {
           </div>
 
           {subscription && (
-            <Card className="mb-8">
+            <Card className="mb-8 shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
               <CardHeader>
                 <CardTitle className="flex items-center justify-center gap-2">
                   {getPlanIcon(subscription.plan)}
@@ -122,7 +122,7 @@ function SuccessContent() {
             </Card>
           )}
 
-          <Card className="mb-8">
+          <Card className="mb-8 shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
             <CardHeader>
               <CardTitle>What&apos;s Next?</CardTitle>
             </CardHeader>

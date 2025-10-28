@@ -1,13 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, endpoints, type PaginatedResponse } from "@/lib/api";
-import type { AdResponse, CreateAdRequest, UpdateAdRequest, UpdateAdStatusRequest, BulkUpdateAdStatusRequest } from "@/lib/types/ads";
+import type { AdResponse, CreateAdRequest, UpdateAdRequest, UpdateAdStatusRequest } from "@/lib/types/ads";
 
-export function useAds(params: { adSetId: string; page?: number; pageSize?: number; status?: string }) {
+export function useAds(params: { campaignId?: string; brandId?: string; page?: number; pageSize?: number; status?: string }) {
   return useQuery({
     queryKey: ["ads", params],
     queryFn: async () => {
       const res = await api.get<PaginatedResponse<AdResponse>>(endpoints.ads({
-        adSetId: params.adSetId,
+        campaignId: params.campaignId,
+        brandId: params.brandId,
         status: params.status,
         page: params.page,
         pageSize: params.pageSize,
@@ -62,7 +63,7 @@ export function useDeleteAd(adId: string, adSetId: string) {
       return res.data;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["ads", { adSetId }] });
+      qc.invalidateQueries({ queryKey: ["ads"] });
     },
   });
 }
@@ -76,7 +77,7 @@ export function useUpdateAdStatus(adId: string, adSetId?: string) {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["ad", adId] });
-      if (adSetId) qc.invalidateQueries({ queryKey: ["ads", { adSetId }] });
+      qc.invalidateQueries({ queryKey: ["ads"] });
     },
   });
 }
@@ -84,15 +85,30 @@ export function useUpdateAdStatus(adId: string, adSetId?: string) {
 export function useBulkUpdateAdStatus() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: BulkUpdateAdStatusRequest) => {
-      const res = await api.put<boolean>(endpoints.bulkAdStatus(), payload);
-      return res.data;
+    mutationFn: async (payload: { adIds: string[]; status: string }) => {
+      // Backend has no bulk endpoint; perform fan-out updates
+      const results = await Promise.allSettled(
+        payload.adIds.map((id) => api.put<AdResponse>(endpoints.adStatus(id), { adId: id, status: payload.status }))
+      );
+      const allOk = results.every(r => r.status === 'fulfilled');
+      if (!allOk) throw new Error('Some ads failed to update');
+      return true as unknown as boolean;
     },
     onSuccess: (_data, variables) => {
-      // invalidate any list keyed by this adSetId
-      const adSetId = variables.adIds[0];
       qc.invalidateQueries({ queryKey: ["ads"] });
     },
+  });
+}
+
+// Ad preview hook
+export function useAdPreview(adId: string, adFormat: string = 'DESKTOP_FEED_STANDARD') {
+  return useQuery({
+    queryKey: ["ad-preview", adId, adFormat],
+    queryFn: async () => {
+      const res = await api.get<string>(endpoints.adPreview(adId, adFormat));
+      return res.data; // iframe HTML
+    },
+    enabled: !!adId,
   });
 }
 

@@ -25,6 +25,7 @@ import {
   ContentStatusEnum, 
   AdTypeEnum 
 } from "@/lib/types/aisam-types";
+import { api, endpoints } from "@/lib/api";
 
 interface ContentModalProps {
   content: ContentResponseDto | null;
@@ -39,6 +40,7 @@ interface ContentModalProps {
   brands?: Array<{ id: string; name: string }>;
   products?: Array<{ id: string; name: string; brandId: string }>;
   userId?: string;
+  showButtons?: boolean;
 }
 
 export function ContentModal({ 
@@ -53,7 +55,8 @@ export function ContentModal({
   isProcessing = false,
   brands = [],
   products = [],
-  userId = 'current-user-id'
+  userId = 'current-user-id',
+  showButtons = true
 }: ContentModalProps) {
   const [formData, setFormData] = useState<CreateContentRequest>({
     brandId: '',
@@ -73,6 +76,12 @@ export function ContentModal({
   const isCreateMode = !content;
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
+  // Local state for media uploads
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
+
   useEffect(() => {
     if (content) {
       setFormData({
@@ -89,6 +98,10 @@ export function ContentModal({
         publishImmediately: false,
         integrationId: undefined,
       });
+      setImageFiles([]);
+      setImagePreviews([]);
+      setVideoFile(null);
+      setVideoPreview(null);
     } else {
       // Reset form for create mode
       setFormData({
@@ -105,12 +118,60 @@ export function ContentModal({
         publishImmediately: false,
         integrationId: undefined,
       });
+      setImageFiles([]);
+      setImagePreviews([]);
+      setVideoFile(null);
+      setVideoPreview(null);
     }
   }, [content, userId]);
 
+  // Reset incompatible media fields when switching ad type
+  useEffect(() => {
+    if (formData.adType === AdTypeEnum.TextOnly) {
+      setImageFiles([]);
+      setImagePreviews([]);
+      setVideoFile(null);
+      setVideoPreview(null);
+      setFormData((prev) => ({ ...prev, imageUrl: undefined, videoUrl: undefined }));
+    } else if (formData.adType === AdTypeEnum.ImageText) {
+      setVideoFile(null);
+      setVideoPreview(null);
+      setFormData((prev) => ({ ...prev, videoUrl: undefined }));
+    } else if (formData.adType === AdTypeEnum.VideoText) {
+      setImageFiles([]);
+      setImagePreviews([]);
+      setFormData((prev) => ({ ...prev, imageUrl: undefined }));
+    }
+  }, [formData.adType]);
+
+  const uploadToPublic = async (file: File): Promise<string> => {
+    const fd = new FormData();
+    fd.append('file', file);
+    const resp = await api.postForm<{ url: string }>(endpoints.storageUpload('public'), fd);
+    // Backend returns { data: { url } } shape
+    // @ts-ignore
+    return (resp.data?.url) || (resp.data?.data?.url) || '';
+  };
+
   const handleSave = async () => {
     if (isCreateMode && onCreate) {
-      await onCreate(formData);
+      // Upload files if provided
+      let imageUrls: string[] = [];
+      if (imageFiles.length > 0) {
+        imageUrls = await Promise.all(imageFiles.map(uploadToPublic));
+      }
+      let videoUrl: string | undefined = undefined;
+      if (videoFile) {
+        videoUrl = await uploadToPublic(videoFile);
+      }
+
+      const payload: CreateContentRequest = {
+        ...formData,
+        imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : formData.imageUrl,
+        videoUrl: videoUrl || formData.videoUrl,
+      };
+
+      await onCreate(payload);
     } else if (content && onSave) {
       const updateData: UpdateContentRequest = {
         title: formData.title,
@@ -123,6 +184,16 @@ export function ContentModal({
         contextDescription: formData.contextDescription,
         representativeCharacter: formData.representativeCharacter,
       };
+
+      // If user selected new media, upload and override
+      if (imageFiles.length > 0) {
+        const urls = await Promise.all(imageFiles.map(uploadToPublic));
+        updateData.imageUrl = JSON.stringify(urls);
+      }
+      if (videoFile) {
+        const url = await uploadToPublic(videoFile);
+        updateData.videoUrl = url;
+      }
       await onSave(updateData);
     }
   };
@@ -170,12 +241,34 @@ export function ContentModal({
     }
   };
 
+  
+
+  const handleSelectImages = async (files: FileList | null) => {
+    if (!files) return;
+    const list = Array.from(files);
+    setImageFiles(list);
+    const previews = await Promise.all(list.map(f => new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.readAsDataURL(f);
+    })));
+    setImagePreviews(previews);
+  };
+
+  const handleSelectVideo = async (file: File | null) => {
+    if (!file) { setVideoFile(null); setVideoPreview(null); return; }
+    setVideoFile(file);
+    const reader = new FileReader();
+    reader.onload = () => setVideoPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
   const filteredProducts = products.filter(p => p.brandId === formData.brandId);
 
   if (isDesktop) {
   return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
+        <DialogContent className="max-w-5xl w-[90vw] max-h-[90vh] flex flex-col">
           <DialogHeader className="flex-shrink-0">
             <div className="flex items-center gap-3">
               <DialogTitle className="text-lg font-bold">
@@ -202,7 +295,11 @@ export function ContentModal({
               isProcessing={isProcessing}
               onSubmit={onSubmit}
               onPublish={onPublish}
-              showButtons={true}
+              showButtons={showButtons}
+              onSelectImages={handleSelectImages}
+              onSelectVideo={handleSelectVideo}
+              imagePreviews={imagePreviews}
+              videoPreview={videoPreview}
             />
           </div>
         </DialogContent>
@@ -211,7 +308,7 @@ export function ContentModal({
   }
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
+      <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-[90vh] flex flex-col">
         <DrawerHeader className="flex-shrink-0">
           <div className="flex items-center gap-3">
@@ -240,7 +337,11 @@ export function ContentModal({
             onSubmit={onSubmit}
             onPublish={onPublish}
             className="px-4"
-            showButtons={false}
+            showButtons={showButtons}
+            onSelectImages={handleSelectImages}
+            onSelectVideo={handleSelectVideo}
+            imagePreviews={imagePreviews}
+            videoPreview={videoPreview}
           />
         </div>
         <DrawerFooter className="flex-shrink-0">
@@ -299,7 +400,11 @@ function ContentForm({
   onSubmit,
   onPublish,
   className,
-  showButtons = true
+  showButtons = true,
+  onSelectImages,
+  onSelectVideo,
+  imagePreviews,
+  videoPreview
 }: {
   formData: CreateContentRequest;
   setFormData: (data: CreateContentRequest) => void;
@@ -316,6 +421,10 @@ function ContentForm({
   onPublish?: (contentId: string, integrationId: string) => Promise<void>;
   className?: string;
   showButtons?: boolean;
+  onSelectImages: (files: FileList | null) => void;
+  onSelectVideo: (file: File | null) => void;
+  imagePreviews: string[];
+  videoPreview: string | null;
 }) {
   return (
     <div className={`space-y-4 pb-4 ${className || ''}`}>
@@ -436,6 +545,31 @@ function ContentForm({
               className="text-sm"
             />
           </div>
+
+          {/* Media uploads by Ad Type */}
+          {formData.adType === AdTypeEnum.ImageText && (
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Images</Label>
+              <Input type="file" accept="image/*" multiple onChange={(e) => onSelectImages(e.target.files)} />
+              {imagePreviews.length > 0 && (
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                  {imagePreviews.map((src: string, i: number) => (
+                    <img key={i} src={src} alt="preview" className="w-full h-24 object-cover rounded" />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {formData.adType === AdTypeEnum.VideoText && (
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Video</Label>
+              <Input type="file" accept="video/*" onChange={(e) => onSelectVideo(e.target.files?.[0] || null)} />
+              {videoPreview && (
+                <video className="w-full h-48 rounded" controls src={videoPreview} />
+              )}
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="representativeCharacter" className="text-sm font-medium">Representative Character</Label>

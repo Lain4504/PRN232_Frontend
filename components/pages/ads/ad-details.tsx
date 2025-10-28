@@ -5,9 +5,10 @@ import { PageLayout } from "@/components/ui/page-layout";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Megaphone, Eye, MousePointer, TrendingUp, DollarSign } from "lucide-react";
+import { Megaphone } from "lucide-react";
 import { useAd } from "@/hooks/use-ads";
 import { AdStatusControls } from "@/components/ads/ad-status-controls";
+import type { AdStatus } from "@/lib/types/ads";
 import { AdPerformanceDashboard } from "@/components/ads/ad-performance-dashboard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,12 @@ interface AdDetailsProps {
 }
 
 export function AdDetails({ campaignId, adSetId, adId }: AdDetailsProps) {
-  const { data: ad, isLoading } = useAd(adId);
+  const { data: ad } = useAd(adId);
+
+  const safeStatus: AdStatus | undefined =
+    ad?.status && ["DRAFT","ACTIVE","PAUSED","STOPPED","REJECTED","PENDING_REVIEW"].includes(ad.status as string)
+      ? (ad.status as AdStatus)
+      : undefined;
 
   return (
     <PageLayout
@@ -35,10 +41,11 @@ export function AdDetails({ campaignId, adSetId, adId }: AdDetailsProps) {
         { label: "Ads", href: `/dashboard/campaigns/${campaignId}/ad-sets/${adSetId}/ads` },
         { label: "Details", isCurrentPage: true },
       ]}
+      actions={[]}
     >
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <Card className="border-0 shadow-none bg-muted/40">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-xl">
             <Megaphone className="h-5 w-5" />
             Ad Overview
           </CardTitle>
@@ -48,7 +55,7 @@ export function AdDetails({ campaignId, adSetId, adId }: AdDetailsProps) {
           <div className="flex flex-wrap items-center gap-3">
             <Badge variant="secondary">{ad?.status ?? 'DRAFT'}</Badge>
             <Badge variant="outline">ID: {adId.slice(0, 8)}</Badge>
-            <AdStatusControls adId={adId} adSetId={adSetId} status={ad?.status} />
+            <AdStatusControls adId={adId} adSetId={adSetId} status={safeStatus} />
             <Dialog>
               <DialogTrigger asChild>
                 <Button size="sm" variant="outline">Edit</Button>
@@ -64,7 +71,7 @@ export function AdDetails({ campaignId, adSetId, adId }: AdDetailsProps) {
             </Dialog>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
             <AdPerformanceDashboard
               impressions={ad?.metrics?.impressions ?? ad?.performance?.impressions}
               clicks={ad?.metrics?.clicks ?? ad?.performance?.clicks}

@@ -48,11 +48,13 @@ export default function TeamCalendarPage({
           </div>
 
           {/* Calendar View */}
-          <UnifiedContentCalendar
-            teamId={teamId}
-            onEventClick={handleEventClick}
-            onCreateSchedule={handleScheduleClick}
-          />
+          <div className="rounded-md border border-neutral-200/60 dark:border-neutral-800/60 shadow-none p-4">
+            <UnifiedContentCalendar
+              teamId={teamId}
+              onEventClick={handleEventClick}
+              onCreateSchedule={handleScheduleClick}
+            />
+          </div>
 
           {/* Schedule Modal */}
           <ScheduleContentModal

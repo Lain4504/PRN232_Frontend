@@ -17,7 +17,7 @@ import {
   MousePointer,
   TrendingUp,
   BarChart3,
-  Image,
+  Image as ImageIcon,
 } from "lucide-react";
 import { useAdSet } from "@/hooks/use-ad-sets";
 import { useCampaign } from "@/hooks/use-campaigns";
@@ -45,6 +45,11 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
   const { data: campaign, isLoading: campaignLoading, error: campaignError } = useCampaign(campaignId);
   const { data: adSet, isLoading: adSetLoading, error: adSetError } = useAdSet(adSetId);
   const deleteMutation = useDeleteAdSet();
+  const safeFormat = (value?: string) => {
+    if (!value) return '—';
+    const dt = new Date(value);
+    return isNaN(dt.getTime()) ? '—' : format(dt, 'PPP');
+  };
 
   const handleDelete = async () => {
     try {
@@ -210,8 +215,8 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
 
         {/* Performance Metrics */}
         {metrics && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
+          <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="border-0 shadow-none bg-muted/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Impressions</CardTitle>
                 <Eye className="h-4 w-4 text-muted-foreground" />
@@ -226,7 +231,7 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-0 shadow-none bg-muted/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Clicks</CardTitle>
                 <MousePointer className="h-4 w-4 text-muted-foreground" />
@@ -241,7 +246,7 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-0 shadow-none bg-muted/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">CTR</CardTitle>
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -256,7 +261,7 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-0 shadow-none bg-muted/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Spend</CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -274,8 +279,8 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
         )}
 
         {/* Ad Set Details */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader>
               <CardTitle>Ad Set Information</CardTitle>
               <CardDescription>
@@ -293,7 +298,7 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Daily Budget</label>
-                <p className="text-sm">${adSet.budget.toLocaleString()}</p>
+                <p className="text-sm">${typeof (adSet as { budget?: number } | undefined)?.budget === 'number' ? (adSet as { budget: number }).budget.toLocaleString() : '0'}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Status</label>
@@ -303,16 +308,16 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Created</label>
-                <p className="text-sm">{format(new Date(adSet.createdAt), 'PPP')}</p>
+                <p className="text-sm">{safeFormat(adSet.createdAt as string)}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
-                <p className="text-sm">{format(new Date(adSet.updatedAt), 'PPP')}</p>
+                <p className="text-sm">{safeFormat(adSet.updatedAt as string)}</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader>
               <CardTitle>Targeting Configuration</CardTitle>
               <CardDescription>
@@ -391,7 +396,7 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
 
         {/* Schedule Information */}
         {adSet.schedule && (
-          <Card>
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
@@ -433,10 +438,10 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
         )}
 
         {/* Creative Management */}
-        <Card>
+        <Card className="border-0 shadow-none bg-muted/40">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Image className="h-5 w-5" />
+              <ImageIcon className="h-5 w-5" />
               Creative Management
             </CardTitle>
             <CardDescription>
@@ -450,7 +455,7 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
               </p>
               <Button asChild>
                 <Link href={`/dashboard/campaigns/${campaignId}/ad-sets/${adSetId}/creatives`}>
-                  <Image className="mr-2 h-4 w-4" />
+                  <ImageIcon className="mr-2 h-4 w-4" />
                   Manage Creatives
                 </Link>
               </Button>
@@ -460,7 +465,7 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
 
         {/* Associated Ads */}
         {adSet.ads && adSet.ads.length > 0 && (
-          <Card>
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Megaphone className="h-5 w-5" />
@@ -473,7 +478,7 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
             <CardContent>
               <div className="space-y-2">
                 {adSet.ads.map((ad) => (
-                  <div key={ad.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div key={ad.id} className="flex items-center justify-between p-3 rounded-lg bg-background">
                     <div>
                       <p className="font-medium">{ad.name}</p>
                       <p className="text-sm text-muted-foreground">ID: {ad.id.slice(0, 8)}</p>

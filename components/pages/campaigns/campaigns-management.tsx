@@ -133,7 +133,7 @@ const createColumns = (
             {budget ? (
               <div className="flex items-center gap-1">
                 <DollarSign className="h-3 w-3" />
-                {budget.toLocaleString()}
+                {Number(budget ?? 0).toLocaleString()}
               </div>
             ) : (
               <span className="text-muted-foreground">No budget</span>
@@ -356,15 +356,15 @@ export function CampaignsManagement() {
         </div>
 
         {/* Single Row Layout - Stats, Filters, Search, Campaign Count, Create Button */}
-        <div className="flex items-center gap-4 flex-wrap">
+        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
           {/* Stats */}
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
+            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg text-xs lg:text-sm">
               <Megaphone className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
               <span className="font-medium">{totalCampaigns}</span>
               <span className="text-muted-foreground">Campaigns</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
+            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg text-xs lg:text-sm">
               <Target className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
               <span className="font-medium">{activeCampaigns}</span>
               <span className="text-muted-foreground">Active</span>
@@ -414,13 +414,13 @@ export function CampaignsManagement() {
           </Select>
 
           {/* Search */}
-          <div className="relative w-80">
+          <div className="relative w-full sm:w-64 md:w-72 lg:w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search campaigns..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-10 border-gray-200 rounded-lg bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 placeholder:text-gray-400"
+              className="pl-10 h-10 border-gray-200 rounded-lg bg-background shadow-none focus-visible:ring-1 focus-visible:ring-primary/30 transition-all duration-200 placeholder:text-gray-400"
             />
           </div>
 
@@ -450,9 +450,11 @@ export function CampaignsManagement() {
             )}
             data={filteredCampaigns}
             pageSize={10}
+            className="border-0 shadow-none bg-transparent"
+            headerClassName="bg-transparent hover:bg-transparent"
           />
         ) : (
-          <Card>
+          <Card className="border-0 shadow-none bg-transparent">
             <CardContent className="pt-6">
               <div className="text-center py-6">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
@@ -486,7 +488,7 @@ export function CampaignsManagement() {
         )}
 
         {/* Help Section */}
-        <Card className="border border-blue-200 dark:border-blue-800">
+        <Card className="border-0 shadow-none bg-muted/40">
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />

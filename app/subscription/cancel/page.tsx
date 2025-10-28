@@ -121,7 +121,7 @@ function CancelSubscriptionContent() {
           </div>
 
           {/* Current Subscription */}
-          <Card className="mb-8">
+          <Card className="mb-8 shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5" />
@@ -180,7 +180,7 @@ function CancelSubscriptionContent() {
           </Alert>
 
           {/* What Happens Next */}
-          <Card className="mb-8">
+          <Card className="mb-8 shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
             <CardHeader>
               <CardTitle>What happens when you cancel?</CardTitle>
             </CardHeader>

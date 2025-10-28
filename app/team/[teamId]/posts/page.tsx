@@ -294,7 +294,7 @@ export default function TeamPostsPage({
 
 
                 {/* Actions */}
-                <div className="flex justify-end gap-2 pt-4 border-t">
+                <div className="flex justify-end gap-2 pt-4 border-t border-neutral-200/60 dark:border-neutral-800/60">
                   <Button variant="outline" onClick={() => setIsViewModalOpen(false)}>
                     Close
                   </Button>

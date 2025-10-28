@@ -18,6 +18,10 @@ import {
   Loader2,
 } from "lucide-react";
 import { useCreateCreative } from "@/hooks/use-creatives";
+import type { CreateAdCreativeFromContentRequest } from "@/lib/types/creatives";
+import { Input as UIInput } from "@/components/ui/input";
+import Image from "next/image";
+// TODO in future: add from-content flow in UI; current component remains for asset upload use cases
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { createCreativeSchema, type CreateCreativeFormData } from "@/lib/validators/creative-schemas";
 import { CREATIVE_TYPES, CREATIVE_FILE_LIMITS } from "@/lib/types/creatives";
@@ -33,6 +37,10 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
   const [selectedType, setSelectedType] = useState<string>("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [adAccountId, setAdAccountId] = useState<string>("");
+  const [contentId, setContentId] = useState<string>("");
+  const [callToAction, setCallToAction] = useState<string>("");
+  const [linkUrl, setLinkUrl] = useState<string>("");
   
   const createMutation = useCreateCreative();
   const fileUpload = useFileUpload({
@@ -109,10 +117,14 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
 
   const onSubmit = async (data: CreateCreativeFormData) => {
     try {
-      await createMutation.mutateAsync({
-        ...data,
-        tags: selectedTags
-      });
+      const payload: CreateAdCreativeFromContentRequest = {
+        contentId: contentId,
+        adAccountId: adAccountId,
+        adName: data.name,
+        callToAction: callToAction || undefined,
+        linkUrl: linkUrl || undefined,
+      };
+      await createMutation.mutateAsync(payload);
       onSuccess();
     } catch (error) {
       console.error("Create creative error:", error);
@@ -187,10 +199,12 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
               <div className="space-y-4">
                 <div className="flex items-center justify-center">
                   {fileUpload.preview ? (
-                    <img
+                    <Image
                       src={fileUpload.preview}
                       alt="Preview"
-                      className="max-h-32 max-w-32 object-cover rounded"
+                      width={128}
+                      height={128}
+                      className="h-32 w-32 object-cover rounded"
                     />
                   ) : (
                     <Upload className="h-12 w-12 text-muted-foreground" />
@@ -249,6 +263,18 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
         </div>
       )}
 
+      {/* Content and Ad Account context (required for from-content flow) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="contentId">Content ID *</Label>
+          <UIInput id="contentId" placeholder="Approved Content ID" value={contentId} onChange={(e) => setContentId(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="adAccountId">Ad Account ID *</Label>
+          <UIInput id="adAccountId" placeholder="act_... or numeric" value={adAccountId} onChange={(e) => setAdAccountId(e.target.value)} />
+        </div>
+      </div>
+
       {/* Creative Name */}
       <div className="space-y-2">
         <Label htmlFor="name">Creative Name *</Label>
@@ -260,6 +286,18 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
         {errors.name && (
           <p className="text-sm text-destructive">{errors.name.message}</p>
         )}
+      </div>
+
+      {/* CTA and Link */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="cta">Call To Action</Label>
+          <UIInput id="cta" placeholder="SHOP_NOW | LEARN_MORE | ..." value={callToAction} onChange={(e) => setCallToAction(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="linkUrl">Link URL</Label>
+          <UIInput id="linkUrl" placeholder="https://example.com" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} />
+        </div>
       </div>
 
       {/* Content (for TEXT type) */}

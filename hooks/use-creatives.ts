@@ -1,10 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, endpoints } from '@/lib/api';
-import type { 
-  AdCreativeResponse, 
-  CreateAdCreativeRequest, 
-  UpdateAdCreativeRequest, 
-  CreativeListParams 
+import type {
+  AdCreativeResponse,
+  CreateAdCreativeRequest,
+  UpdateAdCreativeRequest,
+  CreativeListParams,
+  CreateAdCreativeFromContentRequest,
+  CreateAdCreativeFromFacebookPostRequest,
 } from '@/lib/types/creatives';
 import type { PaginatedResponse } from '@/lib/api';
 
@@ -50,27 +52,10 @@ export function useCreateCreative() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: CreateAdCreativeRequest) => {
-      const formData = new FormData();
-      formData.append('adSetId', data.adSetId);
-      formData.append('name', data.name);
-      formData.append('type', data.type);
-      
-      if (data.content) {
-        formData.append('content', data.content);
-      }
-      
-      if (data.mediaFile) {
-        formData.append('mediaFile', data.mediaFile);
-      }
-      
-      if (data.tags && data.tags.length > 0) {
-        formData.append('tags', JSON.stringify(data.tags));
-      }
-
-      const response = await api.postMultipart<AdCreativeResponse>(
-        endpoints.createCreative(),
-        formData
+    mutationFn: async (data: CreateAdCreativeFromContentRequest) => {
+      const response = await api.post<AdCreativeResponse>(
+        endpoints.createCreativeFromContent(),
+        data
       );
       return response.data;
     },
@@ -83,6 +68,23 @@ export function useCreateCreative() {
         creativeKeys.detail(newCreative.id),
         newCreative
       );
+    },
+  });
+}
+
+// Create creative from Facebook Post
+export function useCreateCreativeFromFacebookPost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: CreateAdCreativeFromFacebookPostRequest) => {
+      const response = await api.post<AdCreativeResponse>(
+        endpoints.createCreativeFromFacebookPost(),
+        payload
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: creativeKeys.lists() });
     },
   });
 }

@@ -6,9 +6,52 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Zap, Crown, Building2, Calendar, CreditCard, Users, HardDrive, Activity } from 'lucide-react'
 import { useSubscription } from '@/hooks/use-subscription'
+import { useProfile } from '@/lib/contexts/profile-context'
 import { formatPrice } from '@/lib/constants/subscription-plans'
 import { getSubscriptionStatusColor, getSubscriptionStatusText, getDaysUntilBilling } from '@/lib/utils/subscription'
+import { SubscriptionPlanEnum, SubscriptionTier, Subscription } from '@/lib/types/subscription'
 import Link from 'next/link'
+
+// Helper function to create fallback subscription from profile type
+const createFallbackSubscription = (
+  profileType: number,
+  profileId?: string
+): Subscription | null => {
+  if (!profileId) return null
+
+  const tierMap = ['free', 'basic', 'pro'] as const
+  const tier = tierMap[profileType] || 'free'
+
+  return {
+    id: `profile-${profileId}`,
+    profileId: profileId,
+    plan: profileType,
+    planName: tier.charAt(0).toUpperCase() + tier.slice(1),
+    tier,
+    status: 'active',
+    billingCycle: 'monthly',
+    currentPeriodStart: new Date().toISOString(),
+    currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    cancelAtPeriodEnd: false,
+    features: [],
+    limits: {
+      campaigns: profileType === 2 ? -1 : profileType === 1 ? 15 : 3,
+      adSets: profileType === 2 ? -1 : profileType === 1 ? 50 : 10,
+      ads: profileType === 2 ? -1 : profileType === 1 ? 200 : 50,
+      teamMembers: profileType === 2 ? 20 : profileType === 1 ? 5 : 1,
+      storage: profileType === 2 ? '100' : profileType === 1 ? '25' : '1',
+      apiCalls: profileType === 2 ? -1 : profileType === 1 ? 5000 : 1000
+    },
+    usage: {
+      campaigns: 0,
+      adSets: 0,
+      ads: 0,
+      teamMembers: 0,
+      storage: 0,
+      apiCalls: 0
+    }
+  }
+}
 
 interface CurrentPlanCardProps {
   showUsage?: boolean
@@ -22,6 +65,10 @@ export function CurrentPlanCard({
   className = '' 
 }: CurrentPlanCardProps) {
   const { data: subscription, isLoading, error } = useSubscription()
+  const { profileType, activeProfileId } = useProfile()
+
+  // Create fallback subscription if API returns null but we have profile type
+  const effectiveSubscription = subscription || createFallbackSubscription(profileType, activeProfileId || undefined)
 
   const getPlanIcon = (tier: string) => {
     switch (tier) {
@@ -79,7 +126,7 @@ export function CurrentPlanCard({
     )
   }
 
-  if (error || !subscription) {
+  if (error || !effectiveSubscription) {
     return (
       <Card className={className}>
         <CardContent className="text-center py-8">
@@ -89,20 +136,20 @@ export function CurrentPlanCard({
     )
   }
 
-  const statusColor = getSubscriptionStatusColor(subscription.status)
-  const statusText = getSubscriptionStatusText(subscription.status)
-  const daysUntilBilling = getDaysUntilBilling(subscription)
+  const statusColor = getSubscriptionStatusColor(effectiveSubscription.status)
+  const statusText = getSubscriptionStatusText(effectiveSubscription.status)
+  const daysUntilBilling = getDaysUntilBilling(effectiveSubscription)
 
   return (
     <Card className={className}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            {getPlanIcon(subscription.tier)}
+            {getPlanIcon(effectiveSubscription.tier)}
             <div>
-              <CardTitle className="text-lg">{subscription.planName}</CardTitle>
+              <CardTitle className="text-lg">{effectiveSubscription.planName}</CardTitle>
               <CardDescription>
-                {subscription.billingCycle === 'yearly' ? 'Annual' : 'Monthly'} billing
+                {effectiveSubscription.billingCycle === 'yearly' ? 'Annual' : 'Monthly'} billing
               </CardDescription>
             </div>
           </div>
@@ -129,7 +176,7 @@ export function CurrentPlanCard({
               <span>Next billing date</span>
             </div>
             <span className="font-medium">
-              {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+              {new Date(effectiveSubscription.currentPeriodEnd).toLocaleDateString()}
             </span>
           </div>
           
@@ -139,7 +186,7 @@ export function CurrentPlanCard({
             </div>
           )}
 
-          {subscription.cancelAtPeriodEnd && (
+          {effectiveSubscription.cancelAtPeriodEnd && (
             <div className="text-sm text-orange-600 bg-orange-50 p-2 rounded">
               Your subscription will be cancelled at the end of the current period
             </div>
@@ -160,11 +207,11 @@ export function CurrentPlanCard({
                     <span>Campaigns</span>
                   </div>
                   <span className="font-mono text-sm">
-                    {formatUsage(subscription.usage.campaigns, subscription.limits.campaigns)}
+                    {formatUsage(effectiveSubscription.usage.campaigns, effectiveSubscription.limits.campaigns)}
                   </span>
                 </div>
                 <Progress 
-                  value={getUsagePercentage(subscription.usage.campaigns, subscription.limits.campaigns)}
+                  value={getUsagePercentage(effectiveSubscription.usage.campaigns, effectiveSubscription.limits.campaigns)}
                   className="h-2"
                 />
               </div>
@@ -177,11 +224,11 @@ export function CurrentPlanCard({
                     <span>Ad Sets</span>
                   </div>
                   <span className="font-mono text-sm">
-                    {formatUsage(subscription.usage.adSets, subscription.limits.adSets)}
+                    {formatUsage(effectiveSubscription.usage.adSets, effectiveSubscription.limits.adSets)}
                   </span>
                 </div>
                 <Progress 
-                  value={getUsagePercentage(subscription.usage.adSets, subscription.limits.adSets)}
+                  value={getUsagePercentage(effectiveSubscription.usage.adSets, effectiveSubscription.limits.adSets)}
                   className="h-2"
                 />
               </div>
@@ -194,11 +241,11 @@ export function CurrentPlanCard({
                     <span>Ads</span>
                   </div>
                   <span className="font-mono text-sm">
-                    {formatUsage(subscription.usage.ads, subscription.limits.ads)}
+                    {formatUsage(effectiveSubscription.usage.ads, effectiveSubscription.limits.ads)}
                   </span>
                 </div>
                 <Progress 
-                  value={getUsagePercentage(subscription.usage.ads, subscription.limits.ads)}
+                  value={getUsagePercentage(effectiveSubscription.usage.ads, effectiveSubscription.limits.ads)}
                   className="h-2"
                 />
               </div>
@@ -211,11 +258,11 @@ export function CurrentPlanCard({
                     <span>Team Members</span>
                   </div>
                   <span className="font-mono text-sm">
-                    {formatUsage(subscription.usage.teamMembers, subscription.limits.teamMembers)}
+                    {formatUsage(effectiveSubscription.usage.teamMembers, effectiveSubscription.limits.teamMembers)}
                   </span>
                 </div>
                 <Progress 
-                  value={getUsagePercentage(subscription.usage.teamMembers, subscription.limits.teamMembers)}
+                  value={getUsagePercentage(effectiveSubscription.usage.teamMembers, effectiveSubscription.limits.teamMembers)}
                   className="h-2"
                 />
               </div>
@@ -228,11 +275,11 @@ export function CurrentPlanCard({
                     <span>Storage</span>
                   </div>
                   <span className="font-mono text-sm">
-                    {formatUsage(subscription.usage.storage, subscription.limits.storage)}
+                    {formatUsage(effectiveSubscription.usage.storage, effectiveSubscription.limits.storage)}
                   </span>
                 </div>
                 <Progress 
-                  value={getUsagePercentage(subscription.usage.storage, subscription.limits.storage)}
+                  value={getUsagePercentage(effectiveSubscription.usage.storage, effectiveSubscription.limits.storage)}
                   className="h-2"
                 />
               </div>
@@ -245,11 +292,11 @@ export function CurrentPlanCard({
                     <span>API Calls</span>
                   </div>
                   <span className="font-mono text-sm">
-                    {formatUsage(subscription.usage.apiCalls, subscription.limits.apiCalls)}
+                    {formatUsage(effectiveSubscription.usage.apiCalls, effectiveSubscription.limits.apiCalls)}
                   </span>
                 </div>
                 <Progress 
-                  value={getUsagePercentage(subscription.usage.apiCalls, subscription.limits.apiCalls)}
+                  value={getUsagePercentage(effectiveSubscription.usage.apiCalls, effectiveSubscription.limits.apiCalls)}
                   className="h-2"
                 />
               </div>

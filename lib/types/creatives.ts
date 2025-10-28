@@ -41,6 +41,24 @@ export interface CreateAdCreativeRequest {
   tags?: string[];
 }
 
+// New request DTOs aligned with backend
+export interface CreateAdCreativeFromContentRequest {
+  contentId: string;
+  adAccountId: string;
+  callToAction?: string;
+  linkUrl?: string;
+  adName?: string;
+}
+
+export interface CreateAdCreativeFromFacebookPostRequest {
+  brandId: string;
+  adAccountId: string;
+  facebookPostId: string;
+  callToAction?: string;
+  linkUrl?: string;
+  adName?: string;
+}
+
 export interface UpdateAdCreativeRequest extends Partial<CreateAdCreativeRequest> {
   id: string;
   isActive?: boolean;

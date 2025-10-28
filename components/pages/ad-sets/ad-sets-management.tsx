@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -110,12 +110,15 @@ export function AdSetsManagement({ campaignId }: AdSetsManagementProps) {
     {
       accessorKey: "budget",
       header: "Budget",
-      cell: ({ row }: { row: { original: AdSetResponse } }) => (
-        <div className="flex items-center gap-2">
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">${row.original.budget.toLocaleString()}</span>
-        </div>
-      ),
+      cell: ({ row }: { row: { original: AdSetResponse } }) => {
+        const budget = Number((row.original as AdSetResponse).budget ?? 0);
+        return (
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">${budget.toLocaleString()}</span>
+          </div>
+        );
+      },
     },
     {
       accessorKey: "targeting",
@@ -228,12 +231,8 @@ export function AdSetsManagement({ campaignId }: AdSetsManagementProps) {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
-                  Ad Sets
-                </h1>
-                <p className="text-muted-foreground">
-                  Manage ad sets for {campaign.name}
-                </p>
+                <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">Ad Sets</h1>
+                <p className="text-muted-foreground">Manage ad sets.</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -259,9 +258,9 @@ export function AdSetsManagement({ campaignId }: AdSetsManagementProps) {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
+        {/* Stats Chips */}
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Ad Sets</CardTitle>
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
@@ -274,7 +273,7 @@ export function AdSetsManagement({ campaignId }: AdSetsManagementProps) {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -289,7 +288,7 @@ export function AdSetsManagement({ campaignId }: AdSetsManagementProps) {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Impressions</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -304,7 +303,7 @@ export function AdSetsManagement({ campaignId }: AdSetsManagementProps) {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Average CTR</CardTitle>
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
@@ -323,79 +322,73 @@ export function AdSetsManagement({ campaignId }: AdSetsManagementProps) {
           </Card>
         </div>
 
-        {/* Filters and Search */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Ad Sets</CardTitle>
-            <CardDescription>
-              Manage and monitor your ad sets for this campaign
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4 mb-6">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search ad sets..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="paused">Paused</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {adSetsLoading ? (
-              <div className="space-y-4">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-16 bg-muted animate-pulse rounded" />
-                ))}
-              </div>
-            ) : adSetsError ? (
-              <div className="text-center py-8">
-                <Target className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Failed to load ad sets</p>
-              </div>
-            ) : adSets.length === 0 ? (
-              <div className="text-center py-6">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
-                  <Target className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">No ad sets found</h3>
-                <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
-                  Create your first ad set to get started
-                </p>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="h-8 text-xs"
-                  onClick={() => setIsCreateModalOpen(true)}
-                >
-                  <Plus className="mr-1 h-3 w-3" />
-                  Create Your First Ad Set
-                </Button>
-              </div>
-            ) : (
-              <CustomTable
-                columns={columns}
-                data={adSets}
-                pageSize={20}
-                emptyMessage="No ad sets found"
-                emptyDescription="Create your first ad set to get started"
+        {/* Toolbar + Table */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="relative flex-1 min-w-[220px] sm:min-w-[280px] md:min-w-[320px] max-w-sm">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search ad sets..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 bg-background shadow-none focus-visible:ring-1 focus-visible:ring-primary/30"
               />
-            )}
-          </CardContent>
-        </Card>
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-36">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="paused">Paused</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {adSetsLoading ? (
+            <div className="space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-16 bg-muted animate-pulse rounded" />
+              ))}
+            </div>
+          ) : adSetsError ? (
+            <div className="text-center py-8">
+              <Target className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">Failed to load ad sets</p>
+            </div>
+          ) : adSets.length === 0 ? (
+            <div className="text-center py-6">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
+                <Target className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">No ad sets found</h3>
+              <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
+                Create your first ad set to get started
+              </p>
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="h-8 text-xs"
+                onClick={() => setIsCreateModalOpen(true)}
+              >
+                <Plus className="mr-1 h-3 w-3" />
+                Create Your First Ad Set
+              </Button>
+            </div>
+          ) : (
+            <CustomTable
+              columns={columns}
+              data={adSets}
+              pageSize={20}
+              emptyMessage="No ad sets found"
+              emptyDescription="Create your first ad set to get started"
+              className="border-0 shadow-none bg-transparent"
+              headerClassName="bg-transparent hover:bg-transparent"
+            />
+          )}
+        </div>
       </div>
     </div>
   );

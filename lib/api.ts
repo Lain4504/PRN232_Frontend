@@ -371,18 +371,8 @@ export const endpoints = {
   deleteCampaign: (campaignId: string) => `/ad-campaigns/${campaignId}`,
 
   // Ad Set endpoints
-  adSets: (params?: { campaignId?: string; page?: number; pageSize?: number; search?: string; status?: string; sortBy?: string; sortOrder?: string }) => {
-    const searchParams = new URLSearchParams();
-    if (params?.campaignId) searchParams.append('campaignId', params.campaignId);
-    if (params?.page) searchParams.append('page', params.page.toString());
-    if (params?.pageSize) searchParams.append('pageSize', params.pageSize.toString());
-    if (params?.search) searchParams.append('search', params.search);
-    if (params?.status) searchParams.append('status', params.status);
-    if (params?.sortBy) searchParams.append('sortBy', params.sortBy);
-    if (params?.sortOrder) searchParams.append('sortOrder', params.sortOrder);
-    const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return `/ad-sets${queryString}`;
-  },
+  // Backend supports listing ad sets by campaign via route param, not query
+  adSetsByCampaign: (campaignId: string) => `/ad-sets/campaign/${campaignId}`,
   adSetById: (adSetId: string) => `/ad-sets/${adSetId}`,
   createAdSet: () => '/ad-sets',
   updateAdSet: (adSetId: string) => `/ad-sets/${adSetId}`,
@@ -403,15 +393,21 @@ export const endpoints = {
     return `/ad-creatives${queryString}`;
   },
   creativeById: (creativeId: string) => `/ad-creatives/${creativeId}`,
+  creativePreview: (creativeId: string, adFormat?: string) => `/ad-creatives/${creativeId}/previews${adFormat ? `?adFormat=${encodeURIComponent(adFormat)}` : ''}`,
+  // Keep legacy for compatibility (backend still supports but deprecated)
   createCreative: () => '/ad-creatives',
+  createCreativeFromContent: () => '/ad-creatives/from-content',
+  createCreativeFromFacebookPost: () => '/ad-creatives/from-facebook-post',
+  creativeByContent: (contentId: string) => `/ad-creatives/content/${contentId}`,
   updateCreative: (creativeId: string) => `/ad-creatives/${creativeId}`,
   deleteCreative: (creativeId: string) => `/ad-creatives/${creativeId}`,
   creativeMetrics: (creativeId: string) => `/ad-creatives/${creativeId}/metrics`,
 
   // Ad endpoints
-  ads: (params: { adSetId: string; status?: string; page?: number; pageSize?: number }) => {
+  ads: (params: { campaignId?: string; brandId?: string; status?: string; page?: number; pageSize?: number }) => {
     const searchParams = new URLSearchParams();
-    searchParams.append('adSetId', params.adSetId);
+    if (params.campaignId) searchParams.append('campaignId', params.campaignId);
+    if (params.brandId) searchParams.append('brandId', params.brandId);
     if (params.status) searchParams.append('status', params.status);
     if (params.page) searchParams.append('page', params.page.toString());
     if (params.pageSize) searchParams.append('pageSize', params.pageSize.toString());
@@ -419,6 +415,7 @@ export const endpoints = {
     return `/ads${queryString}`;
   },
   adById: (adId: string) => `/ads/${adId}`,
+  adPreview: (adId: string, adFormat?: string) => `/ads/${adId}/previews${adFormat ? `?adFormat=${encodeURIComponent(adFormat)}` : ''}`,
   createAd: () => '/ads',
   updateAd: (adId: string) => `/ads/${adId}`,
   deleteAd: (adId: string) => `/ads/${adId}`,
@@ -462,4 +459,10 @@ export const endpoints = {
     byContent: (contentId: string) => `/posts/content/${contentId}`,
     byIntegration: (integrationId: string) => `/posts/integration/${integrationId}`,
   },
+
+  // Storage endpoints
+  storageUpload: (bucket: string) => `/storage/${bucket}/upload`,
+
+  // Payment endpoints
+  paymentHistory: () => '/payment/history',
 }

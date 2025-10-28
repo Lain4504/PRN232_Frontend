@@ -90,86 +90,74 @@ function CheckoutContent() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <Link href="/overview/profile/new">
-              <Button variant="ghost" size="sm" className="mb-4">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Profile Creation
-              </Button>
-            </Link>
-            <h1 className="text-3xl font-bold">Complete Your Subscription</h1>
-            <p className="text-muted-foreground mt-2">
-              You&apos;re almost ready to get started with your new profile.
-            </p>
-          </div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Header */}
+        <div className="mb-6 space-y-2">
+          <Link href="/overview/profile/new">
+            <Button variant="ghost" size="sm" className="p-0 h-auto">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Profile Creation
+            </Button>
+          </Link>
+          <h1 className="text-xl font-bold tracking-tight text-foreground">Complete Your Subscription</h1>
+          <p className="text-xs text-muted-foreground">You&apos;re almost ready to get started with your new profile.</p>
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Plan Summary */}
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+            <div className="space-y-4">
+              <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
                     {getPlanIcon(planId)}
                     {planName} Plan
                   </CardTitle>
-                  <CardDescription>
-                    {price === 0 ? 'Free forever' : `Billed monthly`}
+                  <CardDescription className="text-xs">
+                    {price === 0 ? 'Free forever' : 'Billed monthly'}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-medium">Monthly Price</span>
-                      <span className="text-2xl font-bold">
-                        {price === 0 ? 'Free' : formatCurrency(price)}
-                      </span>
-                    </div>
-
-                    {price > 0 && (
-                      <div className="text-sm text-muted-foreground">
-                        <p>• Cancel anytime</p>
-                        <p>• 14-day free trial</p>
-                        <p>• Secure payment processing</p>
-                      </div>
-                    )}
+                <CardContent className="pt-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Monthly Price</span>
+                    <span className="text-xl font-bold">{price === 0 ? 'Free' : formatCurrency(price)}</span>
                   </div>
+                  {price > 0 && (
+                    <div className="mt-3 text-xs text-muted-foreground">
+                      <p>• Cancel anytime</p>
+                      <p>• 14-day free trial</p>
+                      <p>• Secure payment processing</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
               {/* Features */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>What&apos;s Included</CardTitle>
+              <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">What&apos;s Included</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-2">
                   <ul className="space-y-2">
                     <li className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-green-500" />
-                      <span>
-                        {features.posts === -1 ? 'Unlimited' : features.posts} posts per month
-                      </span>
+                      <span className="text-sm">{features.posts === -1 ? 'Unlimited' : features.posts} posts per month</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-green-500" />
-                      <span>{features.storage}GB storage</span>
+                      <span className="text-sm">{features.storage}GB storage</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-green-500" />
-                      <span>
-                        {features.campaigns === -1 ? 'Unlimited' : features.campaigns} ad campaigns
-                      </span>
+                      <span className="text-sm">{features.campaigns === -1 ? 'Unlimited' : features.campaigns} ad campaigns</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-green-500" />
-                      <span>{features.teamMembers} team members</span>
+                      <span className="text-sm">{features.teamMembers} team members</span>
                     </li>
                     {features.features.map((feature, index) => (
                       <li key={index} className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-green-500" />
-                        <span>{feature}</span>
+                        <span className="text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -180,25 +168,20 @@ function CheckoutContent() {
             {/* Payment Form */}
             <div>
               {price === 0 ? (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Free Plan</CardTitle>
-                    <CardDescription>
-                      No payment required for the Free plan
-                    </CardDescription>
+                <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">Free Plan</CardTitle>
+                    <CardDescription className="text-xs">No payment required for the Free plan</CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <Button 
-                      className="w-full" 
-                      onClick={() => handlePaymentSuccess('free')}
-                    >
+                  <CardContent className="pt-2">
+                    <Button className="w-full" onClick={() => handlePaymentSuccess('free')}>
                       Create Free Profile
                     </Button>
                   </CardContent>
                 </Card>
               ) : (
-                <Elements 
-                  stripe={getStripe()} 
+                <Elements
+                  stripe={getStripe()}
                   options={{
                     mode: 'payment',
                     currency: 'usd',
@@ -230,12 +213,9 @@ function CheckoutContent() {
             </div>
           </div>
 
-          {/* Security Notice */}
-          <div className="mt-8 text-center text-sm text-muted-foreground">
-            <p>
-              Your payment information is secure and encrypted. We use Stripe for secure payment processing.
-            </p>
-          </div>
+        {/* Security Notice */}
+        <div className="mt-6 text-center text-xs text-muted-foreground">
+          <p>Your payment information is secure and encrypted. We use Stripe for secure payment processing.</p>
         </div>
       </div>
     </div>
