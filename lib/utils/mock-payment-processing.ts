@@ -52,7 +52,7 @@ export class MockPaymentProcessor {
       };
       
       // Create successful payment
-      const payment = await this.createSuccessfulPayment(paymentId, paymentData);
+      await this.createSuccessfulPayment(paymentId, paymentData);
       this.processingQueue.set(paymentId, result);
       
       // Send success notification
@@ -101,7 +101,7 @@ export class MockPaymentProcessor {
   }
 
   // Simulate payment retry
-  async retryPayment(paymentId: string, newPaymentMethodId?: string): Promise<PaymentProcessingResult> {
+  async retryPayment(paymentId: string): Promise<PaymentProcessingResult> {
     await this.delay(1000); // Shorter delay for retry
     
     const random = Math.random();
@@ -124,7 +124,7 @@ export class MockPaymentProcessor {
   }
 
   // Create a successful payment record
-  private async createSuccessfulPayment(paymentId: string, paymentData: {amount: number; currency: string; paymentMethodId: string}): Promise<Payment> {
+  private async createSuccessfulPayment(paymentId: string, paymentData: {amount: number; currency: string; paymentMethodId: string; description?: string; metadata?: Record<string, unknown>}): Promise<Payment> {
     const payment: Payment = {
       id: paymentId,
       amount: paymentData.amount,
@@ -383,7 +383,7 @@ export const mockPaymentProcessor = MockPaymentProcessor.getInstance();
 export const mockPaymentProcessing = {
   processPayment: (paymentData: {amount: number; currency: string; paymentMethodId: string}) => mockPaymentProcessor.processPayment(paymentData),
   retryPayment: (paymentId: string, newPaymentMethodId?: string) => 
-    mockPaymentProcessor.retryPayment(paymentId, newPaymentMethodId),
+    mockPaymentProcessor.retryPayment(paymentId),
   generateInvoice: (paymentId: string) => mockPaymentProcessor.generateInvoice(paymentId),
   createTransaction: (paymentId: string, type?: string) => 
     mockPaymentProcessor.createTransaction(paymentId, type),

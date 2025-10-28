@@ -3,7 +3,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, endpoints } from '@/lib/api';
-import { Team, TeamSettings, UpdateTeamFormData, UpdateTeamSettingsFormData } from '@/lib/types/teams';
+import { Team, TeamSettings, UpdateTeamForm } from '@/lib/types/teams';
 import { toast } from 'sonner';
 
 // Query Keys
@@ -31,7 +31,7 @@ export function useUpdateTeam(teamId: string) {
   const qc = useQueryClient();
   
   return useMutation({
-    mutationFn: async (data: UpdateTeamFormData): Promise<Team> => {
+    mutationFn: async (data: UpdateTeamForm): Promise<Team> => {
       const resp = await api.put<Team>(endpoints.updateTeam(teamId), data);
       return resp.data;
     },
@@ -57,7 +57,7 @@ export function useUpdateTeamSettings(teamId: string) {
   const qc = useQueryClient();
   
   return useMutation({
-    mutationFn: async (data: UpdateTeamSettingsFormData): Promise<TeamSettings> => {
+    mutationFn: async (data: Partial<TeamSettings>): Promise<TeamSettings> => {
       const resp = await api.put<TeamSettings>(endpoints.updateTeamSettings(teamId), data);
       return resp.data;
     },

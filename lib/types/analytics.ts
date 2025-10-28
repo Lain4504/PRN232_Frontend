@@ -246,6 +246,7 @@ export interface ExportData {
 }
 
 export interface ExportOptions {
+  prettyPrint?: boolean;
   includeCharts: boolean;
   includeRawData: boolean;
   dateRange: TimeRange;
@@ -292,10 +293,19 @@ export interface AnalyticsInsight {
   expiresAt?: string;
 }
 
+export interface RealTimeUpdateData {
+  metric?: string;
+  value?: number;
+  change?: number;
+  message?: string;
+  title?: string;
+  timestamp?: string;
+}
+
 export interface RealTimeUpdate {
   id: string;
   type: 'metric' | 'alert' | 'insight';
-  data: Record<string, unknown>;
+  data: RealTimeUpdateData;
   timestamp: string;
   source: string;
 }

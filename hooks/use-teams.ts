@@ -21,6 +21,7 @@ export const teamKeys = {
   details: () => [...teamKeys.all, 'detail'] as const,
   detail: (teamId: string) => [...teamKeys.details(), teamId] as const,
   members: (teamId: string) => [...teamKeys.detail(teamId), 'members'] as const,
+  currentMember: (teamId: string) => [...teamKeys.detail(teamId), 'current-member'] as const,
 }
 
 // Teams by vendor

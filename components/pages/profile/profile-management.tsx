@@ -103,9 +103,9 @@ export function ProfileManagement() {
     })
   }
 
-  const handleEditProfile = (profile: { id: string; profileType: number; company_name?: string; bio?: string; avatarUrl?: string }) => {
+  const handleEditProfile = (profile: { id: string; profileType: 'Free' | 'Basic' | 'Pro'; company_name?: string; bio?: string; avatarUrl?: string }) => {
     setEditingProfileId(profile.id)
-    const profileType = profile.profileType === 0 ? 'personal' : 'business';
+    const profileType = profile.profileType === 'Free' ? 'personal' : 'business';
     setFormData({
       profile_type: profileType,
       company_name: profile.company_name || '',
@@ -119,7 +119,8 @@ export function ProfileManagement() {
     try {
       if (creatingProfile) {
         await createProfileMutation.mutateAsync({
-          profile_type: formData.profile_type,
+          name: formData.company_name || 'Personal Profile',
+          profile_type: formData.profile_type === 'business' ? 'Pro' : 'Free',
           company_name: formData.company_name,
           bio: formData.bio,
           avatar: formData.avatar || undefined,
@@ -129,7 +130,7 @@ export function ProfileManagement() {
         setCreatingProfile(false)
       } else if (editingProfileId) {
         await updateMutation.mutateAsync({
-          profile_type: formData.profile_type,
+          profile_type: formData.profile_type === 'business' ? 'Pro' : 'Free',
           company_name: formData.company_name,
           bio: formData.bio,
           avatar: formData.avatar || undefined,
@@ -211,8 +212,8 @@ export function ProfileManagement() {
   }
 
   const totalProfiles = profiles.length;
-  const businessProfiles = profiles.filter(p => p.profileType === 1).length;
-  const personalProfiles = profiles.filter(p => p.profileType === 0).length;
+  const businessProfiles = profiles.filter(p => p.profileType === 'Pro' || p.profileType === 'Basic').length;
+  const personalProfiles = profiles.filter(p => p.profileType === 'Free').length;
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -292,7 +293,7 @@ export function ProfileManagement() {
             <h2 className="text-lg lg:text-xl font-semibold">Your Profiles</h2>
             <div className="space-y-3">
               {profiles.map((profile) => {
-                const profileType = profile.profileType === 0 ? 'personal' : 'business';
+                const profileType = profile.profileType === 'Free' ? 'personal' : 'business';
                 
                 return (
                   <Card key={profile.id} className="border border-border/50 hover:border-border transition-colors">
@@ -522,7 +523,7 @@ function ViewProfileContent({ profileId }: { profileId: string }) {
   }
 
   const profileData = profile
-  const profileType = profileData.profileType === 0 ? 'personal' : 'business'
+  const profileType = profileData.profileType === 'Free' ? 'personal' : 'business'
 
   return (
     <div className="space-y-6">

@@ -171,11 +171,11 @@ export const calculateTeamAnalytics = (
 
   // Calculate role distribution
   const roleDistribution = members.reduce((acc, member) => {
-    const existing = acc.find(r => r.role === member.role);
+    const existing = acc.find(r => r.role === member.role.name);
     if (existing) {
       existing.count++;
     } else {
-      acc.push({ role: member.role, count: 1 });
+      acc.push({ role: member.role.name, count: 1 });
     }
     return acc;
   }, [] as { role: string; count: number }[]);

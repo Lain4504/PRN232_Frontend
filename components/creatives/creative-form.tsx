@@ -73,7 +73,7 @@ export function CreativeForm({ creative, onSuccess, onCancel }: CreativeFormProp
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && watchedType) {
-      fileUpload.uploadFile(file, watchedType as 'IMAGE' | 'VIDEO' | 'CAROUSEL' | 'TEXT' | 'GIF' | 'STORY');
+      fileUpload.uploadFile(file, watchedType as 'IMAGE' | 'VIDEO' | 'CAROUSEL' | 'GIF' | 'STORY');
       setValue("mediaFile", file);
     }
   };
@@ -82,7 +82,7 @@ export function CreativeForm({ creative, onSuccess, onCancel }: CreativeFormProp
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file && watchedType) {
-      fileUpload.uploadFile(file, watchedType as 'IMAGE' | 'VIDEO' | 'CAROUSEL' | 'TEXT' | 'GIF' | 'STORY');
+      fileUpload.uploadFile(file, watchedType as 'IMAGE' | 'VIDEO' | 'CAROUSEL' | 'GIF' | 'STORY');
       setValue("mediaFile", file);
     }
   };

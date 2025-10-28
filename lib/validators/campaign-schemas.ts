@@ -9,9 +9,7 @@ export const createCampaignSchema = z.object({
   name: z.string()
     .min(1, 'Campaign name is required')
     .max(255, 'Campaign name must be less than 255 characters'),
-  objective: z.enum(CAMPAIGN_OBJECTIVES as [string, ...string[]], {
-    errorMap: () => ({ message: 'Please select a valid campaign objective' })
-  }),
+  objective: z.enum(CAMPAIGN_OBJECTIVES as [string, ...string[]], { message: 'Please select a valid campaign objective' }),
   budget: z.number()
     .min(0.01, 'Budget must be greater than $0.01')
     .max(1000000, 'Budget cannot exceed $1,000,000'),

@@ -23,7 +23,6 @@ interface CustomTableProps<TData, TValue> {
   indexLabel?: string;
   currentPage?: number;
   pageSize?: number;
-  totalItems?: number;
   className?: string;
   headerClassName?: string;
   emptyMessage?: string;
@@ -40,7 +39,6 @@ export function CustomTable<TData, TValue>({
   indexLabel = "STT",
   currentPage = 0,
   pageSize = 10,
-  totalItems,
   className,
   headerClassName = "bg-gray-50/50 hover:bg-gray-50/50 border-b border-gray-300/60",
   emptyMessage = "No data found",

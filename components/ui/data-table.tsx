@@ -35,7 +35,6 @@ import { cn } from "@/lib/utils";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  filterColumn?: string;
   searchPlaceholder?: string;
   pageSize?: number;
   className?: string;
@@ -50,7 +49,6 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
-  filterColumn,
   searchPlaceholder = "Search...",
   pageSize = 10,
   className,

@@ -42,7 +42,7 @@ export function TeamBrandSelector({
   const [selectedBrand, setSelectedBrand] = useState<string>(selectedBrandId || '')
 
   // Fetch team brands
-  const { data: teamBrands = [], isLoading, error } = useTeamBrands(activeTeamId)
+  const { data: teamBrands = [], isLoading, error } = useTeamBrands(activeTeamId || undefined)
 
   useEffect(() => {
     if (selectedBrandId) {

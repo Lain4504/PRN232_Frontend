@@ -22,7 +22,6 @@ import {
 import { TeamBilling } from '@/lib/types/teams';
 
 interface TeamUsageAnalyticsProps {
-  teamId: string;
   billing: TeamBilling;
   canView?: boolean;
 }
@@ -44,7 +43,7 @@ const mockUsageForecast = [
   { date: '2024-12-10', members: 13, storage: 3000, apiCalls: 28000, contentGenerations: 200 }
 ];
 
-export function TeamUsageAnalytics({ teamId, billing, canView = true }: TeamUsageAnalyticsProps) {
+export function TeamUsageAnalytics({ billing, canView = true }: TeamUsageAnalyticsProps) {
   const [timeRange, setTimeRange] = useState('7d');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -67,11 +66,6 @@ export function TeamUsageAnalytics({ teamId, billing, canView = true }: TeamUsag
     return Math.min((used / limit) * 100, 100);
   };
 
-  const getUsageColor = (percentage: number) => {
-    if (percentage >= 90) return 'bg-red-500';
-    if (percentage >= 75) return 'bg-yellow-500';
-    return 'bg-green-500';
-  };
 
   const getUsageStatus = (percentage: number) => {
     if (percentage >= 90) return { status: 'Critical', color: 'text-red-600' };

@@ -14,9 +14,9 @@ export const getStripe = () => {
   return stripePromise
 }
 
-// Stripe Elements options
+// Stripe Elements options for setup mode (payment method collection)
 export const stripeOptions = {
-  mode: 'payment' as const,
+  mode: 'setup' as const,
   currency: 'usd',
   appearance: {
     theme: 'stripe' as const,
@@ -31,6 +31,25 @@ export const stripeOptions = {
     },
   },
 }
+
+// Payment-specific options factory function
+export const createPaymentOptions = (amount: number, currency: string = 'usd') => ({
+  mode: 'payment' as const,
+  amount,
+  currency,
+  appearance: {
+    theme: 'stripe' as const,
+    variables: {
+      colorPrimary: '#2563eb',
+      colorBackground: '#ffffff',
+      colorText: '#1f2937',
+      colorDanger: '#dc2626',
+      fontFamily: 'Inter, system-ui, sans-serif',
+      spacingUnit: '4px',
+      borderRadius: '8px',
+    },
+  },
+})
 
 // Helper function to format currency
 export const formatCurrency = (amount: number, currency: string = 'USD') => {

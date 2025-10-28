@@ -122,7 +122,7 @@ export function SubscriptionDataTable<T>({
             </span>
             {subscription?.tier !== 'free' && (
               <Badge variant="outline" className="text-xs">
-                {subscription.tier}
+                {subscription?.tier}
               </Badge>
             )}
           </div>

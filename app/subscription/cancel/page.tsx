@@ -31,24 +31,23 @@ function CancelSubscriptionContent() {
   const subscriptionId = searchParams.get('id')
 
   useEffect(() => {
-    if (subscriptionId) {
-      loadSubscription()
-    } else {
-      setIsLoading(false)
+    async function loadSubscription() {
+      if (subscriptionId) {
+        try {
+          const data = await getSubscription(subscriptionId)
+          setSubscription(data)
+        } catch (error) {
+          console.error('Error loading subscription:', error)
+          toast.error('Failed to load subscription details')
+        } finally {
+          setIsLoading(false)
+        }
+      } else {
+        setIsLoading(false)
+      }
     }
+    loadSubscription()
   }, [subscriptionId])
-
-  const loadSubscription = async () => {
-    try {
-      const data = await getSubscription(subscriptionId!)
-      setSubscription(data)
-    } catch (error) {
-      console.error('Error loading subscription:', error)
-      toast.error('Failed to load subscription details')
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const handleCancel = async () => {
     if (!subscription) return
@@ -93,7 +92,7 @@ function CancelSubscriptionContent() {
         <div className="text-center">
           <h2 className="text-2xl font-semibold">Subscription Not Found</h2>
           <p className="text-muted-foreground mt-2">
-            The subscription you&#39;re looking for doesn&#39;t exist or has been removed.
+            The subscription you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
           <Link href="/subscription">
             <Button className="mt-4">Back to Subscriptions</Button>
@@ -261,5 +260,19 @@ function CancelSubscriptionContent() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CancelSubscriptionPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      }
+    >
+      <CancelSubscriptionContent />
+    </Suspense>
   )
 }

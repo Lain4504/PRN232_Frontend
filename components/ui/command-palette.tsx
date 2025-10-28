@@ -15,7 +15,6 @@ import {
   Sun, 
   Monitor,
   Target,
-  Package,
   Sparkles,
   Share2,
   CheckCircle,
@@ -227,7 +226,7 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ children, className }: CommandPaletteProps) {
   const [open, setOpen] = React.useState(false)
-  const { theme, setTheme } = useTheme()
+  const { setTheme } = useTheme()
 
   const handleSelect = (url: string) => {
     setOpen(false)

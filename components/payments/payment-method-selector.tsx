@@ -38,7 +38,7 @@ export function PaymentMethodSelector({
     event.stopPropagation();
     try {
       await setDefaultMethod.mutateAsync(methodId);
-    } catch (error) {
+    } catch {
       toast.error('Failed to set default payment method');
     }
   };
@@ -50,7 +50,7 @@ export function PaymentMethodSelector({
       if (selectedMethodId === methodId) {
         onMethodSelect('');
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to remove payment method');
     }
   };

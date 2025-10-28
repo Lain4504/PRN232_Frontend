@@ -43,6 +43,7 @@ export interface CreateAdCreativeRequest {
 
 export interface UpdateAdCreativeRequest extends Partial<CreateAdCreativeRequest> {
   id: string;
+  isActive?: boolean;
 }
 
 export interface CreativeFilters {
@@ -74,7 +75,14 @@ export const CREATIVE_TYPES = [
 ] as const;
 
 // File size limits by type
-export const CREATIVE_FILE_LIMITS = {
+interface CreativeFileLimits {
+  [key: string]: {
+    maxSize: number;
+    formats: string[];
+  };
+}
+
+export const CREATIVE_FILE_LIMITS: CreativeFileLimits = {
   IMAGE: { maxSize: 30 * 1024 * 1024, formats: ['jpg', 'jpeg', 'png', 'webp'] }, // 30MB
   VIDEO: { maxSize: 4 * 1024 * 1024 * 1024, formats: ['mp4', 'mov'] }, // 4GB
   GIF: { maxSize: 10 * 1024 * 1024, formats: ['gif'] }, // 10MB

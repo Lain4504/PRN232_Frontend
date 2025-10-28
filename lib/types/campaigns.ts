@@ -74,7 +74,7 @@ export const CAMPAIGN_OBJECTIVES = [
   'STORE_TRAFFIC',
   'MESSAGES',
   'EVENT_RESPONSES'
-] as const;
+];
 
 export type CampaignObjective = typeof CAMPAIGN_OBJECTIVES[number];
 

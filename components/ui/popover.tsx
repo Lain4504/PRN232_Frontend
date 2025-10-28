@@ -1,80 +1,48 @@
-"use client";
+"use client"
 
-import React, { createContext, useContext, useMemo, useState, useCallback } from "react";
+import * as React from "react"
+import * as PopoverPrimitive from "@radix-ui/react-popover"
 
-interface PopoverContextValue {
-  open: boolean;
-  setOpen: (o: boolean) => void;
+import { cn } from "@/lib/utils"
+
+function Popover({
+  ...props
+}: React.ComponentProps<typeof PopoverPrimitive.Root>) {
+  return <PopoverPrimitive.Root data-slot="popover" {...props} />
 }
 
-const PopoverContext = createContext<PopoverContextValue | null>(null);
-
-export interface PopoverProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  children: React.ReactNode;
+function PopoverTrigger({
+  ...props
+}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
+  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
 }
 
-export function Popover({ open: openProp, onOpenChange, children }: PopoverProps) {
-  const [internalOpen, setInternalOpen] = useState(false);
-  const open = openProp ?? internalOpen;
-  const setOpen = useCallback(
-    (o: boolean) => {
-      if (onOpenChange) onOpenChange(o);
-      else setInternalOpen(o);
-    },
-    [onOpenChange]
-  );
-
-  const value = useMemo(() => ({ open, setOpen }), [open, setOpen]);
-
-  return <PopoverContext.Provider value={value}>{children}</PopoverContext.Provider>;
-}
-
-export interface PopoverTriggerProps {
-  asChild?: boolean;
-  children: React.ReactElement<any>;
-}
-
-export function PopoverTrigger({ asChild, children }: PopoverTriggerProps) {
-  const ctx = useContext(PopoverContext);
-  if (!ctx) return children;
-  const { open, setOpen } = ctx;
-
-  const onClick = (e: React.MouseEvent) => {
-    try {
-      (children.props as any)?.onClick?.(e);
-    } catch {}
-    setOpen(!open);
-  };
-
-  return asChild
-    ? (React.cloneElement(children as any, { onClick } as any))
-    : (
-        <button type="button" onClick={onClick}>
-          {children}
-        </button>
-      );
-}
-
-export interface PopoverContentProps {
-  children: React.ReactNode;
-  className?: string;
-  align?: "start" | "center" | "end";
-}
-
-export function PopoverContent({ children, className }: PopoverContentProps) {
-  const ctx = useContext(PopoverContext);
-  if (!ctx) return null;
-  const { open, setOpen } = ctx;
-
-  if (!open) return null;
-
+function PopoverContent({
+  className,
+  align = "center",
+  sideOffset = 4,
+  ...props
+}: React.ComponentProps<typeof PopoverPrimitive.Content>) {
   return (
-    <div className={className} role="dialog" aria-modal="false">
-      {children}
-    </div>
-  );
+    <PopoverPrimitive.Portal>
+      <PopoverPrimitive.Content
+        data-slot="popover-content"
+        align={align}
+        sideOffset={sideOffset}
+        className={cn(
+          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden",
+          className
+        )}
+        {...props}
+      />
+    </PopoverPrimitive.Portal>
+  )
 }
 
-export default Popover;
+function PopoverAnchor({
+  ...props
+}: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {
+  return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />
+}
+
+export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor }

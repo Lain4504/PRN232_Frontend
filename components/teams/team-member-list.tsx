@@ -11,8 +11,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { 
   Users, 
   Search, 
-  Filter, 
-  MoreHorizontal,
   UserPlus,
   Mail,
   Shield,
@@ -21,10 +19,9 @@ import {
   Activity
 } from 'lucide-react';
 import { TeamMemberResponseDto } from '@/lib/types/aisam-types';
-import { getMemberStatusColor, getMemberStatusLabel, formatDate, formatRelativeTime } from '@/lib/utils/teams';
+import { getMemberStatusColor, getMemberStatusLabel, formatDate } from '@/lib/utils/teams';
 
 interface TeamMemberListProps {
-  teamId: string;
   members: TeamMemberResponseDto[];
   canManage?: boolean;
   onEditMember?: (member: TeamMemberResponseDto) => void;
@@ -34,7 +31,6 @@ interface TeamMemberListProps {
 }
 
 export function TeamMemberList({ 
-  teamId, 
   members, 
   canManage = true, 
   onEditMember, 

@@ -67,7 +67,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* Header được đặt ngoài sidebar để trải dài hết màn hình */}
         <div className="fixed top-0 left-0 right-0 z-50">
-          <DashboardHeader user={user} />
+          <DashboardHeader />
         </div>
       </div>
   )

@@ -90,7 +90,7 @@ export function PaymentAlertSystem({ className }: PaymentAlertSystemProps) {
   ]);
 
   const [isMonitoring, setIsMonitoring] = useState(false);
-  const [alertHistory, setAlertHistory] = useState<Array<{id: string; type: string; message: string; timestamp: string}>>([]);
+  const [alertHistory, setAlertHistory] = useState<Array<{id: string; type: string; message: string; timestamp: string; severity: string}>>([]);
   
   const billingAlerts = useBillingAlerts();
   const stats = useBillingStats();

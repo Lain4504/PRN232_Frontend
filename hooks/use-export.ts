@@ -19,7 +19,7 @@ const mockExportApi = {
     
     return {
       format: request.format,
-      data: request.options.includeRawData ? {} : {},
+      data: request.options.includeRawData ? { id: 'mock', metrics: { impressions: 0, clicks: 0, conversions: 0, ctr: 0, cpc: 0, cpm: 0, roi: 0, engagement: 0, reach: 0, shares: 0, comments: 0, likes: 0, saves: 0 }, dimensions: { platform: 'mock', date: '' }, timeRange: { start: '', end: '', period: 'day' }, filters: {}, aggregations: { sum: [], average: [], count: [], min: [], max: [] }, generatedAt: '' } as AnalyticsData : { id: 'mock', metrics: { impressions: 0, clicks: 0, conversions: 0, ctr: 0, cpc: 0, cpm: 0, roi: 0, engagement: 0, reach: 0, shares: 0, comments: 0, likes: 0, saves: 0 }, dimensions: { platform: 'mock', date: '' }, timeRange: { start: '', end: '', period: 'day' }, filters: {}, aggregations: { sum: [], average: [], count: [], min: [], max: [] }, generatedAt: '' } as AnalyticsData,
       options: request.options,
       status: 'ready',
       downloadUrl: `/api/exports/export-${Date.now()}/download`,
@@ -33,7 +33,7 @@ const mockExportApi = {
     
     return {
       format: 'pdf',
-      data: {},
+      data: { id: 'mock', metrics: { impressions: 0, clicks: 0, conversions: 0, ctr: 0, cpc: 0, cpm: 0, roi: 0, engagement: 0, reach: 0, shares: 0, comments: 0, likes: 0, saves: 0 }, dimensions: { platform: 'mock', date: '' }, timeRange: { start: '', end: '', period: 'day' }, filters: {}, aggregations: { sum: [], average: [], count: [], min: [], max: [] }, generatedAt: '' } as AnalyticsData,
       options: {
         includeCharts: true,
         includeRawData: false,

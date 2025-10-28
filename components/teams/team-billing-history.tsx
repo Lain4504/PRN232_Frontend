@@ -283,10 +283,16 @@ export function TeamBillingHistory({
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          {getPaymentMethodIcon(invoice.paymentMethod)}
-                          <span className="text-sm capitalize">
-                            {invoice.paymentMethod.replace('_', ' ')}
-                          </span>
+                          {invoice.paymentMethod ? (
+                            <>
+                              {getPaymentMethodIcon(invoice.paymentMethod)}
+                              <span className="text-sm capitalize">
+                                {invoice.paymentMethod.replace('_', ' ')}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">N/A</span>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className="text-right">

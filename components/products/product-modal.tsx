@@ -15,10 +15,15 @@ interface ProductModalProps {
   product?: Product
   defaultBrandId?: string
   onSuccess?: () => void
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function ProductModal({ children, mode, product, defaultBrandId, onSuccess }: ProductModalProps) {
-  const [open, setOpen] = useState(false)
+export function ProductModal({ children, mode, product, defaultBrandId, onSuccess, open: controlledOpen, onOpenChange: setControlledOpen }: ProductModalProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
+
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const setOpen = setControlledOpen || setInternalOpen
   const isMobile = useIsMobile()
 
   const handleSuccess = () => {
@@ -29,23 +34,16 @@ export function ProductModal({ children, mode, product, defaultBrandId, onSucces
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger asChild>
-          {children || (
-            <Button>
-              {mode === 'create' ? (
-                <>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Product
-                </>
-              ) : (
-                <>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit Product
-                </>
-              )}
-            </Button>
-          )}
-        </DrawerTrigger>
+        {mode === 'create' && (
+          <DrawerTrigger asChild>
+            {children || (
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Product
+              </Button>
+            )}
+          </DrawerTrigger>
+        )}
         <DrawerContent className="max-h-[90vh] flex flex-col">
           <DrawerHeader className="flex-shrink-0 text-left">
             <DrawerTitle>
@@ -74,23 +72,16 @@ export function ProductModal({ children, mode, product, defaultBrandId, onSucces
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children || (
-          <Button>
-            {mode === 'create' ? (
-              <>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Product
-              </>
-            ) : (
-              <>
-                <Edit className="mr-2 h-4 w-4" />
-                Edit Product
-              </>
-            )}
-          </Button>
-        )}
-      </DialogTrigger>
+      {mode === 'create' && (
+        <DialogTrigger asChild>
+          {children || (
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Product
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>

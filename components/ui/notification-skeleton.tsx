@@ -1,5 +1,4 @@
 import { Skeleton } from "@/components/ui/skeleton"
-import { Bell } from "lucide-react"
 
 export function NotificationSkeleton() {
   return (

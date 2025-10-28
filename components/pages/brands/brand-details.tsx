@@ -18,6 +18,7 @@ import { Brand, Profile } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useBrand } from "@/hooks/use-brands";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { BrandModal } from "@/components/brands/brand-modal";
 
 interface BrandDetailsProps {
@@ -28,6 +29,7 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
   const [_profile, setProfile] = useState<Profile | null>(null);
 
   // Hooks
+  const router = useRouter();
   const { data: brand, isLoading: loading, error } = useBrand(brandId);
 
   useEffect(() => {
@@ -107,7 +109,7 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
               <div>
                 <CardTitle className="text-2xl">{brand.name}</CardTitle>
                 <CardDescription>
-                  {_profile ? (_profile.company_name || _profile.profile_type) : 'No profile linked'}
+                  {_profile ? (_profile.company_name || _profile.profileType) : 'No profile linked'}
                 </CardDescription>
               </div>
             </div>
@@ -133,11 +135,11 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                <span>Created {new Date(brand.created_at).toLocaleDateString()}</span>
+                <span>Created {brand.created_at ? new Date(brand.created_at).toLocaleDateString() : ''}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                <span>Updated {new Date(brand.updated_at).toLocaleDateString()}</span>
+                <span>Updated {brand.updated_at ? new Date(brand.updated_at).toLocaleDateString() : ''}</span>
               </div>
             </div>
           </CardContent>

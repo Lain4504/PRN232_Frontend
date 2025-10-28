@@ -22,12 +22,11 @@ import {
   CheckCircle,
   XCircle
 } from 'lucide-react';
-import { getPermissionsForRole, getPermissionInfo, getAllPermissions } from '@/lib/constants/team-roles';
+import { getPermissionsForRole, getAllPermissions } from '@/lib/constants/team-roles';
 import { toast } from 'sonner';
 import { TeamRole } from '@/lib/types/teams';
 
 interface TeamRoleManagementProps {
-  teamId: string;
   canManage?: boolean;
 }
 
@@ -67,7 +66,7 @@ const mockRoles = [
   }
 ];
 
-export function TeamRoleManagement({ teamId, canManage = true }: TeamRoleManagementProps) {
+export function TeamRoleManagement({ canManage = true }: TeamRoleManagementProps) {
   const [roles, setRoles] = useState(mockRoles);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -104,7 +103,7 @@ export function TeamRoleManagement({ teamId, canManage = true }: TeamRoleManagem
         description: `The ${newRole.name} role has been created.`,
         duration: 3000,
       });
-    } catch (error) {
+    } catch {
       toast.error('Failed to create role', {
         description: 'Please try again later.',
         duration: 4000,
@@ -130,7 +129,7 @@ export function TeamRoleManagement({ teamId, canManage = true }: TeamRoleManagem
         description: `The ${selectedRole.name} role has been updated.`,
         duration: 3000,
       });
-    } catch (error) {
+    } catch {
       toast.error('Failed to update role', {
         description: 'Please try again later.',
         duration: 4000,
@@ -148,7 +147,7 @@ export function TeamRoleManagement({ teamId, canManage = true }: TeamRoleManagem
         description: 'The role has been removed.',
         duration: 3000,
       });
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete role', {
         description: 'Please try again later.',
         duration: 4000,
@@ -171,15 +170,21 @@ export function TeamRoleManagement({ teamId, canManage = true }: TeamRoleManagem
       }
     } else if (selectedRole) {
       if (selectedRole.permissions.includes(permission)) {
-        setSelectedRole(prev => ({
-          ...prev,
-          permissions: prev.permissions.filter(p => p !== permission)
-        }));
+        setSelectedRole(prev => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            permissions: prev.permissions.filter(p => p !== permission)
+          };
+        });
       } else {
-        setSelectedRole(prev => ({
-          ...prev,
-          permissions: [...prev.permissions, permission]
-        }));
+        setSelectedRole(prev => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            permissions: [...prev.permissions, permission]
+          };
+        });
       }
     }
   };
@@ -412,7 +417,7 @@ export function TeamRoleManagement({ teamId, canManage = true }: TeamRoleManagem
                 <Input
                   id="editRoleName"
                   value={selectedRole.name}
-                  onChange={(e) => setSelectedRole(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) => setSelectedRole(prev => prev ? { ...prev, name: e.target.value } : null)}
                 />
               </div>
 
@@ -422,7 +427,7 @@ export function TeamRoleManagement({ teamId, canManage = true }: TeamRoleManagem
                   id="editRoleDescription"
                   rows={3}
                   value={selectedRole.description}
-                  onChange={(e) => setSelectedRole(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) => setSelectedRole(prev => prev ? { ...prev, description: e.target.value } : null)}
                 />
               </div>
 
@@ -436,7 +441,7 @@ export function TeamRoleManagement({ teamId, canManage = true }: TeamRoleManagem
                 <Switch
                   id="editIsDefault"
                   checked={selectedRole.isDefault}
-                  onCheckedChange={(checked) => setSelectedRole(prev => ({ ...prev, isDefault: checked }))}
+                  onCheckedChange={(checked) => setSelectedRole(prev => prev ? { ...prev, isDefault: checked } : null)}
                 />
               </div>
 

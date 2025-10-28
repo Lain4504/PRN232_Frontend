@@ -49,9 +49,6 @@ export function ActionsDropdown({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
                 {actions.map((action, index) => {
-                    const isLastDestructive =
-                        action.variant === "destructive" &&
-                        index === actions.length - 1;
                     const needsSeparator =
                         index > 0 &&
                         action.variant === "destructive" &&

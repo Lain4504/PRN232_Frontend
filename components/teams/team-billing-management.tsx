@@ -300,7 +300,6 @@ export function TeamBillingManagement({ teamId, canManage = true }: TeamBillingM
 
       {/* Usage Analytics */}
       <TeamUsageAnalytics 
-        teamId={teamId}
         billing={billingData}
         canView={canManage}
       />
@@ -310,13 +309,17 @@ export function TeamBillingManagement({ teamId, canManage = true }: TeamBillingM
         teamId={teamId}
         invoices={invoices.map(invoice => ({
           id: invoice.id,
+          teamId: teamId,
           invoiceNumber: invoice.id,
           amount: invoice.amount,
           currency: 'USD',
           status: invoice.status,
+          dueDate: invoice.date, // Mocking dueDate with invoice date
+          items: [{ description: `Subscription for ${invoice.period}`, quantity: 1, unitPrice: invoice.amount, total: invoice.amount }],
           description: `Subscription for ${invoice.period}`,
           period: invoice.period,
           createdAt: invoice.date,
+          updatedAt: invoice.date, // Mocking updatedAt with invoice date
           paymentMethod: 'credit_card'
         }))}
         canView={canManage}

@@ -39,6 +39,7 @@ export interface TeamRole {
   permissions: string[];
   description: string;
   isDefault: boolean;
+  memberCount: number;
 }
 
 export interface TeamActivity {
@@ -204,4 +205,48 @@ export interface TeamAnalytics {
     action: TeamActivityAction;
     count: number;
   }[];
+}
+export interface TeamActivityLog {
+  id: string;
+  teamId: string;
+  userId: string;
+  type: string;
+  title: string;
+  description: string;
+  timestamp: string;
+  userEmail?: string;
+  userName?: string;
+  details?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+}
+
+export interface TeamInvoice {
+  id: string;
+  teamId: string;
+  invoiceNumber: string;
+  amount: number;
+  currency: string;
+  status: 'paid' | 'pending' | 'failed' | 'cancelled';
+  dueDate: string;
+  paidDate?: string;
+  description: string;
+  period?: string;
+  items: Array<{
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    total: number;
+  }>;
+  billingAddress?: {
+    name: string;
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  paymentMethod?: string;
 }

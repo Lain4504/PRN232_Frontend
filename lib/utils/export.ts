@@ -18,16 +18,16 @@ export function generateCSVContent(
   options: ExportOptions
 ): string {
   if (Array.isArray(data)) {
-    return generateCSVFromArray(data, options);
+    return generateCSVFromArray(data);
   } else {
-    return generateCSVFromObject(data, options);
+    return generateCSVFromObject(data);
   }
 }
 
 /**
  * Generate CSV from array of analytics data
  */
-function generateCSVFromArray(data: AnalyticsData[], options: ExportOptions): string {
+function generateCSVFromArray(data: AnalyticsData[]): string {
   if (data.length === 0) return '';
 
   const headers = [
@@ -75,8 +75,7 @@ function generateCSVFromArray(data: AnalyticsData[], options: ExportOptions): st
  * Generate CSV from single analytics object
  */
 function generateCSVFromObject(
-  data: CampaignAnalytics | ContentAnalytics | TeamAnalytics,
-  options: ExportOptions
+  data: CampaignAnalytics | ContentAnalytics | TeamAnalytics
 ): string {
   const rows: string[][] = [];
   
@@ -416,7 +415,7 @@ export function validateExportData(
   if (format === ANALYTICS_EXPORT_FORMATS.JSON) {
     try {
       JSON.stringify(data);
-    } catch (error) {
+    } catch {
       errors.push('Data cannot be serialized to JSON');
     }
   }

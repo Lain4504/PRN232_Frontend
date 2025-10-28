@@ -33,7 +33,7 @@ export function PlanComparison({
       return
     }
 
-    if (currentSubscription?.planId === plan.id) {
+    if (currentSubscription?.plan.toString() === plan.id) {
       toast.info('You are already on this plan')
       return
     }
@@ -156,7 +156,7 @@ export function PlanComparison({
                             Popular
                           </Badge>
                         )}
-                        {currentSubscription?.planId === plan.id && (
+                        {currentSubscription?.plan.toString() === plan.id && (
                           <Badge variant="outline" className="text-xs">
                             Current
                           </Badge>
@@ -229,7 +229,7 @@ export function PlanComparison({
         {/* Action Buttons */}
         <div className="flex justify-center space-x-4 mt-6">
           {plans.map((plan) => {
-            const isCurrentPlan = currentSubscription?.planId === plan.id
+            const isCurrentPlan = currentSubscription?.plan.toString() === plan.id
             
             return (
               <Button

@@ -79,11 +79,11 @@ export function TeamAccessControl({ teamId, canManage = true }: TeamAccessContro
   const [createPolicyDialogOpen, setCreatePolicyDialogOpen] = useState(false);
   const [editPolicyDialogOpen, setEditPolicyDialogOpen] = useState(false);
   const [deletePolicyDialogOpen, setDeletePolicyDialogOpen] = useState<string | null>(null);
-  const [selectedPolicy, setSelectedPolicy] = useState<{id: string; name: string; description: string; rules: Array<{type: string; value: string}>} | null>(null);
+  const [selectedPolicy, setSelectedPolicy] = useState<{id: string; name: string; description: string; isActive: boolean; rules: Array<{resource: string; action: string; allowed: boolean}>} | null>(null);
   const [newPolicy, setNewPolicy] = useState({
     name: '',
     description: '',
-    rules: [] as Array<{type: string; value: string}>
+    rules: [] as Array<{resource: string; action: string; allowed: boolean}>
   });
 
   const handleCreatePolicy = async () => {
@@ -501,7 +501,7 @@ export function TeamAccessControl({ teamId, canManage = true }: TeamAccessContro
                 <Input
                   id="editPolicyName"
                   value={selectedPolicy.name}
-                  onChange={(e) => setSelectedPolicy(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) => setSelectedPolicy(prev => prev ? { ...prev, name: e.target.value } : null)}
                 />
               </div>
 
@@ -511,7 +511,7 @@ export function TeamAccessControl({ teamId, canManage = true }: TeamAccessContro
                   id="editPolicyDescription"
                   rows={3}
                   value={selectedPolicy.description}
-                  onChange={(e) => setSelectedPolicy(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) => setSelectedPolicy(prev => prev ? { ...prev, description: e.target.value } : null)}
                 />
               </div>
 
@@ -525,7 +525,7 @@ export function TeamAccessControl({ teamId, canManage = true }: TeamAccessContro
                 <Switch
                   id="editPolicyActive"
                   checked={selectedPolicy.isActive}
-                  onCheckedChange={(checked) => setSelectedPolicy(prev => ({ ...prev, isActive: checked }))}
+                  onCheckedChange={(checked) => setSelectedPolicy(prev => prev ? { ...prev, isActive: checked } : null)}
                 />
               </div>
             </div>

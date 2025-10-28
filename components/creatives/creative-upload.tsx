@@ -53,9 +53,12 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
     reset
   } = useForm<CreateCreativeFormData>({
     resolver: zodResolver(createCreativeSchema),
-    defaultValues: {
+      defaultValues: {
       adSetId,
-      tags: []
+      name: "",
+      type: "IMAGE",
+      content: "",
+      tags: [],
     }
   });
 
@@ -64,7 +67,7 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && watchedType) {
-      fileUpload.uploadFile(file, watchedType as 'IMAGE' | 'VIDEO' | 'CAROUSEL' | 'TEXT' | 'GIF' | 'STORY');
+      fileUpload.uploadFile(file, watchedType as 'IMAGE' | 'VIDEO' | 'CAROUSEL' | 'GIF' | 'STORY');
       setValue("mediaFile", file);
     }
   };
@@ -73,7 +76,7 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file && watchedType) {
-      fileUpload.uploadFile(file, watchedType as 'IMAGE' | 'VIDEO' | 'CAROUSEL' | 'TEXT' | 'GIF' | 'STORY');
+      fileUpload.uploadFile(file, watchedType as 'IMAGE' | 'VIDEO' | 'CAROUSEL' | 'GIF' | 'STORY');
       setValue("mediaFile", file);
     }
   };
@@ -241,7 +244,7 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
             )}
           </div>
           {errors.mediaFile && (
-            <p className="text-sm text-destructive">{errors.mediaFile.message}</p>
+            <p className="text-sm text-destructive">{errors.mediaFile.message as string}</p>
           )}
         </div>
       )}

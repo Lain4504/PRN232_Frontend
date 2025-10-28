@@ -163,7 +163,13 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
 ]
 
 // Feature gate configurations
-export const FEATURE_GATES = {
+export type FeatureGateConfig = {
+  [key: string]: {
+    [key: string]: { limit: number; upgradePrompt: string };
+  };
+};
+
+export const FEATURE_GATES: FeatureGateConfig = {
   campaigns: {
     free: { limit: 3, upgradePrompt: 'Upgrade to Pro for unlimited campaigns' },
     pro: { limit: -1, upgradePrompt: '' },

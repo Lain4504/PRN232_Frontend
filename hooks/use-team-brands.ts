@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { api, endpoints } from '@/lib/api'
-import type { BrandResponseDto } from '@/lib/types/aisam-types'
+import type { Brand } from '@/lib/types/aisam-types'
 
 // Query Keys
 export const teamBrandKeys = {
@@ -14,9 +14,9 @@ export const teamBrandKeys = {
 export function useTeamBrands(teamId?: string) {
   return useQuery({
     queryKey: teamId ? teamBrandKeys.byTeam(teamId) : teamBrandKeys.lists(),
-    queryFn: async (): Promise<BrandResponseDto[]> => {
+    queryFn: async (): Promise<Brand[]> => {
       if (!teamId) return []
-      const resp = await api.get<BrandResponseDto[]>(`/brands/team/${teamId}`)
+      const resp = await api.get<Brand[]>(`/brands/team/${teamId}`)
       return resp.data
     },
     enabled: !!teamId,
@@ -28,8 +28,8 @@ export function useTeamBrands(teamId?: string) {
 export function useBrandsByTeamMembership() {
   return useQuery({
     queryKey: teamBrandKeys.byTeamMembership(),
-    queryFn: async (): Promise<BrandResponseDto[]> => {
-      const resp = await api.get<BrandResponseDto[]>('/brands/team')
+    queryFn: async (): Promise<Brand[]> => {
+      const resp = await api.get<Brand[]>('/brands/team')
       return resp.data
     },
     staleTime: 5 * 60 * 1000, // 5 minutes

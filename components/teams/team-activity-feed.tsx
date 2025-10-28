@@ -235,7 +235,7 @@ export function TeamActivityFeed({
                 <div key={activity.id} className="flex items-start gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback>
-                      {getInitials(activity.userEmail)}
+                      {getInitials(activity.userEmail || activity.userName || 'Unknown User')}
                     </AvatarFallback>
                   </Avatar>
                   

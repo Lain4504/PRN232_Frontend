@@ -32,12 +32,20 @@ export class SubscriptionErrorHandler {
 
     // Log error
     if (logError) {
-      this.logError(error, context)
+      if (error instanceof Error) {
+        this.logError(error, context)
+      } else {
+        this.logError(new Error(error.message), context)
+      }
     }
 
     // Show user-friendly toast
     if (showToast) {
-      this.showErrorToast(error, retryable)
+      if (error instanceof Error) {
+        this.showErrorToast(error, retryable)
+      } else {
+        this.showErrorToast(new Error(error.message), retryable)
+      }
     }
   }
 
@@ -107,17 +115,17 @@ export class SubscriptionErrorHandler {
     }
   }
 
-  private extractApiErrorMessage(error: Error | {response?: {data?: {message?: string}}; message?: string}): string {
-    if (error?.response?.data?.message) {
-      return error.response.data.message
+  private extractApiErrorMessage(error: Error | {response?: {data?: {message?: string; error?: string}} | undefined; message?: string}): string {
+    if (typeof error === 'object' && error !== null && 'response' in error && error.response?.data?.message) {
+      return error.response.data.message;
     }
-    if (error?.response?.data?.error) {
-      return error.response.data.error
+    if (typeof error === 'object' && error !== null && 'response' in error && error.response?.data?.error) {
+      return error.response.data.error;
     }
-    if (error?.message) {
-      return error.message
+    if (error.message) {
+      return error.message;
     }
-    return 'An unexpected error occurred'
+    return 'An unexpected error occurred';
   }
 
   private logError(error: Error, context?: string): void {
@@ -206,22 +214,19 @@ export const handleBillingError = (
 
 // Error recovery utilities
 export const isRetryableError = (error: Error | {code?: string; message?: string; response?: {status?: number}}): boolean => {
-  // Network errors are usually retryable
-  if (error?.code === 'NETWORK_ERROR' || error?.message?.includes('network')) {
-    return true
+  if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'NETWORK_ERROR') {
+    return true;
   }
-  
-  // Server errors (5xx) are usually retryable
-  if (error?.response?.status >= 500) {
-    return true
+  if (error.message?.includes('network')) {
+    return true;
   }
-  
-  // Rate limiting errors are retryable
-  if (error?.response?.status === 429) {
-    return true
+  if (typeof error === 'object' && error !== null && 'response' in error && error.response?.status && error.response.status >= 500) {
+    return true;
   }
-  
-  return false
+  if (typeof error === 'object' && error !== null && 'response' in error && error.response?.status === 429) {
+    return true;
+  }
+  return false;
 }
 
 export const getRetryDelay = (attempt: number): number => {
@@ -234,15 +239,19 @@ export const createRetryableOperation = async <T>(
   maxRetries: number = 3,
   context?: string
 ): Promise<T> => {
-  let lastError: Error | {response?: {data?: {message?: string}}; message?: string}
+  let lastError: Error | undefined;
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       return await operation()
     } catch (error) {
-      lastError = error
+      if (error instanceof Error) {
+        lastError = error;
+      } else {
+        lastError = new Error(String(error));
+      }
       
-      if (attempt === maxRetries || !isRetryableError(error)) {
+      if (attempt === maxRetries || !isRetryableError(lastError)) {
         break
       }
       
@@ -253,5 +262,6 @@ export const createRetryableOperation = async <T>(
     }
   }
   
-  throw lastError
+  if (lastError) throw lastError;
+  throw new Error('Operation failed after all retries');
 }

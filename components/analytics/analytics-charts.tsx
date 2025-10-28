@@ -88,7 +88,7 @@ export function AnalyticsCharts({
       case 'area':
       case 'bar':
         if (dimension === 'date' && timeRange) {
-          return generateTimeSeriesData(data, metrics, timeRange);
+          return generateTimeSeriesData(data, metrics);
         }
         return formatChartData(data, metrics[0], dimension);
       
@@ -178,8 +178,8 @@ export function AnalyticsCharts({
               <Legend 
                 content={({ payload }) => {
                   const transformedPayload = (payload || []).map((item: LegendPayload) => ({
-                    value: typeof item.value === 'number' ? item.value : 0,
-                    name: item.value || '',
+                    value: String(typeof item.value === 'number' ? item.value : item.value || ''),
+                    
                     color: item.color || '#000',
                     dataKey: String(item.dataKey || '')
                   }));
@@ -225,8 +225,8 @@ export function AnalyticsCharts({
               <Legend 
                 content={({ payload }) => {
                   const transformedPayload = (payload || []).map((item: LegendPayload) => ({
-                    value: typeof item.value === 'number' ? item.value : 0,
-                    name: item.value || '',
+                    value: String(typeof item.value === 'number' ? item.value : item.value || ''),
+                    
                     color: item.color || '#000',
                     dataKey: String(item.dataKey || '')
                   }));
@@ -275,8 +275,8 @@ export function AnalyticsCharts({
               <Legend 
                 content={({ payload }) => {
                   const transformedPayload = (payload || []).map((item: LegendPayload) => ({
-                    value: typeof item.value === 'number' ? item.value : 0,
-                    name: item.value || '',
+                    value: String(typeof item.value === 'number' ? item.value : item.value || ''),
+                    
                     color: item.color || '#000',
                     dataKey: String(item.dataKey || '')
                   }));
@@ -337,8 +337,8 @@ export function AnalyticsCharts({
               <Legend 
                 content={({ payload }) => {
                   const transformedPayload = (payload || []).map((item: LegendPayload) => ({
-                    value: typeof item.value === 'number' ? item.value : 0,
-                    name: item.value || '',
+                    value: String(typeof item.value === 'number' ? item.value : item.value || ''),
+                    
                     color: item.color || '#000',
                     dataKey: String(item.dataKey || '')
                   }));

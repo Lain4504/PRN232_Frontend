@@ -345,9 +345,9 @@ export function usePaymentProcessing() {
 }
 
 export function usePaymentFilters() {
-  const [filters, setFilters] = useState<Record<string, unknown>>({});
+  const [filters, setFilters] = useState<Record<string, string>>({});
 
-  const updateFilter = (key: string, value: unknown) => {
+  const updateFilter = (key: string, value: string) => {
     setFilters(prev => ({
       ...prev,
       [key]: value,

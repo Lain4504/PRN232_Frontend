@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react'
 import { getActiveTeamId, setActiveTeamId, clearActiveTeamId } from '@/lib/utils/profile-utils'
 import { api } from '@/lib/api'
 import { useUser } from '@/hooks/use-user'
@@ -52,38 +52,18 @@ export function TeamProvider({ children }: TeamProviderProps) {
   const { data: user } = useUser()
 
   // Load team context from localStorage on mount
-  useEffect(() => {
-    const loadTeamContext = async () => {
-      try {
-        const savedTeamId = getActiveTeamId()
-        
-        if (savedTeamId) {
-          setActiveTeamIdState(savedTeamId)
-          await loadTeamData(savedTeamId)
-        }
-      } catch (error) {
-        console.error('Error loading team context:', error)
-        clearActiveTeamId()
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadTeamContext()
-  }, [user?.id])
-
-  const loadTeamData = async (teamId: string): Promise<void> => {
+    const loadTeamData = useCallback(async (teamId: string): Promise<void> => {
     if (!user?.id) return
 
     try {
       setIsLoading(true)
       
       // Fetch team details
-      const teamResponse = await api.get(`/team/${teamId}`)
+      const teamResponse = await api.get<{ id: string; name: string; description: string; membersCount: number; status: string }>(`/team/${teamId}`)
       const teamData = teamResponse.data
       
       // Fetch current user's membership in this team
-      const membersResponse = await api.get(`/team/${teamId}/members`)
+      const membersResponse = await api.get<TeamMember[]>(`/team/${teamId}/members`)
       const members = membersResponse.data
       const currentUserMember = members.find((member: TeamMember) => member.userId === user.id)
       
@@ -119,8 +99,30 @@ export function TeamProvider({ children }: TeamProviderProps) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [user?.id])
 
+  // Load team context from localStorage on mount
+  useEffect(() => {
+    const loadTeamContext = async () => {
+      try {
+        const savedTeamId = getActiveTeamId()
+        
+        if (savedTeamId) {
+          setActiveTeamIdState(savedTeamId)
+          await loadTeamData(savedTeamId)
+        }
+      } catch (error) {
+        console.error('Error loading team context:', error)
+        clearActiveTeamId()
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadTeamContext()
+  }, [user?.id, loadTeamData])
+
+  
   const setActiveTeam = (teamId: string, team: Team) => {
     setActiveTeamIdState(teamId)
     setActiveTeamState(team)

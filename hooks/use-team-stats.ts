@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { api, endpoints, PaginatedResponse } from '@/lib/api'
-import type { BrandResponseDto, ContentResponseDto, Post, TeamMemberResponseDto } from '@/lib/types/aisam-types'
+import type { Brand, ContentResponseDto, Post, TeamMemberResponseDto } from '@/lib/types/aisam-types'
 
 // Query Keys
 export const teamStatsKeys = {
@@ -60,7 +60,7 @@ export function useTeamStatistics(teamId?: string) {
         const teamMembersCount = membersResp.data.length
 
         // Get team brands
-        const brandsResp = await api.get<BrandResponseDto[]>(`/brands/team/${teamId}`)
+        const brandsResp = await api.get<Brand[]>(`/brands/team/${teamId}`)
         const brands = brandsResp.data
         const brandsCount = brands.length
 

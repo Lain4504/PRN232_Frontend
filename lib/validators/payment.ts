@@ -23,7 +23,7 @@ export const paymentFormSchema = z.object({
   paymentMethodId: z.string().optional(),
   billingAddress: billingAddressSchema,
   description: z.string().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 // Payment method form validation

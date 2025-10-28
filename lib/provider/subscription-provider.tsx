@@ -2,13 +2,12 @@
 
 import React, { createContext, useContext, ReactNode } from 'react'
 import { useSubscription } from '@/hooks/use-subscription'
-import { useFeatureGate } from '@/hooks/use-feature-gate'
 import type { Subscription, FeatureGate } from '@/lib/types/subscription'
 
 interface SubscriptionContextType {
   subscription: Subscription | null
   isLoading: boolean
-  error: Error | null
+  error: Error | string | null
   canAccessFeature: (featureId: string) => Promise<boolean>
   getFeatureGate: (featureId: string) => Promise<FeatureGate | null>
   isSubscriptionActive: boolean
