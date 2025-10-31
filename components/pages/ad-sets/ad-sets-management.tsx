@@ -29,9 +29,10 @@ import { useState } from "react";
 
 interface AdSetsManagementProps {
   campaignId: string;
+  basePath?: string;
 }
 
-export function AdSetsManagement({ campaignId }: AdSetsManagementProps) {
+export function AdSetsManagement({ campaignId, basePath = '/dashboard/campaigns' }: AdSetsManagementProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -75,7 +76,7 @@ export function AdSetsManagement({ campaignId }: AdSetsManagementProps) {
             The campaign you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
           </p>
           <Button asChild>
-            <Link href="/dashboard/campaigns">
+            <Link href={basePath}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Campaigns
             </Link>
@@ -186,7 +187,7 @@ export function AdSetsManagement({ campaignId }: AdSetsManagementProps) {
       cell: ({ row }: { row: { original: AdSetResponse } }) => (
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" asChild>
-            <Link href={`/dashboard/campaigns/${campaignId}/ad-sets/${row.original.id}`}>
+            <Link href={`${basePath}/${campaignId}/ad-sets/${row.original.id}`}>
               View
             </Link>
           </Button>
@@ -202,15 +203,17 @@ export function AdSetsManagement({ campaignId }: AdSetsManagementProps) {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href={basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard'}>
+                {basePath.includes('/team/') ? 'Team' : 'Dashboard'}
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard/campaigns">Campaigns</BreadcrumbLink>
+              <BreadcrumbLink href={basePath}>Campaigns</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/dashboard/campaigns/${campaignId}`}>
+              <BreadcrumbLink href={`${basePath}/${campaignId}`}>
                 {campaign.name}
               </BreadcrumbLink>
             </BreadcrumbItem>

@@ -232,7 +232,7 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
                     <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center group-hover/action:scale-110 transition-transform duration-200">
                       <UserPlus className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="text-sm font-medium">Invite Member</span>
+                    <span className="text-sm font-medium">Add Member</span>
                     <span className="text-xs text-muted-foreground text-center">Add new team member</span>
                   </Button>
 

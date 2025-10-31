@@ -68,7 +68,8 @@ export default function TeamPostsPage({
   }
 
   const getStatusColor = (status: string) => {
-    switch (status) {
+    const s = (status || '').toLowerCase()
+    switch (s) {
       case 'published':
         return 'bg-green-100 text-green-800'
       case 'failed':
@@ -83,12 +84,10 @@ export default function TeamPostsPage({
   // Define table columns
   const columns: ColumnDef<Post>[] = useMemo(() => [
     {
-      accessorKey: 'externalPostId',
-      header: 'Post ID',
+      accessorKey: 'brandName',
+      header: 'Brand',
       cell: ({ row }) => (
-        <div className="font-medium text-center">
-          {row.getValue('externalPostId')}
-        </div>
+        <span className="text-sm text-foreground">{row.original.brandName || '-'}</span>
       ),
     },
     {
@@ -97,29 +96,37 @@ export default function TeamPostsPage({
       cell: ({ row }) => (
         <div className="text-center">
           <Badge className={getStatusColor(row.getValue('status'))}>
-            {(row.getValue('status') as string).charAt(0).toUpperCase() + 
-             (row.getValue('status') as string).slice(1)}
+            {String(row.getValue('status') || '-').charAt(0).toUpperCase() + 
+             String(row.getValue('status') || '-').slice(1)}
           </Badge>
         </div>
       ),
     },
     {
-      accessorKey: 'contentId',
-      header: 'Content ID',
-      cell: ({ row }) => (
-        <div className="text-center text-sm">
-          {row.getValue('contentId')}
-        </div>
-      ),
+      accessorKey: 'contentTitle',
+      header: 'Content',
+      cell: ({ row }) => {
+        const title = row.original.contentTitle
+        const id = row.original.contentId
+        return (
+          <div className="text-center text-sm">
+            {title || id}
+          </div>
+        )
+      },
     },
     {
-      accessorKey: 'integrationId',
+      accessorKey: 'integrationPlatform',
       header: 'Integration',
-      cell: ({ row }) => (
-        <div className="text-center text-sm">
-          {row.getValue('integrationId')}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const platform = row.original.integrationPlatform
+        const account = row.original.integrationAccountName
+        return (
+          <div className="text-center text-sm text-muted-foreground">
+            {platform ? platform : '-'}{platform ? ' • ' : ''}{account || ''}
+          </div>
+        )
+      },
     },
     {
       accessorKey: 'publishedAt',
@@ -258,38 +265,46 @@ export default function TeamPostsPage({
             
             {selectedPost && (
               <div className="space-y-4">
-                {/* Post ID and Status */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium">Post ID: {selectedPost.externalPostId}</h3>
-                    <p className="text-sm text-muted-foreground">Internal ID: {selectedPost.id}</p>
+                {/* Header: IDs and Status */}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="text-sm text-muted-foreground">External Post ID</div>
+                    <div className="text-base font-semibold break-all">{selectedPost.externalPostId || '-'}</div>
+                    <div className="text-xs text-muted-foreground">Internal ID: {selectedPost.id}</div>
                   </div>
                   <Badge className={getStatusColor(selectedPost.status)}>
-                    {selectedPost.status.charAt(0).toUpperCase() + selectedPost.status.slice(1)}
+                    {String(selectedPost.status || '-').charAt(0).toUpperCase() + String(selectedPost.status || '-').slice(1)}
                   </Badge>
                 </div>
 
-                {/* Content Information */}
+                {/* Main details */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Content ID</label>
-                    <p className="text-sm">{selectedPost.contentId}</p>
+                  <div className="space-y-1">
+                    <div className="text-sm text-muted-foreground">Brand</div>
+                    <div className="text-sm font-medium">{selectedPost.brandName || '-'}</div>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Social Integration ID</label>
-                    <p className="text-sm">{selectedPost.integrationId}</p>
+                  <div className="space-y-1">
+                    <div className="text-sm text-muted-foreground">Content</div>
+                    <div className="text-sm font-medium">{selectedPost.contentTitle || selectedPost.contentId || '-'}</div>
                   </div>
-                </div>
-
-                {/* Published Date */}
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    Published Date
-                  </label>
-                  <p className="text-sm">
-                    {selectedPost.publishedAt ? new Date(selectedPost.publishedAt).toLocaleString() : 'N/A'}
-                  </p>
+                  <div className="space-y-1">
+                    <div className="text-sm text-muted-foreground">Integration</div>
+                    <div className="text-sm font-medium">{selectedPost.integrationPlatform || '-'}{selectedPost.integrationAccountName ? ` • ${selectedPost.integrationAccountName}` : ''}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-sm text-muted-foreground">Published</div>
+                    <div className="text-sm font-medium">
+                      {selectedPost.publishedAt ? new Date(selectedPost.publishedAt).toLocaleString() : 'N/A'}
+                    </div>
+                  </div>
+                  {selectedPost.link && (
+                    <div className="md:col-span-2 space-y-1">
+                      <div className="text-sm text-muted-foreground">Link</div>
+                      <a href={selectedPost.link} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline break-all">
+                        {selectedPost.link}
+                      </a>
+                    </div>
+                  )}
                 </div>
 
 

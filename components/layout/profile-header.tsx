@@ -8,7 +8,6 @@ import { MobileSearchCommand } from "@/components/search/mobile-search-command"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { EnhancedUserMenu } from "@/components/layout/enhanced-user-menu"
-import { EnhancedNotifications } from "@/components/layout/enhanced-notifications"
 import type { UserResponseDto } from "@/lib/types/user"
 
 interface ProfileHeaderProps {
@@ -51,8 +50,6 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
           <div className="lg:hidden">
             <MobileSearchCommand />
           </div>
-
-          <EnhancedNotifications />
 
           <EnhancedUserMenu user={user} />
         </div>

@@ -12,7 +12,6 @@ import { MobileSearchCommand } from "@/components/search/mobile-search-command"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { EnhancedUserMenu } from "@/components/layout/enhanced-user-menu"
-import { EnhancedNotifications } from "@/components/layout/enhanced-notifications"
 import { TeamSidebar } from "@/components/layout/team-sidebar"
 import {
   DropdownMenu,
@@ -168,8 +167,6 @@ export function TeamHeader({ user, team }: TeamHeaderProps) {
           <div className="lg:hidden">
             <MobileSearchCommand />
           </div>
-
-          <EnhancedNotifications />
 
           <EnhancedUserMenu user={currentUser} />
         </div>

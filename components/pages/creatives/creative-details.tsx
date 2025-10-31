@@ -42,9 +42,10 @@ interface CreativeDetailsProps {
   campaignId: string;
   adSetId: string;
   creativeId: string;
+  basePath?: string;
 }
 
-export function CreativeDetails({ campaignId, adSetId, creativeId }: CreativeDetailsProps) {
+export function CreativeDetails({ campaignId, adSetId, creativeId, basePath = '/dashboard/campaigns' }: CreativeDetailsProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -59,7 +60,7 @@ export function CreativeDetails({ campaignId, adSetId, creativeId }: CreativeDet
       await deleteMutation.mutateAsync(creativeId);
       toast.success("Creative deleted successfully");
       // Redirect to creatives list
-      window.location.href = `/dashboard/campaigns/${campaignId}/ad-sets/${adSetId}/creatives`;
+      window.location.href = `${basePath}/${campaignId}/ad-sets/${adSetId}/creatives`;
     } catch (error) {
       toast.error("Failed to delete creative");
       console.error("Delete creative error:", error);
@@ -114,36 +115,38 @@ export function CreativeDetails({ campaignId, adSetId, creativeId }: CreativeDet
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/campaigns">Campaigns</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={`/dashboard/campaigns/${campaignId}`}>
-              {campaign.name}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={`/dashboard/campaigns/${campaignId}/ad-sets`}>
-              Ad Sets
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={`/dashboard/campaigns/${campaignId}/ad-sets/${adSetId}`}>
-              {adSet.name}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={`/dashboard/campaigns/${campaignId}/ad-sets/${adSetId}/creatives`}>
-              Creatives
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+            <BreadcrumbLink href={basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard'}>
+                {basePath.includes('/team/') ? 'Team' : 'Dashboard'}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={basePath}>Campaigns</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`${basePath}/${campaignId}`}>
+                {campaign.name}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`${basePath}/${campaignId}/ad-sets`}>
+                Ad Sets
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`${basePath}/${campaignId}/ad-sets/${adSetId}`}>
+                {adSet.name}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`${basePath}/${campaignId}/ad-sets/${adSetId}/creatives`}>
+                Creatives
+              </BreadcrumbLink>
+            </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>{creative.name}</BreadcrumbPage>

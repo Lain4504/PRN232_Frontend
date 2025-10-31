@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { 
   Save, 
@@ -149,7 +149,7 @@ export function ContentModal({
     fd.append('file', file);
     const resp = await api.postForm<{ url: string }>(endpoints.storageUpload('public'), fd);
     // Backend returns { data: { url } } shape
-    // @ts-ignore
+    // @ts-expect-error - Response shape may vary
     return (resp.data?.url) || (resp.data?.data?.url) || '';
   };
 
@@ -228,18 +228,6 @@ export function ContentModal({
     }
   };
 
-  const getAdTypeIcon = (adType: AdTypeEnum) => {
-    switch (adType) {
-      case AdTypeEnum.TextOnly:
-        return <FileText className="h-4 w-4" />;
-      case AdTypeEnum.ImageText:
-        return <Image className="h-4 w-4" />;
-      case AdTypeEnum.VideoText:
-        return <Video className="h-4 w-4" />;
-      default:
-        return <FileText className="h-4 w-4" />;
-    }
-  };
 
   
 
@@ -554,7 +542,8 @@ function ContentForm({
               {imagePreviews.length > 0 && (
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
                   {imagePreviews.map((src: string, i: number) => (
-                    <img key={i} src={src} alt="preview" className="w-full h-24 object-cover rounded" />
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img key={i} src={src} alt="Preview" className="w-full h-24 object-cover rounded" />
                   ))}
                 </div>
               )}

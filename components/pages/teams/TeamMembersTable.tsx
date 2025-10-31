@@ -119,7 +119,7 @@ const createColumns = (
       
       const actions: ActionItem[] = [
         {
-          label: "Edit",
+          label: "Update",
           icon: <Edit className="h-4 w-4" />,
           onClick: () => handleEditMember(row.original),
         },
@@ -294,7 +294,7 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
           <div className="ml-auto">
             <Button size="sm" onClick={onInviteMember}>
               <User2 className="mr-2 h-4 w-4" />
-              Invite Member
+              Add Member
             </Button>
           </div>
         )}
@@ -325,7 +325,7 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
               <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
                 {searchTerm
                   ? 'Try adjusting your search terms'
-                  : 'Invite team members to get started'
+                  : 'Add team members to get started'
                 }
               </p>
             </div>

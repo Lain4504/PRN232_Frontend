@@ -43,9 +43,10 @@ import { toast } from "sonner";
 interface CreativesManagementProps {
   campaignId: string;
   adSetId: string;
+  basePath?: string;
 }
 
-export function CreativesManagement({ campaignId, adSetId }: CreativesManagementProps) {
+export function CreativesManagement({ campaignId, adSetId, basePath = '/dashboard/campaigns' }: CreativesManagementProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -95,30 +96,32 @@ export function CreativesManagement({ campaignId, adSetId }: CreativesManagement
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/campaigns">Campaigns</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={`/dashboard/campaigns/${campaignId}`}>
-              {campaign.name}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={`/dashboard/campaigns/${campaignId}/ad-sets`}>
-              Ad Sets
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={`/dashboard/campaigns/${campaignId}/ad-sets/${adSetId}`}>
-              {adSet.name}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+              <BreadcrumbLink href={basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard'}>
+                {basePath.includes('/team/') ? 'Team' : 'Dashboard'}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={basePath}>Campaigns</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`${basePath}/${campaignId}`}>
+                {campaign.name}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`${basePath}/${campaignId}/ad-sets`}>
+                Ad Sets
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`${basePath}/${campaignId}/ad-sets/${adSetId}`}>
+                {adSet.name}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>Creatives</BreadcrumbPage>

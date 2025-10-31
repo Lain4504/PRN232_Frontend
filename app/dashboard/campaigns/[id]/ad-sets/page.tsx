@@ -7,5 +7,5 @@ interface AdSetsPageProps {
 }
 
 export default function AdSetsPage({ params }: AdSetsPageProps) {
-  return <AdSetsManagement campaignId={params.id} />;
+  return <AdSetsManagement campaignId={params.id} basePath="/dashboard/campaigns" />;
 }

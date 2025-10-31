@@ -18,9 +18,10 @@ interface AdDetailsProps {
   campaignId: string;
   adSetId: string;
   adId: string;
+  basePath?: string;
 }
 
-export function AdDetails({ campaignId, adSetId, adId }: AdDetailsProps) {
+export function AdDetails({ campaignId, adSetId, adId, basePath = '/dashboard/campaigns' }: AdDetailsProps) {
   const { data: ad } = useAd(adId);
 
   const safeStatus: AdStatus | undefined =
@@ -33,12 +34,12 @@ export function AdDetails({ campaignId, adSetId, adId }: AdDetailsProps) {
       title="Ad Details"
       description="View performance and manage this ad."
       breadcrumbs={[
-        { label: "Dashboard", href: "/dashboard" },
-        { label: "Campaigns", href: "/dashboard/campaigns" },
-        { label: "Campaign", href: `/dashboard/campaigns/${campaignId}` },
-        { label: "Ad Sets", href: `/dashboard/campaigns/${campaignId}/ad-sets` },
-        { label: "Ad Set", href: `/dashboard/campaigns/${campaignId}/ad-sets/${adSetId}` },
-        { label: "Ads", href: `/dashboard/campaigns/${campaignId}/ad-sets/${adSetId}/ads` },
+        { label: basePath.includes('/team/') ? 'Team' : 'Dashboard', href: basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard' },
+        { label: "Campaigns", href: basePath },
+        { label: "Campaign", href: `${basePath}/${campaignId}` },
+        { label: "Ad Sets", href: `${basePath}/${campaignId}/ad-sets` },
+        { label: "Ad Set", href: `${basePath}/${campaignId}/ad-sets/${adSetId}` },
+        { label: "Ads", href: `${basePath}/${campaignId}/ad-sets/${adSetId}/ads` },
         { label: "Details", isCurrentPage: true },
       ]}
       actions={[]}

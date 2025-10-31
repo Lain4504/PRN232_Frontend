@@ -36,18 +36,51 @@ async function fetchWithAuth(url: string, options: RequestInit = {}, reqOptions:
    const authHeader: Record<string, string> = {}
    if (requireAuth) {
      const supabase = createClient()
+     // Try to get current session token
      const { data: { session } } = await supabase.auth.getSession()
-     if (session?.access_token) {
-       authHeader['Authorization'] = `Bearer ${session.access_token}`
+     let accessToken = session?.access_token
+
+     // If no token yet (e.g., session not hydrated), try refreshing once
+     if (!accessToken) {
+       try {
+         const { data: refreshed } = await supabase.auth.refreshSession()
+         accessToken = refreshed.session?.access_token || undefined
+       } catch {
+         // ignore, will proceed without auth header
+       }
+     }
+
+     if (accessToken) {
+       authHeader['Authorization'] = `Bearer ${accessToken}`
      }
    }
 
   // Add profile and team context headers
   const contextHeaders: Record<string, string> = {}
   if (typeof window !== 'undefined') {
-    const activeProfileId = localStorage.getItem('activeProfileId')
+    let activeProfileId = localStorage.getItem('activeProfileId')
     const activeTeamId = localStorage.getItem('activeTeamId')
-    
+
+    // If profile id is missing but we have an access token, hydrate it once from API
+    if (!activeProfileId && requireAuth && authHeader['Authorization']) {
+      try {
+        const meResponse = await fetch(`${API_URL}/users/profile/me`, {
+          headers: { 'Authorization': authHeader['Authorization'] },
+        })
+        if (meResponse.ok) {
+          const meJson = await meResponse.json().catch(() => null) as { data?: { id?: string }; id?: string } | null
+          const profileData = (meJson && (meJson.data || meJson)) || null
+          const newProfileId = profileData?.id
+          if (newProfileId && typeof newProfileId === 'string') {
+            localStorage.setItem('activeProfileId', newProfileId)
+            activeProfileId = newProfileId
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+
     if (activeProfileId) {
       contextHeaders['X-Profile-Id'] = activeProfileId
     }

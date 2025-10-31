@@ -7,7 +7,6 @@ import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { 
   Target, 
-  Package, 
   FileText, 
   Activity,
   Calendar,
@@ -19,11 +18,7 @@ import {
   Send,
   TrendingUp,
   Users,
-  Zap,
   Sparkles,
-  Eye,
-  Heart,
-  MessageCircle,
   Share2,
 } from "lucide-react"
 // Removed mock-api import - using real API instead
@@ -33,7 +28,21 @@ import { QuickActionsPanel } from "./quick-actions-panel"
 // import { CurrentPlanCard } from "@/components/subscription/current-plan-card"
 
 // Enhanced Stats Cards Data with better visualization
-const getStatsData = (stats: DashboardStats) => [
+const getStatsData = (stats: DashboardStats) => {
+  const teamsVal = stats.total_teams ?? 0
+  return [
+  {
+    title: "Total Teams",
+    value: teamsVal.toString(),
+    change: "+3.1%",
+    trend: "up",
+    icon: Users,
+    color: "text-chart-2",
+    bgColor: "bg-chart-2/10",
+    borderColor: "border-chart-2/20",
+    description: "Teams you belong to",
+    href: "/overview/teams"
+  },
   {
     title: "Total Brands",
     value: stats.total_brands.toString(),
@@ -70,7 +79,7 @@ const getStatsData = (stats: DashboardStats) => [
     description: "Social media posts",
     href: "/dashboard/posts"
   },
-]
+]} 
 
 // Recent Activities Data - will be populated from API
 
@@ -94,7 +103,25 @@ const DashboardContent = () => {
         // For now, we'll create a mock stats object based on available data
         const statsResponse = await api.get<DashboardStats>('/dashboard/stats')
         if (statsResponse.success) {
-          setStats(statsResponse.data)
+          const raw = statsResponse.data as unknown as Record<string, unknown>
+          const toNumber = (value: unknown): number => {
+            if (typeof value === 'number') return value
+            if (typeof value === 'string') {
+              const parsed = Number(value)
+              return isNaN(parsed) ? 0 : parsed
+            }
+            return 0
+          }
+          const normalized: DashboardStats = {
+            total_teams: toNumber(raw?.total_teams ?? raw?.teamsCount),
+            total_brands: toNumber(raw?.total_brands ?? raw?.brandsCount ?? raw?.totalBrands ?? raw?.brands),
+            total_products: toNumber(raw?.total_products ?? raw?.totalProducts),
+            total_contents: toNumber(raw?.total_contents ?? raw?.totalContents),
+            total_posts: toNumber(raw?.total_posts ?? raw?.totalPosts),
+            pending_approvals: toNumber(raw?.pending_approvals ?? raw?.pendingApprovalsCount),
+            scheduled_posts: toNumber(raw?.scheduled_posts ?? raw?.scheduledPosts),
+          }
+          setStats(normalized)
         }
         
         // Recent activities removed from dashboard UI

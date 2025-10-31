@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useUpcomingSchedules, useTeamSchedules } from '@/hooks/use-content-calendar';
 import { useTeamBrands } from '@/hooks/use-team-brands';
 import { useBrands } from '@/hooks/use-brands';
+import { useTeam } from '@/hooks/use-teams';
 import type { ContentCalendar } from '@/lib/types/aisam-types';
 
 interface UseCalendarDataProps {
@@ -30,6 +31,9 @@ export function useCalendarData({
   
   // For dashboard context, use a different approach
   const isDashboardContext = teamId === "dashboard";
+  
+  // Get team info to get team name
+  const { data: team } = useTeam(isDashboardContext ? "" : teamId);
   
   // Load team brands (for team context) or all brands (for dashboard context)
   const { data: teamBrands = [] } = useTeamBrands(isDashboardContext ? "" : teamId);
@@ -69,7 +73,7 @@ export function useCalendarData({
 
   const teamContext = {
     teamId,
-    teamName: isDashboardContext ? "Dashboard" : `Team ${teamId.slice(0, 8)}`
+    teamName: isDashboardContext ? "Dashboard" : (team?.name || `Team ${teamId.slice(0, 8)}`)
   };
 
   return {

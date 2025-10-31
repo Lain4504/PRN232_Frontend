@@ -7,7 +7,11 @@ import { useUser } from '@/hooks/use-user'
 import { TeamPermissionGate } from '@/components/teams/team-permission-gate'
 import { EditTeamDialog } from '@/components/teams/edit-team-dialog'
 import { AddMemberDialog } from '@/components/pages/teams/AddMemberDialog'
+import { AddBrandDialog } from '@/components/pages/teams/AddBrandDialog'
+import { EditMemberDialog } from '@/components/teams/edit-member-dialog'
 import { TeamMembersTable } from '@/components/pages/teams/TeamMembersTable'
+import { TeamBrandsList } from '@/components/pages/teams/TeamBrandsList'
+import { TeamMemberResponseDto } from '@/lib/types/aisam-types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -57,6 +61,8 @@ export default function TeamSettingsPage({
   const [editTeamOpen, setEditTeamOpen] = useState(false)
   const [inviteOpen, setInviteOpen] = useState(false)
   const [addMemberOpen, setAddMemberOpen] = useState(false)
+  const [addBrandOpen, setAddBrandOpen] = useState(false)
+  const [editingMember, setEditingMember] = useState<TeamMemberResponseDto | null>(null)
   const [showAllPermissions, setShowAllPermissions] = useState(false)
   
   // State for tabs
@@ -76,9 +82,9 @@ export default function TeamSettingsPage({
       tabs.push({ value: 'permissions', label: 'Permissions' })
     }
     
-    // Settings tab - only visible if user can update team settings
-    if (hasPermission('UPDATE_TEAM') || hasPermission('MANAGE_TEAM_SETTINGS')) {
-      tabs.push({ value: 'settings', label: 'Settings' })
+    // Brands tab - visible if user can view team members (similar permission level)
+    if (hasPermission('VIEW_TEAM_MEMBERS')) {
+      tabs.push({ value: 'brands', label: 'Brands' })
     }
     
     return tabs
@@ -100,6 +106,15 @@ export default function TeamSettingsPage({
   
   // Find current user's membership
   const currentUserMember = members?.find(m => m.userId === user?.id)
+  
+  // Handlers for member dialogs
+  const handleEditMember = (member: TeamMemberResponseDto) => {
+    setEditingMember(member)
+  }
+  
+  const handleCloseEditMember = () => {
+    setEditingMember(null)
+  }
   
   // Loading state
   if (teamLoading || membersLoading) {
@@ -232,6 +247,8 @@ export default function TeamSettingsPage({
               <TeamMembersTable 
                 teamId={teamId}
                 canManage={hasPermission('INVITE_MEMBER')}
+                onEditMember={handleEditMember}
+                onInviteMember={() => setAddMemberOpen(true)}
               />
             </div>
           )}
@@ -327,57 +344,23 @@ export default function TeamSettingsPage({
             </div>
           )}
 
-          {validActiveTab === 'settings' && (
+          {validActiveTab === 'brands' && (
             <div className="space-y-6">
-              <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60">
-            <CardHeader className="pb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gradient-to-br from-chart-4/20 to-chart-4/10 rounded-lg flex items-center justify-center">
-                      <Settings className="h-4 w-4 text-chart-4" />
-                    </div>
-                    <CardTitle className="text-lg font-semibold">Team Settings</CardTitle>
-                  </div>
-                  <CardDescription className="text-sm text-muted-foreground">
-                    Configure your team settings and preferences
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-muted/20">
-                    <div>
-                      <h4 className="font-medium text-foreground">Edit Team Information</h4>
-                      <p className="text-sm text-muted-foreground">Update team name, description, and other details</p>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setEditTeamOpen(true)}
-                  disabled={!hasPermission('UPDATE_TEAM')}
-                      className="gap-2"
-                >
-                      <Settings className="h-4 w-4" />
-                      Edit Team
-                </Button>
-                  </div>
-                
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-muted/20">
-                    <div>
-                      <h4 className="font-medium text-foreground">Invite New Members</h4>
-                      <p className="text-sm text-muted-foreground">Send invitations to join your team</p>
-                    </div>
-                <Button 
-                      size="sm"
-                  onClick={() => setInviteOpen(true)}
-                  disabled={!hasPermission('INVITE_MEMBER')}
-                      className="gap-2"
-                    >
-                      <UserPlus className="h-4 w-4" />
-                      Invite Member
-                </Button>
+              <div>
+                <h2 className="text-xl font-semibold">Team Brands</h2>
+                <p className="text-muted-foreground text-sm">
+                  Manage brands associated with this team
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <TeamBrandsList 
+                teamId={teamId} 
+                canManage={hasPermission('INVITE_MEMBER')} 
+                onAddBrand={() => setAddBrandOpen(true)} 
+              />
             </div>
-              )}
+          )}
+
+          
             </>
           )}
           
@@ -396,17 +379,22 @@ export default function TeamSettingsPage({
           teamId={teamId}
         />
         
-        {inviteOpen && (
-          <div className="fixed inset-0 z-50">
-            <div className="absolute inset-0 bg-black/50" onClick={() => setInviteOpen(false)} />
-            <div className="relative z-10 p-4">
-              <TeamInvitationSystem 
-                teamId={teamId} 
-                canManage={hasPermission('INVITE_MEMBER')} 
-              />
-            </div>
-          </div>
-          )}
+        <EditMemberDialog
+          open={!!editingMember}
+          onOpenChange={(open) => !open && handleCloseEditMember()}
+          teamId={teamId}
+          member={editingMember}
+        />
+        
+        <AddBrandDialog
+          open={addBrandOpen}
+          onOpenChange={setAddBrandOpen}
+          teamId={teamId}
+          onSuccess={() => {
+            // Refresh data after adding brand
+            // You can add refresh logic here when backend is ready
+          }}
+        />
         </div>
       </div>
     </TeamPermissionGate>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -9,24 +9,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   Package,
   Plus,
   Search,
-  Pencil,
-  Trash2,
   DollarSign,
   Image as ImageIcon,
   Target,
-  AlertTriangle
+  Eye,
 } from "lucide-react";
 import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import { CustomTable } from "@/components/ui/custom-table";
@@ -37,6 +33,7 @@ import { useBrands } from "@/hooks/use-brands";
 import { useProducts, useDeleteProduct } from "@/hooks/use-products";
 import { useParams } from "next/navigation";
 import { ProductModal } from "@/components/products/product-modal";
+import Image from "next/image";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import {
   Select,
@@ -51,11 +48,8 @@ import Link from "next/link";
 
 // Create columns function to access component state
 const createColumns = (
-  handleEditProduct: (product: Product) => void,
-  handleDeleteProduct: (productId: string, productName: string) => void,
-  handleRefresh: () => void,
+  handleViewProduct: (product: Product) => void,
   brands: Brand[],
-  isDeleting: boolean
 ): ColumnDef<Product>[] => [
     {
       accessorKey: "name",
@@ -132,20 +126,12 @@ const createColumns = (
       cell: ({ row }) => {
         const actions: ActionItem[] = [
           {
-            label: "Edit",
-            icon: <Pencil className="h-4 w-4" />,
-            onClick: () => handleEditProduct(row.original),
-          },
-          {
-            label: "Delete",
-            icon: <Trash2 className="h-4 w-4" />,
-            onClick: () => handleDeleteProduct(row.original.id, row.original.name),
-            variant: "destructive" as const,
-            disabled: isDeleting,
+            label: "View",
+            icon: <Eye className="h-4 w-4" />,
+            onClick: () => handleViewProduct(row.original),
           },
         ];
-
-        return <ActionsDropdown actions={actions} disabled={isDeleting} />;
+        return <ActionsDropdown actions={actions} />;
       },
     },
   ];
@@ -153,8 +139,8 @@ const createColumns = (
 export function ProductsManagement() {
   const params = useParams();
   const [searchTerm, setSearchTerm] = useState("");
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [viewingProduct, setViewingProduct] = useState<Product | null>(null);
+  const [isViewOpen, setIsViewOpen] = useState(false);
   const [pageSize, setPageSize] = useState(10);
 
   // Get brand ID from route params
@@ -184,16 +170,12 @@ export function ProductsManagement() {
     refetchProducts();
   };
 
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct(product);
-    setIsEditModalOpen(true);
+  const handleViewProduct = (product: Product) => {
+    setViewingProduct(product);
+    setIsViewOpen(true);
   };
 
-  const handleCloseEdit = () => {
-    setEditingProduct(null);
-    setIsEditModalOpen(false);
-  };
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDeleteProduct = async (productId: string, productName: string) => {
     try {
       await deleteProductMutation.mutateAsync(productId);
@@ -330,7 +312,7 @@ export function ProductsManagement() {
         {/* Products Table */}
         {filteredProducts.length > 0 ? (
           <CustomTable
-            columns={createColumns(handleEditProduct, handleDeleteProduct, handleRefresh, safeBrands, deleteProductMutation.isPending)}
+            columns={createColumns(handleViewProduct, safeBrands)}
             data={filteredProducts}
             pageSize={pageSize}
           />
@@ -379,18 +361,56 @@ export function ProductsManagement() {
           </CardContent>
         </Card>
 
-        {/* Edit Product Modal */}
-        {editingProduct && (
-          <ProductModal
-            mode="edit"
-            product={editingProduct}
-            open={isEditModalOpen}
-            onOpenChange={setIsEditModalOpen}
-            onSuccess={() => {
-              handleRefresh();
-              handleCloseEdit();
-            }}
-          />
+        {/* View Product Modal */}
+        {viewingProduct && (
+          <AlertDialog open={isViewOpen} onOpenChange={setIsViewOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2">
+                  <Package className="h-4 w-4" />
+                  {viewingProduct.name}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Product details
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={viewingProduct.images?.[0] || ''} />
+                    <AvatarFallback>
+                      <ImageIcon className="h-5 w-5" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Brand</div>
+                    <div className="text-sm font-medium">{safeBrands.find(b => b.id === viewingProduct.brandId)?.name || 'Unknown'}</div>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Description</div>
+                  <div className="text-sm">{viewingProduct.description || '-'}</div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <DollarSign className="h-4 w-4 text-chart-2" />
+                  <div className="text-sm font-medium">{Number(viewingProduct.price || 0).toFixed(2)}</div>
+                </div>
+                {Array.isArray(viewingProduct.images) && viewingProduct.images.length > 1 && (
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">Images</div>
+                    <div className="flex gap-2 flex-wrap">
+                      {viewingProduct.images.map((img, idx) => (
+                        <Image key={idx} src={img} alt="" width={48} height={48} className="h-12 w-12 rounded object-cover border" />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogAction onClick={() => setIsViewOpen(false)}>Close</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </div>
     </div>

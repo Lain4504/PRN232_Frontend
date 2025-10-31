@@ -61,29 +61,37 @@ export default function PaymentHistoryPage() {
     }
   }
 
-  const getStatusIcon = (status: number) => {
-    switch (status) {
-      case 1: // Success
+  const getStatusIcon = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'succeeded':
+      case 'success':
+      case 'paid':
         return <CheckCircle className="h-5 w-5 text-green-500" />
-      case 2: // Failed
+      case 'failed':
+      case 'failure':
         return <XCircle className="h-5 w-5 text-red-500" />
-      case 3: // Refunded
+      case 'refunded':
+      case 'refund':
         return <RefreshCw className="h-5 w-5 text-orange-500" />
-      case 0: // Pending
+      case 'pending':
       default:
         return <Clock className="h-5 w-5 text-yellow-500" />
     }
   }
 
-  const getStatusBadge = (status: number) => {
-    switch (status) {
-      case 1: // Success
+  const getStatusBadge = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'succeeded':
+      case 'success':
+      case 'paid':
         return <Badge className="bg-green-100 text-green-800">Success</Badge>
-      case 2: // Failed
+      case 'failed':
+      case 'failure':
         return <Badge className="bg-red-100 text-red-800">Failed</Badge>
-      case 3: // Refunded
+      case 'refunded':
+      case 'refund':
         return <Badge className="bg-orange-100 text-orange-800">Refunded</Badge>
-      case 0: // Pending
+      case 'pending':
       default:
         return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>
     }
@@ -184,7 +192,10 @@ export default function PaymentHistoryPage() {
                   <div>
                     <div className="text-sm text-muted-foreground">Successful Payments</div>
                     <div className="text-2xl font-bold mt-1">
-                      {payments.filter(p => p.status === 1).length}
+                      {payments.filter(p => {
+                        const status = p.status.toLowerCase();
+                        return status === 'succeeded' || status === 'success' || status === 'paid';
+                      }).length}
                     </div>
                   </div>
                 </div>

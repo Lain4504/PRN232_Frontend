@@ -1,6 +1,6 @@
 import { AccountSidebar } from "@/components/layout/account-sidebar";
 import { AccountMobileNav } from "@/components/layout/account-mobile-nav";
-import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { ProfileHeader } from "@/components/layout/profile-header";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -19,7 +19,7 @@ export default async function AccountLayout({
   return (
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
-      <DashboardHeader />
+      <ProfileHeader />
       
       {/* Mobile Navigation - Visible on mobile only */}
       <AccountMobileNav />

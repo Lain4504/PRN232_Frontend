@@ -13,7 +13,8 @@ export default function CreativeDetailsPage({ params }: CreativeDetailsPageProps
     <CreativeDetails 
       campaignId={params.id} 
       adSetId={params.adSetId} 
-      creativeId={params.creativeId} 
+      creativeId={params.creativeId}
+      basePath="/dashboard/campaigns"
     />
   );
 }

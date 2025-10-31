@@ -9,7 +9,6 @@ import { MobileSearchCommand } from "@/components/search/mobile-search-command"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { EnhancedUserMenu } from "@/components/layout/enhanced-user-menu"
-import { EnhancedNotifications } from "@/components/layout/enhanced-notifications"
 import { ProfileSwitcher } from "@/components/profiles/profile-switcher"
 
 
@@ -60,8 +59,6 @@ export function DashboardHeader() {
           <div className="lg:hidden">
             <MobileSearchCommand />
           </div>
-
-          <EnhancedNotifications />
 
           {user && <EnhancedUserMenu user={user} />}
         </div>

@@ -8,5 +8,5 @@ interface AdSetDetailsPageProps {
 }
 
 export default function AdSetDetailsPage({ params }: AdSetDetailsPageProps) {
-  return <AdSetDetails campaignId={params.id} adSetId={params.adSetId} />;
+  return <AdSetDetails campaignId={params.id} adSetId={params.adSetId} basePath="/dashboard/campaigns" />;
 }

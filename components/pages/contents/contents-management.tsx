@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, FileText, Brain, AlertCircle, Search, Filter, X } from "lucide-react";
+import { FileText, Brain, AlertCircle, Search } from "lucide-react";
 import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { CustomTable } from "@/components/ui/custom-table";
@@ -104,15 +104,26 @@ const createColumns = (
     accessorKey: "adType",
     header: "Type",
     cell: ({ row }) => {
-      const adType = row.getValue("adType") as AdTypeEnum;
+      const raw = row.getValue("adType") as unknown;
+      const value = typeof raw === 'string' ? raw : (raw as AdTypeEnum);
+      const label = (() => {
+        if (typeof value === 'string') {
+          const v = value.toLowerCase();
+          if (v === 'textonly' || v === 'text_only') return 'Text Only';
+          if (v === 'imagetext' || v === 'image_text') return 'Image + Text';
+          if (v === 'videotext' || v === 'video_text') return 'Video + Text';
+          return null;
+        } else {
+          if (value === AdTypeEnum.TextOnly) return 'Text Only';
+          if (value === AdTypeEnum.ImageText) return 'Image + Text';
+          if (value === AdTypeEnum.VideoText) return 'Video + Text';
+          return null;
+        }
+      })();
       return (
         <div className="text-sm">
-          {adType === AdTypeEnum.TextOnly ? (
-            <Badge variant="outline">Text Only</Badge>
-          ) : adType === AdTypeEnum.ImageText ? (
-            <Badge variant="outline">Image + Text</Badge>
-          ) : adType === AdTypeEnum.VideoText ? (
-            <Badge variant="outline">Video + Text</Badge>
+          {label ? (
+            <Badge variant="outline">{label}</Badge>
           ) : (
             <span className="text-muted-foreground">Unknown</span>
           )}
@@ -261,8 +272,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
   );
 
   const isLoading = teamId && scopeBrandId === "team-all" ? (teamAll.isLoading) : (byBrand.isLoading);
-  const error = teamId && scopeBrandId === "team-all" ? (undefined) : (byBrand.error);
-  const contentsData = teamId && scopeBrandId === "team-all" ? teamAll.data : (byBrand.data as any);
+  const contentsData = teamId && scopeBrandId === "team-all" ? teamAll.data : (byBrand.data as { data?: unknown[] } | undefined);
   
 
   // Transform brands data to ensure correct format
@@ -296,7 +306,9 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
 
   // Handle the data structure from API response
   // From debug info, we see that contentsData is already the array of contents
-  const contents: ContentResponseDto[] = Array.isArray(contentsData) ? contentsData : (contentsData?.data || []);
+  const contents: ContentResponseDto[] = Array.isArray(contentsData) 
+    ? (contentsData as ContentResponseDto[])
+    : ((contentsData?.data as ContentResponseDto[]) || []);
   
 
   const filteredContents = contents.filter((content: ContentResponseDto) => {
@@ -496,7 +508,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
           {teamId && (
             <Select
               value={scopeBrandId}
-              onValueChange={(val) => setScopeBrandId(val as any)}
+              onValueChange={(val) => setScopeBrandId(val)}
             >
               <SelectTrigger className="w-56">
                 <SelectValue placeholder="Scope" />

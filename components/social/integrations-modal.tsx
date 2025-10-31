@@ -86,6 +86,11 @@ export function IntegrationsModal({ account, isOpen, onClose, onDeleteTarget }: 
                         <Badge variant="outline" className="text-xs">
                           {target.type}
                         </Badge>
+                        {target.category && (
+                          <span className="text-xs text-muted-foreground truncate">
+                            {target.category}
+                          </span>
+                        )}
                         {target.brandName && (
                           <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <Building2 className="h-3 w-3" />

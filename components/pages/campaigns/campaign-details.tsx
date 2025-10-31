@@ -26,7 +26,11 @@ import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbP
 import { CampaignModal } from "@/components/campaigns/campaign-modal";
 import { format } from "date-fns";
 
-export function CampaignDetails() {
+interface CampaignDetailsProps {
+  basePath?: string;
+}
+
+export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignDetailsProps = {}) {
   const params = useParams();
   const campaignId = params.id as string;
   
@@ -65,7 +69,7 @@ export function CampaignDetails() {
             The campaign you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
           </p>
           <Button asChild>
-            <Link href="/dashboard/campaigns">
+            <Link href={basePath}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Campaigns
             </Link>
@@ -87,11 +91,13 @@ export function CampaignDetails() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href={basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard'}>
+                {basePath.includes('/team/') ? 'Team' : 'Dashboard'}
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard/campaigns">Campaigns</BreadcrumbLink>
+              <BreadcrumbLink href={basePath}>Campaigns</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -127,22 +133,11 @@ export function CampaignDetails() {
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" asChild>
-                <Link href={`/dashboard/campaigns/${campaign.id}/ad-sets`}>
+                <Link href={`${basePath}/${campaign.id}/ad-sets`}>
                   <Target className="mr-2 h-4 w-4" />
                   Manage Ad Sets
                 </Link>
               </Button>
-              <CampaignModal
-                mode="edit"
-                campaign={campaign}
-                open={isEditModalOpen}
-                onOpenChange={setIsEditModalOpen}
-              >
-                <Button variant="outline">
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit Campaign
-                </Button>
-              </CampaignModal>
             </div>
           </div>
         </div>
@@ -286,20 +281,6 @@ export function CampaignDetails() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Campaign ID</label>
-                <p className="text-sm">{campaign.id}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Ad Account ID</label>
-                <p className="text-sm">{campaign.adAccountId}</p>
-              </div>
-              {campaign.facebookCampaignId && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Facebook Campaign ID</label>
-                  <p className="text-sm">{campaign.facebookCampaignId}</p>
-                </div>
-              )}
-              <div>
                 <label className="text-sm font-medium text-muted-foreground">Created</label>
                 <p className="text-sm">{format(new Date(campaign.createdAt), 'PPP')}</p>
               </div>
@@ -327,7 +308,7 @@ export function CampaignDetails() {
                         <p className="text-sm text-muted-foreground">ID: {adSet.id.slice(0, 8)}</p>
                       </div>
                       <Button variant="outline" size="sm" asChild>
-                        <Link href={`/dashboard/campaigns/${campaign.id}/ad-sets/${adSet.id}`}>
+                        <Link href={`${basePath}/${campaign.id}/ad-sets/${adSet.id}`}>
                           View
                         </Link>
                       </Button>
@@ -339,7 +320,7 @@ export function CampaignDetails() {
                   <BarChart3 className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">No ad sets created yet</p>
                   <Button variant="outline" size="sm" className="mt-2" asChild>
-                    <Link href={`/dashboard/campaigns/${campaign.id}/ad-sets`}>
+                    <Link href={`${basePath}/${campaign.id}/ad-sets`}>
                       Create Ad Set
                     </Link>
                   </Button>

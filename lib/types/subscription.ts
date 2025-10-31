@@ -89,11 +89,13 @@ export interface CreatePaymentIntentResponse {
 export interface PaymentResponseDto {
   id: string
   userId: string
+  subscriptionId?: string
   amount: number
   currency: string
   status: string
-  transactionId: string
-  paymentMethod: string
+  transactionId?: string
+  paymentMethod?: string
+  invoiceUrl?: string
   createdAt: string
 }
 

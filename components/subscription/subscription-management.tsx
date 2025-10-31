@@ -170,9 +170,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
 
   const tabItems: CustomTabItem[] = [
     { value: 'overview', label: 'Overview' },
-    { value: 'billing', label: 'Billing' },
-    { value: 'history', label: 'History' },
-    { value: 'settings', label: 'Settings' }
+    { value: 'billing', label: 'Billing' }
   ]
 
   return (
@@ -362,55 +360,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
         </div>
         )}
 
-        {/* History Tab */}
-        {activeTab === 'history' && (
-          <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Billing History</CardTitle>
-              <CardDescription>
-                View all your past invoices and payments
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <History className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Billing History</h3>
-                <p className="text-muted-foreground mb-4">
-                  Your billing history will appear here
-                </p>
-                <Button variant="outline">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download All Invoices
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        )}
-
-        {/* Settings Tab */}
-        {activeTab === 'settings' && (
-          <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Subscription Settings</CardTitle>
-              <CardDescription>
-                Manage your subscription preferences and notifications
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="text-center py-8">
-                <Settings className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Settings</h3>
-                <p className="text-muted-foreground">
-                  Subscription settings will be available here
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        )}
+        
       </div>
 
       {/* Plan Change Dialog */}

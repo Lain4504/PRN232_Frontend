@@ -113,6 +113,7 @@ export interface SocialAccountDto {
   isActive: boolean;
   expiresAt?: string;
   createdAt: string;
+  updatedAt: string;
   targets?: SocialTargetDto[];
 }
 
@@ -219,6 +220,11 @@ export interface Post {
   isDeleted: boolean;
   link?: string;
   metrics?: PostMetrics;
+  // Enriched, friendly fields from backend
+  contentTitle?: string;
+  brandName?: string;
+  integrationPlatform?: string;
+  integrationAccountName?: string;
 }
 
 export interface PerformanceMetrics {
@@ -330,6 +336,7 @@ export interface SchedulePostForm {
 
 // Dashboard overview types
 export interface DashboardStats {
+  total_teams?: number;
   total_brands: number;
   total_products: number;
   total_contents: number;

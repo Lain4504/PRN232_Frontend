@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface AdsManagementProps {
   campaignId: string;
   adSetId: string;
+  basePath?: string;
 }
 
 interface AdListItem {
@@ -34,7 +35,7 @@ interface AdListItem {
   updatedAt?: string;
 }
 
-export function AdsManagement({ campaignId, adSetId }: AdsManagementProps) {
+export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/campaigns' }: AdsManagementProps) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -56,7 +57,7 @@ export function AdsManagement({ campaignId, adSetId }: AdsManagementProps) {
       header: "Name",
       accessorKey: "name",
       cell: ({ row }) => (
-        <Link className="font-medium hover:underline" href={`/dashboard/campaigns/${campaignId}/ad-sets/${adSetId}/ads/${row.original.id}`}>
+        <Link className="font-medium hover:underline" href={`${basePath}/${campaignId}/ad-sets/${adSetId}/ads/${row.original.id}`}>
           {row.original.name}
         </Link>
       )
@@ -161,11 +162,11 @@ export function AdsManagement({ campaignId, adSetId }: AdsManagementProps) {
       title="Ads"
       description="Create and manage ads."
       breadcrumbs={[
-        { label: "Dashboard", href: "/dashboard" },
-        { label: "Campaigns", href: "/dashboard/campaigns" },
-        { label: "Campaign", href: `/dashboard/campaigns/${campaignId}` },
-        { label: "Ad Sets", href: `/dashboard/campaigns/${campaignId}/ad-sets` },
-        { label: "Ad Set", href: `/dashboard/campaigns/${campaignId}/ad-sets/${adSetId}` },
+        { label: basePath.includes('/team/') ? 'Team' : 'Dashboard', href: basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard' },
+        { label: "Campaigns", href: basePath },
+        { label: "Campaign", href: `${basePath}/${campaignId}` },
+        { label: "Ad Sets", href: `${basePath}/${campaignId}/ad-sets` },
+        { label: "Ad Set", href: `${basePath}/${campaignId}/ad-sets/${adSetId}` },
         { label: "Ads", isCurrentPage: true },
       ]}
       actions={[]}

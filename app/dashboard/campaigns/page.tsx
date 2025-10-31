@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function CampaignsPage() {
-  return <CampaignsManagement />;
+  return <CampaignsManagement basePath="/dashboard/campaigns" />;
 }

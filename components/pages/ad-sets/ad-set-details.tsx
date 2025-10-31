@@ -36,9 +36,10 @@ import { Megaphone } from "lucide-react";
 interface AdSetDetailsProps {
   campaignId: string;
   adSetId: string;
+  basePath?: string;
 }
 
-export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
+export function AdSetDetails({ campaignId, adSetId, basePath = '/dashboard/campaigns' }: AdSetDetailsProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   
@@ -56,7 +57,7 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
       await deleteMutation.mutateAsync(adSetId);
       toast.success("Ad set deleted successfully");
       // Redirect to ad sets list
-      window.location.href = `/dashboard/campaigns/${campaignId}/ad-sets`;
+      window.location.href = `${basePath}/${campaignId}/ad-sets`;
     } catch (error) {
       toast.error("Failed to delete ad set");
       console.error("Delete ad set error:", error);
@@ -93,7 +94,7 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
             The ad set you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
           </p>
           <Button asChild>
-            <Link href={`/dashboard/campaigns/${campaignId}/ad-sets`}>
+            <Link href={`${basePath}/${campaignId}/ad-sets`}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Ad Sets
             </Link>
@@ -114,21 +115,23 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href={basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard'}>
+                {basePath.includes('/team/') ? 'Team' : 'Dashboard'}
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard/campaigns">Campaigns</BreadcrumbLink>
+              <BreadcrumbLink href={basePath}>Campaigns</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/dashboard/campaigns/${campaignId}`}>
+              <BreadcrumbLink href={`${basePath}/${campaignId}`}>
                 {campaign.name}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/dashboard/campaigns/${campaignId}/ad-sets`}>
+              <BreadcrumbLink href={`${basePath}/${campaignId}/ad-sets`}>
                 Ad Sets
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -454,7 +457,7 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
                 Create and manage visual and textual content for your advertisements.
               </p>
               <Button asChild>
-                <Link href={`/dashboard/campaigns/${campaignId}/ad-sets/${adSetId}/creatives`}>
+                <Link href={`${basePath}/${campaignId}/ad-sets/${adSetId}/creatives`}>
                   <ImageIcon className="mr-2 h-4 w-4" />
                   Manage Creatives
                 </Link>
@@ -486,7 +489,7 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">{ad.status}</Badge>
                       <Button asChild variant="ghost" size="sm">
-                        <Link href={`/dashboard/campaigns/${campaignId}/ad-sets/${adSetId}/ads/${ad.id}`}>View</Link>
+                        <Link href={`${basePath}/${campaignId}/ad-sets/${adSetId}/ads/${ad.id}`}>View</Link>
                       </Button>
                     </div>
                   </div>
@@ -494,7 +497,7 @@ export function AdSetDetails({ campaignId, adSetId }: AdSetDetailsProps) {
               </div>
               <div className="mt-4">
                 <Button asChild>
-                  <Link href={`/dashboard/campaigns/${campaignId}/ad-sets/${adSetId}/ads`}>
+                  <Link href={`${basePath}/${campaignId}/ad-sets/${adSetId}/ads`}>
                     <Megaphone className="mr-2 h-4 w-4" />
                     Manage Ads
                   </Link>

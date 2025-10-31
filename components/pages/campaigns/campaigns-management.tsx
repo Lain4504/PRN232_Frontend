@@ -56,7 +56,8 @@ const createColumns = (
   handleEditCampaign: (campaign: AdCampaignResponse) => void,
   handleDeleteCampaign: (campaignId: string) => void,
   brands: { id: string; name: string }[] = [],
-  isDeleting: boolean
+  isDeleting: boolean,
+  basePath: string = '/dashboard/campaigns'
 ): ColumnDef<AdCampaignResponse>[] => [
     {
       accessorKey: "name",
@@ -205,7 +206,7 @@ const createColumns = (
           {
             label: "View Details",
             icon: <Eye className="h-4 w-4" />,
-            onClick: () => window.open(`/dashboard/campaigns/${row.original.id}`, '_self'),
+            onClick: () => window.open(`${basePath}/${row.original.id}`, '_self'),
           },
           {
             label: "Edit",
@@ -226,7 +227,11 @@ const createColumns = (
     },
   ];
 
-export function CampaignsManagement() {
+interface CampaignsManagementProps {
+  basePath?: string;
+}
+
+export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: CampaignsManagementProps = {}) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [objectiveFilter, setObjectiveFilter] = useState<string>("all");
@@ -336,7 +341,9 @@ export function CampaignsManagement() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href={basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard'}>
+                {basePath.includes('/team/') ? 'Team' : 'Dashboard'}
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -446,7 +453,8 @@ export function CampaignsManagement() {
               handleEditCampaign,
               handleDeleteCampaign,
               safeBrands,
-              deleteCampaignMutation.isPending
+              deleteCampaignMutation.isPending,
+              basePath
             )}
             data={filteredCampaigns}
             pageSize={10}

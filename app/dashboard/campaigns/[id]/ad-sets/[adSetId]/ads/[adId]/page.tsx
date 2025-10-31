@@ -7,7 +7,7 @@ interface PageProps {
 
 export default function AdDetailsPage({ params }: PageProps) {
   const { id: campaignId, adSetId, adId } = params;
-  return <AdDetails campaignId={campaignId} adSetId={adSetId} adId={adId} />;
+  return <AdDetails campaignId={campaignId} adSetId={adSetId} adId={adId} basePath="/dashboard/campaigns" />;
 }
 
 

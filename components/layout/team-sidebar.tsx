@@ -13,6 +13,7 @@ import {
   Mail,
   Calendar,
   Users,
+  Megaphone,
   PanelLeftDashed,
 } from "lucide-react"
 
@@ -90,6 +91,12 @@ export function TeamSidebar() {
       url: `/team/${teamId}/calendar`,
       icon: Calendar,
       permission: 'SCHEDULE_POST'
+    },
+    {
+      title: "Campaigns",
+      url: `/team/${teamId}/campaigns`,
+      icon: Megaphone,
+      permission: 'CREATE_CONTENT'
     },
     {
       title: "Team",

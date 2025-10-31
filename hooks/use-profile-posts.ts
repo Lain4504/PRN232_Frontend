@@ -35,18 +35,8 @@ export function useProfilePosts(profileId?: string, filters?: PostFilters) {
         return resp.data
       }
       
-      // Get profile brands first - use the brands endpoint that returns brands for the active profile
-      const brandsResp = await api.get<Brand[]>(endpoints.brands())
-      const brandIds = brandsResp.data.map(brand => brand.id)
-      
-      if (brandIds.length === 0) {
-        return { data: [], totalCount: 0, page: 1, pageSize: 10, totalPages: 0, hasNextPage: false, hasPreviousPage: false }
-      }
-
-      // Get posts for all profile brands
-      const brandIdParams = brandIds.map(id => `brandId=${id}`).join('&')
-      const url = queryString ? `${endpoints.posts.list()}?${queryString}&${brandIdParams}` : `${endpoints.posts.list()}?${brandIdParams}`
-      
+      // No brand filter: call posts endpoint directly; backend will infer by profile context
+      const url = queryString ? `${endpoints.posts.list()}?${queryString}` : endpoints.posts.list()
       const resp = await api.get<PaginatedResponse<Post>>(url)
       return resp.data
     },

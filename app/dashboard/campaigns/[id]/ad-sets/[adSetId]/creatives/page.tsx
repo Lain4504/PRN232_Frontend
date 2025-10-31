@@ -8,5 +8,5 @@ interface CreativesManagementPageProps {
 }
 
 export default function CreativesManagementPage({ params }: CreativesManagementPageProps) {
-  return <CreativesManagement campaignId={params.id} adSetId={params.adSetId} />;
+  return <CreativesManagement campaignId={params.id} adSetId={params.adSetId} basePath="/dashboard/campaigns" />;
 }

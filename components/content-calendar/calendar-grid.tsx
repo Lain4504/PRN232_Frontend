@@ -183,29 +183,44 @@ export function CalendarGrid({
                   {day.getDate()}
                 </div>
                 <div className="space-y-0.5 sm:space-y-1 overflow-hidden">
-                  {dayEvents.slice(0, 2).map(event => (
-                    <div
-                      key={event.id}
-                      className={`
-                        text-[10px] sm:text-xs px-1 sm:px-1.5 py-0.5 rounded-md 
-                        cursor-pointer border transition-all duration-200
-                        hover:scale-105 hover:shadow-sm
-                        ${getEventBadgeColor(event.status)}
-                      `}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEventClick?.(event);
-                      }}
-                      title={`${event.contentTitle} - ${event.brandName}`}
-                    >
-                      <div className="truncate font-medium">{event.contentTitle}</div>
-                      <div className="text-[9px] sm:text-xs opacity-75 truncate hidden sm:block">
-                        {event.brandName}
+                  {dayEvents.slice(0, 2).map(event => {
+                    const eventTime = event.scheduledTime 
+                      ? new Date(`${event.scheduledDate}T${event.scheduledTime}`).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+                      : new Date(event.scheduledDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                    
+                    return (
+                      <div
+                        key={event.id}
+                        className={`
+                          text-[10px] sm:text-xs px-1.5 sm:px-2 py-1 rounded-md 
+                          cursor-pointer border transition-all duration-200
+                          hover:scale-105 hover:shadow-sm flex flex-col gap-0.5
+                          ${getEventBadgeColor(event.status)}
+                        `}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEventClick?.(event);
+                        }}
+                        title={`${event.contentTitle || 'Untitled'} - ${event.brandName || 'Unknown Brand'} at ${eventTime}`}
+                      >
+                        <div className="truncate font-semibold leading-tight">
+                          {event.contentTitle || 'Untitled Content'}
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {event.brandName && (
+                            <div className="text-[9px] sm:text-[10px] opacity-80 truncate max-w-[60%]">
+                              {event.brandName}
+                            </div>
+                          )}
+                          <div className="text-[9px] sm:text-[10px] opacity-60">
+                              {eventTime}
+                            </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                   {dayEvents.length > 2 && (
-                    <div className="text-[10px] sm:text-xs text-muted-foreground font-medium">
+                    <div className="text-[10px] sm:text-xs text-muted-foreground font-medium px-1.5">
                       +{dayEvents.length - 2} more
                     </div>
                   )}
