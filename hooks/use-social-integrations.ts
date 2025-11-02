@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { api, endpoints } from '@/lib/api'
+import { api, endpoints, ApiResponse } from '@/lib/api'
 
 // Types
 export interface SocialIntegrationDto {
@@ -31,8 +31,8 @@ export function useSocialIntegrations(brandId?: string) {
     queryKey: brandId ? socialIntegrationKeys.byBrand(brandId) : socialIntegrationKeys.lists(),
     queryFn: async (): Promise<SocialIntegrationDto[]> => {
       if (!brandId) return []
-      const resp = await api.get<SocialIntegrationDto[]>(endpoints.socialIntegrationsByBrand(brandId))
-      return resp.data
+      const resp = await api.get<ApiResponse<SocialIntegrationDto[]>>(endpoints.socialIntegrationsByBrand(brandId))
+      return resp.data.data || resp.data || []
     },
     enabled: !!brandId,
   })

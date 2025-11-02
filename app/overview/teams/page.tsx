@@ -1,16 +1,17 @@
 "use client"
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useUser } from '@/hooks/use-user'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
-import { Users, Building2, User, Calendar, ArrowLeft, Plus, Search, Filter } from 'lucide-react'
-import { TeamCard } from '@/components/teams/team-card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Users, Building2, ArrowLeft, Search, Filter } from 'lucide-react'
 import Link from 'next/link'
 
 interface Team {
@@ -21,11 +22,13 @@ interface Team {
   membersCount: number
   createdAt: string
   avatarUrl?: string
+  status?: 'Active' | 'Inactive' | 'Archived'
 }
 
 export default function TeamsPage() {
   const { data: user, isLoading: userLoading } = useUser()
   const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
 
   // Load user's teams
   const { data: teams = [], isLoading: teamsLoading, error: teamsError } = useQuery({
@@ -76,9 +79,11 @@ export default function TeamsPage() {
     )
   }
 
-  // Filter teams based on search query
+  // Filter teams based on search query and status
   const filteredTeams = teams.filter(team => {
-    return team.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch = team.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesStatus = statusFilter === 'all' || team.status === statusFilter || (!team.status && statusFilter === 'Active')
+    return matchesSearch && matchesStatus
   })
 
   return (
@@ -90,14 +95,14 @@ export default function TeamsPage() {
             <Link href="/overview">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Quay lại
+                Back
               </Button>
             </Link>
           </div>
           <div>
             <h1 className="text-2xl font-bold">My Teams</h1>
             <p className="text-muted-foreground">
-              Danh sách các team mà bạn đang tham gia
+              List of teams you are participating in
             </p>
           </div>
         </div>
@@ -107,16 +112,24 @@ export default function TeamsPage() {
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Tìm kiếm team"
+              placeholder="Search teams"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
             />
           </div>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Lọc
-          </Button>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[160px]" size="sm">
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="Active">Active</SelectItem>
+              <SelectItem value="Inactive">Inactive</SelectItem>
+              <SelectItem value="Archived">Archived</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Teams Table */}
@@ -144,25 +157,31 @@ export default function TeamsPage() {
             <Card className="border-destructive">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Users className="h-16 w-16 text-destructive mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Lỗi tải danh sách team</h3>
+                <h3 className="text-xl font-semibold mb-2">Error loading teams list</h3>
                 <p className="text-muted-foreground text-center mb-6 max-w-md">
-                  Có lỗi khi tải danh sách team của bạn. Vui lòng thử lại.
+                  There was an error loading your teams list. Please try again.
                 </p>
                 <Button onClick={() => window.location.reload()}>
-                  Thử lại
+                  Try again
                 </Button>
               </CardContent>
             </Card>
-          ) : filteredTeams.length === 0 && searchQuery ? (
+          ) : filteredTeams.length === 0 && (searchQuery || statusFilter !== 'all') ? (
             <Card className="border-dashed">
               <CardContent className="flex flex-col items-center justify-center py-16">
                 <Users className="h-20 w-20 text-muted-foreground mb-6" />
-                <h3 className="text-2xl font-semibold mb-3">Không tìm thấy team</h3>
+                <h3 className="text-2xl font-semibold mb-3">No teams found</h3>
                 <p className="text-muted-foreground text-center mb-8 max-w-md">
-                  Không có team nào khớp với từ khóa tìm kiếm của bạn. Hãy thử từ khóa khác.
+                  No teams match your search criteria. Please try different filters.
                 </p>
-                <Button onClick={() => setSearchQuery('')} variant="outline">
-                  Xóa tìm kiếm
+                <Button 
+                  onClick={() => {
+                    setSearchQuery('')
+                    setStatusFilter('all')
+                  }} 
+                  variant="outline"
+                >
+                  Clear filters
                 </Button>
               </CardContent>
             </Card>
@@ -170,9 +189,9 @@ export default function TeamsPage() {
             <Card className="border-dashed">
               <CardContent className="flex flex-col items-center justify-center py-16">
                 <Users className="h-20 w-20 text-muted-foreground mb-6" />
-                <h3 className="text-2xl font-semibold mb-3">Chưa có team nào</h3>
+                <h3 className="text-2xl font-semibold mb-3">No teams yet</h3>
                 <p className="text-muted-foreground text-center mb-8 max-w-md">
-                  Bạn chưa được thêm vào team nào. Hãy liên hệ với quản trị viên để được mời tham gia team.
+                  You haven&apos;t been added to any teams yet. Please contact an administrator to be invited to a team.
                 </p>
               </CardContent>
             </Card>
@@ -181,11 +200,11 @@ export default function TeamsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>TEAM</TableHead>
-                    <TableHead>TRẠNG THÁI</TableHead>
-                    <TableHead>VAI TRÒ</TableHead>
-                    <TableHead>THÀNH VIÊN</TableHead>
-                    <TableHead>THAM GIA</TableHead>
+                <TableHead>TEAM</TableHead>
+                <TableHead>STATUS</TableHead>
+                <TableHead>ROLE</TableHead>
+                <TableHead>MEMBERS</TableHead>
+                <TableHead>JOINED</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -199,9 +218,11 @@ export default function TeamsPage() {
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                             {team.avatarUrl ? (
-                              <img 
+                              <Image 
                                 src={team.avatarUrl} 
                                 alt={team.name}
+                                width={40}
+                                height={40}
                                 className="h-10 w-10 rounded-full object-cover"
                               />
                             ) : (
@@ -210,13 +231,21 @@ export default function TeamsPage() {
                           </div>
                           <div>
                             <div className="font-semibold">{team.name}</div>
-                            <div className="text-sm text-muted-foreground">{team.id}</div>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="default" className="bg-green-500 hover:bg-green-600">
-                          Hoạt động
+                        <Badge 
+                          variant="default" 
+                          className={
+                            (team.status === 'Active' || !team.status) 
+                              ? 'bg-green-500 hover:bg-green-600' 
+                              : team.status === 'Inactive'
+                              ? 'bg-yellow-500 hover:bg-yellow-600'
+                              : 'bg-gray-500 hover:bg-gray-600'
+                          }
+                        >
+                          {team.status || 'Active'}
                         </Badge>
                       </TableCell>
                       <TableCell>

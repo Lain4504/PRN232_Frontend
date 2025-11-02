@@ -16,11 +16,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { 
-  Eye,
   Edit,
   Trash2,
   Send,
-  Share,
   Clock,
   Image,
   Video,
@@ -31,26 +29,23 @@ import { ContentScheduleActions } from "./content-schedule-actions";
 
 interface ContentCardProps {
   content: ContentResponseDto;
-  onView?: (content: ContentResponseDto) => void;
   onEdit?: (content: ContentResponseDto) => void;
   onDelete?: (contentId: string) => void;
   onSubmit?: (contentId: string) => void;
   onSubmitForApproval?: (content: ContentResponseDto) => void;
-  onPublish?: (contentId: string, integrationId: string) => void;
   isProcessing?: boolean;
   showActions?: boolean;
 }
 
 export function ContentCard({ 
   content, 
-  onView, 
   onEdit, 
   onDelete, 
   onSubmit, 
-  onPublish,
   isProcessing = false,
   showActions = true
 }: ContentCardProps) {
+
   const getStatusBadge = (status: ContentStatusEnum) => {
     switch (status) {
       case ContentStatusEnum.Draft:
@@ -66,6 +61,20 @@ export function ContentCard({
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
+  };
+
+  // Helper function to normalize adType to AdTypeEnum
+  const normalizeAdType = (adType: string | AdTypeEnum): AdTypeEnum => {
+    if (typeof adType === 'number') {
+      return adType as AdTypeEnum;
+    }
+    if (typeof adType === 'string') {
+      const normalized = adType.toLowerCase().replace(/_/g, '');
+      if (normalized === 'textonly') return AdTypeEnum.TextOnly;
+      if (normalized === 'imagetext' || normalized === 'image+text') return AdTypeEnum.ImageText;
+      if (normalized === 'videotext' || normalized === 'video+text') return AdTypeEnum.VideoText;
+    }
+    return AdTypeEnum.TextOnly; // Default fallback
   };
 
   const getAdTypeIcon = (adType: AdTypeEnum) => {
@@ -102,8 +111,8 @@ export function ContentCard({
             <div className="flex items-center gap-2 mb-3">
               {getStatusBadge(content.status)}
               <Badge variant="outline" className="flex items-center gap-1 text-xs">
-                {getAdTypeIcon(content.adType)}
-                {getAdTypeLabel(content.adType)}
+                {getAdTypeIcon(normalizeAdType(content.adType))}
+                {getAdTypeLabel(normalizeAdType(content.adType))}
               </Badge>
             </div>
             <CardTitle className="text-base font-bold mb-1 group-hover:text-primary transition-colors">
@@ -114,21 +123,6 @@ export function ContentCard({
             </CardDescription>
           </div>
           
-          {showActions && (
-            <div className="flex gap-1">
-              {onView && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => onView(content)}
-                  className="h-8 text-xs"
-                >
-                  <Eye className="mr-1 h-3 w-3" />
-                  View
-                </Button>
-              )}
-            </div>
-          )}
         </div>
       </CardHeader>
       
@@ -182,18 +176,6 @@ export function ContentCard({
                 >
                   <Send className="mr-1 h-3 w-3" />
                   Submit for Approval
-                </Button>
-              )}
-              
-              {content.status === ContentStatusEnum.Approved && onPublish && (
-                <Button
-                  size="sm"
-                  onClick={() => onPublish(content.id, 'default-integration')}
-                  disabled={isProcessing}
-                  className="bg-green-600 hover:bg-green-700 h-7 text-xs"
-                >
-                  <Share className="mr-1 h-3 w-3" />
-                  Publish
                 </Button>
               )}
               

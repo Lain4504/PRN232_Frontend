@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -13,6 +14,7 @@ import { formatPrice } from '@/lib/constants/subscription-plans'
 import { analyzePlanChangeImpact } from '@/lib/utils/subscription'
 import { toast } from 'sonner'
 import type { SubscriptionPlan, BillingCycle, Subscription } from '@/lib/types/subscription'
+import { cn } from '@/lib/utils'
 
 interface PlanChangeDialogProps {
   open: boolean
@@ -29,8 +31,19 @@ export function PlanChangeDialog({
 }: PlanChangeDialogProps) {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly')
   const [immediate, setImmediate] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
   const changePlanMutation = useChangePlan()
   const comparison = usePlanComparison(targetPlan.id)
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.matchMedia('(max-width: 768px)').matches)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const handleConfirm = async () => {
     try {
@@ -77,25 +90,19 @@ export function PlanChangeDialog({
     return analyzePlanChangeImpact(currentSubscription, targetPlan)
   }
 
+  // Guard against undefined targetPlan
+  if (!targetPlan) {
+    return null
+  }
+
   const impactAnalysis = getImpactAnalysis()
   const price = billingCycle === 'yearly' ? targetPlan.price.yearly : targetPlan.price.monthly
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
-            {getPlanIcon(targetPlan.tier)}
-            <span>Change to {targetPlan.name} Plan</span>
-          </DialogTitle>
-          <DialogDescription>
-            Review the changes and confirm your plan upgrade
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-6">
+  // Shared content component
+  const renderContent = () => (
+    <div className="space-y-6">
           {/* Plan Details */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className={cn("grid gap-4", isMobile ? "grid-cols-1" : "grid-cols-2")}>
             <div className="space-y-2">
               <h4 className="font-medium">Current Plan</h4>
               <div className="p-3 border rounded-lg">
@@ -245,22 +252,75 @@ export function PlanChangeDialog({
             </div>
           </div>
         </div>
+  )
 
-        <DialogFooter className="flex-col sm:flex-row space-y-2 sm:space-y-0">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleConfirm}
-            disabled={changePlanMutation.isPending}
-            className="w-full sm:w-auto"
-          >
-            {changePlanMutation.isPending ? (
-              'Processing...'
-            ) : (
-              `Confirm ${comparison?.data?.isUpgrade ? 'Upgrade' : 'Change'}`
-            )}
-          </Button>
+  // Shared footer component
+  const renderFooter = () => (
+    <div className={cn("flex-col space-y-2 sm:flex-row sm:space-y-0", isMobile ? "flex" : "flex")}>
+      <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
+        Cancel
+      </Button>
+      <Button 
+        onClick={handleConfirm}
+        disabled={changePlanMutation.isPending}
+        className="w-full sm:w-auto"
+      >
+        {changePlanMutation.isPending ? (
+          'Processing...'
+        ) : (
+          `Confirm ${comparison?.data?.isUpgrade ? 'Upgrade' : 'Change'}`
+        )}
+      </Button>
+    </div>
+  )
+
+  // Render drawer for mobile
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="max-h-[90vh]">
+          <DrawerHeader className="border-b">
+            <DrawerTitle className="flex items-center space-x-2">
+              {getPlanIcon(targetPlan.tier)}
+              <span>Change to {targetPlan.name} Plan</span>
+            </DrawerTitle>
+            <DrawerDescription>
+              Review the changes and confirm your plan upgrade
+            </DrawerDescription>
+          </DrawerHeader>
+          
+          <div className="overflow-y-auto flex-1 px-4 pb-4">
+            {renderContent()}
+          </div>
+
+          <DrawerFooter className="border-t">
+            {renderFooter()}
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    )
+  }
+
+  // Render dialog for desktop
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-2">
+            {getPlanIcon(targetPlan.tier)}
+            <span>Change to {targetPlan.name} Plan</span>
+          </DialogTitle>
+          <DialogDescription>
+            Review the changes and confirm your plan upgrade
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="overflow-y-auto flex-1 min-h-0 px-6">
+          {renderContent()}
+        </div>
+
+        <DialogFooter className="flex-shrink-0 flex-col sm:flex-row space-y-2 sm:space-y-0 border-t pt-4 mt-4">
+          {renderFooter()}
         </DialogFooter>
       </DialogContent>
     </Dialog>

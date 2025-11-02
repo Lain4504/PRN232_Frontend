@@ -16,7 +16,7 @@ export default function TeamLayout({ children }: TeamLayoutProps) {
   const [user, setUser] = useState<User | null>(null)
   const supabase = createClient()
   const [sidebarMode, setSidebarMode] = useState<"expanded" | "collapsed" | "hover">("hover")
-  const { activeTeam, isLoading: teamLoading } = useTeam()
+  const { activeTeam, activeTeamId, isLoading: teamLoading } = useTeam()
 
   useEffect(() => {
     // init sidebar mode
@@ -49,8 +49,10 @@ export default function TeamLayout({ children }: TeamLayoutProps) {
     }
   }, [supabase.auth])
 
-  // Show loading while team context is loading
-  if (teamLoading) {
+  // Show loading while team context is loading or if we have an activeTeamId but not activeTeam yet
+  // Only show loading if we have an activeTeamId (meaning we're trying to load a specific team)
+  // If we don't have activeTeamId, the parent layout will handle redirect
+  if (teamLoading || (activeTeamId && !activeTeam)) {
     return (
       <div className="h-screen w-full overflow-hidden flex items-center justify-center">
         <div className="text-center">
@@ -61,8 +63,15 @@ export default function TeamLayout({ children }: TeamLayoutProps) {
     )
   }
 
-  // If no active team, show error
-  if (!activeTeam) {
+  // If no active team but we have activeTeamId, something went wrong
+  // Return null and let the parent layout handle the redirect
+  if (!activeTeam && activeTeamId) {
+    return null
+  }
+
+  // If no active team and no activeTeamId, show error (only show if we're sure we're not loading)
+  // This should rarely happen as the parent layout should redirect, but handle it just in case
+  if (!activeTeam && !activeTeamId) {
     return (
       <div className="h-screen w-full overflow-hidden flex items-center justify-center">
         <div className="text-center">
@@ -71,6 +80,11 @@ export default function TeamLayout({ children }: TeamLayoutProps) {
         </div>
       </div>
     )
+  }
+
+  // At this point, activeTeam must exist (TypeScript doesn't narrow the type automatically)
+  if (!activeTeam) {
+    return null
   }
 
   return (

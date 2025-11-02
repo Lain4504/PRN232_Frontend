@@ -114,47 +114,45 @@ export function TeamHeader({ user, team }: TeamHeaderProps) {
           </div>
 
           {/* Team Switcher */}
-          <div className="hidden lg:block">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 px-2">
-                  <Building2 className="h-4 w-4 mr-2" />
-                  <span className="font-medium">{team.name}</span>
-                  <ChevronDown className="h-4 w-4 ml-1" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-64">
-                <DropdownMenuLabel>Switch Team</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {userTeams.map((userTeam) => (
-                  <DropdownMenuItem
-                    key={userTeam.id}
-                    onClick={() => handleTeamSwitch(userTeam.id)}
-                    className={userTeam.id === team.id ? "bg-accent" : ""}
-                  >
-                    <div className="flex items-center gap-2 w-full">
-                      <Building2 className="h-4 w-4" />
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">{userTeam.name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {userTeam.userRole} • {userTeam.membersCount} members
-                        </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 px-2">
+                <Building2 className="h-4 w-4 mr-2" />
+                <span className="font-medium text-xs sm:text-sm">{team.name}</span>
+                <ChevronDown className="h-4 w-4 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-64">
+              <DropdownMenuLabel>Switch Team</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {userTeams.map((userTeam) => (
+                <DropdownMenuItem
+                  key={userTeam.id}
+                  onClick={() => handleTeamSwitch(userTeam.id)}
+                  className={userTeam.id === team.id ? "bg-accent" : ""}
+                >
+                  <div className="flex items-center gap-2 w-full">
+                    <Building2 className="h-4 w-4" />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium truncate">{userTeam.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {userTeam.userRole} • {userTeam.membersCount} members
                       </div>
-                      {userTeam.id === team.id && (
-                        <Badge variant="secondary" className="text-xs">
-                          Current
-                        </Badge>
-                      )}
                     </div>
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLeaveTeam} className="text-destructive">
-                  Leave Team
+                    {userTeam.id === team.id && (
+                      <Badge variant="secondary" className="text-xs">
+                        Current
+                      </Badge>
+                    )}
+                  </div>
                 </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLeaveTeam} className="text-destructive">
+                Leave Team
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="flex-1"></div>
@@ -178,7 +176,8 @@ export function TeamHeader({ user, team }: TeamHeaderProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Leave Team</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to leave <strong>{team.name}</strong>? You will be redirected to the teams overview page.
+              This only exits the team view. You’ll remain a member of
+              <strong> {team.name}</strong>. You’ll be taken to the teams overview.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

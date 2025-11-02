@@ -11,8 +11,7 @@ export async function middleware(request: NextRequest) {
   
   // Routes that require profile context
   const profileRequiredRoutes = [
-    '/dashboard',
-    '/subscription'
+    '/dashboard'
   ];
   
   // Routes that require team context

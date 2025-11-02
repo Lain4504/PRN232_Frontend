@@ -11,10 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
@@ -24,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ContentResponseDto, CreateApprovalRequest } from "@/lib/types/aisam-types";
-import { Send, X } from "lucide-react";
+import { Send } from "lucide-react";
 
 interface SubmitApprovalDialogProps {
   content: ContentResponseDto | null;
@@ -78,8 +76,7 @@ function SubmitApprovalForm({
             {approvers.map((approver) => (
               <SelectItem key={approver.id} value={approver.id}>
                 <div className="flex items-center gap-2">
-                  <span>{approver.name || approver.email}</span>
-                  <span className="text-muted-foreground">({approver.email})</span>
+                  <span>{approver.email}</span>
                   {approver.canApproveContent && (
                     <Badge variant="secondary" className="ml-auto">Can approve</Badge>
                   )}
@@ -101,11 +98,11 @@ function SubmitApprovalForm({
         />
       </div>
 
-      <div className="flex gap-2 pt-4">
+      <div className="flex flex-col gap-2 pt-4">
         <Button
           onClick={handleSubmit}
           disabled={isSubmitting || !selectedApproverId}
-          className="flex-1"
+          className="w-full"
         >
           <Send className="mr-2 h-4 w-4" />
           {isSubmitting ? "Submitting..." : "Submit for Approval"}
@@ -114,6 +111,7 @@ function SubmitApprovalForm({
           variant="outline"
           onClick={onClose}
           disabled={isSubmitting}
+          className="w-full"
         >
           Cancel
         </Button>
@@ -153,11 +151,6 @@ export function SubmitApprovalDialog(props: SubmitApprovalDialogProps) {
         <div className="px-4">
           <SubmitApprovalForm {...props} />
         </div>
-        <DrawerFooter className="pt-2">
-          <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
-        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );

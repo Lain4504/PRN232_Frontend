@@ -56,7 +56,7 @@ function CancelSubscriptionContent() {
     try {
       await cancelSubscription(subscription.id)
       toast.success('Subscription cancelled successfully')
-      router.push('/subscription')
+      router.push('/dashboard/subscription')
     } catch (error) {
       console.error('Error cancelling subscription:', error)
       toast.error('Failed to cancel subscription')
@@ -94,7 +94,7 @@ function CancelSubscriptionContent() {
           <p className="text-muted-foreground mt-2">
             The subscription you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
-          <Link href="/subscription">
+          <Link href="/dashboard/subscription">
             <Button className="mt-4">Back to Subscriptions</Button>
           </Link>
         </div>
@@ -108,7 +108,7 @@ function CancelSubscriptionContent() {
         <div className="max-w-2xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <Link href="/subscription">
+            <Link href="/dashboard/subscription">
               <Button variant="ghost" size="sm" className="mb-4">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Subscriptions
@@ -241,7 +241,7 @@ function CancelSubscriptionContent() {
               {isCancelling ? 'Cancelling...' : 'Yes, Cancel Subscription'}
             </Button>
             
-            <Link href="/subscription" className="flex-1">
+            <Link href="/dashboard/subscription" className="flex-1">
               <Button variant="outline" size="lg" className="w-full">
                 Keep Subscription
               </Button>

@@ -12,11 +12,7 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, D
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { 
   Save, 
-  Send, 
-  Share, 
-  Image, 
-  Video, 
-  FileText 
+  Send
 } from "lucide-react";
 import { 
   ContentResponseDto, 
@@ -28,14 +24,13 @@ import {
 import { api, endpoints } from "@/lib/api";
 
 interface ContentModalProps {
-  content: ContentResponseDto | null;
-  isEditing?: boolean;
+  content?: ContentResponseDto | null; // Optional - if null, it's create mode
+  isEditing?: boolean; // If true, editing existing content
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave?: (data: UpdateContentRequest) => Promise<void>;
   onCreate?: (data: CreateContentRequest) => Promise<void>;
   onSubmit?: (contentId: string) => Promise<void>;
-  onPublish?: (contentId: string, integrationId: string) => Promise<void>;
   isProcessing?: boolean;
   brands?: Array<{ id: string; name: string }>;
   products?: Array<{ id: string; name: string; brandId: string }>;
@@ -50,8 +45,7 @@ export function ContentModal({
   onOpenChange,
   onSave, 
   onCreate,
-  onSubmit, 
-  onPublish,
+  onSubmit,
   isProcessing = false,
   brands = [],
   products = [],
@@ -82,12 +76,47 @@ export function ContentModal({
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
 
+  // Helper function to convert adType string to enum
+  const parseAdType = (adType: string | number | AdTypeEnum): AdTypeEnum => {
+    if (typeof adType === 'number') {
+      return adType as AdTypeEnum;
+    }
+    if (typeof adType === 'string') {
+      const normalized = adType.toLowerCase().replace(/_/g, '');
+      if (normalized === 'textonly') return AdTypeEnum.TextOnly;
+      if (normalized === 'imagetext' || normalized === 'image+text') return AdTypeEnum.ImageText;
+      if (normalized === 'videotext' || normalized === 'video+text') return AdTypeEnum.VideoText;
+    }
+    return AdTypeEnum.TextOnly; // Default fallback
+  };
+
+  // Helper to parse imageUrl field into array (supports array, JSON string, double-encoded, or single string)
+  const parseImageUrlToArray = (value: unknown): string[] => {
+    if (value == null) return [];
+    if (Array.isArray(value)) return value.filter((v): v is string => typeof v === 'string' && !!v);
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (!trimmed || trimmed.toLowerCase() === 'null' || trimmed.toLowerCase() === 'undefined') return [];
+      let current: unknown = trimmed;
+      for (let i = 0; i < 2; i++) {
+        try {
+          const parsed = JSON.parse(current as string);
+          if (Array.isArray(parsed)) return parsed.filter(Boolean);
+          if (typeof parsed === 'string') { current = parsed; continue; }
+          break;
+        } catch { break; }
+      }
+      return [trimmed];
+    }
+    return [];
+  };
+
   useEffect(() => {
     if (content) {
       setFormData({
         brandId: content.brandId,
         productId: content.productId || undefined,
-        adType: content.adType,
+        adType: parseAdType(content.adType),
         title: content.title || '',
         textContent: content.textContent || '',
         imageUrl: content.imageUrl || undefined,
@@ -144,10 +173,39 @@ export function ContentModal({
     }
   }, [formData.adType]);
 
+  // Ensure global body remains interactive when dialog/drawer is open
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    // Capture previous styles to restore later
+    const previousPointerEvents = document.body.style.pointerEvents;
+    const previousCursor = document.body.style.cursor;
+    // Force-enable interactions/cursor in case any scroll-lock library disables them
+    document.body.style.pointerEvents = 'auto';
+    document.body.style.cursor = 'auto';
+    return () => {
+      document.body.style.pointerEvents = previousPointerEvents;
+      document.body.style.cursor = previousCursor;
+    };
+  }, [open]);
+
+  // Upload file to ContentMedia bucket (NOT 'public' - use 'contentmedia')
   const uploadToPublic = async (file: File): Promise<string> => {
     const fd = new FormData();
-    fd.append('file', file);
-    const resp = await api.postForm<{ url: string }>(endpoints.storageUpload('public'), fd);
+    // Ensure content-type is set correctly for video files
+    // Some browsers may not set content-type automatically
+    const fileType = file.type || (file.name.toLowerCase().endsWith('.mp4') ? 'video/mp4' : 
+                                   file.name.toLowerCase().endsWith('.mov') ? 'video/quicktime' :
+                                   file.name.toLowerCase().endsWith('.avi') ? 'video/x-msvideo' :
+                                   file.name.toLowerCase().endsWith('.webm') ? 'video/webm' :
+                                   file.name.toLowerCase().endsWith('.mpeg') ? 'video/mpeg' : '');
+    
+    // Create a new File with explicit type if needed
+    const fileWithType = fileType && file.type !== fileType ? new File([file], file.name, { type: fileType }) : file;
+    fd.append('file', fileWithType);
+    
+    // IMPORTANT: Use ContentMedia bucket (matches DefaultBucketEnum.ContentMedia)
+    const bucketName = 'ContentMedia';
+    const resp = await api.postForm<{ url: string }>(endpoints.storageUpload(bucketName), fd);
     // Backend returns { data: { url } } shape
     // @ts-expect-error - Response shape may vary
     return (resp.data?.url) || (resp.data?.data?.url) || '';
@@ -156,9 +214,9 @@ export function ContentModal({
   const handleSave = async () => {
     if (isCreateMode && onCreate) {
       // Upload files if provided
-      let imageUrls: string[] = [];
+      let uploadedImageUrls: string[] = [];
       if (imageFiles.length > 0) {
-        imageUrls = await Promise.all(imageFiles.map(uploadToPublic));
+        uploadedImageUrls = await Promise.all(imageFiles.map(uploadToPublic));
       }
       let videoUrl: string | undefined = undefined;
       if (videoFile) {
@@ -167,7 +225,14 @@ export function ContentModal({
 
       const payload: CreateContentRequest = {
         ...formData,
-        imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : formData.imageUrl,
+        imageUrl: (() => {
+          const existing = parseImageUrlToArray(formData.imageUrl as unknown);
+          const combined = Array.from(new Set([...
+            existing,
+            ...uploadedImageUrls
+          ].filter(Boolean)));
+          return combined.length > 0 ? JSON.stringify(combined) : formData.imageUrl;
+        })(),
         videoUrl: videoUrl || formData.videoUrl,
       };
 
@@ -185,10 +250,15 @@ export function ContentModal({
         representativeCharacter: formData.representativeCharacter,
       };
 
-      // If user selected new media, upload and override
+      // If user selected new images, upload and append to existing
       if (imageFiles.length > 0) {
         const urls = await Promise.all(imageFiles.map(uploadToPublic));
-        updateData.imageUrl = JSON.stringify(urls);
+        const existing = parseImageUrlToArray(formData.imageUrl as unknown);
+        const combined = Array.from(new Set([...
+          existing,
+          ...urls
+        ].filter(Boolean)));
+        updateData.imageUrl = JSON.stringify(combined);
       }
       if (videoFile) {
         const url = await uploadToPublic(videoFile);
@@ -201,13 +271,6 @@ export function ContentModal({
   const handleSubmit = async () => {
     if (content && onSubmit) {
       await onSubmit(content.id);
-    }
-  };
-
-  const handlePublish = async () => {
-    if (content && onPublish) {
-      // In a real app, you'd show an integration selection modal
-      await onPublish(content.id, 'default-integration');
     }
   };
 
@@ -259,30 +322,28 @@ export function ContentModal({
         <DialogContent className="max-w-5xl w-[90vw] max-h-[90vh] flex flex-col">
           <DialogHeader className="flex-shrink-0">
             <div className="flex items-center gap-3">
-              <DialogTitle className="text-lg font-bold">
-                {isCreateMode ? 'Create Content' : isEditing ? 'Edit Content' : 'View Content'}
-              </DialogTitle>
-              {content && getStatusBadge(content.status)}
-            </div>
-            <DialogDescription>
-              {isCreateMode ? 'Create new content for your brand' : isEditing ? 'Edit your content' : 'View content details'}
+            <DialogTitle className="text-lg font-bold">
+              {isCreateMode ? 'Create Content' : 'Edit Content'}
+            </DialogTitle>
+            {content && getStatusBadge(content.status)}
+          </div>
+          <DialogDescription>
+              {isCreateMode ? 'Create new content for your brand' : 'Edit your content'}
             </DialogDescription>
           </DialogHeader>
           <div className="flex-1 overflow-y-auto">
             <ContentForm 
               formData={formData}
               setFormData={setFormData}
-              content={content}
+              content={content ?? null}
               isEditing={isEditing}
               isCreateMode={isCreateMode}
               brands={brands}
               products={filteredProducts}
               handleSave={handleSave}
               handleSubmit={handleSubmit}
-              handlePublish={handlePublish}
               isProcessing={isProcessing}
               onSubmit={onSubmit}
-              onPublish={onPublish}
               showButtons={showButtons}
               onSelectImages={handleSelectImages}
               onSelectVideo={handleSelectVideo}
@@ -301,37 +362,35 @@ export function ContentModal({
         <DrawerHeader className="flex-shrink-0">
           <div className="flex items-center gap-3">
             <DrawerTitle className="text-lg font-bold">
-              {isCreateMode ? 'Create Content' : isEditing ? 'Edit Content' : 'View Content'}
+              {isCreateMode ? 'Create Content' : 'Edit Content'}
             </DrawerTitle>
             {content && getStatusBadge(content.status)}
           </div>
           <DrawerDescription>
-              {isCreateMode ? 'Create new content for your brand' : isEditing ? 'Edit your content' : 'View content details'}
+              {isCreateMode ? 'Create new content for your brand' : 'Edit your content'}
             </DrawerDescription>
           </DrawerHeader>
-        <div className="flex-1 overflow-y-auto">
-          <ContentForm 
-            formData={formData}
-            setFormData={setFormData}
-            content={content}
-            isEditing={isEditing}
-            isCreateMode={isCreateMode}
-            brands={brands}
-            products={filteredProducts}
-            handleSave={handleSave}
-            handleSubmit={handleSubmit}
-            handlePublish={handlePublish}
-            isProcessing={isProcessing}
-            onSubmit={onSubmit}
-            onPublish={onPublish}
-            className="px-4"
-            showButtons={showButtons}
-            onSelectImages={handleSelectImages}
-            onSelectVideo={handleSelectVideo}
-            imagePreviews={imagePreviews}
-            videoPreview={videoPreview}
-          />
-        </div>
+          <div className="flex-1 overflow-y-auto">
+            <ContentForm 
+              formData={formData}
+              setFormData={setFormData}
+              content={content ?? null}
+              isEditing={isEditing}
+              isCreateMode={isCreateMode}
+              brands={brands}
+              products={filteredProducts}
+              handleSave={handleSave}
+              handleSubmit={handleSubmit}
+              isProcessing={isProcessing}
+              onSubmit={onSubmit}
+              className="px-4"
+              showButtons={false}
+              onSelectImages={handleSelectImages}
+              onSelectVideo={handleSelectVideo}
+              imagePreviews={imagePreviews}
+              videoPreview={videoPreview}
+            />
+          </div>
         <DrawerFooter className="flex-shrink-0">
           <div className="flex flex-col gap-2">
             {(isEditing || isCreateMode) && (
@@ -356,16 +415,6 @@ export function ContentModal({
               </Button>
             )}
             
-            {content && content.status === ContentStatusEnum.Approved && onPublish && !isEditing && (
-              <Button
-                onClick={handlePublish}
-                disabled={isProcessing}
-                className="w-full bg-green-600 hover:bg-green-700"
-              >
-                <Share className="mr-2 h-4 w-4" />
-                Publish Content
-              </Button>
-            )}
           </div>
         </DrawerFooter>
       </DrawerContent>
@@ -383,10 +432,8 @@ function ContentForm({
   products, 
   handleSave, 
   handleSubmit, 
-  handlePublish, 
   isProcessing,
   onSubmit,
-  onPublish,
   className,
   showButtons = true,
   onSelectImages,
@@ -403,10 +450,8 @@ function ContentForm({
   products: Array<{ id: string; name: string; brandId: string }>;
   handleSave: () => Promise<void>;
   handleSubmit: () => Promise<void>;
-  handlePublish: () => Promise<void>;
   isProcessing: boolean;
   onSubmit?: (contentId: string) => Promise<void>;
-  onPublish?: (contentId: string, integrationId: string) => Promise<void>;
   className?: string;
   showButtons?: boolean;
   onSelectImages: (files: FileList | null) => void;
@@ -414,6 +459,66 @@ function ContentForm({
   imagePreviews: string[];
   videoPreview: string | null;
 }) {
+  // Derive preview sources from existing content if user hasn't selected new media
+  const existingImageUrls = React.useMemo(() => {
+    const normalize = (val: unknown): string[] => {
+      if (val == null) return [];
+      if (Array.isArray(val)) return val.filter((v): v is string => typeof v === 'string' && !!v);
+      if (typeof val === 'string') {
+        const trimmed = val.trim();
+        if (!trimmed || trimmed.toLowerCase() === 'null' || trimmed.toLowerCase() === 'undefined') return [];
+        // Try up to two JSON parses to handle double-encoded strings
+        let current: unknown = trimmed;
+        for (let i = 0; i < 2; i++) {
+          try {
+            const parsed = JSON.parse(current as string);
+            if (Array.isArray(parsed)) return parsed.filter(Boolean);
+            if (typeof parsed === 'string') {
+              current = parsed;
+              continue;
+            }
+            // Fallback if parsed to non-string/array
+            break;
+          } catch {
+            break;
+          }
+        }
+        // If we reach here, treat as single URL string
+        return [trimmed];
+      }
+      return [];
+    };
+    return normalize(formData.imageUrl as unknown);
+  }, [formData.imageUrl]);
+
+  // For multi-upload, show existing images plus any newly selected previews
+  const displayImageUrls = React.useMemo(() => {
+    return [...existingImageUrls, ...imagePreviews];
+  }, [existingImageUrls, imagePreviews]);
+  const displayVideoUrl = React.useMemo(() => {
+    if (videoPreview) return videoPreview;
+    const val: unknown = formData.videoUrl as unknown;
+    if (val == null) return null;
+    if (typeof val === 'string') {
+      const trimmed = val.trim();
+      if (!trimmed || trimmed.toLowerCase() === 'null' || trimmed.toLowerCase() === 'undefined') return null;
+      let current: unknown = trimmed;
+      for (let i = 0; i < 2; i++) {
+        try {
+          const parsed = JSON.parse(current as string);
+          if (typeof parsed === 'string' && parsed) {
+            current = parsed;
+            continue;
+          }
+          break;
+        } catch {
+          break;
+        }
+      }
+      return typeof current === 'string' ? current : null;
+    }
+    return null;
+  }, [videoPreview, formData.videoUrl]);
   return (
     <div className={`space-y-4 pb-4 ${className || ''}`}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -539,9 +644,9 @@ function ContentForm({
             <div className="space-y-2">
               <Label className="text-sm font-medium">Images</Label>
               <Input type="file" accept="image/*" multiple onChange={(e) => onSelectImages(e.target.files)} />
-              {imagePreviews.length > 0 && (
+              {displayImageUrls.length > 0 && (
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
-                  {imagePreviews.map((src: string, i: number) => (
+                  {displayImageUrls.map((src: string, i: number) => (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img key={i} src={src} alt="Preview" className="w-full h-24 object-cover rounded" />
                   ))}
@@ -554,8 +659,8 @@ function ContentForm({
             <div className="space-y-2">
               <Label className="text-sm font-medium">Video</Label>
               <Input type="file" accept="video/*" onChange={(e) => onSelectVideo(e.target.files?.[0] || null)} />
-              {videoPreview && (
-                <video className="w-full h-48 rounded" controls src={videoPreview} />
+              {displayVideoUrl && (
+                <video className="w-full h-48 rounded" controls src={displayVideoUrl} />
               )}
             </div>
           )}
@@ -572,20 +677,7 @@ function ContentForm({
             />
           </div>
 
-          {(isEditing || isCreateMode) && (
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="publishImmediately"
-                checked={formData.publishImmediately}
-                onChange={(e) => setFormData({ ...formData, publishImmediately: e.target.checked })}
-                className="rounded"
-              />
-              <Label htmlFor="publishImmediately" className="text-sm">
-                Publish immediately after approval
-              </Label>
-            </div>
-          )}
+          {/* Publish immediately option removed as default is false */}
 
           {content && !isEditing && (
             <div className="space-y-4 pt-4 border-t">
@@ -628,16 +720,6 @@ function ContentForm({
               </Button>
             )}
             
-            {content && content.status === ContentStatusEnum.Approved && onPublish && !isEditing && (
-              <Button
-                onClick={handlePublish}
-                disabled={isProcessing}
-                className="flex-1 min-w-[120px] h-9 text-sm bg-green-600 hover:bg-green-700"
-              >
-                <Share className="mr-2 h-4 w-4" />
-                Publish Content
-              </Button>
-            )}
           </div>
       )}
     </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { getUserSubscriptions, getActiveSubscription, getPlanPricing } from '@/lib/api/subscription'
+import { getUserSubscriptions, getActiveSubscription, getActiveSubscriptionByProfile, getPlanPricing } from '@/lib/api/subscription'
 import { SubscriptionResponseDto, Subscription, SubscriptionPlanEnum, SubscriptionTier } from '@/lib/types/subscription'
 
 export function useSubscription(profileId?: string) {
@@ -20,12 +20,32 @@ export function useSubscription(profileId?: string) {
       setIsLoading(true)
       setError(null)
       
-      const data = await getUserSubscriptions()
-      setSubscriptions(data)
-      
+      // If profileId is provided, get active subscription directly for that profile
+      // Backend uses active profile from context, so this will get the subscription
+      // for the currently active profile
       if (profileId) {
-        const active = await getActiveSubscription(profileId)
-        setActiveSubscription(active)
+        try {
+          // Get active subscription directly (uses active profile from backend context)
+          const active = await getActiveSubscriptionByProfile()
+          setActiveSubscription(active)
+        } catch (err) {
+          console.error('Error fetching active subscription by profile:', err)
+          // If API fails (e.g., no active subscription), set to null
+          setActiveSubscription(null)
+        }
+        
+        // Also get all subscriptions for reference
+        try {
+          const data = await getUserSubscriptions()
+          setSubscriptions(data)
+        } catch (err) {
+          console.error('Error fetching all subscriptions:', err)
+          setSubscriptions([])
+        }
+      } else {
+        // No profileId, just get all subscriptions
+        const data = await getUserSubscriptions()
+        setSubscriptions(data)
       }
     } catch (err) {
       console.error('Subscription loading error:', err)
@@ -145,21 +165,8 @@ export function useChangePlan() {
       billingCycle: 'monthly' | 'yearly'
       immediate: boolean
     }) => {
-      // Mock API call for plan change
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // In a real implementation, this would call your API
-      const response = await fetch('/api/subscription/change-plan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId, billingCycle, immediate })
-      })
-      
-      if (!response.ok) {
-        throw new Error('Failed to change plan')
-      }
-      
-      return response.json()
+      const { changeSubscriptionPlan } = await import('@/lib/api/subscription')
+      return await changeSubscriptionPlan(planId, billingCycle, immediate)
     },
     onSuccess: () => {
       // Invalidate subscription queries to refetch updated data
@@ -287,21 +294,8 @@ export function useCancelSubscription() {
       subscriptionId: string
       reason?: string
     }) => {
-      // Mock API call for subscription cancellation
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // In a real implementation, this would call your API
-      const response = await fetch('/api/subscription/cancel', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subscriptionId, reason })
-      })
-      
-      if (!response.ok) {
-        throw new Error('Failed to cancel subscription')
-      }
-      
-      return response.json()
+      const { cancelSubscription } = await import('@/lib/api/subscription')
+      return await cancelSubscription(subscriptionId)
     },
     onSuccess: () => {
       // Invalidate subscription queries to refetch updated data

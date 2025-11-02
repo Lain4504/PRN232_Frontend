@@ -77,8 +77,11 @@ function ScheduleContentForm({
       return;
     }
 
+    const normalizedTime = scheduledTime && scheduledTime.length === 5 ? `${scheduledTime}:00` : scheduledTime;
+
     const payload: ScheduleContentRequest = {
-      scheduledDate: `${scheduledDate}T${scheduledTime}`,
+      scheduledDate: scheduledDate,
+      scheduledTime: normalizedTime,
       timezone,
       integrationIds: selectedIntegrationIds,
     };

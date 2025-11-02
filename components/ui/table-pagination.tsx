@@ -46,19 +46,19 @@ export function TablePagination({
   return (
     <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 ${className}`}>
       {/* Items info */}
-      <div className="text-xs text-gray-500 font-medium">
+      <div className="text-xs text-muted-foreground font-medium">
         Showing {startItem} to {endItem} of {totalItems} entries
       </div>
 
       <div className="flex items-center gap-4">
         {/* Page size selector */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">Rows per page:</span>
+          <span className="text-xs text-muted-foreground">Rows per page:</span>
           <Select
             value={String(pageSize)}
             onValueChange={(value) => onPageSizeChange(Number(value))}
           >
-            <SelectTrigger className="w-20 h-8 rounded-md border-gray-200/60 bg-white/60 backdrop-blur-sm text-gray-600 focus:border-gray-300 focus:ring-1 focus:ring-gray-200/50">
+            <SelectTrigger className="w-20 h-8">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -78,22 +78,22 @@ export function TablePagination({
             size="sm"
             onClick={goToFirstPage}
             disabled={!canGoToPreviousPage}
-            className="h-8 w-8 p-0 rounded-md border-gray-200/60 hover:bg-gray-50/60 disabled:opacity-40 disabled:cursor-not-allowed bg-white/60 backdrop-blur-sm"
+            className="h-8 w-8 p-0"
           >
-            <ChevronsLeft className="h-3.5 w-3.5 text-gray-500" />
+            <ChevronsLeft className="h-3.5 w-3.5" />
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={goToPreviousPage}
             disabled={!canGoToPreviousPage}
-            className="h-8 w-8 p-0 rounded-md border-gray-200/60 hover:bg-gray-50/60 disabled:opacity-40 disabled:cursor-not-allowed bg-white/60 backdrop-blur-sm"
+            className="h-8 w-8 p-0"
           >
-            <ChevronLeft className="h-3.5 w-3.5 text-gray-500" />
+            <ChevronLeft className="h-3.5 w-3.5" />
           </Button>
           
           <div className="flex items-center gap-1 px-3">
-            <span className="text-xs text-gray-500 font-medium">
+            <span className="text-xs text-muted-foreground font-medium">
               Page {currentPage + 1} of {totalPages}
             </span>
           </div>
@@ -103,18 +103,18 @@ export function TablePagination({
             size="sm"
             onClick={goToNextPage}
             disabled={!canGoToNextPage}
-            className="h-8 w-8 p-0 rounded-md border-gray-200/60 hover:bg-gray-50/60 disabled:opacity-40 disabled:cursor-not-allowed bg-white/60 backdrop-blur-sm"
+            className="h-8 w-8 p-0"
           >
-            <ChevronRight className="h-3.5 w-3.5 text-gray-500" />
+            <ChevronRight className="h-3.5 w-3.5" />
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={goToLastPage}
             disabled={!canGoToNextPage}
-            className="h-8 w-8 p-0 rounded-md border-gray-200/60 hover:bg-gray-50/60 disabled:opacity-40 disabled:cursor-not-allowed bg-white/60 backdrop-blur-sm"
+            className="h-8 w-8 p-0"
           >
-            <ChevronsRight className="h-3.5 w-3.5 text-gray-500" />
+            <ChevronsRight className="h-3.5 w-3.5" />
           </Button>
         </div>
       </div>

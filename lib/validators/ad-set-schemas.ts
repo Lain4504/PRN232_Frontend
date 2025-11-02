@@ -19,8 +19,6 @@ const locationTargetingSchema = z.object({
     latitude: z.number().min(-90).max(90),
     longitude: z.number().min(-180).max(180),
   }).optional(),
-}).refine((data) => data.country || data.region || data.city || data.coordinates, {
-  message: 'At least one location criteria must be specified',
 });
 
 // Demographics targeting validation
@@ -35,16 +33,14 @@ const demographicsTargetingSchema = z.object({
 const genderTargetingSchema = z.object({
   male: z.boolean().optional(),
   female: z.boolean().optional(),
-}).refine((data) => data.male || data.female, {
-  message: 'At least one gender must be selected',
 });
 
 // Targeting configuration validation
 const targetingConfigSchema = z.object({
   demographics: demographicsTargetingSchema.optional(),
-  interests: z.array(z.string()).min(1, 'At least one interest must be selected').optional(),
+  interests: z.array(z.string()).optional(),
   behaviors: z.array(z.string()).optional(),
-  locations: z.array(locationTargetingSchema).min(1, 'At least one location must be specified').optional(),
+  locations: z.array(locationTargetingSchema).optional(),
   ageRange: ageRangeSchema.optional(),
   gender: genderTargetingSchema.optional(),
   customAudiences: z.array(z.string()).optional(),
@@ -87,7 +83,7 @@ export const createAdSetSchema = z.object({
   targeting: targetingConfigSchema,
   budget: z.number()
     .min(0.01, 'Budget must be greater than 0')
-    .max(10000, 'Budget cannot exceed $10,000 per day'),
+    .max(10000, 'Budget cannot exceed 10,000 VND per day'),
   schedule: scheduleSchema.optional(),
 });
 

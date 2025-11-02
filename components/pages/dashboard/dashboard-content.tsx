@@ -12,8 +12,6 @@ import {
   Calendar,
   Plus,
   Filter,
-  ArrowUpIcon,
-  ArrowDownIcon,
   Clock,
   Send,
   TrendingUp,
@@ -34,8 +32,6 @@ const getStatsData = (stats: DashboardStats) => {
   {
     title: "Total Teams",
     value: teamsVal.toString(),
-    change: "+3.1%",
-    trend: "up",
     icon: Users,
     color: "text-chart-2",
     bgColor: "bg-chart-2/10",
@@ -46,8 +42,6 @@ const getStatsData = (stats: DashboardStats) => {
   {
     title: "Total Brands",
     value: stats.total_brands.toString(),
-    change: "+5.2%",
-    trend: "up",
     icon: Target,
     color: "text-chart-1",
     bgColor: "bg-chart-1/10",
@@ -58,8 +52,6 @@ const getStatsData = (stats: DashboardStats) => {
   {
     title: "Total Contents",
     value: stats.total_contents.toString(),
-    change: "+8.4%", 
-    trend: "up",
     icon: FileText,
     color: "text-chart-3",
     bgColor: "bg-chart-3/10",
@@ -70,8 +62,6 @@ const getStatsData = (stats: DashboardStats) => {
   {
     title: "Published Posts",
     value: stats.total_posts.toString(),
-    change: "+15.2%",
-    trend: "up", 
     icon: Send,
     color: "text-chart-4",
     bgColor: "bg-chart-4/10",
@@ -99,9 +89,8 @@ const DashboardContent = () => {
           setUser(userResponse.data)
         }
         
-        // Get dashboard stats - using a custom endpoint or calculating from other data
-        // For now, we'll create a mock stats object based on available data
-        const statsResponse = await api.get<DashboardStats>('/dashboard/stats')
+        // Get dashboard stats for current profile
+        const statsResponse = await api.get<DashboardStats>(endpoints.dashboardStats())
         if (statsResponse.success) {
           const raw = statsResponse.data as unknown as Record<string, unknown>
           const toNumber = (value: unknown): number => {
@@ -170,26 +159,6 @@ const DashboardContent = () => {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button asChild variant="outline" size="sm" className="text-xs px-3 py-1.5">
-            <Link href="/dashboard?filter=open">
-              <Filter className="mr-1 h-3 w-3" />
-              Filter
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm" className="text-xs px-3 py-1.5">
-            <Link href="/dashboard/insights">
-              <TrendingUp className="mr-1 h-3 w-3" />
-              Analytics
-            </Link>
-          </Button>
-          <Button asChild size="sm" className="text-xs px-3 py-1.5">
-            <Link href="/dashboard/brands">
-              <Plus className="mr-1 h-3 w-3" />
-              New Brand
-            </Link>
-          </Button>
-        </div>
       </div>
 
       {/* Compact Stats Grid */}
@@ -208,20 +177,7 @@ const DashboardContent = () => {
               </div>
             </CardHeader>
             <CardContent className="pt-1">
-              <div className="space-y-1">
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <div className="flex items-center text-xs">
-                  {stat.trend === 'up' ? (
-                    <ArrowUpIcon className="mr-1 h-3 w-3 text-chart-2" />
-                  ) : (
-                    <ArrowDownIcon className="mr-1 h-3 w-3 text-destructive" />
-                  )}
-                  <span className={stat.trend === 'up' ? 'text-chart-2 font-medium' : 'text-destructive font-medium'}>
-                    {stat.change}
-                  </span>
-                  <span className="ml-1 text-muted-foreground/70 text-xs">from last month</span>
-                </div>
-              </div>
+              <div className="text-2xl font-bold">{stat.value}</div>
             </CardContent>
           </Card>
         ))}

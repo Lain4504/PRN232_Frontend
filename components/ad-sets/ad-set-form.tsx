@@ -9,11 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
 import { X, Plus, Target, DollarSign, Calendar, Users, MapPin } from "lucide-react";
 import { useCreateAdSet, useUpdateAdSet } from "@/hooks/use-ad-sets";
 import { createAdSetSchema, updateAdSetSchema } from "@/lib/validators/ad-set-schemas";
-import { TARGETING_INTERESTS, GENDER_OPTIONS } from "@/lib/types/ad-sets";
+import { GENDER_OPTIONS } from "@/lib/types/ad-sets";
 import type { AdSetResponse } from "@/lib/types/ad-sets";
 import type { CreateAdSetFormData, UpdateAdSetFormData } from "@/lib/validators/ad-set-schemas";
 import { toast } from "sonner";
@@ -71,18 +70,6 @@ export function AdSetForm({ campaignId, adSet, onSuccess, onCancel }: AdSetFormP
     }
   };
 
-  const addInterest = (interest: string) => {
-    const currentInterests = watchedTargeting?.interests || [];
-    if (!currentInterests.includes(interest)) {
-      setValue("targeting.interests", [...currentInterests, interest]);
-    }
-  };
-
-  const removeInterest = (interest: string) => {
-    const currentInterests = watchedTargeting?.interests || [];
-    setValue("targeting.interests", currentInterests.filter((i: string) => i !== interest));
-  };
-
   const addLocation = () => {
     const currentLocations = watchedTargeting?.locations || [];
     setValue("targeting.locations", [...currentLocations, { country: "" }]);
@@ -128,7 +115,7 @@ export function AdSetForm({ campaignId, adSet, onSuccess, onCancel }: AdSetFormP
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="budget">Daily Budget ($)</Label>
+            <Label htmlFor="budget">Daily Budget (VND)</Label>
             <div className="relative">
               <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -217,42 +204,7 @@ export function AdSetForm({ campaignId, adSet, onSuccess, onCancel }: AdSetFormP
             )}
           </div>
 
-          {/* Interests */}
-          <div className="space-y-2">
-            <Label>Interests</Label>
-            <div className="space-y-3">
-              <div className="flex flex-wrap gap-2">
-                {watchedTargeting?.interests?.map((interest: string) => (
-                  <Badge key={interest} variant="secondary" className="flex items-center gap-1">
-                    {interest}
-                    <X
-                      className="h-3 w-3 cursor-pointer"
-                      onClick={() => removeInterest(interest)}
-                    />
-                  </Badge>
-                ))}
-              </div>
-              <Select onValueChange={addInterest}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Add interest" />
-                </SelectTrigger>
-                <SelectContent>
-                  {TARGETING_INTERESTS.map((interest) => (
-                    <SelectItem
-                      key={interest}
-                      value={interest}
-                      disabled={watchedTargeting?.interests?.includes(interest)}
-                    >
-                      {interest}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {errors.targeting?.interests && (
-              <p className="text-sm text-destructive">{errors.targeting.interests.message}</p>
-            )}
-          </div>
+          {/* Interests removed: Facebook requires numeric IDs; hiding to prevent invalid requests */}
 
           {/* Locations */}
           <div className="space-y-2">

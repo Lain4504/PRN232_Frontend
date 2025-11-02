@@ -17,9 +17,30 @@ import {
 } from 'lucide-react'
 import type { Brand } from '@/lib/types/aisam-types'
 
+interface TeamStatsResponse {
+  membersCount: number
+  membersAddedThisMonth: number
+  brandsCount: number
+  totalContents: number
+  contentCreatedThisWeek: number
+  pendingApprovals: number
+}
+
 export function TeamDashboardOverview() {
   const { activeTeamId, activeTeam } = useTeam()
 
+  // Fetch team stats
+  const { data: statsResp, isLoading: loadingStats } = useQuery({
+    queryKey: ['team-stats', activeTeamId],
+    queryFn: async () => {
+      if (!activeTeamId) return { data: null }
+      return api.get<TeamStatsResponse>(endpoints.teamStats(activeTeamId))
+    },
+    enabled: !!activeTeamId,
+    staleTime: 5 * 60 * 1000,
+  })
+
+  // Fetch team brands for display
   const { data: brandsResp, isLoading: loadingBrands } = useQuery({
     queryKey: ['team-brands', activeTeamId],
     queryFn: async () => {
@@ -30,31 +51,42 @@ export function TeamDashboardOverview() {
     staleTime: 5 * 60 * 1000,
   })
 
+  const teamStats = statsResp?.data as TeamStatsResponse | undefined
   const teamBrands = (brandsResp?.data as Brand[]) || []
-  const isLoading = loadingBrands
+  const isLoading = loadingStats || loadingBrands
+
+  // Format trend text for members
+  const membersTrend = teamStats?.membersAddedThisMonth 
+    ? `+${teamStats.membersAddedThisMonth} this month`
+    : "0 this month"
+
+  // Format trend text for content
+  const contentTrend = teamStats?.contentCreatedThisWeek
+    ? `+${teamStats.contentCreatedThisWeek} this week`
+    : "0 this week"
 
   const statsCards = [
     {
       title: "Members",
-      value: activeTeam?.membersCount || 0,
+      value: teamStats?.membersCount || 0,
       icon: Users,
-      trend: "+2 this month"
+      trend: membersTrend
     },
     {
       title: "Brands",
-      value: teamBrands.length,
+      value: teamStats?.brandsCount || teamBrands.length || 0,
       icon: Building2,
       trend: "All active"
     },
     {
       title: "Content",
-      value: 0,
+      value: teamStats?.totalContents || 0,
       icon: FileText,
-      trend: "+12 this week"
+      trend: contentTrend
     },
     {
       title: "Pending",
-      value: 0,
+      value: teamStats?.pendingApprovals || 0,
       icon: CheckCircle,
       trend: "Needs review"
     }

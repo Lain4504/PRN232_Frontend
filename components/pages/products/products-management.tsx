@@ -253,9 +253,9 @@ export function ProductsManagement() {
         </div>
 
         {/* Single Row Layout - Stats, Page Size, Search, Products, Create Button */}
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
           {/* Stats */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
               <Package className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
               <span className="font-medium">{totalProducts}</span>
@@ -269,7 +269,7 @@ export function ProductsManagement() {
             value={String(pageSize)}
             onValueChange={(value) => setPageSize(Number(value))}
           >
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-full sm:w-[120px] md:w-32">
               <SelectValue placeholder="Rows" />
             </SelectTrigger>
             <SelectContent>
@@ -282,7 +282,7 @@ export function ProductsManagement() {
           </Select>
 
           {/* Search */}
-          <div className="relative w-80">
+          <div className="relative w-full sm:w-64 md:w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search products..."
@@ -295,13 +295,13 @@ export function ProductsManagement() {
 
 
           {/* Create Button */}
-          <div className="ml-auto">
+          <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-2">
             <ProductModal
               mode="create"
               defaultBrandId={brandId}
               onSuccess={handleRefresh}
             >
-              <Button size="sm">
+              <Button size="sm" className="w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Product
               </Button>

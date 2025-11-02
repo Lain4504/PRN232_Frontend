@@ -57,10 +57,10 @@ export default function BillingPage() {
     return (
       <div className="container mx-auto py-6 space-y-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+          <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="h-64 bg-gray-200 rounded"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
+            <div className="h-64 bg-muted rounded"></div>
+            <div className="h-64 bg-muted rounded"></div>
           </div>
         </div>
       </div>
@@ -195,8 +195,8 @@ export default function BillingPage() {
                       variant={invoice.status === 'paid' ? 'default' : 'secondary'}
                       className={
                         invoice.status === 'paid' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
+                          ? 'bg-success text-success-foreground' 
+                          : 'bg-warning text-warning-foreground'
                       }
                     >
                       {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}

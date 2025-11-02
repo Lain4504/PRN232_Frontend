@@ -40,7 +40,7 @@ export function CustomTable<TData, TValue>({
   currentPage = 0,
   pageSize = 10,
   className,
-  headerClassName = "bg-gray-50/50 hover:bg-gray-50/50 border-b border-gray-300/60",
+  headerClassName = "bg-muted/50 hover:bg-muted/50 border-b border-border",
   emptyMessage = "No data found",
   emptyDescription,
   loadingRows = 5,
@@ -61,7 +61,7 @@ export function CustomTable<TData, TValue>({
         const baseIndex = currentPage * pageSize;
         const displayIndex = baseIndex + row.index + 1;
         return (
-          <div className="text-center font-medium text-gray-700">
+          <div className="text-center font-medium text-foreground">
             {displayIndex}
           </div>
         );
@@ -105,17 +105,17 @@ export function CustomTable<TData, TValue>({
             )}
           >
             {column.id === "index" ? (
-              <div className="h-4 w-6 bg-gray-100/60 animate-pulse rounded mx-auto" />
+              <div className="h-4 w-6 bg-muted animate-pulse rounded mx-auto" />
             ) : column.id === "actions" ? (
-              <div className="h-8 w-8 bg-gray-100/60 animate-pulse rounded mx-auto" />
+              <div className="h-8 w-8 bg-muted animate-pulse rounded mx-auto" />
             ) : colIndex === 1 && showIndex ? (
               // First data column - usually has avatar + text
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-gray-100/60 animate-pulse" />
-                <div className="h-4 w-32 bg-gray-100/60 animate-pulse rounded" />
+                <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
+                <div className="h-4 w-32 bg-muted animate-pulse rounded" />
               </div>
             ) : (
-              <div className="h-4 w-24 bg-gray-100/60 animate-pulse rounded" />
+              <div className="h-4 w-24 bg-muted animate-pulse rounded" />
             )}
           </TableCell>
         ))}
@@ -126,7 +126,7 @@ export function CustomTable<TData, TValue>({
   // Loading state
   if (isLoading) {
     return (
-      <div className={cn("rounded-lg border border-gray-200/60 overflow-hidden bg-white/80 backdrop-blur-sm shadow-sm", className)}>
+      <div className={cn("rounded-lg border border-border overflow-hidden bg-card backdrop-blur-sm shadow-sm", className)}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -135,7 +135,7 @@ export function CustomTable<TData, TValue>({
                   <TableHead 
                     key={header.id} 
                     className={cn(
-                      "text-gray-500 font-medium text-xs uppercase tracking-wide py-3 px-4 h-12 text-center",
+                      "text-muted-foreground font-medium text-xs uppercase tracking-wide py-3 px-4 h-12 text-center",
                       header.id === "index" && "w-16",
                       header.id === "actions" && "w-16"
                     )}
@@ -157,7 +157,7 @@ export function CustomTable<TData, TValue>({
   }
 
   return (
-    <div className={cn("rounded-lg border border-gray-200/60 overflow-hidden bg-white/80 backdrop-blur-sm shadow-sm", className)}>
+    <div className={cn("rounded-lg border border-border overflow-hidden bg-card backdrop-blur-sm shadow-sm", className)}>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -189,7 +189,7 @@ export function CustomTable<TData, TValue>({
             <TableRow>
               <TableCell colSpan={columns.length} className="h-32 text-center py-12">
                 <div className="flex flex-col items-center justify-center">
-                  <p className="text-sm font-medium text-gray-500 mb-1">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">
                     {emptyMessage}
                   </p>
                   {emptyDescription && (
@@ -205,8 +205,8 @@ export function CustomTable<TData, TValue>({
               <TableRow 
                 key={row.id}
                 className={cn(
-                  "hover:bg-gray-50/40 transition-all duration-200 border-b border-gray-200/60 last:border-b-0",
-                  index % 2 === 0 ? "bg-white/60" : "bg-gray-50/20",
+                  "hover:bg-muted/50 transition-all duration-200 border-b border-border last:border-b-0",
+                  index % 2 === 0 ? "bg-card" : "bg-muted/30",
                   onRowClick && "cursor-pointer"
                 )}
                 onClick={() => onRowClick?.(row.original)}
@@ -215,8 +215,8 @@ export function CustomTable<TData, TValue>({
                   <TableCell 
                     key={cell.id} 
                     className={cn(
-                      "py-3 px-4 text-gray-700 text-sm font-medium",
-                      cell.column.id === "index" && "w-16 text-center font-semibold text-gray-800",
+                      "py-3 px-4 text-foreground text-sm font-medium",
+                      cell.column.id === "index" && "w-16 text-center font-semibold text-foreground",
                       cell.column.id === "actions" && "w-16 px-4 text-center"
                     )}
                   >

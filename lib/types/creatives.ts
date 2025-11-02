@@ -59,6 +59,17 @@ export interface CreateAdCreativeFromFacebookPostRequest {
   adName?: string;
 }
 
+export interface FacebookPostDetails {
+  id: string;
+  message?: string;
+  title?: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  linkUrl?: string;
+  createdTime: string;
+  type?: string;
+}
+
 export interface UpdateAdCreativeRequest extends Partial<CreateAdCreativeRequest> {
   id: string;
   isActive?: boolean;

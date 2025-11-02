@@ -5,23 +5,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { CustomTabs, CustomTabItem } from '@/components/ui/custom-tabs'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { 
-  CreditCard, 
-  Calendar, 
   Settings, 
-  History, 
   AlertTriangle, 
   CheckCircle,
   XCircle,
-  Clock,
-  Download
+  Clock
 } from 'lucide-react'
 import { useSubscription, useCancelSubscription } from '@/hooks/use-subscription'
-import { CurrentPlanCard } from './current-plan-card'
 import { PlanChangeDialog } from './plan-change-dialog'
-import { formatPrice, getPlanById } from '@/lib/constants/subscription-plans'
-import { getDaysUntilBilling, formatBillingDate } from '@/lib/utils/subscription'
+import { getPlanById } from '@/lib/constants/subscription-plans'
 import { toast } from 'sonner'
 import type { SubscriptionPlan, Subscription } from '@/lib/types/subscription'
 import { useProfile } from '@/lib/contexts/profile-context'
@@ -76,27 +79,27 @@ const createFallbackSubscription = (
 export function SubscriptionManagement({ className = '', profileId }: SubscriptionManagementProps) {
   const [showPlanChangeDialog, setShowPlanChangeDialog] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null)
-  const [activeTab, setActiveTab] = useState('overview')
-  const { data: subscription, isLoading } = useSubscription(profileId)
-  const { profileType } = useProfile()
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const { activeProfileId, profileType } = useProfile()
+  // Use prop profileId if provided, otherwise use activeProfileId from context
+  const effectiveProfileId = profileId || activeProfileId || undefined
+  const { data: subscription, isLoading } = useSubscription(effectiveProfileId)
   const cancelSubscriptionMutation = useCancelSubscription()
 
   // Create fallback subscription if API returns null but we have profile type
-  const effectiveSubscription = subscription || createFallbackSubscription(profileType, profileId)
+  const effectiveSubscription = subscription || createFallbackSubscription(profileType, effectiveProfileId)
 
   const handlePlanChange = (plan: SubscriptionPlan) => {
     setSelectedPlan(plan)
     setShowPlanChangeDialog(true)
   }
 
+  const handleCancelClick = () => {
+    setShowCancelDialog(true)
+  }
+
   const handleCancelSubscription = async () => {
     if (!effectiveSubscription) return
-
-    const confirmed = window.confirm(
-      'Are you sure you want to cancel your subscription? You will lose access to premium features at the end of your billing period.'
-    )
-
-    if (!confirmed) return
 
     try {
       await cancelSubscriptionMutation.mutateAsync({
@@ -104,6 +107,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
         reason: 'User requested cancellation'
       })
       toast.success('Subscription cancelled successfully')
+      setShowCancelDialog(false)
     } catch (error) {
       console.error('Cancellation error:', error)
       toast.error('Failed to cancel subscription. Please try again.')
@@ -165,13 +169,6 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
     )
   }
 
-  const daysUntilBilling = getDaysUntilBilling(effectiveSubscription)
-  const nextBillingDate = new Date(effectiveSubscription.currentPeriodEnd)
-
-  const tabItems: CustomTabItem[] = [
-    { value: 'overview', label: 'Overview' },
-    { value: 'billing', label: 'Billing' }
-  ]
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -183,184 +180,87 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
         </p>
       </div>
 
-      {/* Current Plan Overview */}
-      <CurrentPlanCard showUsage={true} showActions={false} />
+      {/* Subscription Information */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Subscription Status */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              {getStatusIcon(effectiveSubscription.status)}
+              <span>Subscription Status</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Status</span>
+              <Badge className={getStatusColor(effectiveSubscription.status)}>
+                {effectiveSubscription.status.charAt(0).toUpperCase() + effectiveSubscription.status.slice(1)}
+              </Badge>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Plan</span>
+              <span className="font-medium">{effectiveSubscription.planName}</span>
+            </div>
 
-      {/* Main Content Tabs */}
-      <div className="space-y-6">
-        <CustomTabs
-          items={tabItems}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+            {effectiveSubscription.currentPeriodEnd && (
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">End Date</span>
+                <span className="font-medium">
+                  {new Date(effectiveSubscription.currentPeriodEnd).toLocaleDateString()}
+                </span>
+              </div>
+            )}
 
-        {/* Overview Tab */}
-        {activeTab === 'overview' && (
-          <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Subscription Status */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  {getStatusIcon(effectiveSubscription.status)}
-                  <span>Subscription Status</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Status</span>
-                  <Badge className={getStatusColor(effectiveSubscription.status)}>
-                    {effectiveSubscription.status.charAt(0).toUpperCase() + effectiveSubscription.status.slice(1)}
-                  </Badge>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Plan</span>
-                  <span className="font-medium">{effectiveSubscription.planName}</span>
-                </div>
+            {effectiveSubscription.currentPeriodStart && (
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Start Date</span>
+                <span className="font-medium">
+                  {new Date(effectiveSubscription.currentPeriodStart).toLocaleDateString()}
+                </span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Billing Cycle</span>
-                  <span className="font-medium capitalize">{effectiveSubscription.billingCycle}</span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Next Billing</span>
-                  <span className="font-medium">{formatBillingDate(nextBillingDate)}</span>
-                </div>
-
-                {effectiveSubscription.cancelAtPeriodEnd && (
-                  <Alert variant="destructive">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>
-                      Your subscription will be cancelled at the end of the current period
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>
-                  Manage your subscription and billing
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button 
-                  onClick={() => handlePlanChange(getPlanById('pro')!)}
-                  className="w-full justify-start"
-                  variant="outline"
-                >
-                  <Settings className="h-4 w-4 mr-2" />
-                  Change Plan
-                </Button>
-                
-                <Button 
-                  className="w-full justify-start"
-                  variant="outline"
-                >
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Update Payment Method
-                </Button>
-                
-                <Button 
-                  className="w-full justify-start"
-                  variant="outline"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download Invoice
-                </Button>
-                
-                {effectiveSubscription.tier !== 'free' && (
-                  <Button 
-                    onClick={handleCancelSubscription}
-                    className="w-full justify-start text-red-600 hover:text-red-700"
-                    variant="outline"
-                    disabled={cancelSubscriptionMutation.isPending}
-                  >
-                    <XCircle className="h-4 w-4 mr-2" />
-                    {cancelSubscriptionMutation.isPending ? 'Cancelling...' : 'Cancel Subscription'}
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-        )}
-
-        {/* Billing Tab */}
-        {activeTab === 'billing' && (
-          <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Billing Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <CreditCard className="h-5 w-5" />
-                  <span>Billing Information</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Next Payment</span>
-                  <span className="font-medium">
-                    {formatPrice(effectiveSubscription.tier === 'free' ? 0 : 29)}
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Payment Date</span>
-                  <span className="font-medium">{formatBillingDate(nextBillingDate)}</span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Days Until Billing</span>
-                  <span className="font-medium">{daysUntilBilling} days</span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Payment Method</span>
-                  <span className="font-medium">•••• 4242</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Billing History Preview */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <History className="h-5 w-5" />
-                  <span>Recent Billing</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>December 2024</span>
-                    <span className="font-medium">{formatPrice(29)}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>November 2024</span>
-                    <span className="font-medium">{formatPrice(29)}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>October 2024</span>
-                    <span className="font-medium">{formatPrice(29)}</span>
-                  </div>
-                </div>
-                <Button variant="outline" size="sm" className="w-full mt-4">
-                  View All History
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-        )}
-
-        
+        {/* Quick Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>
+              Manage your subscription
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button 
+              onClick={() => {
+                const plan = getPlanById('pro')
+                if (plan) {
+                  handlePlanChange(plan)
+                } else {
+                  toast.error('Plan not found. Please try again.')
+                }
+              }}
+              className="w-full justify-start"
+              variant="outline"
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Change Plan
+            </Button>
+            
+            {effectiveSubscription.tier !== 'free' && (
+              <Button 
+                onClick={handleCancelClick}
+                className="w-full justify-start text-red-600 hover:text-red-700"
+                variant="outline"
+                disabled={cancelSubscriptionMutation.isPending}
+              >
+                <XCircle className="h-4 w-4 mr-2" />
+                {cancelSubscriptionMutation.isPending ? 'Cancelling...' : 'Cancel Subscription'}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Plan Change Dialog */}
@@ -372,6 +272,42 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
           currentSubscription={effectiveSubscription}
         />
       )}
+
+      {/* Cancel Subscription Alert Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-500" />
+              Cancel Subscription?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <p>
+                Are you sure you want to cancel your subscription? This action cannot be undone.
+              </p>
+              <div className="bg-muted p-3 rounded-md space-y-2 text-sm">
+                <p className="font-medium">What will happen:</p>
+                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                  <li>You will lose access to premium features immediately</li>
+                  <li>Your subscription will be cancelled at the end of the current billing period</li>
+                  <li>You&apos;ll be moved to the Free plan automatically</li>
+                  <li>Your data will be preserved, but you won&apos;t be able to create new premium content</li>
+                </ul>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelSubscription}
+              disabled={cancelSubscriptionMutation.isPending}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              {cancelSubscriptionMutation.isPending ? 'Cancelling...' : 'Yes, Cancel Subscription'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

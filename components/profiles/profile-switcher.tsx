@@ -37,6 +37,10 @@ export function ProfileSwitcher() {
     window.location.href = '/overview/profile/new'
   }
 
+  const handleManageProfiles = () => {
+    window.location.href = '/overview'
+  }
+
   if (!activeProfile) {
     return (
       <Button variant="outline" onClick={handleSwitchProfile}>
@@ -131,7 +135,7 @@ export function ProfileSwitcher() {
           Create New Profile
         </DropdownMenuItem>
         
-        <DropdownMenuItem onClick={handleSwitchProfile}>
+        <DropdownMenuItem onClick={handleManageProfiles}>
           <Building2 className="h-4 w-4 mr-2" />
           Manage Profiles
         </DropdownMenuItem>

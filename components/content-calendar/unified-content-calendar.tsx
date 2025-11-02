@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,7 @@ import { UpcomingSchedulesList } from "./upcoming-schedules-list";
 import { CalendarGrid } from "./calendar-grid";
 import { useCalendarData } from "@/hooks/use-calendar-data";
 import type { ContentCalendar } from "@/lib/types/aisam-types";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface UnifiedContentCalendarProps {
   teamId: string;
@@ -59,6 +60,12 @@ export function UnifiedContentCalendar({
     console.log('[Calendar] Brand filter changed to:', brandId);
     setBrandFilter(brandId === "all" ? undefined : brandId);
   };
+
+  const schedulesForSelectedDate = useMemo(() => {
+    if (!selectedDate) return [] as ContentCalendar[];
+    const dateStr = selectedDate.toISOString().split('T')[0];
+    return schedules.filter(s => new Date(s.scheduledDate).toISOString().split('T')[0] === dateStr);
+  }, [selectedDate, schedules]);
 
   if (error) {
     return (
@@ -185,6 +192,46 @@ export function UnifiedContentCalendar({
           </div>
         </div>
       )}
+
+      {/* Day Schedules Modal */}
+      <Dialog open={!!selectedDate} onOpenChange={(open) => !open && setSelectedDate(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedDate ? selectedDate.toLocaleDateString() : ''}
+            </DialogTitle>
+          </DialogHeader>
+
+          {schedulesForSelectedDate.length === 0 && (
+            <div className="text-sm text-muted-foreground">No schedules for this date.</div>
+          )}
+
+          <div className="space-y-2">
+            {schedulesForSelectedDate.map(event => {
+              const eventTime = event.scheduledTime 
+                ? new Date(`${event.scheduledDate}T${event.scheduledTime}`).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+                : new Date(event.scheduledDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+            return (
+              <button
+                key={event.id}
+                className="w-full text-left p-3 rounded-md border hover:shadow-sm transition flex flex-col gap-1"
+                onClick={() => {
+                  onEventClick?.(event);
+                  setSelectedDate(null);
+                }}
+                title={`${event.contentTitle || 'Untitled'} - ${event.brandName || 'Unknown Brand'} at ${eventTime}`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="font-medium truncate">{event.contentTitle || 'Untitled Content'}</div>
+                  <div className="text-xs text-muted-foreground">{eventTime}</div>
+                </div>
+                <div className="text-xs text-muted-foreground truncate">{event.brandName}</div>
+              </button>
+            )})}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

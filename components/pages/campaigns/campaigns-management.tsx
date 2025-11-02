@@ -133,8 +133,8 @@ const createColumns = (
           <div className="text-sm font-medium">
             {budget ? (
               <div className="flex items-center gap-1">
-                <DollarSign className="h-3 w-3" />
-                {Number(budget ?? 0).toLocaleString()}
+                <span>₫</span>
+                {Number(budget ?? 0).toLocaleString('vi-VN')}
               </div>
             ) : (
               <span className="text-muted-foreground">No budget</span>
@@ -363,9 +363,9 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
         </div>
 
         {/* Single Row Layout - Stats, Filters, Search, Campaign Count, Create Button */}
-        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
           {/* Stats */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg text-xs lg:text-sm">
               <Megaphone className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
               <span className="font-medium">{totalCampaigns}</span>
@@ -381,7 +381,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
 
           {/* Filters */}
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-full sm:w-[120px] md:w-32">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -393,7 +393,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
           </Select>
 
           <Select value={objectiveFilter} onValueChange={setObjectiveFilter}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-full sm:w-[140px] md:w-40">
               <SelectValue placeholder="Objective" />
             </SelectTrigger>
             <SelectContent>
@@ -407,7 +407,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
           </Select>
 
           <Select value={brandFilter} onValueChange={setBrandFilter}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-full sm:w-[120px] md:w-32">
               <SelectValue placeholder="Brand" />
             </SelectTrigger>
             <SelectContent>
@@ -436,9 +436,9 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
 
 
           {/* Create Button */}
-          <div className="ml-auto">
+          <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-2">
             <CampaignModal mode="create" onSuccess={handleRefresh}>
-              <Button size="sm">
+              <Button size="sm" className="w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" />
                 Create Campaign
               </Button>

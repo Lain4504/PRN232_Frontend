@@ -79,9 +79,31 @@ export function useCreateBrand() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (payload: CreateBrandForm): Promise<Brand> => {
-      // Remove file from payload for now (backend might not support multipart)
-      const { logo, ...jsonPayload } = payload
-      const resp = await api.post<{ data: Brand }>(endpoints.brands(), jsonPayload)
+      // Step 1: upload logo if provided
+      let logoUrl: string | undefined
+      if (payload.logo) {
+        const formData = new FormData()
+        formData.append('file', payload.logo)
+        const uploadResp = await api.postMultipart<{ fileName: string; url: string }>(
+          endpoints.storageUpload('brandassets'),
+          formData
+        )
+        // API wrapper returns { data: { fileName, url } }
+        logoUrl = (uploadResp.data as unknown as { url?: string })?.url
+      }
+
+      // Step 2: send create request with PascalCase DTO fields
+      const requestBody = {
+        Name: payload.name,
+        Description: payload.description || undefined,
+        LogoUrl: logoUrl || undefined,
+        Slogan: payload.slogan || undefined,
+        Usp: payload.usp || undefined,
+        TargetAudience: payload.target_audience || undefined,
+        ProfileId: payload.profile_id || undefined,
+      }
+
+      const resp = await api.post<{ data: Brand }>(endpoints.brands(), requestBody)
       return resp.data.data
     },
     onSuccess: () => {
@@ -95,7 +117,30 @@ export function useUpdateBrand(brandId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (payload: CreateBrandForm): Promise<Brand> => {
-      const resp = await api.put<{ data: Brand }>(endpoints.brandById(brandId), payload)
+      // Step 1: upload new logo if provided
+      let logoUrl: string | undefined
+      if (payload.logo) {
+        const formData = new FormData()
+        formData.append('file', payload.logo)
+        const uploadResp = await api.postMultipart<{ fileName: string; url: string }>(
+          endpoints.storageUpload('brandassets'),
+          formData
+        )
+        logoUrl = (uploadResp.data as unknown as { url?: string })?.url
+      }
+
+      // Step 2: send update request with PascalCase DTO fields
+      const requestBody = {
+        Name: payload.name || undefined,
+        Description: payload.description || undefined,
+        LogoUrl: logoUrl || undefined,
+        Slogan: payload.slogan || undefined,
+        Usp: payload.usp || undefined,
+        TargetAudience: payload.target_audience || undefined,
+        ProfileId: payload.profile_id || undefined,
+      }
+
+      const resp = await api.put<{ data: Brand }>(endpoints.brandById(brandId), requestBody)
       return resp.data.data
     },
     onSuccess: (updated) => {

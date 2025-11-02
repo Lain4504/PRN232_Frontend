@@ -95,7 +95,7 @@ export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/camp
       accessorKey: "spend",
       cell: ({ getValue }) => {
         const v = getValue<number | undefined>();
-        return v != null ? `$${v.toLocaleString()}` : "-";
+        return v != null ? `₫${v.toLocaleString()}` : "-";
       }
     },
     {
@@ -195,16 +195,16 @@ export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/camp
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-3 flex-wrap">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
               <div className="relative w-full sm:w-64 md:w-72">
                 <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input className="pl-8 bg-background shadow-none focus-visible:ring-1 focus-visible:ring-primary/30" placeholder="Search ads" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }} />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <Select value={status ?? "all"} onValueChange={(val) => { setStatus(val === "all" ? undefined : val); setPage(1); }}>
-                  <SelectTrigger className="h-8 w-[160px]">
+                  <SelectTrigger className="h-8 w-full sm:w-[160px]">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -215,12 +215,13 @@ export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/camp
                 </Select>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="sm"
                 disabled={selected.size === 0}
                 onClick={() => bulk.mutate({ adIds: Array.from(selected), status: "PAUSED" })}
+                className="flex-1 sm:flex-initial"
               >
                 Pause
               </Button>
@@ -229,6 +230,7 @@ export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/camp
                 size="sm"
                 disabled={selected.size === 0}
                 onClick={() => bulk.mutate({ adIds: Array.from(selected), status: "ACTIVE" })}
+                className="flex-1 sm:flex-initial"
               >
                 Start
               </Button>
@@ -255,10 +257,10 @@ function AdPreviewBody({ adId }: { adId: string }) {
   const { data, isLoading, refetch } = useAdPreview(adId, format);
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2 justify-between flex-wrap">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:justify-between flex-wrap">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <Select value={format} onValueChange={(v) => setFormat(v)}>
-            <SelectTrigger className="w-[240px] h-8">
+            <SelectTrigger className="w-full sm:w-[240px] h-8">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

@@ -8,7 +8,6 @@ import { usePendingApprovalsCount } from '@/hooks/use-approvals'
 import { useUnreadNotificationsCount } from '@/hooks/use-notifications'
 import {
   Home,
-  Settings,
   BarChart3,
   Calendar,
   Mail,
@@ -20,8 +19,6 @@ import {
   Users,
   TrendingUp,
   Bell,
-  HelpCircle,
-  BookOpen,
   Megaphone,
   CreditCard,
   Sparkles,
@@ -111,21 +108,6 @@ const secondaryNavItems: NavItem[] = [
     title: "Subscription",
     url: "/dashboard/subscription",
     icon: CreditCard,
-  },
-  {
-    title: "Settings",
-    url: "/dashboard/settings",
-    icon: Settings,
-  },
-  {
-    title: "Help & Support",
-    url: "/dashboard/help",
-    icon: HelpCircle,
-  },
-  {
-    title: "Documentation",
-    url: "/docs",
-    icon: BookOpen,
   },
 ]
 

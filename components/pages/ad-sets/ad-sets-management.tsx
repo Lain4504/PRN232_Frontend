@@ -112,11 +112,11 @@ export function AdSetsManagement({ campaignId, basePath = '/dashboard/campaigns'
       accessorKey: "budget",
       header: "Budget",
       cell: ({ row }: { row: { original: AdSetResponse } }) => {
-        const budget = Number((row.original as AdSetResponse).budget ?? 0);
+        const dailyBudget = Number(((row.original as unknown as { dailyBudget?: number }).dailyBudget) ?? (row.original as AdSetResponse).budget ?? 0);
         return (
           <div className="flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">${budget.toLocaleString()}</span>
+            <span className="font-medium">₫{dailyBudget.toLocaleString('vi-VN')}</span>
           </div>
         );
       },
@@ -283,7 +283,9 @@ export function AdSetsManagement({ campaignId, basePath = '/dashboard/campaigns'
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                ${adSets.reduce((sum, adSet) => sum + adSet.budget, 0).toLocaleString()}
+                ₫{adSets
+                  .reduce((sum, adSet) => sum + Number(((adSet as unknown as { dailyBudget?: number }).dailyBudget) ?? (adSet as AdSetResponse).budget ?? 0), 0)
+                  .toLocaleString('vi-VN')}
               </div>
               <p className="text-xs text-muted-foreground">
                 Daily budget allocation
@@ -327,8 +329,8 @@ export function AdSetsManagement({ campaignId, basePath = '/dashboard/campaigns'
 
         {/* Toolbar + Table */}
         <div className="space-y-4">
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="relative flex-1 min-w-[220px] sm:min-w-[280px] md:min-w-[320px] max-w-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
+            <div className="relative w-full sm:w-64 md:w-80">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search ad sets..."
@@ -338,7 +340,7 @@ export function AdSetsManagement({ campaignId, basePath = '/dashboard/campaigns'
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-36">
+              <SelectTrigger className="w-full sm:w-[140px] md:w-36">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>

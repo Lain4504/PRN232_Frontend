@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/select'
 import { Mail, Edit, Eye, Calendar, User, ExternalLink, Clock, CheckCircle, XCircle } from 'lucide-react'
 import type { Post } from '@/lib/types/aisam-types'
+import { useGetSocialAccounts } from '@/hooks/use-social-accounts'
 
 export default function TeamPostsPage({
   params,
@@ -40,6 +41,20 @@ export default function TeamPostsPage({
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
 
   const { data: postsData, isLoading, error } = useTeamPosts(teamId, filters)
+  const { data: socialAccounts } = useGetSocialAccounts()
+
+  const integrationIdToTargetName = useMemo(() => {
+    const map = new Map<string, string>()
+    if (!socialAccounts) return map
+    for (const account of socialAccounts) {
+      for (const target of account.targets || []) {
+        if (target.id && target.name) {
+          map.set(target.id, target.name)
+        }
+      }
+    }
+    return map
+  }, [socialAccounts])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -120,10 +135,11 @@ export default function TeamPostsPage({
       header: 'Integration',
       cell: ({ row }) => {
         const platform = row.original.integrationPlatform
-        const account = row.original.integrationAccountName
+        const fallbackAccount = row.original.integrationAccountName
+        const resolvedName = integrationIdToTargetName.get(row.original.integrationId) || fallbackAccount
         return (
           <div className="text-center text-sm text-muted-foreground">
-            {platform ? platform : '-'}{platform ? ' • ' : ''}{account || ''}
+            {platform ? platform : '-'}{platform ? ' • ' : ''}{resolvedName || ''}
           </div>
         )
       },
@@ -165,7 +181,7 @@ export default function TeamPostsPage({
         </div>
       ),
     },
-  ], [])
+  ], [integrationIdToTargetName])
 
   return (
     <TeamPermissionGate permission="VIEW_POSTS">
@@ -180,9 +196,10 @@ export default function TeamPostsPage({
         </div>
 
         {/* Filters Row */}
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex flex-col md:flex-row md:items-end gap-3 md:gap-4 mb-4">
           {/* Brand Selector */}
-          <div className="w-64">
+          <div className="w-full md:flex-1 min-w-[240px]">
+            <div className="text-xs text-muted-foreground mb-1">Brand</div>
             <TeamBrandSelector
               selectedBrandId={filters.brandId}
               onBrandChange={handleBrandChange}
@@ -191,53 +208,23 @@ export default function TeamPostsPage({
             />
           </div>
 
-          {/* Page Size Selector */}
-          <Select
-            value={String(filters.pageSize)}
-            onValueChange={(value) => setFilters(prev => ({ ...prev, pageSize: Number(value), page: 1 }))}
-          >
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Rows" />
-            </SelectTrigger>
-            <SelectContent>
-              {[5, 10, 20, 30, 40, 50].map((size) => (
-                <SelectItem key={size} value={String(size)}>
-                  {size} rows
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Status Filter Buttons */}
-          <div className="flex gap-2 ml-auto">
-            <Button 
-              variant={filters.status === undefined ? "default" : "outline"} 
-              size="sm"
-              onClick={() => handleStatusFilter('all')}
+          {/* Status Filter Select */}
+          <div className="w-full md:w-56 md:ml-auto">
+            <div className="text-xs text-muted-foreground mb-1">Status</div>
+            <Select
+              value={filters.status ?? 'all'}
+              onValueChange={(value) => handleStatusFilter(value)}
             >
-              All
-            </Button>
-            <Button 
-              variant={filters.status === 'published' ? "default" : "outline"} 
-              size="sm"
-              onClick={() => handleStatusFilter('published')}
-            >
-              Published
-            </Button>
-            <Button 
-              variant={filters.status === 'failed' ? "default" : "outline"} 
-              size="sm"
-              onClick={() => handleStatusFilter('failed')}
-            >
-              Failed
-            </Button>
-            <Button 
-              variant={filters.status === 'deleted' ? "default" : "outline"} 
-              size="sm"
-              onClick={() => handleStatusFilter('deleted')}
-            >
-              Deleted
-            </Button>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Filter status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="published">Published</SelectItem>
+                <SelectItem value="failed">Failed</SelectItem>
+                <SelectItem value="deleted">Deleted</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -265,13 +252,8 @@ export default function TeamPostsPage({
             
             {selectedPost && (
               <div className="space-y-4">
-                {/* Header: IDs and Status */}
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="text-sm text-muted-foreground">External Post ID</div>
-                    <div className="text-base font-semibold break-all">{selectedPost.externalPostId || '-'}</div>
-                    <div className="text-xs text-muted-foreground">Internal ID: {selectedPost.id}</div>
-                  </div>
+                {/* Header: Status only (IDs removed) */}
+                <div className="flex items-start justify-end">
                   <Badge className={getStatusColor(selectedPost.status)}>
                     {String(selectedPost.status || '-').charAt(0).toUpperCase() + String(selectedPost.status || '-').slice(1)}
                   </Badge>
@@ -289,7 +271,10 @@ export default function TeamPostsPage({
                   </div>
                   <div className="space-y-1">
                     <div className="text-sm text-muted-foreground">Integration</div>
-                    <div className="text-sm font-medium">{selectedPost.integrationPlatform || '-'}{selectedPost.integrationAccountName ? ` • ${selectedPost.integrationAccountName}` : ''}</div>
+                    <div className="text-sm font-medium">{selectedPost.integrationPlatform || '-'}{(() => {
+                      const name = integrationIdToTargetName.get(selectedPost.integrationId) || selectedPost.integrationAccountName
+                      return name ? ` • ${name}` : ''
+                    })()}</div>
                   </div>
                   <div className="space-y-1">
                     <div className="text-sm text-muted-foreground">Published</div>

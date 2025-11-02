@@ -81,10 +81,7 @@ const createColumns = (
               </AvatarFallback>
             </Avatar>
             <div>
-              <div
-                className="font-semibold text-gray-800 cursor-pointer hover:text-primary transition-colors"
-                onClick={() => handleReview(approval)}
-              >
+              <div className="font-semibold">
                 {row.getValue("contentTitle")}
               </div>
             </div>
@@ -187,23 +184,7 @@ const createColumns = (
           },
         ];
 
-        if (canApprove) {
-          actions.push({
-            label: "Quick Approve",
-            icon: <Check className="h-4 w-4" />,
-            onClick: () => handleQuickApprove(approval.id),
-            disabled: isProcessing,
-          });
-        }
-
-        if (canReject) {
-          actions.push({
-            label: "Quick Reject",
-            icon: <XIcon className="h-4 w-4" />,
-            onClick: () => handleQuickReject(approval.id),
-            disabled: isProcessing,
-          });
-        }
+        // Quick Approve/Reject removed per requirement
 
         actions.push({
           label: "Delete",
@@ -398,9 +379,9 @@ export function SharedApprovalManagement({
         </div>
 
         {/* Single Row Layout - Stats, Filters, Search, Approvals Count, Create Button */}
-        <div className="flex items-center gap-4 flex-wrap">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
           {/* Stats */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
               <CheckCircle className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
               <span className="font-medium">{filteredApprovals.length}</span>
@@ -414,7 +395,7 @@ export function SharedApprovalManagement({
 
           {/* Status Filter */}
           <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ContentStatusEnum | "all")}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-full sm:w-[140px] md:w-40">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -426,7 +407,7 @@ export function SharedApprovalManagement({
           </Select>
 
           {/* Search */}
-          <div className="relative w-80">
+          <div className="relative w-full sm:w-64 md:w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search approvals..."
@@ -442,7 +423,7 @@ export function SharedApprovalManagement({
 
           {/* Create Button */}
           {showCreateButton && (
-            <div className="ml-auto">
+            <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-2">
               <Button
                 onClick={() => {
                   // Navigate to content creation or approval creation page
@@ -453,7 +434,7 @@ export function SharedApprovalManagement({
                   }
                 }}
                 size="sm"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 w-full sm:w-auto"
               >
                 <Plus className="h-4 w-4" />
                 Create Approval

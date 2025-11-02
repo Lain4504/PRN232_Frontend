@@ -1,15 +1,31 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Check, X, Loader2 } from "lucide-react";
 import { ApprovalResponseDto, ContentStatusEnum } from "@/lib/types/aisam-types";
 import { useSocialIntegrations } from "@/hooks/use-social-integrations";
-import { usePublishContent } from "@/hooks/use-contents";
+import { usePublishContent, useContent } from "@/hooks/use-contents";
+import { ContentPreviewView } from "@/components/contents/content-preview-view";
 import { toast } from "sonner";
 
 interface ApprovalModalProps {
@@ -32,10 +48,18 @@ export function ApprovalModal({
   const [notes, setNotes] = useState("");
   const [selectedIntegrationId, setSelectedIntegrationId] = useState<string>("");
   const [isPublishing, setIsPublishing] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  // Use content from approval if available, otherwise fetch it
+  const approvalContent = approval?.content;
+  const { data: fetchedContent, isLoading: contentLoading } = useContent(
+    approvalContent ? undefined : approval?.contentId
+  );
+  const content = approvalContent || fetchedContent;
 
   // Get social integrations for publishing
   const { data: integrations = [], isLoading: integrationsLoading } = useSocialIntegrations(
-    approval?.brandId || approval?.content?.brandId || ""
+    approval?.brandId || approval?.content?.brandId || content?.brandId || ""
   );
 
   const publishContentMutation = usePublishContent(approval?.contentId || "");
@@ -43,21 +67,33 @@ export function ApprovalModal({
   if (!approval) return null;
 
   const handleApprove = async () => {
-    await onApprove(notes);
-    setNotes("");
+    try {
+      await onApprove(notes);
+      setNotes("");
+      onClose(); // Close modal after successful approval
+    } catch (error) {
+      // Error handling is done in parent component
+      console.error('Failed to approve:', error);
+    }
   };
 
   const handleReject = async () => {
     if (!notes.trim()) {
-      alert('Please provide a reason for rejection');
+      toast.error('Please provide a reason for rejection');
       return;
     }
-    await onReject(notes);
-    setNotes("");
+    try {
+      await onReject(notes);
+      setNotes("");
+      onClose(); // Close modal after successful rejection
+    } catch (error) {
+      // Error handling is done in parent component
+      console.error('Failed to reject:', error);
+    }
   };
 
   const handlePublish = async () => {
-    if (!approval || !selectedIntegrationId) return;
+    if (!approval || !selectedIntegrationId || !content) return;
     setIsPublishing(true);
     try {
       await publishContentMutation.mutateAsync(selectedIntegrationId);
@@ -72,164 +108,203 @@ export function ApprovalModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>
+  const modalContent = (
+    <>
+      {/* Approval Info Section */}
+      <div className="space-y-4 border-b pb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold">Review Content</h2>
+            <div className="flex items-center gap-2 mt-2">
+              <Badge variant="secondary">{approval.brandName}</Badge>
+              <span className="text-sm text-muted-foreground">•</span>
+              <span className="text-sm text-muted-foreground">Approver: {approval.approverEmail}</span>
+            </div>
+          </div>
+        </div>
+
+        {approval.notes && (
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Submission Notes</Label>
+            <div className="p-3 bg-muted rounded-lg">
+              <p className="text-sm whitespace-pre-wrap">{approval.notes}</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Content Preview */}
+      {contentLoading ? (
+        <div className="flex items-center justify-center p-8">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span className="ml-2 text-sm text-muted-foreground">Loading content...</span>
+        </div>
+      ) : content ? (
+        <ContentPreviewView
+          content={content}
+          showActions={false}
+        />
+      ) : approval?.contentId ? (
+        <div className="text-center p-8 text-muted-foreground">
+          <p>Content is being loaded. If this persists, please refresh the page.</p>
+          <p className="text-xs mt-2">Content ID: {approval.contentId}</p>
+        </div>
+      ) : (
+        <div className="text-center p-8 text-muted-foreground">
+          <p>Content information is not available.</p>
+        </div>
+      )}
+
+      {/* Approval Actions */}
+      <div className="space-y-4 pt-4 border-t">
+        <div className="space-y-2">
+          <Label htmlFor="approval-notes">
+            {approval.status === ContentStatusEnum.PendingApproval ? 'Approval Notes (Optional)' : 'Additional Notes'}
+          </Label>
+          <Textarea
+            id="approval-notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder={
+              approval.status === ContentStatusEnum.PendingApproval 
+                ? "Add notes for the content creator..." 
+                : "Add additional notes..."
+            }
+            rows={3}
+          />
+        </div>
+
+        {approval.status === ContentStatusEnum.PendingApproval && (
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={handleApprove}
+              disabled={isProcessing || contentLoading}
+              className="w-full bg-chart-2 hover:bg-chart-2/90"
+            >
+              <Check className="mr-2 h-4 w-4" />
+              Approve Content
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleReject}
+              disabled={isProcessing || contentLoading}
+              className="w-full"
+            >
+              <X className="mr-2 h-4 w-4" />
+              Reject Content
+            </Button>
+          </div>
+        )}
+
+        {approval.status === ContentStatusEnum.Approved && content && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Select Social Integration</Label>
+              {integrationsLoading ? (
+                <div className="flex items-center justify-center p-4 border rounded-md">
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <span className="text-sm text-muted-foreground">Loading integrations...</span>
+                </div>
+              ) : integrations.length === 0 ? (
+                <div className="p-4 bg-muted rounded-md text-center">
+                  <p className="text-sm text-muted-foreground">No social integrations available for this brand.</p>
+                </div>
+              ) : (
+                <Select
+                  value={selectedIntegrationId}
+                  onValueChange={setSelectedIntegrationId}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select an integration..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {integrations.map((integration) => (
+                      <SelectItem key={integration.id} value={integration.id}>
+                        <div className="flex items-center justify-between w-full">
+                          <span className="font-medium">{integration.name}</span>
+                          <span className="text-xs text-muted-foreground ml-2">{integration.platform}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+            
+            <div className="flex flex-col gap-2">
+              <Button
+                onClick={handlePublish}
+                disabled={!selectedIntegrationId || isPublishing || integrations.length === 0}
+                className="w-full bg-blue-600 hover:bg-blue-700"
+              >
+                {isPublishing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Publishing...
+                  </>
+                ) : (
+                  <>
+                    <Check className="mr-2 h-4 w-4" />
+                    Publish Content
+                  </>
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={onClose}
+                disabled={isPublishing}
+                className="w-full"
+              >
+                Publish Later
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+
+  if (isDesktop) {
+    return (
+      <Dialog open={!!approval} onOpenChange={(open) => !open && onClose()}>
+        <DialogContent className="max-w-4xl w-[90vw] max-h-[90vh] flex flex-col">
+          <DialogHeader className="flex-shrink-0">
+            <DialogTitle>
               {approval.status === ContentStatusEnum.PendingApproval 
                 ? "Review Content" 
                 : "Content Approved - Ready to Publish"
               }
-            </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            </DialogTitle>
+            <DialogDescription>
+              Review content details, images, and videos before approval
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto pr-2">
+            {modalContent}
           </div>
-        </CardHeader>
-        
-        <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-semibold text-lg">{approval.contentTitle}</h3>
-              <p className="text-muted-foreground">{approval.brandName}</p>
-            </div>
-            
-            <div>
-              <Label className="text-sm font-medium">Approver</Label>
-              <p className="text-sm text-muted-foreground mt-1">{approval.approverEmail}</p>
-            </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
-            <div>
-              <Label className="text-sm font-medium">Status</Label>
-              <p className="text-sm text-muted-foreground mt-1">{approval.status}</p>
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium">Submitted</Label>
-              <p className="text-sm text-muted-foreground mt-1">
-                {new Date(approval.createdAt).toLocaleDateString()} at {new Date(approval.createdAt).toLocaleTimeString()}
-              </p>
-            </div>
-
-            {approval.notes && (
-              <div>
-                <Label className="text-sm font-medium">Existing Notes</Label>
-                <div className="p-4 bg-muted rounded-lg mt-2">
-                  <p className="text-sm whitespace-pre-wrap">{approval.notes}</p>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="approval-notes">
-              {approval.status === ContentStatusEnum.PendingApproval ? 'Approval Notes' : 'Additional Notes'}
-            </Label>
-            <Textarea
-              id="approval-notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder={
-                approval.status === ContentStatusEnum.PendingApproval 
-                  ? "Add notes for the content creator..." 
-                  : "Add additional notes..."
-              }
-              rows={3}
-            />
-          </div>
-          
-          {approval.status === ContentStatusEnum.PendingApproval && (
-            <div className="flex gap-3">
-              <Button
-                onClick={handleApprove}
-                disabled={isProcessing}
-                className="flex-1 bg-chart-2 hover:bg-chart-2/90"
-              >
-                <Check className="mr-2 h-4 w-4" />
-                Approve Content
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={handleReject}
-                disabled={isProcessing}
-                className="flex-1"
-              >
-                <X className="mr-2 h-4 w-4" />
-                Reject Content
-              </Button>
-            </div>
-          )}
-
-          {approval.status === ContentStatusEnum.Approved && (
-            <div className="space-y-4">
-              <div className="space-y-3">
-                <Label className="text-sm font-medium">Select Social Integration</Label>
-                {integrationsLoading ? (
-                  <div className="flex items-center justify-center p-4">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="ml-2 text-sm text-muted-foreground">Loading integrations...</span>
-                  </div>
-                ) : integrations.length === 0 ? (
-                  <div className="p-4 bg-muted rounded-lg text-center">
-                    <p className="text-sm text-muted-foreground">No social integrations available for this brand.</p>
-                  </div>
-                ) : (
-                  <RadioGroup
-                    value={selectedIntegrationId}
-                    onValueChange={setSelectedIntegrationId}
-                    className="space-y-2"
-                  >
-                    {integrations.map((integration) => (
-                      <div key={integration.id} className="flex items-center space-x-2">
-                        <RadioGroupItem value={integration.id} id={integration.id} />
-                        <Label htmlFor={integration.id} className="flex-1 cursor-pointer">
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium">{integration.name}</span>
-                            <span className="text-sm text-muted-foreground">{integration.platform}</span>
-                          </div>
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                )}
-              </div>
-              
-              <div className="flex gap-3">
-                <Button
-                  onClick={handlePublish}
-                  disabled={!selectedIntegrationId || isPublishing || integrations.length === 0}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
-                >
-                  {isPublishing ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Publishing...
-                    </>
-                  ) : (
-                    <>
-                      <Check className="mr-2 h-4 w-4" />
-                      Publish Content
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={onClose}
-                  disabled={isPublishing}
-                >
-                  Publish Later
-                </Button>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+  return (
+    <Drawer open={!!approval} onOpenChange={(open) => !open && onClose()}>
+      <DrawerContent className="max-h-[90vh] flex flex-col">
+        <DrawerHeader className="flex-shrink-0">
+          <DrawerTitle>
+            {approval.status === ContentStatusEnum.PendingApproval 
+              ? "Review Content" 
+              : "Content Approved - Ready to Publish"
+            }
+          </DrawerTitle>
+          <DrawerDescription>
+            Review content details, images, and videos before approval
+          </DrawerDescription>
+        </DrawerHeader>
+        <div className="flex-1 overflow-y-auto px-4">
+          {modalContent}
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 }

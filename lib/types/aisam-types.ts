@@ -31,6 +31,7 @@ export interface Brand {
   name: string;
   description?: string;
   logo_url?: string;
+  logoUrl?: string; // API may return camelCase
   slogan?: string;
   usp?: string; // Unique Selling Proposition
   target_audience?: string;
@@ -582,7 +583,7 @@ export interface ContentResponseDto {
   textContent?: string;
   imageUrl?: string;
   videoUrl?: string;
-  adType: AdTypeEnum;
+  adType: AdTypeEnum | string; // API returns string, frontend uses enum
   status: ContentStatusEnum;
   createdAt: string;
   updatedAt?: string;

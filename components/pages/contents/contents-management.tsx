@@ -40,12 +40,16 @@ import {
 // import { ContentFilters as ContentFiltersComponent } from "@/components/contents/content-filters"; // Removed unused import
 // import { ContentList } from "@/components/contents/content-list"; // Removed unused import
 import { ContentModal } from "@/components/contents/content-modal";
+import { ContentPreviewModal } from "@/components/contents/content-preview-modal";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Calendar, Edit, Trash2, Send, Globe } from "lucide-react";
+import { Calendar, Edit, Trash2, Send, Eye } from "lucide-react";
 import { SubmitApprovalDialog } from "@/components/contents/submit-approval-dialog";
 import { useTeamMembers } from "@/hooks/use-teams";
 import { useCreateApproval } from "@/hooks/use-approvals";
+import { useQueryClient } from "@tanstack/react-query";
+import { api, endpoints } from "@/lib/api";
+import type { ApiResponse } from "@/lib/types/aisam-types";
 
 // TODO: Replace with actual auth hook
 const useCurrentUser = () => {
@@ -55,10 +59,9 @@ const useCurrentUser = () => {
 // Create columns for the data table
 const createColumns = (
   handleEditContent: (contentId: string) => void,
-  handleViewContent: (contentId: string) => void,
+  handleViewContent: (content: ContentResponseDto) => void,
   handleDeleteContent: (contentId: string) => void,
   handleSubmitContent: (contentId: string) => void,
-  handlePublishContent: (contentId: string, integrationId: string) => void,
   brands: { id: string; name: string }[] = [],
   isProcessing: boolean
 ): ColumnDef<ContentResponseDto>[] => [
@@ -77,10 +80,7 @@ const createColumns = (
             </AvatarFallback>
           </Avatar>
           <div>
-            <div 
-              className="font-medium cursor-pointer hover:text-primary transition-colors"
-              onClick={() => handleViewContent(row.original.id)}
-            >
+            <div className="font-medium">
               {row.getValue("title")}
             </div>
             <div className="flex items-center gap-2 mt-1">
@@ -179,24 +179,21 @@ const createColumns = (
     cell: ({ row }) => {
       const content = row.original;
       const canSubmit = content.status === ContentStatusEnum.Draft;
-      const canPublish = content.status === ContentStatusEnum.Approved;
       
       const actions: ActionItem[] = [];
+      
+      // Always show Preview option
+      actions.push({
+        label: "Preview",
+        icon: <Eye className="h-4 w-4" />,
+        onClick: () => handleViewContent(content),
+      });
       
       if (canSubmit) {
         actions.push({
           label: "Submit for Approval",
           icon: <Send className="h-4 w-4" />,
           onClick: () => handleSubmitContent(content.id),
-          disabled: isProcessing,
-        });
-      }
-      
-      if (canPublish) {
-        actions.push({
-          label: "Publish",
-          icon: <Globe className="h-4 w-4" />,
-          onClick: () => handlePublishContent(content.id, "integration-id"),
           disabled: isProcessing,
         });
       }
@@ -235,6 +232,8 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
   const [selectedContent, setSelectedContent] = useState<ContentResponseDto | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isApprovalDialogOpen, setIsApprovalDialogOpen] = useState(false);
+  const [previewContent, setPreviewContent] = useState<ContentResponseDto | null>(null);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   // State for current content operations
   const [currentContentId, setCurrentContentId] = useState<string>("");
@@ -289,11 +288,14 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
 
   // Use hooks with current content ID
   const createContentMutation = useCreateContent();
-  const updateContentMutation = useUpdateContent(currentContentId);
-  const deleteContentMutation = useDeleteContent(currentContentId);
-  const submitContentMutation = useSubmitContent(currentContentId);
-  const publishContentMutation = usePublishContent(currentContentId);
   const createApprovalMutation = useCreateApproval();
+  
+  // Create mutations with placeholder - will be updated when contentId is set
+  // Note: These mutations will be recreated when currentContentId changes
+  const updateContentMutation = useUpdateContent(currentContentId || "placeholder");
+  const deleteContentMutation = useDeleteContent(currentContentId || "placeholder");
+  const submitContentMutation = useSubmitContent(currentContentId || "placeholder");
+  const publishContentMutation = usePublishContent(currentContentId || "placeholder");
 
   // Active team for member lookup (from header context)
   const [activeTeamId, setActiveTeamId] = useState<string | null>(null);
@@ -332,12 +334,29 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
     }
   };
 
+  const queryClient = useQueryClient();
+  
   const handleUpdateContent = async (contentId: string, data: UpdateContentRequest) => {
-    setCurrentContentId(contentId);
+    if (!contentId) {
+      toast.error('Content ID is required');
+      return;
+    }
+    
     try {
-      // Use the mutation that was created with the current content ID
-      await updateContentMutation.mutateAsync(data);
-      toast.success('Content updated successfully');
+      // Call API directly with the contentId to ensure correct endpoint
+      // This avoids the issue of using mutation with empty contentId
+      const resp = await api.put<ApiResponse<ContentResponseDto>>(endpoints.contentById(contentId), data);
+      
+      if (resp.data?.data) {
+        // Invalidate queries to refresh data
+        queryClient.invalidateQueries({ queryKey: ['contents'] });
+        queryClient.invalidateQueries({ queryKey: ['contents', 'detail', contentId] });
+        if (resp.data.data.brandId) {
+          queryClient.invalidateQueries({ queryKey: ['contents', 'brand', resp.data.data.brandId] });
+        }
+        toast.success('Content updated successfully');
+        setCurrentContentId(contentId);
+      }
     } catch (error) {
       console.error('Failed to update content:', error);
       toast.error('Failed to update content');
@@ -364,17 +383,6 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
     setIsApprovalDialogOpen(true);
   };
 
-  const handlePublishContent = async (contentId: string, integrationId: string) => {
-    setCurrentContentId(contentId);
-    try {
-      // Use the mutation that was created with the current content ID
-      await publishContentMutation.mutateAsync(integrationId);
-      toast.success('Content published successfully');
-    } catch (error) {
-      console.error('Failed to publish content:', error);
-      toast.error('Failed to publish content');
-    }
-  };
 
   // Function to open edit modal
   const handleEditContent = (contentId: string) => {
@@ -386,14 +394,10 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
     }
   };
 
-  // Function to open view modal
-  const handleViewContent = (contentId: string) => {
-    const content = contents.find((c) => c.id === contentId);
-
-    if (content) {
-      setSelectedContent(content);
-      setIsEditing(false);
-    }
+  // Function to open preview modal
+  const handleViewContent = (content: ContentResponseDto) => {
+    setPreviewContent(content);
+    setIsPreviewModalOpen(true);
   };
 
   // Wrapper function for ContentModal onSave
@@ -467,9 +471,9 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
 
 
         {/* Single Row Layout - Stats, Filters, Search, Content Count, Create Buttons */}
-        <div className="flex items-center gap-4 flex-wrap">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
           {/* Stats */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
               <FileText className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
               <span className="font-medium">{contents.length}</span>
@@ -480,7 +484,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
 
           {/* Filters */}
           <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ContentStatusEnum | "all")}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-full sm:w-[140px] md:w-40">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -494,7 +498,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
           </Select>
 
           <Select value={adTypeFilter === "all" ? "all" : adTypeFilter.toString()} onValueChange={(value) => setAdTypeFilter(value === "all" ? "all" : parseInt(value) as AdTypeEnum)}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-full sm:w-[140px] md:w-40">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
             <SelectContent>
@@ -510,7 +514,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
               value={scopeBrandId}
               onValueChange={(val) => setScopeBrandId(val)}
             >
-              <SelectTrigger className="w-56">
+              <SelectTrigger className="w-full sm:w-[160px] md:w-56">
                 <SelectValue placeholder="Scope" />
               </SelectTrigger>
               <SelectContent>
@@ -524,7 +528,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
 
 
           {/* Search */}
-          <div className="relative w-80">
+          <div className="relative w-full sm:w-64 md:w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search content..."
@@ -539,12 +543,12 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
 
 
           {/* Create Buttons */}
-          <div className="ml-auto flex items-center gap-2">
+          <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-2">
             <Button 
               onClick={() => setIsCreating(true)} 
               variant="outline"
               size="sm"
-              className="flex items-center justify-center gap-2"
+              className="flex items-center justify-center gap-2 flex-1 sm:flex-initial"
             >
               <FileText className="h-4 w-4" />
               Manual
@@ -552,10 +556,11 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
             <Button 
               onClick={() => window.location.href = `/dashboard/brands/${initialBrandId || 'all'}/contents/new`}
               size="sm"
-              className="flex items-center justify-center gap-2"
+              className="flex items-center justify-center gap-2 flex-1 sm:flex-initial"
             >
               <Brain className="h-4 w-4" />
-              Create with AI
+              <span className="hidden sm:inline">Create with AI</span>
+              <span className="sm:hidden">AI</span>
             </Button>
           </div>
         </div>
@@ -568,13 +573,11 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
               handleViewContent,
               handleDeleteContent,
               handleSubmitContent,
-              handlePublishContent,
               brands,
               createContentMutation.isPending ||
               updateContentMutation.isPending ||
               deleteContentMutation.isPending ||
-              submitContentMutation.isPending ||
-              publishContentMutation.isPending
+              submitContentMutation.isPending
             )}
             data={filteredContents}
             pageSize={10}
@@ -668,8 +671,10 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
             }
           }}
           onSave={handleSaveContent}
-          onPublish={handlePublishContent}
-          isProcessing={updateContentMutation.isPending || submitContentMutation.isPending || publishContentMutation.isPending}
+          onSubmit={async (contentId) => {
+            await handleSubmitContent(contentId);
+          }}
+          isProcessing={updateContentMutation.isPending || submitContentMutation.isPending}
           brands={brands}
           products={products}
           userId={userId}
@@ -694,6 +699,31 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
             }
           }}
         />
+
+        {/* Content Preview Modal */}
+        {previewContent && (
+          <ContentPreviewModal
+            content={previewContent}
+            open={isPreviewModalOpen}
+            onOpenChange={setIsPreviewModalOpen}
+            onSubmit={async (contentId) => {
+              await handleSubmitContent(contentId);
+              setIsPreviewModalOpen(false);
+            }}
+            onPublish={async (contentId, integrationId) => {
+              setCurrentContentId(contentId);
+              try {
+                await publishContentMutation.mutateAsync(integrationId);
+                toast.success('Content published successfully');
+                setIsPreviewModalOpen(false);
+              } catch (error) {
+                console.error('Failed to publish content:', error);
+                toast.error('Failed to publish content');
+              }
+            }}
+            isProcessing={publishContentMutation.isPending || submitContentMutation.isPending}
+          />
+        )}
       </div>
     </div>
   );

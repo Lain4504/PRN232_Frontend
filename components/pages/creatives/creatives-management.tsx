@@ -144,7 +144,7 @@ export function CreativesManagement({ campaignId, adSetId, basePath = '/dashboar
                   Create Creative
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Create New Creative</DialogTitle>
                 </DialogHeader>
@@ -162,8 +162,8 @@ export function CreativesManagement({ campaignId, adSetId, basePath = '/dashboar
         </div>
 
         {/* Toolbar */}
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
             <div className="relative w-full sm:w-64 md:w-80">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -174,7 +174,7 @@ export function CreativesManagement({ campaignId, adSetId, basePath = '/dashboar
               />
             </div>
             <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="w-[180px] h-9">
+              <SelectTrigger className="w-full sm:w-[160px] md:w-[180px] h-9">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>

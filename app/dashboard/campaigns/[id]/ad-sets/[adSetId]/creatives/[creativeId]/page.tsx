@@ -1,19 +1,20 @@
 import { CreativeDetails } from '@/components/pages/creatives/creative-details';
 
 interface CreativeDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
     adSetId: string;
     creativeId: string;
-  };
+  }>;
 }
 
-export default function CreativeDetailsPage({ params }: CreativeDetailsPageProps) {
+export default async function CreativeDetailsPage({ params }: CreativeDetailsPageProps) {
+  const { id, adSetId, creativeId } = await params;
   return (
     <CreativeDetails 
-      campaignId={params.id} 
-      adSetId={params.adSetId} 
-      creativeId={params.creativeId}
+      campaignId={id} 
+      adSetId={adSetId} 
+      creativeId={creativeId}
       basePath="/dashboard/campaigns"
     />
   );

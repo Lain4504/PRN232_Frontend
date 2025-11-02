@@ -56,13 +56,17 @@ const createColumns = (
     cell: ({ row }) => (
       <div className="flex items-center justify-center gap-3">
         <Avatar className="h-10 w-10">
-          {row.original.logo_url ? (
-            <AvatarImage src={row.original.logo_url} alt={row.getValue("name")} />
-          ) : (
-            <AvatarFallback>
-              <Target className="h-4 w-4" />
-            </AvatarFallback>
-          )}
+          {(() => {
+            const logo = (row.original as unknown as { logo_url?: string; logoUrl?: string }).logo_url
+              || (row.original as unknown as { logo_url?: string; logoUrl?: string }).logoUrl
+            return logo ? (
+              <AvatarImage src={logo} alt={row.getValue("name")} />
+            ) : (
+              <AvatarFallback>
+                <Target className="h-4 w-4" />
+              </AvatarFallback>
+            )
+          })()}
         </Avatar>
         <div>
           <div className="font-semibold text-gray-800">{row.getValue("name")}</div>
@@ -236,9 +240,9 @@ export function BrandsManagement() {
         </div>
 
         {/* Single Row Layout - Stats, Rows, Search, Brands, Create Button */}
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
           {/* Stats */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-shrink-0">
             <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 rounded-xl border border-gray-200 text-sm shadow-sm">
               <Target className="h-4 w-4 text-gray-500 flex-shrink-0" />
               <span className="font-semibold text-gray-700">{totalBrands}</span>
@@ -251,7 +255,7 @@ export function BrandsManagement() {
             value={String(pageSize)}
             onValueChange={(value) => setPageSize(Number(value))}
           >
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-full sm:w-[120px] md:w-32">
               <SelectValue placeholder="Rows" />
             </SelectTrigger>
             <SelectContent>
@@ -264,7 +268,7 @@ export function BrandsManagement() {
           </Select>
 
           {/* Search */}
-          <div className="relative w-80">
+          <div className="relative w-full sm:w-64 md:w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search brands..."
@@ -277,9 +281,9 @@ export function BrandsManagement() {
 
 
           {/* Create Button */}
-          <div className="ml-auto">
+          <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-2">
             <BrandModal mode="create" onSuccess={handleRefresh}>
-              <Button size="sm">
+              <Button size="sm" className="w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" />
                 Create Brand
               </Button>

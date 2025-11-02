@@ -21,8 +21,6 @@ import {
   User as UserIcon, 
   Settings, 
   Bell, 
-  CreditCard, 
-  HelpCircle, 
   Moon, 
   Sun, 
   Monitor,
@@ -114,12 +112,6 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/dashboard/subscription" className="flex items-center gap-3 p-2">
-              <CreditCard className="h-4 w-4" />
-              <span>Billing & Plans</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
             <Link href="/account/payment" className="flex items-center gap-3 p-2">
               <History className="h-4 w-4" />
               <span>Payment History</span>
@@ -178,18 +170,6 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
                   : "bg-transparent border border-muted-foreground")
               }
             />
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-
-        <DropdownMenuSeparator />
-
-        {/* Support & Help */}
-        <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard/help" className="flex items-center gap-3 p-2">
-              <HelpCircle className="h-4 w-4" />
-              <span>Help & Support</span>
-            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 

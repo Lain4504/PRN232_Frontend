@@ -7,6 +7,7 @@ import type {
   CreativeListParams,
   CreateAdCreativeFromContentRequest,
   CreateAdCreativeFromFacebookPostRequest,
+  FacebookPostDetails,
 } from '@/lib/types/creatives';
 import type { PaginatedResponse } from '@/lib/api';
 
@@ -184,5 +185,19 @@ export function useToggleCreativeStatus() {
       // Invalidate lists to refetch
       queryClient.invalidateQueries({ queryKey: creativeKeys.lists() });
     },
+  });
+}
+
+// Get Facebook posts
+export function useFacebookPosts(brandId?: string, pageId?: string, limit: number = 50) {
+  return useQuery({
+    queryKey: ['facebook-posts', brandId, pageId, limit],
+    queryFn: async () => {
+      const response = await api.get<FacebookPostDetails[]>(
+        endpoints.facebookPosts({ brandId, pageId, limit })
+      );
+      return response.data;
+    },
+    enabled: !!brandId,
   });
 }

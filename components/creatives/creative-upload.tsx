@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -9,23 +9,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import {
-  Upload,
-  X,
-  AlertCircle,
-  CheckCircle,
-  Loader2,
-} from "lucide-react";
-import { useCreateCreative } from "@/hooks/use-creatives";
+import { Upload, X, Loader2 } from "lucide-react";
+import { useCreateCreative, useCreateCreativeFromFacebookPost, useFacebookPosts } from "@/hooks/use-creatives";
 import type { CreateAdCreativeFromContentRequest } from "@/lib/types/creatives";
 import { Input as UIInput } from "@/components/ui/input";
-import Image from "next/image";
-// TODO in future: add from-content flow in UI; current component remains for asset upload use cases
-import { useFileUpload } from "@/hooks/use-file-upload";
 import { createCreativeSchema, type CreateCreativeFormData } from "@/lib/validators/creative-schemas";
-import { CREATIVE_TYPES, CREATIVE_FILE_LIMITS } from "@/lib/types/creatives";
+import { CREATIVE_TYPES } from "@/lib/types/creatives";
 import { toast } from "sonner";
+import { useContentsByBrand } from "@/hooks/use-contents";
+import { ContentStatusEnum } from "@/lib/types/aisam-types";
+import { useGetAdAccounts, useGetSocialAccounts } from "@/hooks/use-social-accounts";
+import { useBrands } from "@/hooks/use-brands";
+import type { SocialAccountDto, AdAccountDto, ContentResponseDto } from "@/lib/types/aisam-types";
 
 interface CreativeUploadProps {
   adSetId: string;
@@ -34,23 +29,18 @@ interface CreativeUploadProps {
 }
 
 export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadProps) {
-  const [selectedType, setSelectedType] = useState<string>("");
+  const [flow, setFlow] = useState<'fromContent' | 'fromFacebookPost'>('fromContent');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [adAccountId, setAdAccountId] = useState<string>("");
   const [contentId, setContentId] = useState<string>("");
   const [callToAction, setCallToAction] = useState<string>("");
   const [linkUrl, setLinkUrl] = useState<string>("");
+  const [selectedSocialAccountId, setSelectedSocialAccountId] = useState<string>("");
+  const [facebookPostId, setFacebookPostId] = useState<string>("");
   
-  const createMutation = useCreateCreative();
-  const fileUpload = useFileUpload({
-    onSuccess: () => {
-      toast.success("File uploaded successfully");
-    },
-    onError: (error) => {
-      toast.error(error);
-    }
-  });
+  const createFromContent = useCreateCreative();
+  const createFromFacebookPost = useCreateCreativeFromFacebookPost();
 
   const {
     register,
@@ -58,7 +48,7 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
     formState: { errors },
     setValue,
     watch,
-    reset
+    // remove reset to avoid unused var warning
   } = useForm<CreateCreativeFormData>({
     resolver: zodResolver(createCreativeSchema),
       defaultValues: {
@@ -72,26 +62,42 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
 
   const watchedType = watch("type");
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && watchedType) {
-      fileUpload.uploadFile(file, watchedType as 'IMAGE' | 'VIDEO' | 'CAROUSEL' | 'GIF' | 'STORY');
-      setValue("mediaFile", file);
-    }
-  };
+  // Brand -> Approved contents for selection
+  const [selectedBrandId, setSelectedBrandId] = useState<string>("");
+  const { data: brands = [] } = useBrands();
+  const contentsByBrand = useContentsByBrand(selectedBrandId || undefined, { status: ContentStatusEnum.Approved, page: 1, pageSize: 50, sortBy: "createdAt", sortDescending: true });
+  const approvedContents = useMemo(() => {
+    // useContentsByBrand returns ApiPaginatedResponse<ContentResponseDto>
+    // Structure: { data: ContentResponseDto[], totalCount, page, ... }
+    const data = contentsByBrand?.data;
+    if (!data || !Array.isArray(data)) return [];
+    return data;
+  }, [contentsByBrand]);
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const file = event.dataTransfer.files[0];
-    if (file && watchedType) {
-      fileUpload.uploadFile(file, watchedType as 'IMAGE' | 'VIDEO' | 'CAROUSEL' | 'GIF' | 'STORY');
-      setValue("mediaFile", file);
-    }
-  };
+  // Fetch social accounts and ad accounts for selection
+  const { data: socialAccounts = [] } = useGetSocialAccounts();
+  const { data: adAccounts = [] } = useGetAdAccounts(selectedSocialAccountId);
+  
+  // Fetch Facebook posts when brand is selected
+  const { data: facebookPosts = [], isLoading: isLoadingPosts } = useFacebookPosts(selectedBrandId || undefined);
 
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-  };
+  // Common CTA options
+  const CTA_OPTIONS = [
+    "SHOP_NOW",
+    "LEARN_MORE",
+    "SIGN_UP",
+    "SUBSCRIBE",
+    "GET_OFFER",
+    "CONTACT_US",
+    "APPLY_NOW",
+    "BOOK_NOW",
+    "DOWNLOAD",
+    "GET_QUOTE",
+    "REGISTER_NOW",
+    "BUY_NOW",
+  ] as const;
+
+  // File upload handlers removed: not used in current flows
 
   const addTag = () => {
     if (tagInput.trim() && !selectedTags.includes(tagInput.trim())) {
@@ -117,31 +123,65 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
 
   const onSubmit = async (data: CreateCreativeFormData) => {
     try {
-      const payload: CreateAdCreativeFromContentRequest = {
-        contentId: contentId,
-        adAccountId: adAccountId,
-        adName: data.name,
-        callToAction: callToAction || undefined,
-        linkUrl: linkUrl || undefined,
-      };
-      await createMutation.mutateAsync(payload);
-      onSuccess();
+      console.log("Form submitted with data:", data);
+      console.log("Flow:", flow);
+      console.log("Form errors:", errors);
+      
+      if (flow === 'fromContent') {
+        if (!selectedBrandId) {
+          toast.error("Please select a brand");
+          return;
+        }
+        if (!contentId) {
+          toast.error("Please select content");
+          return;
+        }
+        if (!adAccountId) {
+          toast.error("Please select an ad account");
+          return;
+        }
+        const payload: CreateAdCreativeFromContentRequest = {
+          contentId: contentId,
+          adAccountId: adAccountId,
+          adName: data.name,
+          callToAction: callToAction || undefined,
+          linkUrl: linkUrl || undefined,
+        };
+        await createFromContent.mutateAsync(payload);
+        toast.success("Creative created successfully");
+        onSuccess();
+      } else if (flow === 'fromFacebookPost') {
+        if (!selectedBrandId) {
+          toast.error("Please select a brand");
+          return;
+        }
+        if (!adAccountId) {
+          toast.error("Please select an ad account");
+          return;
+        }
+        if (!facebookPostId) {
+          toast.error("Please enter Facebook Post ID");
+          return;
+        }
+        await createFromFacebookPost.mutateAsync({
+          brandId: selectedBrandId,
+          adAccountId,
+          facebookPostId,
+          callToAction: callToAction || undefined,
+          linkUrl: linkUrl || undefined,
+          adName: data.name || undefined,
+        });
+        toast.success("Creative created successfully");
+        onSuccess();
+      }
     } catch (error) {
       console.error("Create creative error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to create creative";
+      toast.error(errorMessage);
     }
   };
 
-  const getFileRequirements = (type: string) => {
-    const limits = CREATIVE_FILE_LIMITS[type as keyof typeof CREATIVE_FILE_LIMITS];
-    if (!limits) return null;
-    
-    return {
-      maxSize: Math.round(limits.maxSize / (1024 * 1024)),
-      formats: limits.formats.join(", ")
-    };
-  };
-
-  const requirements = watchedType ? getFileRequirements(watchedType) : null;
+  // File requirements removed: not used in current flows
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -152,16 +192,14 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
           value={watchedType || ""}
           onValueChange={(value) => {
             setValue("type", value as 'IMAGE' | 'VIDEO' | 'CAROUSEL' | 'TEXT' | 'GIF' | 'STORY');
-            setSelectedType(value);
-            fileUpload.reset();
           }}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select creative type" />
           </SelectTrigger>
           <SelectContent>
-            {CREATIVE_TYPES.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
+          {CREATIVE_TYPES.map((type) => (
+            <SelectItem key={type.value} value={type.value}>
                 <div className="flex items-center gap-2">
                   {type.label}
                   <span className="text-xs text-muted-foreground">
@@ -177,103 +215,189 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
         )}
       </div>
 
-      {/* File Upload */}
-      {watchedType && ['IMAGE', 'VIDEO', 'GIF'].includes(watchedType) && (
-        <div className="space-y-2">
-          <Label>Media File *</Label>
-          <div
-            className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-muted-foreground/50 transition-colors cursor-pointer"
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onClick={() => document.getElementById('file-input')?.click()}
-          >
-            <input
-              id="file-input"
-              type="file"
-              className="hidden"
-              accept={requirements?.formats}
-              onChange={handleFileSelect}
-            />
-            
-            {fileUpload.file ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-center">
-                  {fileUpload.preview ? (
-                    <Image
-                      src={fileUpload.preview}
-                      alt="Preview"
-                      width={128}
-                      height={128}
-                      className="h-32 w-32 object-cover rounded"
-                    />
-                  ) : (
-                    <Upload className="h-12 w-12 text-muted-foreground" />
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">{fileUpload.file.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {(fileUpload.file.size / (1024 * 1024)).toFixed(2)} MB
-                  </p>
-                  {fileUpload.isUploading && (
-                    <Progress value={fileUpload.progress} className="w-full" />
-                  )}
-                  {fileUpload.error && (
-                    <div className="flex items-center gap-2 text-destructive text-sm">
-                      <AlertCircle className="h-4 w-4" />
-                      {fileUpload.error}
-                    </div>
-                  )}
-                  {!fileUpload.error && !fileUpload.isUploading && (
-                    <div className="flex items-center gap-2 text-green-600 text-sm">
-                      <CheckCircle className="h-4 w-4" />
-                      File ready
-                    </div>
-                  )}
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    fileUpload.removeFile();
-                    setValue("mediaFile", undefined);
-                  }}
-                >
-                  <X className="h-4 w-4 mr-1" />
-                  Remove
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <Upload className="h-12 w-12 text-muted-foreground mx-auto" />
-                <div>
-                  <p className="text-sm font-medium">Click to upload or drag and drop</p>
-                  <p className="text-xs text-muted-foreground">
-                    {requirements && `Max ${requirements.maxSize}MB, ${requirements.formats}`}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-          {errors.mediaFile && (
-            <p className="text-sm text-destructive">{errors.mediaFile.message as string}</p>
-          )}
-        </div>
-      )}
+      {/* File Upload (removed for this flow; creatives are created from content or Facebook post) */}
 
-      {/* Content and Ad Account context (required for from-content flow) */}
+      {/* Flow Selector */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <Button type="button" variant={flow === 'fromContent' ? 'default' : 'outline'} onClick={() => setFlow('fromContent')}>From Approved Content</Button>
+        <Button type="button" variant={flow === 'fromFacebookPost' ? 'default' : 'outline'} onClick={() => setFlow('fromFacebookPost')}>From Facebook Post</Button>
+      </div>
+
+      {/* Flow-specific fields */}
+      {/* From Content flow */}
+      {flow === 'fromContent' && (
+      <>
+      {/* Brand, Content and Ad Account context (required for from-content flow) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Brand select */}
         <div className="space-y-2">
-          <Label htmlFor="contentId">Content ID *</Label>
-          <UIInput id="contentId" placeholder="Approved Content ID" value={contentId} onChange={(e) => setContentId(e.target.value)} />
+          <Label htmlFor="brandId">Brand *</Label>
+          <Select value={selectedBrandId} onValueChange={(v) => { setSelectedBrandId(v); setContentId(""); }}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select brand" />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.isArray(brands) && (brands as Array<{ id: string; name: string }>).map((b) => (
+                <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
+
+        {/* Content select (from brand's approved contents) */}
         <div className="space-y-2">
-          <Label htmlFor="adAccountId">Ad Account ID *</Label>
-          <UIInput id="adAccountId" placeholder="act_... or numeric" value={adAccountId} onChange={(e) => setAdAccountId(e.target.value)} />
+          <Label htmlFor="contentId">Content *</Label>
+          <Select value={contentId} onValueChange={setContentId} disabled={!selectedBrandId}>
+            <SelectTrigger>
+              <SelectValue placeholder={selectedBrandId ? "Select approved content" : "Select brand first"} />
+            </SelectTrigger>
+            <SelectContent>
+              {approvedContents.map((c: ContentResponseDto) => (
+                <SelectItem key={c.id} value={c.id}>
+                  <div className="flex flex-col">
+                    <span className="truncate max-w-[220px]">{c.title || c.id}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Ad account select (pick social account then ad account) */}
+        <div className="space-y-2">
+          <Label htmlFor="socialAccount">Social Account</Label>
+          <Select value={selectedSocialAccountId} onValueChange={(v) => { setSelectedSocialAccountId(v); setAdAccountId(""); }}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select social account" />
+            </SelectTrigger>
+            <SelectContent>
+              {socialAccounts.map((sa: SocialAccountDto) => (
+                <SelectItem key={sa.id} value={sa.id}>
+                  <div className="flex items-center gap-2">
+                    <span className="capitalize">{sa.provider}</span>
+                    <span className="text-xs text-muted-foreground">{sa.providerUserId || sa.id}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Label htmlFor="adAccountId">Ad Account *</Label>
+          <Select value={adAccountId} onValueChange={setAdAccountId}>
+            <SelectTrigger>
+              <SelectValue placeholder={selectedSocialAccountId ? "Select ad account" : "Select social account first"} />
+            </SelectTrigger>
+            <SelectContent>
+              {adAccounts.map((aa: AdAccountDto) => (
+                <SelectItem key={aa.id} value={aa.id}>
+                  <div className="flex flex-col">
+                    <span>{aa.name}</span>
+                    <span className="text-xs text-muted-foreground">{aa.accountId} • {aa.currency}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
+      </>
+      )}
+
+      {/* From Facebook Post flow */}
+      {flow === 'fromFacebookPost' && (
+      <>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Brand select */}
+        <div className="space-y-2">
+          <Label htmlFor="brandId">Brand *</Label>
+          <Select value={selectedBrandId} onValueChange={(v) => { setSelectedBrandId(v); }}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select brand" />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.isArray(brands) && (brands as Array<{ id: string; name: string }>).map((b) => (
+                <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Social account and ad account */}
+        <div className="space-y-2">
+          <Label htmlFor="socialAccount">Social Account</Label>
+          <Select value={selectedSocialAccountId} onValueChange={(v) => { setSelectedSocialAccountId(v); setAdAccountId(""); }}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select social account" />
+            </SelectTrigger>
+            <SelectContent>
+              {socialAccounts.map((sa: SocialAccountDto) => (
+                <SelectItem key={sa.id} value={sa.id}>
+                  <div className="flex items-center gap-2">
+                    <span className="capitalize">{sa.provider}</span>
+                    <span className="text-xs text-muted-foreground">{sa.providerUserId || sa.id}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Label htmlFor="adAccountId">Ad Account *</Label>
+          <Select value={adAccountId} onValueChange={setAdAccountId}>
+            <SelectTrigger>
+              <SelectValue placeholder={selectedSocialAccountId ? "Select ad account" : "Select social account first"} />
+            </SelectTrigger>
+            <SelectContent>
+              {adAccounts.map((aa: AdAccountDto) => (
+                <SelectItem key={aa.id} value={aa.id}>
+                  <div className="flex flex-col">
+                    <span>{aa.name}</span>
+                    <span className="text-xs text-muted-foreground">{aa.accountId} • {aa.currency}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="facebookPostId">Facebook Post ID *</Label>
+          {selectedBrandId ? (
+            <Select value={facebookPostId} onValueChange={setFacebookPostId} disabled={!selectedBrandId}>
+              <SelectTrigger>
+                <SelectValue placeholder={selectedBrandId ? (isLoadingPosts ? "Loading posts..." : "Select Facebook post") : "Select brand first"} />
+              </SelectTrigger>
+              <SelectContent>
+                {isLoadingPosts ? (
+                  <SelectItem value="loading" disabled>Loading posts...</SelectItem>
+                ) : facebookPosts.length === 0 ? (
+                  <SelectItem value="empty" disabled>No posts found</SelectItem>
+                ) : (
+                  facebookPosts.map((post) => (
+                    <SelectItem key={post.id} value={post.id}>
+                      <div className="flex flex-col">
+                        <span className="truncate max-w-[200px]">{post.message || post.id}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {post.type || 'Unknown'} • {new Date(post.createdTime).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+          ) : (
+            <UIInput id="facebookPostId" placeholder="Select brand first" value={facebookPostId} onChange={(e) => setFacebookPostId(e.target.value)} disabled />
+          )}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="linkUrl">Link URL</Label>
+          <UIInput id="linkUrl" placeholder="https://example.com" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} />
+        </div>
+      </div>
+      </>
+      )}
 
       {/* Creative Name */}
       <div className="space-y-2">
@@ -288,16 +412,27 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
         )}
       </div>
 
-      {/* CTA and Link */}
+      {/* CTA (applies to both flows) and Link (also in FB section) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="cta">Call To Action</Label>
-          <UIInput id="cta" placeholder="SHOP_NOW | LEARN_MORE | ..." value={callToAction} onChange={(e) => setCallToAction(e.target.value)} />
+          <Select value={callToAction} onValueChange={setCallToAction}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select call to action" />
+            </SelectTrigger>
+            <SelectContent>
+              {CTA_OPTIONS.map((cta) => (
+                <SelectItem key={cta} value={cta}>{cta.replace(/_/g, " ")}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="linkUrl">Link URL</Label>
-          <UIInput id="linkUrl" placeholder="https://example.com" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} />
-        </div>
+        {flow === 'fromContent' && (
+          <div className="space-y-2">
+            <Label htmlFor="linkUrl">Link URL</Label>
+            <UIInput id="linkUrl" placeholder="https://example.com" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} />
+          </div>
+        )}
       </div>
 
       {/* Content (for TEXT type) */}
@@ -356,9 +491,9 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
         </Button>
         <Button
           type="submit"
-          disabled={createMutation.isPending || fileUpload.isUploading}
+          disabled={createFromContent.isPending || createFromFacebookPost.isPending}
         >
-          {createMutation.isPending ? (
+          {(createFromContent.isPending || createFromFacebookPost.isPending) ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Creating...

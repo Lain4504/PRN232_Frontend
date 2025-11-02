@@ -17,7 +17,6 @@ interface ContentListProps {
   onCreate?: (data: CreateContentRequest) => Promise<void>;
   onDelete?: (contentId: string) => Promise<void>;
   onSubmit?: (contentId: string) => Promise<void>;
-  onPublish?: (contentId: string, integrationId: string) => Promise<void>;
   isProcessing?: boolean;
   emptyMessage?: string;
   emptyDescription?: string;
@@ -32,7 +31,6 @@ export function ContentList({
   onCreate,
   onDelete,
   onSubmit,
-  onPublish,
   isProcessing = false,
   emptyMessage = "No content found",
   emptyDescription = "There is no content to display",
@@ -43,11 +41,6 @@ export function ContentList({
   const [selectedContent, setSelectedContent] = useState<ContentResponseDto | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-
-  const handleView = (content: ContentResponseDto) => {
-    setSelectedContent(content);
-    setIsEditing(false);
-  };
 
   const handleEdit = (content: ContentResponseDto) => {
     setSelectedContent(content);
@@ -75,20 +68,6 @@ export function ContentList({
   const handleCreateContent = async (data: CreateContentRequest) => {
     if (onCreate) {
       await onCreate(data);
-      handleCloseModal();
-    }
-  };
-
-  const handleSubmitContent = async (contentId: string) => {
-    if (onSubmit) {
-      await onSubmit(contentId);
-      handleCloseModal();
-    }
-  };
-
-  const handlePublishContent = async (contentId: string, integrationId: string) => {
-    if (onPublish) {
-      await onPublish(contentId, integrationId);
       handleCloseModal();
     }
   };
@@ -128,11 +107,9 @@ export function ContentList({
           <ContentCard
             key={content.id}
             content={content}
-            onView={handleView}
             onEdit={handleEdit}
             onDelete={onDelete}
             onSubmit={onSubmit}
-            onPublish={onPublish}
             isProcessing={isProcessing}
           />
         ))}
@@ -145,7 +122,7 @@ export function ContentList({
         onOpenChange={(open) => !open && handleCloseModal()}
         onSave={handleSave}
         onCreate={handleCreateContent}
-        onPublish={handlePublishContent}
+        onSubmit={onSubmit}
         isProcessing={isProcessing}
         brands={brands}
         products={products}

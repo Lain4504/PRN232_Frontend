@@ -110,11 +110,17 @@ export function TeamProvider({ children }: TeamProviderProps) {
         if (savedTeamId) {
           setActiveTeamIdState(savedTeamId)
           await loadTeamData(savedTeamId)
+        } else {
+          // No saved team ID, just set loading to false
+          setIsLoading(false)
         }
       } catch (error) {
         console.error('Error loading team context:', error)
+        // Clear everything on error
+        setActiveTeamIdState(null)
+        setActiveTeamState(null)
+        setCurrentMember(null)
         clearActiveTeamId()
-      } finally {
         setIsLoading(false)
       }
     }

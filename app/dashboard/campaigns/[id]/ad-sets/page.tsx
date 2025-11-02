@@ -1,11 +1,12 @@
 import { AdSetsManagement } from '@/components/pages/ad-sets/ad-sets-management';
 
 interface AdSetsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function AdSetsPage({ params }: AdSetsPageProps) {
-  return <AdSetsManagement campaignId={params.id} basePath="/dashboard/campaigns" />;
+export default async function AdSetsPage({ params }: AdSetsPageProps) {
+  const { id } = await params;
+  return <AdSetsManagement campaignId={id} basePath="/dashboard/campaigns" />;
 }

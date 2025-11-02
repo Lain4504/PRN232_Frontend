@@ -74,8 +74,41 @@ export const getUserSubscriptions = async (): Promise<SubscriptionResponseDto[]>
   return response.data!
 }
 
+export const getActiveSubscriptionByProfile = async (): Promise<SubscriptionResponseDto | null> => {
+  try {
+    const response = await api.get<SubscriptionResponseDto>('/payment/subscription/active')
+    return response.data || null
+  } catch (error) {
+    console.error('Error fetching active subscription by profile:', error)
+    return null
+  }
+}
+
 export const cancelSubscription = async (id: string): Promise<boolean> => {
   const response = await api.delete<boolean>(`/payment/subscription/${id}`)
+  return response.data!
+}
+
+export const changeSubscriptionPlan = async (
+  planId: string,
+  billingCycle: 'monthly' | 'yearly',
+  immediate: boolean
+): Promise<SubscriptionResponseDto> => {
+  // Map plan ID string to enum value
+  const planMap: Record<string, number> = {
+    'free': 0,
+    'basic': 1,
+    'pro': 2,
+    'enterprise': 2 // Enterprise maps to Pro for now
+  }
+  
+  const planEnum = planMap[planId] ?? 1
+  
+  const response = await api.put<SubscriptionResponseDto>('/payment/subscription/change-plan', {
+    planId: planEnum,
+    billingCycle,
+    immediate
+  })
   return response.data!
 }
 
@@ -88,6 +121,13 @@ export const getUserPaymentHistory = async (): Promise<PaymentResponseDto[]> => 
 // Helper functions
 export const getActiveSubscription = async (profileId: string): Promise<SubscriptionResponseDto | null> => {
   try {
+    // Try to get active subscription directly by profile
+    const active = await getActiveSubscriptionByProfile()
+    if (active && active.profileId === profileId) {
+      return active
+    }
+    
+    // Fallback: get all subscriptions and filter
     const subscriptions = await getUserSubscriptions()
     return subscriptions.find(sub => sub.profileId === profileId && sub.isActive) || null
   } catch (error) {

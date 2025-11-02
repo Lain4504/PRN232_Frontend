@@ -1,12 +1,13 @@
 import { AdSetDetails } from '@/components/pages/ad-sets/ad-set-details';
 
 interface AdSetDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
     adSetId: string;
-  };
+  }>;
 }
 
-export default function AdSetDetailsPage({ params }: AdSetDetailsPageProps) {
-  return <AdSetDetails campaignId={params.id} adSetId={params.adSetId} basePath="/dashboard/campaigns" />;
+export default async function AdSetDetailsPage({ params }: AdSetDetailsPageProps) {
+  const { id, adSetId } = await params;
+  return <AdSetDetails campaignId={id} adSetId={adSetId} basePath="/dashboard/campaigns" />;
 }

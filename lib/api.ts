@@ -292,6 +292,7 @@ export const endpoints = {
   // Team Activity endpoints
   teamActivity: (teamId: string) => `/team/${teamId}/activity`,
   teamAnalytics: (teamId: string) => `/team/${teamId}/analytics`,
+  teamStats: (teamId: string) => `/team/${teamId}/stats`,
 
   // Team Billing endpoints
   teamBilling: (teamId: string) => `/team/${teamId}/billing`,
@@ -425,6 +426,14 @@ export const endpoints = {
     const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
     return `/ad-creatives${queryString}`;
   },
+  facebookPosts: (params?: { brandId?: string; pageId?: string; limit?: number }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.brandId) searchParams.append('brandId', params.brandId);
+    if (params?.pageId) searchParams.append('pageId', params.pageId);
+    if (params?.limit) searchParams.append('limit', params.limit.toString());
+    const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return `/ad-creatives/facebook/posts${queryString}`;
+  },
   creativeById: (creativeId: string) => `/ad-creatives/${creativeId}`,
   creativePreview: (creativeId: string, adFormat?: string) => `/ad-creatives/${creativeId}/previews${adFormat ? `?adFormat=${encodeURIComponent(adFormat)}` : ''}`,
   // Keep legacy for compatibility (backend still supports but deprecated)
@@ -498,4 +507,7 @@ export const endpoints = {
 
   // Payment endpoints
   paymentHistory: () => '/payment/history',
+
+  // Dashboard endpoints
+  dashboardStats: () => '/dashboard/stats',
 }

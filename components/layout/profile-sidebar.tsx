@@ -8,8 +8,6 @@ import {
   Users,
   Settings,
   Bell,
-  HelpCircle,
-  BookOpen,
   PanelLeftDashed,
 } from "lucide-react"
 
@@ -52,18 +50,7 @@ const profileNavItems: NavItem[] = [
 ]
 
 // System and Support Navigation
-const secondaryNavItems: NavItem[] = [
-  {
-    title: "Help & Support",
-    url: "/dashboard/help",
-    icon: HelpCircle,
-  },
-  {
-    title: "Documentation",
-    url: "/dashboard/docs",
-    icon: BookOpen,
-  },
-]
+const secondaryNavItems: NavItem[] = []
 
 export function ProfileSidebar() {
   const pathname = usePathname()
@@ -216,12 +203,6 @@ export function ProfileSidebar() {
 
             {/* System Navigation */}
             <div className="mb-4">
-              <h3 className={cn(
-                "text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
-                sidebarModeState === 'collapsed' && "hidden"
-              )}>
-                System
-              </h3>
               <div className="space-y-1">
                 {secondaryNavItems.map((item) => (
                   <Tooltip key={item.title}>

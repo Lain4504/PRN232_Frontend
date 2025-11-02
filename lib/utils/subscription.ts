@@ -128,7 +128,7 @@ export const getRemainingUsage = (
 }
 
 // Plan comparison utilities
-export const comparePlans = (currentPlan: SubscriptionPlan, targetPlan: SubscriptionPlan): {
+export const comparePlans = (currentPlan: SubscriptionPlan | undefined | null, targetPlan: SubscriptionPlan): {
   isUpgrade: boolean
   isDowngrade: boolean
   priceDifference: number
@@ -138,9 +138,29 @@ export const comparePlans = (currentPlan: SubscriptionPlan, targetPlan: Subscrip
     improved: string[]
   }
 } => {
+  // Handle case where currentPlan is undefined (e.g., no subscription or invalid tier)
+  if (!currentPlan) {
+    // Default to free plan for comparison
+    const freePlan = getPlanByTier('free')
+    if (!freePlan) {
+      // Fallback: return neutral comparison if we can't get free plan
+      return {
+        isUpgrade: true,
+        isDowngrade: false,
+        priceDifference: targetPlan.price.monthly,
+        featureChanges: {
+          added: targetPlan.features,
+          removed: [],
+          improved: [],
+        },
+      }
+    }
+    currentPlan = freePlan
+  }
+
   const tierOrder = { free: 0, basic: 1, pro: 2, enterprise: 3 }
-  const currentTierOrder = tierOrder[currentPlan.tier]
-  const targetTierOrder = tierOrder[targetPlan.tier]
+  const currentTierOrder = tierOrder[currentPlan.tier as keyof typeof tierOrder] ?? 0
+  const targetTierOrder = tierOrder[targetPlan.tier as keyof typeof tierOrder] ?? 0
 
   const isUpgrade = targetTierOrder > currentTierOrder
   const isDowngrade = targetTierOrder < currentTierOrder
@@ -201,10 +221,21 @@ export const analyzePlanChangeImpact = (
   endOfPeriodChanges: string[]
   warnings: string[]
 } => {
-  const comparison = comparePlans(
-    getPlanByTier(currentSubscription.tier)!,
-    targetPlan
-  )
+  // Get current plan, fallback to free if not found
+  const currentPlan = getPlanByTier(currentSubscription.tier) ?? getPlanByTier('free')
+  
+  if (!currentPlan) {
+    // If we can't get any plan, return safe defaults
+    return {
+      willLoseFeatures: false,
+      willLoseData: false,
+      immediateChanges: ['Unable to determine plan changes. Please contact support.'],
+      endOfPeriodChanges: [],
+      warnings: ['Current subscription tier could not be determined.'],
+    }
+  }
+
+  const comparison = comparePlans(currentPlan, targetPlan)
 
   const willLoseFeatures = comparison.featureChanges.removed.length > 0
   const willLoseData = comparison.isDowngrade && currentSubscription.usage.campaigns > targetPlan.limits.campaigns

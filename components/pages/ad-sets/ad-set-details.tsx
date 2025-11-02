@@ -144,31 +144,31 @@ export function AdSetDetails({ campaignId, adSetId, basePath = '/dashboard/campa
 
         {/* Header */}
         <div className="space-y-3 lg:space-y-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="flex items-start gap-3 sm:gap-4 min-w-0 flex-1">
+              <Avatar className="h-12 w-12 sm:h-16 sm:w-16 flex-shrink-0">
                 <AvatarFallback>
-                  <Target className="h-8 w-8" />
+                  <Target className="h-6 w-6 sm:h-8 sm:w-8" />
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground break-words">
                   {adSet.name}
                 </h1>
-                <div className="flex items-center gap-2 mt-2">
+                <div className="flex flex-wrap items-center gap-2 mt-2">
                   <Badge variant="secondary" className={statusColor}>
                     {status}
                   </Badge>
-                  <Badge variant="outline">
-                    Campaign: {campaign.name}
+                  <Badge variant="outline" className="text-xs sm:text-sm">
+                    Campaign: <span className="truncate max-w-[120px] sm:max-w-none inline-block">{campaign.name}</span>
                   </Badge>
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:flex-shrink-0">
               <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline">
+                  <Button variant="outline" className="w-full sm:w-auto">
                     <Edit className="mr-2 h-4 w-4" />
                     Edit Ad Set
                   </Button>
@@ -188,7 +188,7 @@ export function AdSetDetails({ campaignId, adSetId, basePath = '/dashboard/campa
               
               <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive">
+                  <Button variant="destructive" className="w-full sm:w-auto">
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete
                   </Button>
@@ -271,7 +271,7 @@ export function AdSetDetails({ campaignId, adSetId, basePath = '/dashboard/campa
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  ${metrics.spend.toLocaleString()}
+                  ₫{metrics.spend.toLocaleString('vi-VN')}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Total spent
@@ -292,16 +292,8 @@ export function AdSetDetails({ campaignId, adSetId, basePath = '/dashboard/campa
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Ad Set ID</label>
-                <p className="text-sm">{adSet.id}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Campaign ID</label>
-                <p className="text-sm">{adSet.campaignId}</p>
-              </div>
-              <div>
                 <label className="text-sm font-medium text-muted-foreground">Daily Budget</label>
-                <p className="text-sm">${typeof (adSet as { budget?: number } | undefined)?.budget === 'number' ? (adSet as { budget: number }).budget.toLocaleString() : '0'}</p>
+                <p className="text-sm">₫{typeof (adSet as { budget?: number } | undefined)?.budget === 'number' ? (adSet as { budget: number }).budget.toLocaleString('vi-VN') : '0'}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Status</label>

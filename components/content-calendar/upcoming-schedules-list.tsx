@@ -39,6 +39,25 @@ export function UpcomingSchedulesList({
     return format(date, "MMM d");
   };
 
+  const formatLocalTime = (dateString: string, timeString: string | undefined, timezone: string) => {
+    try {
+      const date = parseISO(dateString);
+      let hh: string, mm: string, ss: string;
+      if (timeString) {
+        [hh = "00", mm = "00", ss = "00"] = timeString.split(":");
+      } else {
+        // Derive time from scheduledDate (treated as UTC instant)
+        hh = String(date.getUTCHours()).padStart(2, '0');
+        mm = String(date.getUTCMinutes()).padStart(2, '0');
+        ss = String(date.getUTCSeconds()).padStart(2, '0');
+      }
+      const local = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), Number(hh), Number(mm), Number(ss)));
+      return `${format(local, "HH:mm")} ${timezone}`;
+    } catch {
+      return "--:--";
+    }
+  };
+
   const sortedSchedules = [...schedules]
       .sort((a, b) => new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime())
       .slice(0, limit);
@@ -78,7 +97,7 @@ export function UpcomingSchedulesList({
                         <span className="font-medium">{schedule.brandName}</span>
                         <span className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                          {getDateLabel(schedule.scheduledDate)}
+                          {getDateLabel(schedule.scheduledDate)} • {formatLocalTime(schedule.scheduledDate, schedule.scheduledTime, schedule.timezone)}
                   </span>
                       </div>
                     </div>

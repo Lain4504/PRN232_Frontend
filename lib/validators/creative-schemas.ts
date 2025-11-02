@@ -47,17 +47,10 @@ export const createCreativeSchema = z.object({
   tags: z
     .array(z.string().max(50, 'Tag must be less than 50 characters'))
     .max(10, 'Maximum 10 tags allowed')
-    }).refine((data) => {
-  // Require media file for IMAGE, VIDEO, and GIF types
-  if (['IMAGE', 'VIDEO', 'GIF'].includes(data.type) && !data.mediaFile) {
-    return false;
-  }
-  return true;
-}, {
-  message: 'Media file is required for IMAGE, VIDEO, and GIF types',
-  path: ['mediaFile']
-}).refine((data) => {
+    })    .refine((data) => {
   // Require content for TEXT type
+  // Note: Media file validation is handled in the component for different flows
+  // (fromContent, fromFacebookPost don't require mediaFile)
   if (data.type === 'TEXT' && (!data.content || data.content.trim().length === 0)) {
     return false;
   }
@@ -66,7 +59,7 @@ export const createCreativeSchema = z.object({
   message: 'Content is required for TEXT type',
   path: ['content']
 }).refine((data) => {
-  // Validate file type and size based on creative type
+  // Validate file type and size based on creative type (only if mediaFile is provided)
   if (data.mediaFile && data.type === 'IMAGE') {
     try {
       imageFileSchema.parse(data.mediaFile);

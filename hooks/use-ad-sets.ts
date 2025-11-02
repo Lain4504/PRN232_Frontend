@@ -66,9 +66,39 @@ export function useCreateAdSet() {
 
   return useMutation({
     mutationFn: async (data: CreateAdSetRequest) => {
+      // Transform frontend shape -> backend DTO
+      const targetingPayload: Record<string, unknown> = {};
+      const ageMin = data.targeting?.ageRange?.min;
+      const ageMax = data.targeting?.ageRange?.max;
+      if (typeof ageMin === 'number') targetingPayload["age_min"] = ageMin;
+      if (typeof ageMax === 'number') targetingPayload["age_max"] = Math.max(ageMax, 18);
+
+      // genders: 1=male, 2=female
+      const genders: number[] = [];
+      if (data.targeting?.gender?.male) genders.push(1);
+      if (data.targeting?.gender?.female) genders.push(2);
+      if (genders.length > 0) targetingPayload["genders"] = genders;
+
+      // locations -> geo_locations.countries (expect ISO-2 if provided)
+      const countries = (data.targeting?.locations || [])
+        .map(l => (l.country || '').trim())
+        .filter(Boolean);
+      if (countries.length > 0) {
+        targetingPayload["geo_locations"] = { countries };
+      }
+
+      const backendBody = {
+        campaignId: data.campaignId,
+        name: data.name,
+        targeting: JSON.stringify(targetingPayload),
+        dailyBudget: data.budget,
+        startDate: data.schedule?.startDate && data.schedule.startDate.length > 0 ? new Date(data.schedule.startDate) : null,
+        endDate: data.schedule?.endDate && data.schedule.endDate.length > 0 ? new Date(data.schedule.endDate) : null,
+      } as unknown as Record<string, unknown>;
+
       const response = await api.post<AdSetResponse>(
         endpoints.createAdSet(),
-        data
+        backendBody
       );
       return response.data;
     },
@@ -91,9 +121,31 @@ export function useUpdateAdSet() {
 
   return useMutation({
     mutationFn: async (data: UpdateAdSetRequest) => {
+      // Transform only fields provided
+      const targetingPayload: Record<string, unknown> = {};
+      if (data.targeting?.ageRange?.min !== undefined) targetingPayload["age_min"] = data.targeting.ageRange.min;
+      if (data.targeting?.ageRange?.max !== undefined) targetingPayload["age_max"] = Math.max(data.targeting.ageRange.max, 18);
+      const genders: number[] = [];
+      if (data.targeting?.gender?.male) genders.push(1);
+      if (data.targeting?.gender?.female) genders.push(2);
+      if (genders.length > 0) targetingPayload["genders"] = genders;
+      if (data.targeting?.locations) {
+        const countries = data.targeting.locations.map(l => (l.country || '').trim()).filter(Boolean);
+        if (countries.length > 0) targetingPayload["geo_locations"] = { countries };
+      }
+
+      const backendBody: Record<string, unknown> = {
+        ...(data.campaignId ? { campaignId: data.campaignId } : {}),
+        ...(data.name ? { name: data.name } : {}),
+        ...(Object.keys(targetingPayload).length > 0 ? { targeting: JSON.stringify(targetingPayload) } : {}),
+        ...(data.budget !== undefined ? { dailyBudget: data.budget } : {}),
+        ...(data.schedule?.startDate ? { startDate: new Date(data.schedule.startDate) } : {}),
+        ...(data.schedule?.endDate ? { endDate: new Date(data.schedule.endDate) } : {}),
+      };
+
       const response = await api.put<AdSetResponse>(
         endpoints.updateAdSet(data.id),
-        data
+        backendBody
       );
       return response.data;
     },

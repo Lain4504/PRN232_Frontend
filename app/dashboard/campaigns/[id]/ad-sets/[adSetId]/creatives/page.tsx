@@ -1,12 +1,13 @@
 import { CreativesManagement } from '@/components/pages/creatives/creatives-management';
 
 interface CreativesManagementPageProps {
-  params: {
+  params: Promise<{
     id: string;
     adSetId: string;
-  };
+  }>;
 }
 
-export default function CreativesManagementPage({ params }: CreativesManagementPageProps) {
-  return <CreativesManagement campaignId={params.id} adSetId={params.adSetId} basePath="/dashboard/campaigns" />;
+export default async function CreativesManagementPage({ params }: CreativesManagementPageProps) {
+  const { id, adSetId } = await params;
+  return <CreativesManagement campaignId={id} adSetId={adSetId} basePath="/dashboard/campaigns" />;
 }

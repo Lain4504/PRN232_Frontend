@@ -52,8 +52,10 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
         target_audience: brand.target_audience || '',
       });
       
-      if (brand.logo_url) {
-        setLogoPreview(brand.logo_url);
+      const existingLogo = (brand as unknown as { logo_url?: string; logoUrl?: string })
+      const previewUrl = existingLogo.logo_url || existingLogo.logoUrl || null
+      if (previewUrl) {
+        setLogoPreview(previewUrl)
       }
     }
   }, [mode, brand]);
