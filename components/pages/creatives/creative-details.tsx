@@ -9,13 +9,9 @@ import {
   Image,
   Edit,
   Trash2,
-  ArrowLeft,
   Eye,
   MousePointer,
   TrendingUp,
-  DollarSign,
-  Calendar,
-  Tag,
   BarChart3,
   Play,
   FileText,
@@ -24,9 +20,7 @@ import {
 import { useCreative } from "@/hooks/use-creative";
 import { useAdSet } from "@/hooks/use-ad-sets";
 import { useCampaign } from "@/hooks/use-campaigns";
-import { getCreativeStatus, getCreativeStatusColor, getCreativeTypeColor, CREATIVE_TYPES } from "@/lib/types/creatives";
-import Link from "next/link";
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { getCreativeStatus, getCreativeStatusColor, getCreativeTypeColor, CREATIVE_TYPES, type CreativeType } from "@/lib/types/creatives";
 import { format } from "date-fns";
 import { PageLayout } from "@/components/ui/page-layout";
 import { PageLoading } from "@/components/layout/page-loading";
@@ -84,7 +78,7 @@ export function CreativeDetails({ campaignId, adSetId, creativeId, basePath = '/
 
   const status = getCreativeStatus(creative);
   const statusColor = getCreativeStatusColor(status);
-  const typeColor = getCreativeTypeColor(creative.type);
+  const typeColor = getCreativeTypeColor((creative.type ?? 'IMAGE') as CreativeType);
   const typeInfo = CREATIVE_TYPES.find(t => t.value === creative.type);
   const metrics = creative.metrics;
 
@@ -107,52 +101,20 @@ export function CreativeDetails({ campaignId, adSetId, creativeId, basePath = '/
     }
   };
 
-  const CreativeIcon = getCreativeIcon(creative.type);
+  const CreativeIcon = getCreativeIcon(creative.type || 'IMAGE');
 
   return (
-    <PageLayout>
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href={basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard'}>
-                {basePath.includes('/team/') ? 'Team' : 'Dashboard'}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={basePath}>Campaigns</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`${basePath}/${campaignId}`}>
-                {campaign.name}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`${basePath}/${campaignId}/ad-sets`}>
-                Ad Sets
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`${basePath}/${campaignId}/ad-sets/${adSetId}`}>
-                {adSet.name}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`${basePath}/${campaignId}/ad-sets/${adSetId}/creatives`}>
-                Creatives
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{creative.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+    <PageLayout
+      breadcrumbs={[
+        { label: 'Dashboard', href: '/dashboard' },
+        { label: 'Campaigns', href: basePath },
+        { label: 'Campaign', href: `${basePath}/${campaignId}` },
+        { label: 'Ad Sets', href: `${basePath}/${campaignId}/ad-sets` },
+        { label: 'Ad Set', href: `${basePath}/${campaignId}/ad-sets/${adSetId}` },
+        { label: 'Creatives', href: `${basePath}/${campaignId}/ad-sets/${adSetId}/creatives` },
+        { label: creative?.name || 'Details', isCurrentPage: true },
+      ]}
+    >
 
       {/* Header */}
       <div className="space-y-6">
@@ -336,11 +298,11 @@ export function CreativeDetails({ campaignId, adSetId, creativeId, basePath = '/
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Created</label>
-                <p className="text-sm">{format(new Date(creative.createdAt), 'PPP')}</p>
+                <p className="text-sm">{creative.createdAt ? format(new Date(creative.createdAt), 'PPP') : '—'}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
-                <p className="text-sm">{format(new Date(creative.updatedAt), 'PPP')}</p>
+                <p className="text-sm">{creative.updatedAt ? format(new Date(creative.updatedAt), 'PPP') : '—'}</p>
               </div>
             </CardContent>
           </Card>
@@ -409,11 +371,13 @@ export function CreativeDetails({ campaignId, adSetId, creativeId, basePath = '/
 
       {/* Preview Modal */}
       <Dialog open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="w-[96vw] sm:w-[94vw] md:w-[92vw] lg:w-[88vw] max-w-[1400px] h-[92vh] p-0 flex flex-col">
+          <DialogHeader className="flex-shrink-0 px-4 sm:px-6 pt-4 sm:pt-6">
             <DialogTitle>Creative Preview</DialogTitle>
           </DialogHeader>
-          <CreativePreview creative={creative} fullScreen />
+          <div className="flex-1 overflow-auto p-3 sm:p-4">
+            <CreativePreview creative={creative} fullScreen />
+          </div>
         </DialogContent>
       </Dialog>
     </PageLayout>

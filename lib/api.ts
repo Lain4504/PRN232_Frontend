@@ -367,6 +367,7 @@ export const endpoints = {
   contentById: (contentId: string) => `/content/${contentId}`,
   contentSubmit: (contentId: string) => `/content/${contentId}/submit`,
   contentPublish: (contentId: string, integrationId: string) => `/content/${contentId}/publish/${integrationId}`,
+  contentClone: (contentId: string) => `/content/${contentId}/clone`,
   contentRestore: (contentId: string) => `/content/${contentId}/restore`,
 
   // Social Integration endpoints

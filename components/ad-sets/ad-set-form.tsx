@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { X, Plus, Target, DollarSign, Calendar, Users, MapPin } from "lucide-react";
+import { X, Plus, Target, Calendar, Users, MapPin } from "lucide-react";
 import { useCreateAdSet, useUpdateAdSet } from "@/hooks/use-ad-sets";
 import { createAdSetSchema, updateAdSetSchema } from "@/lib/validators/ad-set-schemas";
 import { GENDER_OPTIONS } from "@/lib/types/ad-sets";
@@ -117,16 +117,16 @@ export function AdSetForm({ campaignId, adSet, onSuccess, onCancel }: AdSetFormP
           <div className="space-y-2">
             <Label htmlFor="budget">Daily Budget (VND)</Label>
             <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground font-medium">₫</span>
               <Input
                 id="budget"
                 type="number"
-                step="0.01"
-                min="0.01"
-                max="10000"
+                step="1"
+                min="1"
+                max="1000000000"
                 {...register("budget", { valueAsNumber: true })}
                 className="pl-10 h-10 sm:h-9"
-                placeholder="0.00"
+                placeholder="0"
               />
             </div>
             {errors.budget && (

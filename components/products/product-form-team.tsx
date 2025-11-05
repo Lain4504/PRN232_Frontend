@@ -9,28 +9,24 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FormField } from "@/components/ui/form-field";
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
-import { Product, CreateProductForm } from "@/lib/types/aisam-types";
+import { Product, CreateProductForm, Brand } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
-import { useBrands } from "@/hooks/use-brands";
 import { useTeamBrands } from "@/hooks/use-team-brands";
 import { useCreateProduct, useUpdateProduct } from "@/hooks/use-products";
 import { Loader2, Package, Upload, Image as ImageIcon } from "lucide-react";
-import { Brand } from "@/lib/types/aisam-types";
 
-interface ProductFormProps {
+interface TeamProductFormProps {
   mode: 'create' | 'edit';
   product?: Product;
   defaultBrandId?: string;
-  brands?: Brand[]; // Optional: pass brands from parent (e.g., team brands)
-  teamId?: string; // Optional: if provided, use team brands instead of all brands
+  teamId: string; // Required for team form
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
-export function ProductForm({ mode, product, defaultBrandId, brands: providedBrands, teamId, onSuccess, onCancel }: ProductFormProps) {
+export function TeamProductForm({ mode, product, defaultBrandId, teamId, onSuccess, onCancel }: TeamProductFormProps) {
   const [brandContextProcessed, setBrandContextProcessed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  // const [error, setError] = useState<string | null>(null); // Removed unused variable
   const [formData, setFormData] = useState<CreateProductForm>({
     brand_id: '',
     name: '',
@@ -39,42 +35,20 @@ export function ProductForm({ mode, product, defaultBrandId, brands: providedBra
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  // Hooks - conditionally fetch brands based on context
-  // Priority: providedBrands (if provided) > teamBrands (if teamId) > allBrands (only if neither provided)
-  
-  // Check if brands are explicitly provided (not undefined)
-  const hasProvidedBrands = providedBrands !== undefined;
-  
-  // Only fetch team brands if teamId is provided and brands are NOT provided
-  const shouldFetchTeamBrands = !!teamId && !hasProvidedBrands;
-  const { data: teamBrands = [], isLoading: teamBrandsLoading } = useTeamBrands(shouldFetchTeamBrands ? teamId : undefined);
-  
-  // Only fetch all brands if no brands are provided and no teamId
-  const shouldFetchAllBrands = !hasProvidedBrands && !teamId;
-  const { data: allBrands = [], isLoading: allBrandsLoading } = useBrands(shouldFetchAllBrands);
-  
-  // Determine which brands to use
-  // Priority: providedBrands (even if empty array) > teamBrands > allBrands
-  const brands = hasProvidedBrands 
-    ? (providedBrands || []) // Use provided brands (even if empty array)
-    : (teamId ? teamBrands : allBrands);
-  
-  // Determine loading state
-  const brandsLoading = hasProvidedBrands 
-    ? false // If brands are provided, no loading needed
-    : (teamId ? teamBrandsLoading : allBrandsLoading);
+  // Only fetch team brands - no all brands fetch
+  const { data: teamBrands = [], isLoading: teamBrandsLoading } = useTeamBrands(teamId);
   
   const createProductMutation = useCreateProduct();
   const updateProductMutation = useUpdateProduct(product?.id || '');
-  
-  const brandsLoaded = !brandsLoading;
+
+  const brandsLoaded = !teamBrandsLoading;
 
   useEffect(() => {
-    if (brands.length > 0) {
+    if (teamBrands.length > 0) {
       if (mode === 'edit' && product) {
         // Pre-fill form for edit mode
         setFormData({
-          brand_id: product.brandId, // API uses camelCase
+          brand_id: product.brandId,
           name: product.name,
           description: product.description || '',
           price: product.price || 0,
@@ -84,25 +58,17 @@ export function ProductForm({ mode, product, defaultBrandId, brands: providedBra
           setImagePreview(product.images[0]);
         }
       } else {
-        // For create mode, prioritize defaultBrandId prop, then localStorage, then first brand
-        if (defaultBrandId && brands.find(b => b.id === defaultBrandId)) {
+        // For create mode, prioritize defaultBrandId, then first team brand
+        if (defaultBrandId && teamBrands.find(b => b.id === defaultBrandId)) {
           setFormData(prev => ({ ...prev, brand_id: defaultBrandId }));
           setBrandContextProcessed(true);
-        } else {
-          const brandContext = localStorage.getItem('createProductBrandContext');
-          
-          if (brandContext && brands.find(b => b.id === brandContext)) {
-            setFormData(prev => ({ ...prev, brand_id: brandContext }));
-            localStorage.removeItem('createProductBrandContext');
-            setBrandContextProcessed(true);
-          } else if (brands.length > 0 && !brandContextProcessed && !defaultBrandId) {
-            // Only auto-select first brand if no brand context was processed and no defaultBrandId
-            setFormData(prev => ({ ...prev, brand_id: brands[0].id }));
-          }
+        } else if (teamBrands.length > 0) {
+          // Auto-select first team brand if no defaultBrandId
+          setFormData(prev => ({ ...prev, brand_id: teamBrands[0].id }));
         }
       }
     }
-  }, [brands, mode, product, defaultBrandId, brandContextProcessed]);
+  }, [teamBrands, mode, product, defaultBrandId, brandContextProcessed]);
 
   const handleInputChange = (field: keyof CreateProductForm, value: string | number | string[] | undefined) => {
     setFormData(prev => ({
@@ -146,6 +112,17 @@ export function ProductForm({ mode, product, defaultBrandId, brands: providedBra
       return;
     }
 
+    if (!formData.brand_id) {
+      toast.error('Please select a brand');
+      return;
+    }
+
+    // Validate that selected brand is in team brands
+    if (!teamBrands.find(b => b.id === formData.brand_id)) {
+      toast.error('Selected brand is not part of this team');
+      return;
+    }
+
     try {
       setIsLoading(true);
       
@@ -165,7 +142,7 @@ export function ProductForm({ mode, product, defaultBrandId, brands: providedBra
     }
   };
 
-  if (brandsLoading) {
+  if (teamBrandsLoading) {
     return (
       <div className="space-y-6 p-4">
         <LoadingSkeleton className="h-6 w-32" />
@@ -183,29 +160,43 @@ export function ProductForm({ mode, product, defaultBrandId, brands: providedBra
     );
   }
 
+  if (teamBrands.length === 0) {
+    return (
+      <div className="space-y-6 p-4">
+        <div className="text-center py-8">
+          <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No Team Brands Available</h3>
+          <p className="text-muted-foreground mb-4">
+            This team doesn&apos;t have any brands assigned. Please assign brands to the team first.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 p-4">
       <form onSubmit={handleSubmit} className="space-y-6">
         <FormField label="Brand" required>
           {brandsLoaded ? (
-            defaultBrandId && brands.length === 1 && brands[0].id === defaultBrandId ? (
-              // If only one brand is available and it matches defaultBrandId, show as disabled
+            teamBrands.length === 1 ? (
+              // If only one team brand, show as disabled input
               <Input
-                value={brands[0].name}
+                value={teamBrands[0].name}
                 disabled
                 className="bg-muted"
               />
             ) : (
               <Select 
-                key={`brand-select-${formData.brand_id}`} 
+                key={`team-brand-select-${formData.brand_id}`} 
                 value={formData.brand_id} 
                 onValueChange={(value) => handleInputChange('brand_id', value)}
               >
                 <SelectTrigger id="brand">
-                  <SelectValue placeholder="Select a brand" />
+                  <SelectValue placeholder="Select a team brand" />
                 </SelectTrigger>
                 <SelectContent>
-                  {brands.map((brand) => (
+                  {teamBrands.map((brand: Brand) => (
                     <SelectItem key={brand.id} value={brand.id}>
                       {brand.name}
                     </SelectItem>
@@ -318,3 +309,4 @@ export function ProductForm({ mode, product, defaultBrandId, brands: providedBra
     </div>
   );
 }
+

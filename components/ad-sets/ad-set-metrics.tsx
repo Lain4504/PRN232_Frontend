@@ -62,7 +62,12 @@ export function AdSetMetrics({ metrics, className }: AdSetMetricsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            ${metrics.spend.toLocaleString()}
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(metrics.spend)}
           </div>
           <p className="text-xs text-muted-foreground">
             Total spent

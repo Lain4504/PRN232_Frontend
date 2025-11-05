@@ -42,7 +42,14 @@ export function AdPerformanceDashboard({ impressions, clicks, ctr, spend }: AdPe
           <CardTitle className="text-sm">Spend</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{spend != null ? `$${spend.toLocaleString()}` : '-'}</div>
+          <div className="text-2xl font-bold">
+            {spend != null ? new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(spend) : '-'}
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -82,8 +82,8 @@ export const createAdSetSchema = z.object({
     .max(255, 'Ad set name must be less than 255 characters'),
   targeting: targetingConfigSchema,
   budget: z.number()
-    .min(0.01, 'Budget must be greater than 0')
-    .max(10000, 'Budget cannot exceed 10,000 VND per day'),
+    .min(1, 'Budget must be greater than ₫1')
+    .max(1000000000, 'Budget cannot exceed ₫1,000,000,000 per day'),
   schedule: scheduleSchema.optional(),
 });
 

@@ -7,19 +7,22 @@ import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, Dr
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Plus, Edit } from 'lucide-react'
 import { ProductForm } from '@/components/products/product-form'
-import { Product } from '@/lib/types/aisam-types'
+import { TeamProductForm } from '@/components/products/product-form-team'
+import { Product, Brand } from '@/lib/types/aisam-types'
 
 interface ProductModalProps {
   children?: React.ReactNode
   mode: 'create' | 'edit'
   product?: Product
   defaultBrandId?: string
+  brands?: Brand[] // Optional: pass brands from parent (e.g., team brands)
+  teamId?: string // Optional: if provided, use TeamProductForm instead of ProductForm
   onSuccess?: () => void
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }
 
-export function ProductModal({ children, mode, product, defaultBrandId, onSuccess, open: controlledOpen, onOpenChange: setControlledOpen }: ProductModalProps) {
+export function ProductModal({ children, mode, product, defaultBrandId, brands, teamId, onSuccess, open: controlledOpen, onOpenChange: setControlledOpen }: ProductModalProps) {
   const [internalOpen, setInternalOpen] = useState(false)
 
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
@@ -57,13 +60,25 @@ export function ProductModal({ children, mode, product, defaultBrandId, onSucces
             </DrawerDescription>
           </DrawerHeader>
           <div className="px-4 overflow-y-auto flex-1">
-            <ProductForm 
-              mode={mode} 
-              product={product} 
-              defaultBrandId={defaultBrandId}
-              onSuccess={handleSuccess}
-              onCancel={() => setOpen(false)}
-            />
+            {teamId ? (
+              <TeamProductForm 
+                mode={mode} 
+                product={product} 
+                defaultBrandId={defaultBrandId}
+                teamId={teamId}
+                onSuccess={handleSuccess}
+                onCancel={() => setOpen(false)}
+              />
+            ) : (
+              <ProductForm 
+                mode={mode} 
+                product={product} 
+                defaultBrandId={defaultBrandId}
+                brands={brands}
+                onSuccess={handleSuccess}
+                onCancel={() => setOpen(false)}
+              />
+            )}
           </div>
         </DrawerContent>
       </Drawer>
@@ -95,13 +110,25 @@ export function ProductModal({ children, mode, product, defaultBrandId, onSucces
           </DialogDescription>
         </DialogHeader>
         <div className="overflow-y-auto flex-1">
-          <ProductForm 
-            mode={mode} 
-            product={product} 
-            defaultBrandId={defaultBrandId}
-            onSuccess={handleSuccess}
-            onCancel={() => setOpen(false)}
-          />
+          {teamId ? (
+            <TeamProductForm 
+              mode={mode} 
+              product={product} 
+              defaultBrandId={defaultBrandId}
+              teamId={teamId}
+              onSuccess={handleSuccess}
+              onCancel={() => setOpen(false)}
+            />
+          ) : (
+            <ProductForm 
+              mode={mode} 
+              product={product} 
+              defaultBrandId={defaultBrandId}
+              brands={brands}
+              onSuccess={handleSuccess}
+              onCancel={() => setOpen(false)}
+            />
+          )}
         </div>
       </DialogContent>
     </Dialog>

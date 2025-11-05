@@ -94,6 +94,10 @@ export function ApprovalModal({
 
   const handlePublish = async () => {
     if (!approval || !selectedIntegrationId || !content) return;
+    if (approval.status === 'Published' || content.status === 'Published') {
+      toast.info('This approval/content has already been published');
+      return;
+    }
     setIsPublishing(true);
     try {
       await publishContentMutation.mutateAsync(selectedIntegrationId);

@@ -62,6 +62,19 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Redirect authenticated users away from auth pages
+  if (
+    user &&
+    request.nextUrl.pathname.startsWith("/auth") &&
+    !request.nextUrl.pathname.startsWith("/auth/callback") &&
+    !request.nextUrl.pathname.startsWith("/auth/confirm")
+  ) {
+    console.log('User already authenticated, redirecting from auth page');
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
+  }
+
   // IMPORTANT: Return the supabaseResponse to maintain session
   return supabaseResponse;
 }

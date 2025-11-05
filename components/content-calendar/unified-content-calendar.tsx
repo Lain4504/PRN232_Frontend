@@ -19,7 +19,7 @@ import type { ContentCalendar } from "@/lib/types/aisam-types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface UnifiedContentCalendarProps {
-  teamId: string;
+  teamId?: string; // Optional: undefined for profile context, string for team context
   onEventClick?: (event: ContentCalendar) => void;
   onCreateSchedule?: () => void;
 }

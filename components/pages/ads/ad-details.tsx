@@ -2,7 +2,6 @@
 
 import React from "react";
 import { PageLayout } from "@/components/ui/page-layout";
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Megaphone } from "lucide-react";
@@ -34,13 +33,13 @@ export function AdDetails({ campaignId, adSetId, adId, basePath = '/dashboard/ca
       title="Ad Details"
       description="View performance and manage this ad."
       breadcrumbs={[
-        { label: basePath.includes('/team/') ? 'Team' : 'Dashboard', href: basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard' },
-        { label: "Campaigns", href: basePath },
-        { label: "Campaign", href: `${basePath}/${campaignId}` },
-        { label: "Ad Sets", href: `${basePath}/${campaignId}/ad-sets` },
-        { label: "Ad Set", href: `${basePath}/${campaignId}/ad-sets/${adSetId}` },
-        { label: "Ads", href: `${basePath}/${campaignId}/ad-sets/${adSetId}/ads` },
-        { label: "Details", isCurrentPage: true },
+        { label: 'Dashboard', href: '/dashboard' },
+        { label: 'Campaigns', href: basePath },
+        { label: 'Campaign', href: `${basePath}/${campaignId}` },
+        { label: 'Ad Sets', href: `${basePath}/${campaignId}/ad-sets` },
+        { label: 'Ad Set', href: `${basePath}/${campaignId}/ad-sets/${adSetId}` },
+        { label: 'Ads', href: `${basePath}/${campaignId}/ad-sets/${adSetId}/ads` },
+        { label: 'Details', isCurrentPage: true },
       ]}
       actions={[]}
     >
@@ -66,7 +65,7 @@ export function AdDetails({ campaignId, adSetId, adId, basePath = '/dashboard/ca
                   <DialogTitle>Edit Ad</DialogTitle>
                 </DialogHeader>
                 {ad && (
-                  <AdForm adSetId={adSetId} ad={ad} />
+                  <AdForm campaignId={campaignId} adSetId={adSetId} ad={ad} />
                 )}
               </DialogContent>
             </Dialog>

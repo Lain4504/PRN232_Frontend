@@ -17,7 +17,7 @@ import {
   Tag,
   BarChart3,
 } from "lucide-react";
-import type { AdCreativeResponse } from "@/lib/types/creatives";
+import type { AdCreativeResponse, CreativeType } from "@/lib/types/creatives";
 import { getCreativeStatus, getCreativeStatusColor, getCreativeTypeColor, CREATIVE_TYPES } from "@/lib/types/creatives";
 import { format } from "date-fns";
 
@@ -40,8 +40,9 @@ export function CreativeCard({
 }: CreativeCardProps) {
   const status = getCreativeStatus(creative);
   const statusColor = getCreativeStatusColor(status);
-  const typeColor = getCreativeTypeColor(creative.type);
-  const typeInfo = CREATIVE_TYPES.find(t => t.value === creative.type);
+  const safeType = (creative.type ?? 'IMAGE') as CreativeType;
+  const typeColor = getCreativeTypeColor(safeType);
+  const typeInfo = CREATIVE_TYPES.find(t => t.value === safeType);
 
   const getCreativeIcon = (type: string) => {
     switch (type) {
@@ -62,7 +63,7 @@ export function CreativeCard({
     }
   };
 
-  const CreativeIcon = getCreativeIcon(creative.type);
+  const CreativeIcon = getCreativeIcon(safeType);
 
   if (compact) {
     return (

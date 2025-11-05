@@ -1,44 +1,36 @@
 "use client";
 
-import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Image,
-  Plus,
   Search,
-  Filter,
-  Grid3X3,
-  List,
   Upload,
   Eye,
-  Edit,
-  Trash2,
-  ArrowLeft,
   Calendar,
-  Tag,
   BarChart3,
+  Play,
+  FileText,
 } from "lucide-react";
 import { useCreatives } from "@/hooks/use-creatives";
 import { useAdSet } from "@/hooks/use-ad-sets";
 import { useCreativePreview } from "@/hooks/use-creative";
 import { useCampaign } from "@/hooks/use-campaigns";
-import { getCreativeStatus, getCreativeStatusColor, getCreativeTypeColor, CREATIVE_TYPES } from "@/lib/types/creatives";
-import Link from "next/link";
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { getCreativeStatus, getCreativeStatusColor, getCreativeTypeColor, type AdCreativeResponse, type CreativeType } from "@/lib/types/creatives";
 import { format } from "date-fns";
 import { PageLayout } from "@/components/ui/page-layout";
 import { PageLoading } from "@/components/layout/page-loading";
 import { PageError } from "@/components/layout/page-error";
 import { PageEmpty } from "@/components/layout/page-empty";
-import { CreativeGallery } from "@/components/creatives/creative-gallery";
 import { CreativeUpload } from "@/components/creatives/creative-upload";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { CustomTable } from "@/components/ui/custom-table";
+import { ColumnDef } from "@tanstack/react-table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface CreativesManagementProps {
   campaignId: string;
@@ -48,8 +40,6 @@ interface CreativesManagementProps {
 
 export function CreativesManagement({ campaignId, adSetId, basePath = '/dashboard/campaigns' }: CreativesManagementProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedType, setSelectedType] = useState<string>("all");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   const { data: campaign, isLoading: campaignLoading, error: campaignError } = useCampaign(campaignId);
@@ -60,18 +50,234 @@ export function CreativesManagement({ campaignId, adSetId, basePath = '/dashboar
   // Preview hook must be declared unconditionally before any early returns to keep hooks order stable
   const { data: previewHtml, isLoading: previewLoading, refetch: refetchPreview } = useCreativePreview(previewCreativeId || '', previewFormat);
   
-  const [page, setPage] = useState(1);
+  const page = 1;
   const [pageSize, setPageSize] = useState(20);
   const { data: creativesData, isLoading: creativesLoading, error: creativesError } = useCreatives({
-    adSetId,
+    // Don't pass adSetId - get all creatives instead
     page,
     pageSize,
     search: searchTerm || undefined,
-    type: selectedType !== "all" ? selectedType as 'IMAGE' | 'VIDEO' | 'CAROUSEL' | 'TEXT' | 'GIF' | 'STORY' : undefined,
     sortBy: "createdAt",
     sortOrder: "desc"
   });
 
+  // Helper functions - must be defined before useMemo
+  const getCreativeIcon = (creative: AdCreativeResponse) => {
+    // Check if it's a Facebook post creative
+    if (creative.facebookPostId) {
+      return Play;
+    }
+    const type = creative.contentPreview?.adType || creative.type;
+    if (!type) return Image;
+    
+    const upperType = type.toUpperCase();
+    if (upperType.includes('IMAGE') || upperType === 'IMAGETEXT') {
+      return Image;
+    }
+    if (upperType.includes('VIDEO') || upperType === 'VIDEOTEXT') {
+      return Play;
+    }
+    if (upperType.includes('TEXT') || upperType === 'TEXTONLY') {
+      return FileText;
+    }
+    return Image;
+  };
+
+  const getCreativeDisplayName = (creative: AdCreativeResponse) => {
+    // For Facebook post creatives
+    if (creative.facebookPostId) {
+      if (creative.contentPreview?.title && creative.contentPreview.title !== "Facebook Post Ad") {
+        return creative.contentPreview.title;
+      }
+      return `Facebook Post ${creative.facebookPostId}`;
+    }
+    // Use contentPreview title if available
+    if (creative.contentPreview?.title) {
+      return creative.contentPreview.title;
+    }
+    // Use name if available
+    if (creative.name) {
+      return creative.name;
+    }
+    // Fallback to creativeId
+    return creative.creativeId || creative.id;
+  };
+
+  const getCreativeType = (creative: AdCreativeResponse) => {
+    // Check if it's a Facebook post creative
+    if (creative.facebookPostId) {
+      return 'FACEBOOK_POST';
+    }
+    if (creative.contentPreview?.adType) {
+      return creative.contentPreview.adType;
+    }
+    if (creative.type) {
+      return creative.type;
+    }
+    return 'UNKNOWN';
+  };
+
+  const formatTypeLabel = (type: string) => {
+    if (type === 'FACEBOOK_POST') return 'Facebook Post';
+    if (type === 'IMAGETEXT') return 'Image + Text';
+    if (type === 'VIDEOTEXT') return 'Video + Text';
+    if (type === 'TEXTONLY') return 'Text Only';
+    return type.replace(/_/g, ' ');
+  };
+
+  // useMemo must be called before early returns to maintain hook order
+  const columns = useMemo<ColumnDef<AdCreativeResponse>[]>(() => [
+    {
+      id: "name",
+      header: "Name",
+      cell: ({ row }) => {
+        const creative = row.original;
+        const CreativeIcon = getCreativeIcon(creative);
+        const displayName = getCreativeDisplayName(creative);
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10">
+              {creative.contentPreview?.imageUrl ? (
+                <AvatarImage src={creative.contentPreview.imageUrl} alt={displayName} />
+              ) : creative.thumbnailUrl ? (
+                <AvatarImage src={creative.thumbnailUrl} alt={displayName} />
+              ) : creative.mediaUrl ? (
+                <AvatarImage src={creative.mediaUrl} alt={displayName} />
+              ) : null}
+              <AvatarFallback>
+                <CreativeIcon className="h-5 w-5" />
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="font-medium text-foreground">{displayName}</span>
+              {creative.contentPreview?.textContent && (
+                <span className="text-xs text-muted-foreground line-clamp-1">
+                  {creative.contentPreview.textContent}
+                </span>
+              )}
+            </div>
+          </div>
+        );
+      },
+      enableSorting: true,
+    },
+    {
+      id: "type",
+      header: "Type",
+      cell: ({ row }) => {
+        const creative = row.original;
+        const type = getCreativeType(creative);
+        const allowedTypes: CreativeType[] = ['IMAGE','VIDEO','CAROUSEL','TEXT','GIF','STORY'];
+        const typeColor = getCreativeTypeColor((allowedTypes.includes(type as CreativeType) ? (type as CreativeType) : 'IMAGE'));
+        return (
+          <Badge variant="outline" className={typeColor}>
+            {formatTypeLabel(type)}
+          </Badge>
+        );
+      },
+      enableSorting: true,
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const creative = row.original;
+        const status = getCreativeStatus(creative);
+        const statusColor = getCreativeStatusColor(status);
+        return (
+          <Badge variant="secondary" className={statusColor}>
+            {status}
+          </Badge>
+        );
+      },
+      enableSorting: true,
+    },
+    {
+      id: "createdAt",
+      header: "Created",
+      cell: ({ row }) => {
+        const creative = row.original;
+        return (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Calendar className="h-4 w-4" />
+            {format(new Date(creative.createdAt), 'MMM d, yyyy')}
+          </div>
+        );
+      },
+      enableSorting: true,
+    },
+    {
+      id: "tags",
+      header: "Tags",
+      cell: ({ row }) => {
+        const creative = row.original;
+        if (!creative.tags || creative.tags.length === 0) {
+          return <span className="text-sm text-muted-foreground">-</span>;
+        }
+        return (
+          <div className="flex items-center gap-1 flex-wrap">
+            {creative.tags.slice(0, 2).map((tag) => (
+              <Badge key={tag} variant="outline" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+            {creative.tags.length > 2 && (
+              <Badge variant="outline" className="text-xs">
+                +{creative.tags.length - 2}
+              </Badge>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      id: "metrics",
+      header: "Metrics",
+      cell: ({ row }) => {
+        const creative = row.original;
+        if (!creative.metrics) {
+          return <span className="text-sm text-muted-foreground">-</span>;
+        }
+        return (
+          <div className="flex flex-col gap-1 text-xs">
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <BarChart3 className="h-3 w-3" />
+              {creative.metrics.impressions.toLocaleString()} impressions
+            </div>
+            <div className="text-muted-foreground">
+              CTR: {creative.metrics.ctr.toFixed(1)}%
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const creative = row.original;
+        return (
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setPreviewCreativeId(creative.id);
+                setIsPreviewOpen(true);
+                refetchPreview();
+              }}
+              title="Preview"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
+      enableSorting: false,
+    },
+  ], [refetchPreview]);
+
+  // Early returns after all hooks
   if (campaignLoading || adSetLoading || creativesLoading) {
     return <PageLoading />;
   }
@@ -91,44 +297,16 @@ export function CreativesManagement({ campaignId, adSetId, basePath = '/dashboar
   const hasCreatives = creatives.length > 0;
 
   return (
-    <PageLayout>
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-              <BreadcrumbLink href={basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard'}>
-                {basePath.includes('/team/') ? 'Team' : 'Dashboard'}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={basePath}>Campaigns</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`${basePath}/${campaignId}`}>
-                {campaign.name}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`${basePath}/${campaignId}/ad-sets`}>
-                Ad Sets
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`${basePath}/${campaignId}/ad-sets/${adSetId}`}>
-                {adSet.name}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Creatives</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
+    <PageLayout
+      breadcrumbs={[
+        { label: 'Dashboard', href: '/dashboard' },
+        { label: 'Campaigns', href: basePath },
+        { label: 'Campaign', href: `${basePath}/${campaignId}` },
+        { label: 'Ad Sets', href: `${basePath}/${campaignId}/ad-sets` },
+        { label: 'Ad Set', href: `${basePath}/${campaignId}/ad-sets/${adSetId}` },
+        { label: 'Creatives', isCurrentPage: true },
+      ]}
+    >
       {/* Header */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -140,7 +318,7 @@ export function CreativesManagement({ campaignId, adSetId, basePath = '/dashboar
             <Dialog open={isUploadModalOpen} onOpenChange={setIsUploadModalOpen}>
               <DialogTrigger asChild>
                 <Button>
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Upload className="mr-2 h-4 w-4" />
                   Create Creative
                 </Button>
               </DialogTrigger>
@@ -163,49 +341,14 @@ export function CreativesManagement({ campaignId, adSetId, basePath = '/dashboar
 
         {/* Toolbar */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
-            <div className="relative w-full sm:w-64 md:w-80">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search creatives"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-background shadow-none focus-visible:ring-1 focus-visible:ring-primary/30"
-              />
-            </div>
-            <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="w-full sm:w-[160px] md:w-[180px] h-9">
-                <SelectValue placeholder="Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {CREATIVE_TYPES.map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    {type.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div className="flex rounded-md border border-border/60 overflow-hidden">
-              <Button
-                variant={viewMode === "grid" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("grid")}
-                className="rounded-none"
-                aria-pressed={viewMode === "grid"}
-              >
-                <Grid3X3 className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("list")}
-                className="rounded-none"
-                aria-pressed={viewMode === "list"}
-              >
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
+          <div className="relative w-full sm:w-64 md:w-80">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search creatives"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-background shadow-none focus-visible:ring-1 focus-visible:ring-primary/30"
+            />
           </div>
         </div>
 
@@ -221,110 +364,43 @@ export function CreativesManagement({ campaignId, adSetId, basePath = '/dashboar
             }}
           />
         ) : (
-          <CreativeGallery
-            creatives={creatives}
-            viewMode={viewMode}
-            onEdit={(creative) => {
-              toast.info("Edit functionality coming soon");
-            }}
-            onDelete={(creative) => {
-              toast.info("Delete functionality coming soon");
-            }}
-            onPreview={(creative) => {
-              setPreviewCreativeId(creative.id);
-              setIsPreviewOpen(true);
-              refetchPreview();
-            }}
+          <CustomTable
+            columns={columns}
+            data={creatives}
+            currentPage={page - 1}
+            pageSize={pageSize}
+            emptyMessage="No creatives found"
+            emptyDescription="Try adjusting your search or filter criteria."
           />
-        )}
-
-        {/* Stats */}
-        {hasCreatives && (
-          <div className="grid gap-3 sm:gap-4 md:grid-cols-4">
-            <Card className="border-0 shadow-none bg-muted/40">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total</CardTitle>
-                <Image className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{creatives.length}</div>
-                <p className="text-xs text-muted-foreground">
-                  {creatives.filter(c => c.isActive).length} active
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-none bg-muted/40">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Images</CardTitle>
-                <Image className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {creatives.filter(c => c.type === 'IMAGE').length}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Static images
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-none bg-muted/40">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Videos</CardTitle>
-                <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {creatives.filter(c => c.type === 'VIDEO').length}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Video content
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-none bg-muted/40">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Text</CardTitle>
-                <Tag className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {creatives.filter(c => c.type === 'TEXT').length}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Text creatives
-                </p>
-              </CardContent>
-            </Card>
-          </div>
         )}
 
         {/* Preview Modal */}
         <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-          <DialogContent className="max-w-3xl">
-            <DialogHeader>
-              <DialogTitle>Creative Preview</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Select value={previewFormat} onValueChange={(v) => setPreviewFormat(v)}>
-                  <SelectTrigger className="w-[240px] h-8">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="DESKTOP_FEED_STANDARD">Desktop Feed</SelectItem>
-                    <SelectItem value="MOBILE_FEED_STANDARD">Mobile Feed</SelectItem>
-                    <SelectItem value="RIGHT_COLUMN_STANDARD">Right Column</SelectItem>
-                    <SelectItem value="FACEBOOK_STORY_MOBILE">Facebook Story</SelectItem>
-                    <SelectItem value="INSTAGRAM_EXPLORE_GRID_HOME">IG Explore Home</SelectItem>
-                    <SelectItem value="INSTAGRAM_SEARCH_CHAIN">IG Search Results</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button variant="secondary" size="sm" onClick={() => refetchPreview()}>Refresh</Button>
+          <DialogContent className="w-[96vw] sm:w-[94vw] md:w-[92vw] lg:w-[88vw] max-w-[1400px] h-[92vh] p-0 flex flex-col">
+            <DialogHeader className="flex-shrink-0 px-4 sm:px-6 pt-4 sm:pt-6">
+              <div className="flex items-center justify-between">
+                <DialogTitle>Creative Preview</DialogTitle>
+                <div className="flex items-center gap-2">
+                  <Select value={previewFormat} onValueChange={(v) => setPreviewFormat(v)}>
+                    <SelectTrigger className="w-[200px] sm:w-[240px] h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="DESKTOP_FEED_STANDARD">Desktop Feed</SelectItem>
+                      <SelectItem value="MOBILE_FEED_STANDARD">Mobile Feed</SelectItem>
+                      <SelectItem value="RIGHT_COLUMN_STANDARD">Right Column</SelectItem>
+                      <SelectItem value="FACEBOOK_STORY_MOBILE">Facebook Story</SelectItem>
+                      <SelectItem value="INSTAGRAM_EXPLORE_GRID_HOME">IG Explore Home</SelectItem>
+                      <SelectItem value="INSTAGRAM_SEARCH_CHAIN">IG Search Results</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button variant="secondary" size="sm" onClick={() => refetchPreview()}>Refresh</Button>
+                </div>
               </div>
-              <div className="min-h-[240px]">
+            </DialogHeader>
+            <div className="flex-1 overflow-auto p-3 sm:p-4">
+              <div className="mb-2 text-xs text-muted-foreground">Scroll to view full preview</div>
+              <div className="min-h-[240px] h-[70vh] overflow-auto rounded-md border bg-background p-3">
                 {previewLoading ? (
                   <div className="py-10 text-center text-muted-foreground">Loading preview…</div>
                 ) : previewHtml ? (

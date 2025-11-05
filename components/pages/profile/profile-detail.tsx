@@ -23,7 +23,7 @@ export function ProfileDetail() {
     try {
       await deleteMutation.mutateAsync(id)
       toast.success('Đã chuyển vào thùng rác')
-      window.location.href = '/dashboard/profile'
+      window.location.href = '/dashboard'
     } catch (e) {
       toast.error('Xóa thất bại')
     }
@@ -55,7 +55,7 @@ export function ProfileDetail() {
     return (
       <div className="flex-1 space-y-6 p-6 bg-background">
         <div className="flex items-center justify-between">
-          <Link href="/dashboard/profile">
+          <Link href="/dashboard">
             <Button variant="outline" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
@@ -74,7 +74,7 @@ export function ProfileDetail() {
   return (
     <div className="flex-1 space-y-6 p-6 bg-background">
       <div className="flex items-center justify-between">
-        <Link href="/dashboard/profile">
+        <Link href="/dashboard">
           <Button variant="outline" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back

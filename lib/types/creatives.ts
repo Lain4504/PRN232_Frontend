@@ -1,15 +1,30 @@
+export interface AdCreativePreview {
+  title?: string;
+  textContent?: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  adType?: string;
+}
+
 export interface AdCreativeResponse {
   id: string;
-  adSetId: string;
-  name: string;
-  type: CreativeType;
+  name?: string;
+  contentId?: string;
+  adAccountId?: string;
+  creativeId?: string;
+  callToAction?: string;
+  facebookPostId?: string;
+  createdAt: string;
+  contentPreview?: AdCreativePreview;
+  // Legacy fields (for backward compatibility)
+  adSetId?: string;
+  type?: CreativeType;
   content?: string;
   mediaUrl?: string;
   thumbnailUrl?: string;
-  tags: string[];
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  tags?: string[];
+  isActive?: boolean;
+  updatedAt?: string;
   metrics?: AdCreativeMetrics;
   usage?: CreativeUsage;
 }
@@ -45,8 +60,8 @@ export interface CreateAdCreativeRequest {
 export interface CreateAdCreativeFromContentRequest {
   contentId: string;
   adAccountId: string;
-  callToAction?: string;
-  linkUrl?: string;
+  callToAction: string; // Required for Facebook API
+  linkUrl: string; // Required for Facebook API
   adName?: string;
 }
 
@@ -54,8 +69,8 @@ export interface CreateAdCreativeFromFacebookPostRequest {
   brandId: string;
   adAccountId: string;
   facebookPostId: string;
-  callToAction?: string;
-  linkUrl?: string;
+  callToAction: string; // Required for Facebook API
+  linkUrl: string; // Required for Facebook API
   adName?: string;
 }
 
@@ -83,7 +98,7 @@ export interface CreativeFilters {
 }
 
 export interface CreativeListParams {
-  adSetId: string;
+  adSetId?: string;
   page?: number;
   pageSize?: number;
   search?: string;

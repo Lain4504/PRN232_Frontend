@@ -25,6 +25,7 @@ export interface AdResponse {
   status: AdStatus | string;
   name?: string;
   adSetName?: string;
+  pageName?: string;
   // Backend may not include these optional fields
   targeting?: unknown;
   schedule?: {
@@ -42,13 +43,7 @@ export interface AdResponse {
 export interface CreateAdRequest {
   adSetId: string;
   creativeId: string;
-  name: string;
-  targeting?: unknown;
-  schedule?: {
-    startDate?: string;
-    endDate?: string;
-    timezone?: string;
-  };
+  status?: AdStatus | string;
 }
 
 export interface UpdateAdRequest {

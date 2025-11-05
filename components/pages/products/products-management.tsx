@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,10 +19,10 @@ import {
   Package,
   Plus,
   Search,
-  DollarSign,
   Image as ImageIcon,
   Target,
   Eye,
+  Pencil,
 } from "lucide-react";
 import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import { CustomTable } from "@/components/ui/custom-table";
@@ -31,6 +31,8 @@ import { Product, Brand } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useBrands } from "@/hooks/use-brands";
 import { useProducts, useDeleteProduct } from "@/hooks/use-products";
+import { useTeamBrands } from "@/hooks/use-team-brands";
+import { useTeamProducts } from "@/hooks/use-team-products";
 import { useParams } from "next/navigation";
 import { ProductModal } from "@/components/products/product-modal";
 import Image from "next/image";
@@ -49,6 +51,7 @@ import Link from "next/link";
 // Create columns function to access component state
 const createColumns = (
   handleViewProduct: (product: Product) => void,
+  handleEditProduct: (product: Product) => void,
   brands: Brand[],
 ): ColumnDef<Product>[] => [
     {
@@ -83,11 +86,14 @@ const createColumns = (
       header: "Price",
       cell: ({ row }) => {
         const price = row.getValue("price") as number;
+        const formattedPrice = new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        }).format(price);
         return (
-          <div className="flex items-center gap-1">
-            <DollarSign className="h-4 w-4 text-chart-2" />
-            <span className="font-medium">{price.toFixed(2)}</span>
-          </div>
+          <span className="font-medium">{formattedPrice}</span>
         );
       },
     },
@@ -130,39 +136,94 @@ const createColumns = (
             icon: <Eye className="h-4 w-4" />,
             onClick: () => handleViewProduct(row.original),
           },
+          {
+            label: "Edit",
+            icon: <Pencil className="h-4 w-4" />,
+            onClick: () => handleEditProduct(row.original),
+          },
         ];
         return <ActionsDropdown actions={actions} />;
       },
     },
   ];
 
-export function ProductsManagement() {
+interface ProductsManagementProps {
+  initialBrandId?: string; // Allow passing brandId from parent component
+  teamId?: string; // When provided, can show all team brands products
+}
+
+export function ProductsManagement({ initialBrandId, teamId }: ProductsManagementProps = {}) {
   const params = useParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewingProduct, setViewingProduct] = useState<Product | null>(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [pageSize, setPageSize] = useState(10);
 
-  // Get brand ID from route params
-  const brandId = params.id as string;
+  // Get brand ID from route params (only if not in team mode)
+  const routeBrandId = params.id as string | undefined;
+  const brandId = teamId ? undefined : (routeBrandId || initialBrandId);
 
-  // Hooks
-  const { data: brands = [] } = useBrands();
-  const { data: products = [], isLoading: loading, refetch: refetchProducts } = useProducts();
+  // Get team brands if teamId is provided
+  const { data: teamBrands = [] } = useTeamBrands(teamId || "");
+
+  // Scope selection: when teamId provided, allow selecting All team brands or a specific brand
+  // When not in team mode, use routeBrandId or initialBrandId
+  const [scopeBrandId, setScopeBrandId] = useState<string | "team-all">(
+    teamId ? "team-all" : (routeBrandId || initialBrandId || "")
+  );
+
+  // Update scopeBrandId when routeBrandId changes (non-team mode)
+  useEffect(() => {
+    if (!teamId && routeBrandId && routeBrandId !== scopeBrandId) {
+      setScopeBrandId(routeBrandId);
+    }
+  }, [routeBrandId, teamId, scopeBrandId]);
+
+  // Hooks - fetch brands unconditionally to avoid conditional hook calls
+  const brandsQuery = useBrands();
+  const brands = teamId ? teamBrands : (brandsQuery.data || []);
+  
+  // Get products based on mode
+  // When not in team mode, use brandId (routeBrandId or initialBrandId)
+  // When in team mode, use scopeBrandId
+  const effectiveBrandId = teamId 
+    ? (scopeBrandId !== "team-all" ? scopeBrandId : undefined)
+    : (brandId || scopeBrandId || undefined);
+    
+  const regularProducts = useProducts(effectiveBrandId);
+  const teamProducts = useTeamProducts(
+    teamId && scopeBrandId === "team-all" ? teamId : undefined,
+    teamId && scopeBrandId !== "team-all" ? scopeBrandId : undefined
+  );
+
+  const isLoading = teamId && scopeBrandId === "team-all" ? (teamProducts.isLoading) : (regularProducts.isLoading);
+  const productsData = teamId && scopeBrandId === "team-all" ? (teamProducts.data || []) : (regularProducts.data || []);
+  const refetchProducts = teamId && scopeBrandId === "team-all" ? teamProducts.refetch : regularProducts.refetch;
+
   const deleteProductMutation = useDeleteProduct();
 
   // Ensure arrays are always arrays
   const safeBrands = Array.isArray(brands) ? brands : [];
-  const safeProducts = Array.isArray(products) ? products : [];
+  const safeProducts = Array.isArray(productsData) ? productsData : [];
 
   // Get current brand info
-  const currentBrand = safeBrands.find(b => b.id === brandId);
+  // When in team mode, use scopeBrandId; otherwise use brandId
+  const currentBrandId = teamId 
+    ? (scopeBrandId !== "team-all" ? scopeBrandId : undefined)
+    : brandId;
+  const currentBrand = safeBrands.find(b => b.id === currentBrandId);
 
-  // Filter products by brand and search term
+  // Filter products by search term and brand
   const filteredProducts = safeProducts.filter(product => {
-    const matchesBrand = brandId ? product.brandId === brandId : true;
+    // Filter by brand when brandId is specified (not in team-all mode or when specific brand is selected)
+    const matchesBrand = !effectiveBrandId || product.brandId === effectiveBrandId;
+    
+    // Filter by search term
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    
     return matchesBrand && matchesSearch;
   });
 
@@ -173,6 +234,11 @@ export function ProductsManagement() {
   const handleViewProduct = (product: Product) => {
     setViewingProduct(product);
     setIsViewOpen(true);
+  };
+
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product);
+    setIsEditOpen(true);
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -187,7 +253,7 @@ export function ProductsManagement() {
   };
 
   // Loading state
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex-1 space-y-6 p-6 bg-background">
         <LoadingSkeleton className="h-8 w-48" />
@@ -203,8 +269,8 @@ export function ProductsManagement() {
   // Main UI
   const totalProducts = filteredProducts.length;
 
-  // Redirect to brands if no brand ID provided
-  if (!brandId) {
+  // Redirect to brands if no brand ID provided and not in team mode
+  if (!teamId && !brandId && !initialBrandId) {
     return (
       <div className="flex-1 space-y-6 p-6 bg-background">
         <div className="text-center py-16">
@@ -226,29 +292,34 @@ export function ProductsManagement() {
     <div className="max-w-7xl mx-auto">
       <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
         {/* Breadcrumb */}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard/brands">Brands</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{currentBrand?.name || 'Brand'} - Products</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        {!teamId && (
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/dashboard/brands">Brands</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{currentBrand?.name || 'Brand'} - Products</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        )}
 
         {/* Header */}
         <div>
           <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
-            Products - {currentBrand?.name || 'Unknown Brand'}
+            {teamId ? 'Team Products' : `Products - ${currentBrand?.name || 'Unknown Brand'}`}
           </h1>
           <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
-            Manage products for {currentBrand?.name || 'this brand'}
+            {teamId 
+              ? 'Manage products for your team brands'
+              : `Manage products for ${currentBrand?.name || 'this brand'}`
+            }
           </p>
         </div>
 
@@ -263,6 +334,24 @@ export function ProductsManagement() {
             </div>
 
           </div>
+
+          {/* Brand Selector (Team Mode) */}
+          {teamId && (
+            <Select
+              value={scopeBrandId}
+              onValueChange={(value) => setScopeBrandId(value as string | "team-all")}
+            >
+              <SelectTrigger className="w-full sm:w-[160px] md:w-56">
+                <SelectValue placeholder="Scope" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="team-all">All team brands</SelectItem>
+                {teamBrands.map((b: Brand) => (
+                  <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
 
           {/* Page Size Selector */}
           <Select
@@ -298,7 +387,13 @@ export function ProductsManagement() {
           <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-2">
             <ProductModal
               mode="create"
-              defaultBrandId={brandId}
+              defaultBrandId={scopeBrandId !== "team-all" ? scopeBrandId : (brandId || initialBrandId)}
+              brands={
+                teamId 
+                  ? teamBrands 
+                  : (brandId && !initialBrandId ? safeBrands.filter(b => b.id === brandId) : safeBrands)
+              }
+              teamId={teamId}
               onSuccess={handleRefresh}
             >
               <Button size="sm" className="w-full sm:w-auto">
@@ -312,7 +407,7 @@ export function ProductsManagement() {
         {/* Products Table */}
         {filteredProducts.length > 0 ? (
           <CustomTable
-            columns={createColumns(handleViewProduct, safeBrands)}
+            columns={createColumns(handleViewProduct, handleEditProduct, safeBrands)}
             data={filteredProducts}
             pageSize={pageSize}
           />
@@ -331,7 +426,13 @@ export function ProductsManagement() {
                 </p>
                 <ProductModal
                   mode="create"
-                  defaultBrandId={brandId}
+                  defaultBrandId={scopeBrandId !== "team-all" ? scopeBrandId : (brandId || initialBrandId)}
+                  brands={
+                    teamId 
+                      ? teamBrands 
+                      : (brandId && !initialBrandId ? safeBrands.filter(b => b.id === brandId) : safeBrands)
+                  }
+                  teamId={teamId}
                   onSuccess={handleRefresh}
                 >
                   <Button>
@@ -391,9 +492,13 @@ export function ProductsManagement() {
                   <div className="text-sm text-muted-foreground">Description</div>
                   <div className="text-sm">{viewingProduct.description || '-'}</div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <DollarSign className="h-4 w-4 text-chart-2" />
-                  <div className="text-sm font-medium">{Number(viewingProduct.price || 0).toFixed(2)}</div>
+                <div className="text-sm font-medium">
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  }).format(Number(viewingProduct.price || 0))}
                 </div>
                 {Array.isArray(viewingProduct.images) && viewingProduct.images.length > 1 && (
                   <div>
@@ -412,6 +517,28 @@ export function ProductsManagement() {
             </AlertDialogContent>
           </AlertDialog>
         )}
+
+         {/* Edit Product Modal */}
+         {editingProduct && (
+           <ProductModal
+             mode="edit"
+             product={editingProduct}
+             defaultBrandId={brandId}
+             brands={
+               teamId 
+                 ? teamBrands 
+                 : (brandId && !initialBrandId ? safeBrands.filter(b => b.id === brandId) : safeBrands)
+             }
+             teamId={teamId}
+             open={isEditOpen}
+             onOpenChange={setIsEditOpen}
+             onSuccess={() => {
+               setIsEditOpen(false);
+               setEditingProduct(null);
+               handleRefresh();
+             }}
+           />
+         )}
       </div>
     </div>
   );

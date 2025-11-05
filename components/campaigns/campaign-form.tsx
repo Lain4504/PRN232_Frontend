@@ -350,14 +350,14 @@ export function CampaignForm({
                 name="budget"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Budget ($)</FormLabel>
+                    <FormLabel>Budget (VND)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        step="0.01"
-                        min="0.01"
-                        max="1000000"
-                        placeholder="0.00"
+                        step="1"
+                        min="1"
+                        max="1000000000"
+                        placeholder="0"
                         {...field}
                         onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         disabled={isLoading}

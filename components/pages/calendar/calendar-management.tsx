@@ -31,7 +31,6 @@ export function CalendarManagement() {
         </div>
 
         <UnifiedContentCalendar
-          teamId="dashboard" // Use a default teamId for dashboard context
           onEventClick={handleEventClick}
           onCreateSchedule={handleScheduleClick}
         />
@@ -40,7 +39,6 @@ export function CalendarManagement() {
         <ScheduleContentModal
           isOpen={showScheduleModal}
           onClose={() => setShowScheduleModal(false)}
-          teamId="dashboard"
         />
       </div>
     </div>

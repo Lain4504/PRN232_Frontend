@@ -21,13 +21,13 @@ import {
 import { useBrands } from "@/hooks/use-brands";
 import { useProducts } from "@/hooks/use-products";
 import { useTeamBrands } from "@/hooks/use-team-brands";
-import { useTeamContents } from "@/hooks/use-team-content";
 import { 
   useCreateContent, 
   useUpdateContent, 
   useDeleteContent,
   useSubmitContent,
-  usePublishContent
+  usePublishContent,
+  useCloneContent
 } from "@/hooks/use-contents";
 import { useContentsByBrandFilter } from "@/hooks/use-contents-by-brand";
 import { 
@@ -62,6 +62,7 @@ const createColumns = (
   handleViewContent: (content: ContentResponseDto) => void,
   handleDeleteContent: (contentId: string) => void,
   handleSubmitContent: (contentId: string) => void,
+  handleCloneContent: (contentId: string) => void,
   brands: { id: string; name: string }[] = [],
   isProcessing: boolean
 ): ColumnDef<ContentResponseDto>[] => [
@@ -205,6 +206,11 @@ const createColumns = (
           onClick: () => handleEditContent(content.id),
         },
         {
+          label: "Clone",
+          icon: <FileText className="h-4 w-4" />,
+          onClick: () => handleCloneContent(content.id),
+        },
+        {
           label: "Delete",
           icon: <Trash2 className="h-4 w-4" />,
           onClick: () => handleDeleteContent(content.id),
@@ -248,6 +254,8 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
   // Scope selection: when teamId provided, allow selecting All team brands or a specific brand
   const [scopeBrandId, setScopeBrandId] = useState<string | "team-all">(teamId ? "team-all" : (initialBrandId || ""));
 
+  // When "team-all" is selected, brandId is undefined (fetch all)
+  // When a specific brand is selected, use that brandId
   const byBrand = useContentsByBrandFilter({
     brandId: scopeBrandId !== "team-all" ? (scopeBrandId || initialBrandId || undefined) : undefined,
     searchTerm: searchTerm || undefined,
@@ -257,21 +265,8 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
     pageSize: 50
   });
 
-  const teamAll = useTeamContents(
-    teamId && scopeBrandId === "team-all" ? teamId : undefined,
-    {
-      page: 1,
-      pageSize: 50,
-      searchTerm: searchTerm || undefined,
-      status: statusFilter !== "all" ? statusFilter : undefined,
-      adType: adTypeFilter !== "all" ? adTypeFilter : undefined,
-      sortBy: "createdAt",
-      sortDescending: true,
-    }
-  );
-
-  const isLoading = teamId && scopeBrandId === "team-all" ? (teamAll.isLoading) : (byBrand.isLoading);
-  const contentsData = teamId && scopeBrandId === "team-all" ? teamAll.data : (byBrand.data as { data?: unknown[] } | undefined);
+  const isLoading = byBrand.isLoading;
+  const contentsData = byBrand.data as { data?: unknown[] } | undefined;
   
 
   // Transform brands data to ensure correct format
@@ -296,6 +291,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
   const deleteContentMutation = useDeleteContent(currentContentId || "placeholder");
   const submitContentMutation = useSubmitContent(currentContentId || "placeholder");
   const publishContentMutation = usePublishContent(currentContentId || "placeholder");
+  const cloneContentMutation = useCloneContent(currentContentId || "placeholder");
 
   // Active team for member lookup (from header context)
   const [activeTeamId, setActiveTeamId] = useState<string | null>(null);
@@ -377,6 +373,19 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
     }
   };
 
+  const handleCloneContent = async (contentId: string) => {
+    setCurrentContentId(contentId);
+    try {
+      const cloned = await cloneContentMutation.mutateAsync();
+      toast.success('Cloned content created');
+      setSelectedContent(cloned);
+      setIsEditing(true);
+    } catch (error) {
+      console.error('Failed to clone content:', error);
+      toast.error('Failed to clone content');
+    }
+  };
+
   const handleSubmitContent = async (contentId: string) => {
     setCurrentContentId(contentId);
     // Open approver selection dialog instead of direct submit
@@ -396,7 +405,13 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
 
   // Function to open preview modal
   const handleViewContent = (content: ContentResponseDto) => {
-    setPreviewContent(content);
+    // Enrich content with brandName if missing
+    const enrichedContent: ContentResponseDto = {
+      ...content,
+      // If brandName is missing, try to find it from brands list
+      brandName: content.brandName || brands.find(b => b.id === content.brandId)?.name || content.brandName
+    };
+    setPreviewContent(enrichedContent);
     setIsPreviewModalOpen(true);
   };
 
@@ -573,6 +588,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
               handleViewContent,
               handleDeleteContent,
               handleSubmitContent,
+              handleCloneContent,
               brands,
               createContentMutation.isPending ||
               updateContentMutation.isPending ||
@@ -654,9 +670,11 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
           onOpenChange={setIsCreating}
           onCreate={handleCreateContentWrapper}
           isProcessing={createContentMutation.isPending}
-          brands={brands}
-          products={products}
+          brands={teamId ? undefined : brands}
+          products={teamId ? undefined : products}
+          teamId={teamId}
           userId={userId}
+          defaultBrandId={scopeBrandId !== "team-all" ? scopeBrandId : (initialBrandId || undefined)}
         />
 
         {/* Edit Content Modal */}
@@ -675,8 +693,9 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
             await handleSubmitContent(contentId);
           }}
           isProcessing={updateContentMutation.isPending || submitContentMutation.isPending}
-          brands={brands}
-          products={products}
+          brands={teamId ? undefined : brands}
+          products={teamId ? undefined : products}
+          teamId={teamId}
           userId={userId}
           showButtons={isEditing}
         />
@@ -722,6 +741,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
               }
             }}
             isProcessing={publishContentMutation.isPending || submitContentMutation.isPending}
+            brands={brands}
           />
         )}
       </div>

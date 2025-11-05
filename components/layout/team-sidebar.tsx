@@ -63,6 +63,12 @@ export function TeamSidebar() {
       permission: 'CREATE_CONTENT'
     },
     {
+      title: "Products",
+      url: `/team/${teamId}/products`,
+      icon: Package,
+      permission: 'VIEW_POSTS'
+    },
+    {
       title: "Approvals",
       url: `/team/${teamId}/approval`,
       icon: CheckCircle,
@@ -73,12 +79,6 @@ export function TeamSidebar() {
       url: `/team/${teamId}/contents/new`,
       icon: Sparkles,
       permission: 'SUBMIT_AI_GENERATION'
-    },
-    {
-      title: "Products",
-      url: `/team/${teamId}/products`,
-      icon: Package,
-      permission: 'VIEW_PRODUCTS'
     },
     {
       title: "Posts",

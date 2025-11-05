@@ -25,7 +25,14 @@ export function BudgetScheduler({ budget, schedule, className }: BudgetScheduler
         {/* Budget */}
         <div>
           <label className="text-sm font-medium text-muted-foreground">Daily Budget</label>
-          <p className="text-2xl font-bold">${Number(budget ?? 0).toLocaleString()}</p>
+          <p className="text-2xl font-bold">
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(Number(budget ?? 0))}
+          </p>
         </div>
 
         {/* Schedule */}
@@ -73,7 +80,12 @@ export function BudgetScheduler({ budget, schedule, className }: BudgetScheduler
             <span className="text-sm font-medium text-muted-foreground">Budget Summary</span>
           </div>
           <p className="text-sm text-muted-foreground mt-1">
-            This ad set will spend up to ${Number(budget ?? 0).toLocaleString()} per day
+            This ad set will spend up to {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(Number(budget ?? 0))} per day
             {schedule?.startDate && ` starting ${format(new Date(schedule.startDate), 'MMM dd, yyyy')}`}
             {schedule?.endDate && ` until ${format(new Date(schedule.endDate), 'MMM dd, yyyy')}`}.
           </p>

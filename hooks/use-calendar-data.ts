@@ -6,7 +6,7 @@ import { useTeam } from '@/hooks/use-teams';
 import type { ContentCalendar } from '@/lib/types/aisam-types';
 
 interface UseCalendarDataProps {
-  teamId: string;
+  teamId?: string; // Optional: undefined for profile context, string for team context
   limit?: number;
 }
 
@@ -29,36 +29,36 @@ export function useCalendarData({
 }: UseCalendarDataProps): UseCalendarDataReturn {
   const [brandFilter, setBrandFilter] = useState<string | undefined>(undefined);
   
-  // For dashboard context, use a different approach
-  const isDashboardContext = teamId === "dashboard";
+  // For profile/dashboard context, teamId is undefined
+  const isProfileContext = !teamId;
   
-  // Get team info to get team name
-  const { data: team } = useTeam(isDashboardContext ? "" : teamId);
+  // Get team info to get team name (only for team context)
+  const { data: team } = useTeam(teamId || undefined);
   
-  // Load team brands (for team context) or all brands (for dashboard context)
-  const { data: teamBrands = [] } = useTeamBrands(isDashboardContext ? "" : teamId);
+  // Load team brands (for team context) or all brands (for profile context)
+  const { data: teamBrands = [] } = useTeamBrands(teamId || undefined);
   const { data: allBrands = [] } = useBrands();
   
   // Use appropriate brands based on context
-  const availableBrands = isDashboardContext ? allBrands : teamBrands;
+  const availableBrands = isProfileContext ? allBrands : teamBrands;
   
   // Use brand-specific API when a brand is selected, otherwise use team schedules
-  const { data: teamSchedules = [], isLoading: teamLoading, error: teamError } = useTeamSchedules(isDashboardContext ? "" : teamId, limit);
+  const { data: teamSchedules = [], isLoading: teamLoading, error: teamError } = useTeamSchedules(teamId || "", limit);
   const { data: brandSchedules = [], isLoading: brandLoading, error: brandError } = useUpcomingSchedules(limit, brandFilter);
   
-  // For dashboard context, use upcoming schedules directly
-  const { data: dashboardSchedules = [], isLoading: dashboardLoading, error: dashboardError } = useUpcomingSchedules(limit);
+  // For profile context, use upcoming schedules directly
+  const { data: profileSchedules = [], isLoading: profileLoading, error: profileError } = useUpcomingSchedules(limit);
   
-  // Use brand-specific schedules if a brand is selected, otherwise use team schedules
+  // Use brand-specific schedules if a brand is selected, otherwise use team/profile schedules
   const isBrandSelected = !!brandFilter && brandFilter !== "all" && brandFilter !== "";
   
   let schedules, isLoading, error;
   
-  if (isDashboardContext) {
-    // For dashboard, use upcoming schedules directly
-    schedules = isBrandSelected ? brandSchedules : dashboardSchedules;
-    isLoading = isBrandSelected ? brandLoading : dashboardLoading;
-    error = isBrandSelected ? brandError : dashboardError;
+  if (isProfileContext) {
+    // For profile context, use upcoming schedules directly
+    schedules = isBrandSelected ? brandSchedules : profileSchedules;
+    isLoading = isBrandSelected ? brandLoading : profileLoading;
+    error = isBrandSelected ? brandError : profileError;
   } else {
     // For team context, use team schedules or brand schedules
     schedules = isBrandSelected ? brandSchedules : teamSchedules;
@@ -72,8 +72,8 @@ export function useCalendarData({
   }));
 
   const teamContext = {
-    teamId,
-    teamName: isDashboardContext ? "Dashboard" : (team?.name || `Team ${teamId.slice(0, 8)}`)
+    teamId: teamId || "",
+    teamName: isProfileContext ? "Dashboard" : (team?.name || `Team ${teamId?.slice(0, 8) || ""}`)
   };
 
   return {

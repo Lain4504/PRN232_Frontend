@@ -17,7 +17,7 @@ import {
   AdTypeEnum 
 } from "@/lib/types/aisam-types";
 import { useSocialIntegrations } from "@/hooks/use-social-integrations";
-import { Send, FileText, Image, Video, Calendar, Package, Building2, Share, Loader2 } from "lucide-react";
+import { Send, FileText, Image, Video, Calendar, Package, Share, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface ContentPreviewViewProps {
@@ -26,6 +26,7 @@ interface ContentPreviewViewProps {
   onPublish?: (contentId: string, integrationId: string) => Promise<void>;
   isProcessing?: boolean;
   showActions?: boolean;
+  brands?: Array<{ id: string; name: string }>; // Optional: pass brands to map brandId to name
 }
 
 export function ContentPreviewView({
@@ -34,6 +35,7 @@ export function ContentPreviewView({
   onPublish,
   isProcessing = false,
   showActions = true,
+  brands = [],
 }: ContentPreviewViewProps) {
   const [selectedIntegrationId, setSelectedIntegrationId] = useState<string>("");
   
@@ -176,11 +178,6 @@ export function ContentPreviewView({
 
       {/* Metadata Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Building2 className="h-4 w-4" />
-          <span className="font-medium">Brand:</span>
-          <span>{content.brandName || 'Unknown Brand'}</span>
-        </div>
         {content.productName && (
           <div className="flex items-center gap-2 text-muted-foreground">
             <Package className="h-4 w-4" />

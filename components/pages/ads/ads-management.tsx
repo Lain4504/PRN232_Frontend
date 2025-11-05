@@ -2,7 +2,6 @@
 
 import React from "react";
 import { PageLayout } from "@/components/ui/page-layout";
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Plus, Megaphone, Filter, Search } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,6 +32,9 @@ interface AdListItem {
   ctr?: number;
   spend?: number;
   updatedAt?: string;
+  pageName?: string;
+  adSetName?: string;
+  adId?: string;
 }
 
 export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/campaigns' }: AdsManagementProps) {
@@ -56,11 +58,15 @@ export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/camp
     {
       header: "Name",
       accessorKey: "name",
-      cell: ({ row }) => (
-        <Link className="font-medium hover:underline" href={`${basePath}/${campaignId}/ad-sets/${adSetId}/ads/${row.original.id}`}>
-          {row.original.name}
-        </Link>
-      )
+      cell: ({ row }) => {
+        const ad = row.original;
+        const displayName = ad.pageName || ad.name || ad.adSetName || ad.adId || ad.id;
+        return (
+          <Link className="font-medium hover:underline" href={`${basePath}/${campaignId}/ad-sets/${adSetId}/ads/${ad.id}`}>
+            {displayName}
+          </Link>
+        );
+      }
     },
     {
       header: "Status",
@@ -95,7 +101,12 @@ export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/camp
       accessorKey: "spend",
       cell: ({ getValue }) => {
         const v = getValue<number | undefined>();
-        return v != null ? `₫${v.toLocaleString()}` : "-";
+        return v != null ? new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        }).format(v) : "-";
       }
     },
     {
@@ -148,13 +159,16 @@ export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/camp
     .filter((ad) => !adSetId || ad.adSetId === adSetId)
     .map((ad) => ({
       id: ad.id,
-      name: ad.name || ad.adSetName || ad.adId || ad.id,
+      name: ad.pageName || ad.name || ad.adSetName || ad.adId || ad.id,
       status: ad.status,
       impressions: ad.metrics?.impressions ?? ad.performance?.impressions,
       clicks: ad.metrics?.clicks ?? ad.performance?.clicks,
       ctr: ad.metrics?.ctr ?? ad.performance?.ctr,
       spend: ad.metrics?.spend ?? ad.performance?.spend,
       updatedAt: ad.updatedAt,
+      pageName: ad.pageName,
+      adSetName: ad.adSetName,
+      adId: ad.adId,
     }));
 
   return (
@@ -162,12 +176,12 @@ export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/camp
       title="Ads"
       description="Create and manage ads."
       breadcrumbs={[
-        { label: basePath.includes('/team/') ? 'Team' : 'Dashboard', href: basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard' },
-        { label: "Campaigns", href: basePath },
-        { label: "Campaign", href: `${basePath}/${campaignId}` },
-        { label: "Ad Sets", href: `${basePath}/${campaignId}/ad-sets` },
-        { label: "Ad Set", href: `${basePath}/${campaignId}/ad-sets/${adSetId}` },
-        { label: "Ads", isCurrentPage: true },
+        { label: 'Dashboard', href: '/dashboard' },
+        { label: 'Campaigns', href: basePath },
+        { label: 'Campaign', href: `${basePath}/${campaignId}` },
+        { label: 'Ad Sets', href: `${basePath}/${campaignId}/ad-sets` },
+        { label: 'Ad Set', href: `${basePath}/${campaignId}/ad-sets/${adSetId}` },
+        { label: 'Ads', isCurrentPage: true },
       ]}
       actions={[]}
     >
@@ -179,11 +193,13 @@ export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/camp
               Create Ad
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-xl">
-            <DialogHeader>
+          <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] flex flex-col">
+            <DialogHeader className="flex-shrink-0">
               <DialogTitle>Create New Ad</DialogTitle>
             </DialogHeader>
-            <AdForm adSetId={adSetId} onSuccess={() => setIsCreateOpen(false)} onCancel={() => setIsCreateOpen(false)} />
+            <div className="flex-1 overflow-y-auto pr-1">
+              <AdForm campaignId={campaignId} adSetId={adSetId} onSuccess={() => setIsCreateOpen(false)} onCancel={() => setIsCreateOpen(false)} />
+            </div>
           </DialogContent>
         </Dialog>
       </div>

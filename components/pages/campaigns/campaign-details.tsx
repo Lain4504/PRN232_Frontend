@@ -91,9 +91,7 @@ export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignD
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href={basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard'}>
-                {basePath.includes('/team/') ? 'Team' : 'Dashboard'}
-              </BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -151,7 +149,12 @@ export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignD
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                ${campaign.budget?.toLocaleString() || '0'}
+                {campaign.budget ? new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                }).format(campaign.budget) : '₫0'}
               </div>
               <p className="text-xs text-muted-foreground">
                 Daily budget
@@ -260,7 +263,12 @@ export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignD
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  ${metrics.totalSpend.toLocaleString()}
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  }).format(metrics.totalSpend)}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Total spent
@@ -271,64 +279,24 @@ export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignD
         )}
 
         {/* Campaign Details */}
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card className="border-0 shadow-none bg-muted/40">
-            <CardHeader>
-              <CardTitle>Campaign Information</CardTitle>
-              <CardDescription>
-                Basic details about this campaign
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Created</label>
-                <p className="text-sm">{format(new Date(campaign.createdAt), 'PPP')}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
-                <p className="text-sm">{format(new Date(campaign.updatedAt), 'PPP')}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-none bg-muted/40">
-            <CardHeader>
-              <CardTitle>Ad Sets</CardTitle>
-              <CardDescription>
-                Associated ad sets for this campaign
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {campaign.adSets && campaign.adSets.length > 0 ? (
-                <div className="space-y-2">
-                  {campaign.adSets.map((adSet) => (
-                    <div key={adSet.id} className="flex items-center justify-between p-3 rounded-lg bg-background">
-                      <div>
-                        <p className="font-medium">{adSet.name}</p>
-                        <p className="text-sm text-muted-foreground">ID: {adSet.id.slice(0, 8)}</p>
-                      </div>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link href={`${basePath}/${campaign.id}/ad-sets/${adSet.id}`}>
-                          View
-                        </Link>
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <BarChart3 className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">No ad sets created yet</p>
-                  <Button variant="outline" size="sm" className="mt-2" asChild>
-                    <Link href={`${basePath}/${campaign.id}/ad-sets`}>
-                      Create Ad Set
-                    </Link>
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="border-0 shadow-none bg-muted/40">
+          <CardHeader>
+            <CardTitle>Campaign Information</CardTitle>
+            <CardDescription>
+              Basic details about this campaign
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">Created</label>
+              <p className="text-sm">{format(new Date(campaign.createdAt), 'PPP')}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
+              <p className="text-sm">{format(new Date(campaign.updatedAt), 'PPP')}</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

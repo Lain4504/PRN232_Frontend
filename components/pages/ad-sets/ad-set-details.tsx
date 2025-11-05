@@ -7,12 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Target,
-  Edit,
-  Trash2,
   ArrowLeft,
   DollarSign,
   Calendar,
-  MapPin,
   Eye,
   MousePointer,
   TrendingUp,
@@ -25,12 +22,7 @@ import { getAdSetStatus, getAdSetStatusColor } from "@/lib/types/ad-sets";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { format } from "date-fns";
-import { AdSetForm } from "@/components/ad-sets/ad-set-form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { useDeleteAdSet } from "@/hooks/use-ad-sets";
 import { useState } from "react";
-import { toast } from "sonner";
 import { Megaphone } from "lucide-react";
 
 interface AdSetDetailsProps {
@@ -40,28 +32,13 @@ interface AdSetDetailsProps {
 }
 
 export function AdSetDetails({ campaignId, adSetId, basePath = '/dashboard/campaigns' }: AdSetDetailsProps) {
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   
   const { data: campaign, isLoading: campaignLoading, error: campaignError } = useCampaign(campaignId);
   const { data: adSet, isLoading: adSetLoading, error: adSetError } = useAdSet(adSetId);
-  const deleteMutation = useDeleteAdSet();
   const safeFormat = (value?: string) => {
     if (!value) return '—';
     const dt = new Date(value);
     return isNaN(dt.getTime()) ? '—' : format(dt, 'PPP');
-  };
-
-  const handleDelete = async () => {
-    try {
-      await deleteMutation.mutateAsync(adSetId);
-      toast.success("Ad set deleted successfully");
-      // Redirect to ad sets list
-      window.location.href = `${basePath}/${campaignId}/ad-sets`;
-    } catch (error) {
-      toast.error("Failed to delete ad set");
-      console.error("Delete ad set error:", error);
-    }
   };
 
   if (campaignLoading || adSetLoading) {
@@ -115,9 +92,7 @@ export function AdSetDetails({ campaignId, adSetId, basePath = '/dashboard/campa
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href={basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard'}>
-                {basePath.includes('/team/') ? 'Team' : 'Dashboard'}
-              </BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -125,15 +100,11 @@ export function AdSetDetails({ campaignId, adSetId, basePath = '/dashboard/campa
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`${basePath}/${campaignId}`}>
-                {campaign.name}
-              </BreadcrumbLink>
+              <BreadcrumbLink href={`${basePath}/${campaignId}`}>{campaign.name}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`${basePath}/${campaignId}/ad-sets`}>
-                Ad Sets
-              </BreadcrumbLink>
+              <BreadcrumbLink href={`${basePath}/${campaignId}/ad-sets`}>Ad Sets</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -165,54 +136,7 @@ export function AdSetDetails({ campaignId, adSetId, basePath = '/dashboard/campa
                 </div>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:flex-shrink-0">
-              <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full sm:w-auto">
-                    <Edit className="mr-2 h-4 w-4" />
-                    Edit Ad Set
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Edit Ad Set</DialogTitle>
-                  </DialogHeader>
-                  <AdSetForm
-                    campaignId={campaignId}
-                    adSet={adSet}
-                    onSuccess={() => setIsEditModalOpen(false)}
-                    onCancel={() => setIsEditModalOpen(false)}
-                  />
-                </DialogContent>
-              </Dialog>
-              
-              <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" className="w-full sm:w-auto">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Ad Set</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to delete &quot;{adSet.name}&quot;? This action cannot be undone.
-                      All associated ads will also be deleted.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={handleDelete}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      Delete Ad Set
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:flex-shrink-0" />
           </div>
         </div>
 
@@ -312,81 +236,7 @@ export function AdSetDetails({ campaignId, adSetId, basePath = '/dashboard/campa
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-none bg-muted/40">
-            <CardHeader>
-              <CardTitle>Targeting Configuration</CardTitle>
-              <CardDescription>
-                Audience targeting settings for this ad set
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {adSet.targeting.ageRange && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Age Range</label>
-                  <p className="text-sm">
-                    {adSet.targeting.ageRange.min} - {adSet.targeting.ageRange.max} years
-                  </p>
-                </div>
-              )}
-              
-              {adSet.targeting.gender && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Gender</label>
-                  <p className="text-sm">
-                    {Object.entries(adSet.targeting.gender)
-                .filter(([, selected]) => selected)
-                .map(([gender]) => gender.charAt(0).toUpperCase() + gender.slice(1))
-                      .join(", ") || "Not specified"}
-                  </p>
-                </div>
-              )}
-
-              {adSet.targeting.interests && adSet.targeting.interests.length > 0 && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Interests</label>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {adSet.targeting.interests.map((interest) => (
-                      <Badge key={interest} variant="outline" className="text-xs">
-                        {interest}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {adSet.targeting.locations && adSet.targeting.locations.length > 0 && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Locations</label>
-                  <div className="space-y-1 mt-1">
-                    {adSet.targeting.locations.map((location, index) => (
-                      <div key={index} className="flex items-center gap-1 text-sm">
-                        <MapPin className="h-3 w-3 text-muted-foreground" />
-                        {location.country || location.region || location.city || "Location"}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {adSet.targeting.demographics && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Demographics</label>
-                  <div className="space-y-1 mt-1">
-                    {adSet.targeting.demographics.education && adSet.targeting.demographics.education.length > 0 && (
-                      <p className="text-sm">
-                        Education: {adSet.targeting.demographics.education.join(", ")}
-                      </p>
-                    )}
-                    {adSet.targeting.demographics.relationshipStatus && adSet.targeting.demographics.relationshipStatus.length > 0 && (
-                      <p className="text-sm">
-                        Relationship: {adSet.targeting.demographics.relationshipStatus.join(", ")}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          
         </div>
 
         {/* Schedule Information */}
@@ -458,46 +308,33 @@ export function AdSetDetails({ campaignId, adSetId, basePath = '/dashboard/campa
           </CardContent>
         </Card>
 
-        {/* Associated Ads */}
-        {adSet.ads && adSet.ads.length > 0 && (
-          <Card className="border-0 shadow-none bg-muted/40">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Megaphone className="h-5 w-5" />
-                Associated Ads
-              </CardTitle>
-              <CardDescription>
-                Ads running in this ad set
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {adSet.ads.map((ad) => (
-                  <div key={ad.id} className="flex items-center justify-between p-3 rounded-lg bg-background">
-                    <div>
-                      <p className="font-medium">{ad.name}</p>
-                      <p className="text-sm text-muted-foreground">ID: {ad.id.slice(0, 8)}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">{ad.status}</Badge>
-                      <Button asChild variant="ghost" size="sm">
-                        <Link href={`${basePath}/${campaignId}/ad-sets/${adSetId}/ads/${ad.id}`}>View</Link>
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4">
-                <Button asChild>
-                  <Link href={`${basePath}/${campaignId}/ad-sets/${adSetId}/ads`}>
-                    <Megaphone className="mr-2 h-4 w-4" />
-                    Manage Ads
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* Ad Management */}
+        <Card className="border-0 shadow-none bg-muted/40">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Megaphone className="h-5 w-5" />
+              Ad Management
+            </CardTitle>
+            <CardDescription>
+              Create and manage ads for this ad set
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Create and manage advertisements that will run in this ad set.
+              </p>
+              <Button asChild>
+                <Link href={`${basePath}/${campaignId}/ad-sets/${adSetId}/ads`}>
+                  <Megaphone className="mr-2 h-4 w-4" />
+                  Manage Ads
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Associated Ads removed to avoid duplication with Ad Management */}
       </div>
     </div>
   );

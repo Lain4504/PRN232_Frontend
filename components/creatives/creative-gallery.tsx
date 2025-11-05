@@ -17,7 +17,7 @@ import {
   Tag,
   BarChart3,
 } from "lucide-react";
-import type { AdCreativeResponse } from "@/lib/types/creatives";
+import type { AdCreativeResponse, CreativeType } from "@/lib/types/creatives";
 import { getCreativeStatus, getCreativeStatusColor, getCreativeTypeColor, CREATIVE_TYPES } from "@/lib/types/creatives";
 import { format } from "date-fns";
 
@@ -61,9 +61,10 @@ export function CreativeGallery({
         {creatives.map((creative) => {
           const status = getCreativeStatus(creative);
           const statusColor = getCreativeStatusColor(status);
-          const typeColor = getCreativeTypeColor(creative.type);
-          const typeInfo = CREATIVE_TYPES.find(t => t.value === creative.type);
-          const CreativeIcon = getCreativeIcon(creative.type);
+          const safeType = (creative.type ?? 'IMAGE') as CreativeType;
+          const typeColor = getCreativeTypeColor(safeType);
+          const typeInfo = CREATIVE_TYPES.find(t => t.value === safeType);
+          const CreativeIcon = getCreativeIcon(safeType);
 
           return (
             <Card key={creative.id} className="hover:shadow-md transition-shadow">
@@ -143,9 +144,10 @@ export function CreativeGallery({
       {creatives.map((creative) => {
         const status = getCreativeStatus(creative);
         const statusColor = getCreativeStatusColor(status);
-        const typeColor = getCreativeTypeColor(creative.type);
-        const typeInfo = CREATIVE_TYPES.find(t => t.value === creative.type);
-        const CreativeIcon = getCreativeIcon(creative.type);
+        const safeType = (creative.type ?? 'IMAGE') as CreativeType;
+        const typeColor = getCreativeTypeColor(safeType);
+        const typeInfo = CREATIVE_TYPES.find(t => t.value === safeType);
+        const CreativeIcon = getCreativeIcon(safeType);
 
         return (
           <Card key={creative.id} className="group hover:shadow-lg transition-all duration-200">

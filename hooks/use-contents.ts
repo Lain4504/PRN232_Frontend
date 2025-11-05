@@ -250,6 +250,26 @@ export function usePublishContent(contentId: string) {
       qc.invalidateQueries({ queryKey: contentKeys.lists() })
       // Also invalidate posts since a new post was created
       qc.invalidateQueries({ queryKey: ['posts'] })
+      // Invalidate approvals to reflect published status after publish
+      qc.invalidateQueries({ queryKey: ['approvals'] })
     },
+  })
+}
+
+// Clone content
+export function useCloneContent(contentId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (): Promise<ContentResponseDto> => {
+      const resp = await api.post<ApiResponse<ContentResponseDto>>(endpoints.contentClone(contentId))
+      return resp.data.data
+    },
+    onSuccess: (created) => {
+      // Refresh lists and brand-specific lists
+      qc.invalidateQueries({ queryKey: contentKeys.lists() })
+      if (created?.brandId) {
+        qc.invalidateQueries({ queryKey: contentKeys.byBrand(created.brandId) })
+      }
+    }
   })
 }

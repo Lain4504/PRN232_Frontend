@@ -11,7 +11,7 @@ export const brandKeys = {
 }
 
 // Get all brands
-export function useBrands() {
+export function useBrands(enabled: boolean = true) {
   return useQuery({
     queryKey: brandKeys.lists(),
     queryFn: async (): Promise<Brand[]> => {
@@ -31,6 +31,7 @@ export function useBrands() {
         return [];
       }
     },
+    enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }

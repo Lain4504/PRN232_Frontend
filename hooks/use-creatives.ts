@@ -30,7 +30,7 @@ export function useCreatives(params: CreativeListParams) {
       );
       return response.data;
     },
-    enabled: !!params.adSetId,
+    enabled: true, // Always enabled - can get all creatives without adSetId
   });
 }
 

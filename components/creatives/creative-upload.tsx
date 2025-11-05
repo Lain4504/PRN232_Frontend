@@ -14,7 +14,6 @@ import { useCreateCreative, useCreateCreativeFromFacebookPost, useFacebookPosts 
 import type { CreateAdCreativeFromContentRequest } from "@/lib/types/creatives";
 import { Input as UIInput } from "@/components/ui/input";
 import { createCreativeSchema, type CreateCreativeFormData } from "@/lib/validators/creative-schemas";
-import { CREATIVE_TYPES } from "@/lib/types/creatives";
 import { toast } from "sonner";
 import { useContentsByBrand } from "@/hooks/use-contents";
 import { ContentStatusEnum } from "@/lib/types/aisam-types";
@@ -59,8 +58,6 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
       tags: [],
     }
   });
-
-  const watchedType = watch("type");
 
   // Brand -> Approved contents for selection
   const [selectedBrandId, setSelectedBrandId] = useState<string>("");
@@ -140,12 +137,20 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
           toast.error("Please select an ad account");
           return;
         }
+        if (!callToAction) {
+          toast.error("Please select a call to action");
+          return;
+        }
+        if (!linkUrl || linkUrl.trim() === "") {
+          toast.error("Please enter a link URL");
+          return;
+        }
         const payload: CreateAdCreativeFromContentRequest = {
           contentId: contentId,
           adAccountId: adAccountId,
           adName: data.name,
-          callToAction: callToAction || undefined,
-          linkUrl: linkUrl || undefined,
+          callToAction: callToAction,
+          linkUrl: linkUrl.trim(),
         };
         await createFromContent.mutateAsync(payload);
         toast.success("Creative created successfully");
@@ -163,12 +168,20 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
           toast.error("Please enter Facebook Post ID");
           return;
         }
+        if (!callToAction) {
+          toast.error("Please select a call to action");
+          return;
+        }
+        if (!linkUrl || linkUrl.trim() === "") {
+          toast.error("Please enter a link URL");
+          return;
+        }
         await createFromFacebookPost.mutateAsync({
           brandId: selectedBrandId,
           adAccountId,
           facebookPostId,
-          callToAction: callToAction || undefined,
-          linkUrl: linkUrl || undefined,
+          callToAction: callToAction,
+          linkUrl: linkUrl.trim(),
           adName: data.name || undefined,
         });
         toast.success("Creative created successfully");
@@ -185,38 +198,6 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Creative Type Selection */}
-      <div className="space-y-2">
-        <Label htmlFor="type">Creative Type *</Label>
-        <Select
-          value={watchedType || ""}
-          onValueChange={(value) => {
-            setValue("type", value as 'IMAGE' | 'VIDEO' | 'CAROUSEL' | 'TEXT' | 'GIF' | 'STORY');
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select creative type" />
-          </SelectTrigger>
-          <SelectContent>
-          {CREATIVE_TYPES.map((type) => (
-            <SelectItem key={type.value} value={type.value}>
-                <div className="flex items-center gap-2">
-                  {type.label}
-                  <span className="text-xs text-muted-foreground">
-                    - {type.description}
-                  </span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {errors.type && (
-          <p className="text-sm text-destructive">{errors.type.message}</p>
-        )}
-      </div>
-
-      {/* File Upload (removed for this flow; creatives are created from content or Facebook post) */}
-
       {/* Flow Selector */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         <Button type="button" variant={flow === 'fromContent' ? 'default' : 'outline'} onClick={() => setFlow('fromContent')}>From Approved Content</Button>
@@ -392,8 +373,17 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="linkUrl">Link URL</Label>
-          <UIInput id="linkUrl" placeholder="https://example.com" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} />
+          <Label htmlFor="linkUrl">Link URL *</Label>
+          <UIInput 
+            id="linkUrl" 
+            placeholder="https://example.com" 
+            value={linkUrl} 
+            onChange={(e) => setLinkUrl(e.target.value)}
+            type="url"
+          />
+          {(!linkUrl || linkUrl.trim() === "") && (
+            <p className="text-sm text-destructive">Link URL is required</p>
+          )}
         </div>
       </div>
       </>
@@ -415,7 +405,7 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
       {/* CTA (applies to both flows) and Link (also in FB section) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="cta">Call To Action</Label>
+          <Label htmlFor="cta">Call To Action *</Label>
           <Select value={callToAction} onValueChange={setCallToAction}>
             <SelectTrigger>
               <SelectValue placeholder="Select call to action" />
@@ -426,30 +416,26 @@ export function CreativeUpload({ adSetId, onSuccess, onCancel }: CreativeUploadP
               ))}
             </SelectContent>
           </Select>
+          {!callToAction && (
+            <p className="text-sm text-destructive">Call to action is required</p>
+          )}
         </div>
         {flow === 'fromContent' && (
           <div className="space-y-2">
-            <Label htmlFor="linkUrl">Link URL</Label>
-            <UIInput id="linkUrl" placeholder="https://example.com" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} />
+            <Label htmlFor="linkUrl">Link URL *</Label>
+            <UIInput 
+              id="linkUrl" 
+              placeholder="https://example.com" 
+              value={linkUrl} 
+              onChange={(e) => setLinkUrl(e.target.value)}
+              type="url"
+            />
+            {(!linkUrl || linkUrl.trim() === "") && (
+              <p className="text-sm text-destructive">Link URL is required</p>
+            )}
           </div>
         )}
       </div>
-
-      {/* Content (for TEXT type) */}
-      {watchedType === 'TEXT' && (
-        <div className="space-y-2">
-          <Label htmlFor="content">Content *</Label>
-          <Textarea
-            id="content"
-            {...register("content")}
-            placeholder="Enter creative content"
-            rows={6}
-          />
-          {errors.content && (
-            <p className="text-sm text-destructive">{errors.content.message}</p>
-          )}
-        </div>
-      )}
 
       {/* Tags */}
       <div className="space-y-2">

@@ -18,6 +18,7 @@ interface ContentPreviewModalProps {
   onSubmit?: (contentId: string) => Promise<void>;
   onPublish?: (contentId: string, integrationId: string) => Promise<void>;
   isProcessing?: boolean;
+  brands?: Array<{ id: string; name: string }>; // Optional: pass brands to map brandId to name
 }
 
 export function ContentPreviewModal({
@@ -27,6 +28,7 @@ export function ContentPreviewModal({
   onSubmit,
   onPublish,
   isProcessing = false,
+  brands = [],
 }: ContentPreviewModalProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -66,6 +68,7 @@ export function ContentPreviewModal({
               onSubmit={onSubmit}
               onPublish={onPublish}
               isProcessing={isProcessing}
+              brands={brands}
             />
           </div>
         </DialogContent>
@@ -91,6 +94,7 @@ export function ContentPreviewModal({
             onSubmit={onSubmit}
             onPublish={onPublish}
             isProcessing={isProcessing}
+            brands={brands}
           />
         </div>
       </DrawerContent>

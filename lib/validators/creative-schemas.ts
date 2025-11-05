@@ -118,7 +118,7 @@ export const creativeFiltersSchema = z.object({
 
 // Creative list params schema
 export const creativeListParamsSchema = z.object({
-  adSetId: z.string().min(1, 'Ad Set ID is required'),
+  adSetId: z.string().optional(),
   page: z.number().min(1).optional().default(1),
   pageSize: z.number().min(1).max(100).optional().default(20),
   search: z.string().optional(),

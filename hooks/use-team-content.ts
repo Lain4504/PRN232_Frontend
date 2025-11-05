@@ -34,17 +34,8 @@ export function useTeamContents(teamId?: string, filters?: ContentFilters) {
     queryFn: async (): Promise<PaginatedResponse<ContentResponseDto>> => {
       if (!teamId) return { data: [], totalCount: 0, page: 1, pageSize: 10, totalPages: 0, hasNextPage: false, hasPreviousPage: false }
       
-      // First get team brands
-      const brandsResp = await api.get<Brand[]>(`/brands/team/${teamId}`)
-      const brandIds = brandsResp.data.map(brand => brand.id)
-      
-      if (brandIds.length === 0) {
-        return { data: [], totalCount: 0, page: 1, pageSize: 10, totalPages: 0, hasNextPage: false, hasPreviousPage: false }
-      }
-
-      // Get contents for all team brands
-      const brandIdParams = brandIds.map(id => `brandId=${id}`).join('&')
-      const url = queryString ? `${endpoints.contents()}?${queryString}&${brandIdParams}` : `${endpoints.contents()}?${brandIdParams}`
+      // Get all contents (no brandId filter when "All team brands" is selected)
+      const url = queryString ? `${endpoints.contents()}?${queryString}` : endpoints.contents()
       
       const resp = await api.get<PaginatedResponse<ContentResponseDto>>(url)
       return resp.data

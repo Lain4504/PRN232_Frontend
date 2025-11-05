@@ -11,7 +11,6 @@ import {
   Search,
   ArrowLeft,
   BarChart3,
-  DollarSign,
   Users,
 } from "lucide-react";
 import { useAdSets } from "@/hooks/use-ad-sets";
@@ -114,10 +113,14 @@ export function AdSetsManagement({ campaignId, basePath = '/dashboard/campaigns'
       cell: ({ row }: { row: { original: AdSetResponse } }) => {
         const dailyBudget = Number(((row.original as unknown as { dailyBudget?: number }).dailyBudget) ?? (row.original as AdSetResponse).budget ?? 0);
         return (
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">₫{dailyBudget.toLocaleString('vi-VN')}</span>
-          </div>
+          <span className="font-medium">
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(dailyBudget)}
+          </span>
         );
       },
     },
@@ -136,7 +139,26 @@ export function AdSetsManagement({ campaignId, basePath = '/dashboard/campaigns'
         }
         if (targeting.interests?.length) criteria.push(`${targeting.interests.length} interests`);
         if (targeting.locations?.length) criteria.push(`${targeting.locations.length} locations`);
-        
+        {/* Breadcrumb */}
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={basePath}>Campaigns</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`${basePath}/${campaignId}`}>{campaign.name}</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Ad Sets</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         return (
           <div className="text-sm">
             {criteria.length > 0 ? criteria.slice(0, 2).join(", ") : "No targeting"}
@@ -199,30 +221,7 @@ export function AdSetsManagement({ campaignId, basePath = '/dashboard/campaigns'
   return (
     <div className="max-w-7xl mx-auto">
       <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
-        {/* Breadcrumb */}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href={basePath.includes('/team/') ? basePath.split('/campaigns')[0] : '/dashboard'}>
-                {basePath.includes('/team/') ? 'Team' : 'Dashboard'}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={basePath}>Campaigns</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`${basePath}/${campaignId}`}>
-                {campaign.name}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Ad Sets</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        
 
         {/* Header */}
         <div className="space-y-3 lg:space-y-6">
@@ -279,13 +278,16 @@ export function AdSetsManagement({ campaignId, basePath = '/dashboard/campaigns'
           <Card className="border-0 shadow-none bg-muted/40">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <span className="text-muted-foreground font-medium">₫</span>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                ₫{adSets
-                  .reduce((sum, adSet) => sum + Number(((adSet as unknown as { dailyBudget?: number }).dailyBudget) ?? (adSet as AdSetResponse).budget ?? 0), 0)
-                  .toLocaleString('vi-VN')}
+                {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                }).format(adSets.reduce((sum, adSet) => sum + Number(((adSet as unknown as { dailyBudget?: number }).dailyBudget) ?? (adSet as AdSetResponse).budget ?? 0), 0))}
               </div>
               <p className="text-xs text-muted-foreground">
                 Daily budget allocation

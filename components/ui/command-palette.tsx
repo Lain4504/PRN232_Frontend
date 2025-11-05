@@ -143,14 +143,6 @@ const searchData: SearchItem[] = [
     description: "View all notifications",
     category: "Navigation",
     keywords: ["notification", "alert", "message", "update"]
-  },
-  {
-    title: "Profile",
-    url: "/dashboard/profile",
-    icon: User,
-    description: "Manage your profile",
-    category: "Navigation",
-    keywords: ["profile", "account", "personal", "settings"]
   }
 ]
 

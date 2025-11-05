@@ -17,7 +17,7 @@ import {
   Tablet,
   Maximize2,
 } from "lucide-react";
-import type { AdCreativeResponse } from "@/lib/types/creatives";
+import type { AdCreativeResponse, CreativeType } from "@/lib/types/creatives";
 import { getCreativeTypeColor, CREATIVE_TYPES } from "@/lib/types/creatives";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -31,8 +31,9 @@ export function CreativePreview({ creative, fullScreen = false }: CreativePrevie
   const [selectedDevice, setSelectedDevice] = useState("desktop");
   const [isFullScreenOpen, setIsFullScreenOpen] = useState(false);
 
-  const typeInfo = CREATIVE_TYPES.find(t => t.value === creative.type);
-  const typeColor = getCreativeTypeColor(creative.type);
+  const safeType = (creative.type ?? 'IMAGE') as CreativeType;
+  const typeInfo = CREATIVE_TYPES.find(t => t.value === safeType);
+  const typeColor = getCreativeTypeColor(safeType);
 
   const platforms = [
     { value: "facebook", label: "Facebook", icon: Facebook },
@@ -66,10 +67,10 @@ export function CreativePreview({ creative, fullScreen = false }: CreativePrevie
     }
   };
 
-  const CreativeIcon = getCreativeIcon(creative.type);
+  const CreativeIcon = getCreativeIcon(safeType);
 
   const renderCreativeContent = () => {
-    switch (creative.type) {
+    switch (safeType) {
       case 'IMAGE':
         return (
           <div className="relative w-full h-full bg-gray-100 rounded-lg overflow-hidden">
@@ -335,11 +336,13 @@ export function CreativePreview({ creative, fullScreen = false }: CreativePrevie
         </div>
 
         <Dialog open={isFullScreenOpen} onOpenChange={setIsFullScreenOpen}>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
+          <DialogContent className="w-[96vw] sm:w-[94vw] md:w-[92vw] lg:w-[88vw] max-w-[1400px] h-[92vh] p-0 flex flex-col">
+            <DialogHeader className="flex-shrink-0 px-4 sm:px-6 pt-4 sm:pt-6">
               <DialogTitle>Creative Preview - {creative.name}</DialogTitle>
             </DialogHeader>
-            <PreviewContent />
+            <div className="flex-1 overflow-auto p-3 sm:p-4">
+              <PreviewContent />
+            </div>
           </DialogContent>
         </Dialog>
       </>
@@ -362,11 +365,13 @@ export function CreativePreview({ creative, fullScreen = false }: CreativePrevie
       <PreviewContent />
 
       <Dialog open={isFullScreenOpen} onOpenChange={setIsFullScreenOpen}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="w-[96vw] sm:w-[94vw] md:w-[92vw] lg:w-[88vw] max-w-[1400px] h-[92vh] p-0 flex flex-col">
+          <DialogHeader className="flex-shrink-0 px-4 sm:px-6 pt-4 sm:pt-6">
             <DialogTitle>Creative Preview - {creative.name}</DialogTitle>
           </DialogHeader>
-          <PreviewContent />
+          <div className="flex-1 overflow-auto p-3 sm:p-4">
+            <PreviewContent />
+          </div>
         </DialogContent>
       </Dialog>
     </div>

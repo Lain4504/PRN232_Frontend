@@ -13,15 +13,6 @@ export const AD_STATUSES = [
 export const createAdSchema = z.object({
   adSetId: z.string().uuid('Ad Set ID is required'),
   creativeId: z.string().uuid('Creative ID is required'),
-  name: z.string()
-    .min(1, 'Ad name is required')
-    .max(255, 'Ad name must be less than 255 characters'),
-  targeting: z.unknown().optional(),
-  schedule: z.object({
-    startDate: z.string().optional(),
-    endDate: z.string().optional(),
-    timezone: z.string().optional(),
-  }).optional(),
 });
 
 export const updateAdSchema = z.object({

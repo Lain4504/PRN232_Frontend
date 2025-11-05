@@ -11,8 +11,8 @@ export const createCampaignSchema = z.object({
     .max(255, 'Campaign name must be less than 255 characters'),
   objective: z.enum(CAMPAIGN_OBJECTIVES as [string, ...string[]], { message: 'Please select a valid campaign objective' }),
   budget: z.number()
-    .min(0.01, 'Budget must be greater than $0.01')
-    .max(1000000, 'Budget cannot exceed $1,000,000'),
+    .min(1, 'Budget must be greater than ₫1')
+    .max(1000000000, 'Budget cannot exceed ₫1,000,000,000'),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
 }).refine((data) => {

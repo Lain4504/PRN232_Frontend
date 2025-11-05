@@ -11,6 +11,18 @@ import {
 import { ANALYTICS_EXPORT_FORMATS } from '@/lib/constants/analytics-metrics';
 
 /**
+ * Format currency value as VND
+ */
+function formatVND(value: number): string {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+/**
  * Generate CSV content from analytics data
  */
 export function generateCSVContent(
@@ -237,7 +249,7 @@ function generateHTMLTable(data: AnalyticsData[]): string {
     item.metrics.clicks.toLocaleString(),
     item.metrics.conversions.toLocaleString(),
     `${item.metrics.ctr.toFixed(2)}%`,
-    `$${item.metrics.cpc.toFixed(2)}`,
+    formatVND(item.metrics.cpc),
     `${(item.metrics.roi * 100).toFixed(1)}%`,
     item.metrics.engagement.toLocaleString(),
     item.metrics.reach.toLocaleString()
@@ -267,11 +279,11 @@ function generateHTMLSummary(
       { label: 'Clicks', value: campaignData.metrics.clicks.toLocaleString() },
       { label: 'Conversions', value: campaignData.metrics.conversions.toLocaleString() },
       { label: 'CTR', value: `${campaignData.metrics.ctr.toFixed(2)}%` },
-      { label: 'CPC', value: `$${campaignData.metrics.cpc.toFixed(2)}` },
+      { label: 'CPC', value: formatVND(campaignData.metrics.cpc) },
       { label: 'ROI', value: `${(campaignData.metrics.roi * 100).toFixed(1)}%` },
-      { label: 'Budget', value: `$${Number(campaignData.performance?.budget ?? 0).toLocaleString()}` },
-      { label: 'Spent', value: `$${campaignData.performance.spent.toLocaleString()}` },
-      { label: 'Remaining', value: `$${campaignData.performance.remaining.toLocaleString()}` }
+      { label: 'Budget', value: formatVND(Number(campaignData.performance?.budget ?? 0)) },
+      { label: 'Spent', value: formatVND(campaignData.performance.spent) },
+      { label: 'Remaining', value: formatVND(campaignData.performance.remaining) }
     ];
   } else if ('contentId' in data) {
     const contentData = data as ContentAnalytics;
@@ -291,8 +303,8 @@ function generateHTMLSummary(
     metrics = [
       { label: 'Team Name', value: teamData.teamName },
       { label: 'Team Members', value: teamData.resourceUsage.teamMembers.toString() },
-      { label: 'Total Budget', value: `$${teamData.resourceUsage.totalBudget.toLocaleString()}` },
-      { label: 'Used Budget', value: `$${teamData.resourceUsage.usedBudget.toLocaleString()}` },
+      { label: 'Total Budget', value: formatVND(teamData.resourceUsage.totalBudget) },
+      { label: 'Used Budget', value: formatVND(teamData.resourceUsage.usedBudget) },
       { label: 'Active Campaigns', value: teamData.resourceUsage.activeCampaigns.toString() },
       { label: 'Content Pieces', value: teamData.resourceUsage.contentPieces.toString() },
       { label: 'Task Completion', value: `${teamData.productivity.averageTaskCompletion.toFixed(1)}%` },
