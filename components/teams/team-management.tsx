@@ -121,16 +121,16 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
       </div>
 
       {/* Team Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{team.name}</h1>
-          <p className="text-muted-foreground mt-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight break-words">{team.name}</h1>
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
             {team.description || 'Manage your team members and settings'}
           </p>
         </div>
         {canManage && (
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </div>
@@ -138,7 +138,7 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
       </div>
 
       {/* Enhanced Team Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 hover:scale-105 hover:-translate-y-1">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
@@ -222,7 +222,7 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <Button 
                     variant="outline" 
                     className="h-auto p-4 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary/30 transition-all duration-200 group/action"

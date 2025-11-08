@@ -293,6 +293,45 @@ export function useRestoreApproval(approvalId: string) {
   })
 }
 
+// Change approver
+export function useChangeApprover(approvalId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (newApproverId: string): Promise<ApprovalResponseDto> => {
+      const resp = await api.put<ApprovalResponseDto>(endpoints.approvalChangeApprover(approvalId), { newApproverId })
+      return resp.data
+    },
+    onSuccess: (updated) => {
+      qc.invalidateQueries({ queryKey: approvalKeys.detail(approvalId) })
+      qc.invalidateQueries({ queryKey: approvalKeys.lists() })
+      qc.invalidateQueries({ queryKey: approvalKeys.pending() })
+      if (updated.contentId) {
+        qc.invalidateQueries({ queryKey: approvalKeys.byContent(updated.contentId) })
+        qc.invalidateQueries({ queryKey: approvalKeys.contentPending(updated.contentId) })
+      }
+      if (updated.approverId) {
+        qc.invalidateQueries({ queryKey: approvalKeys.byApprover(updated.approverId) })
+      }
+    },
+  })
+}
+
+// Get available approvers for a brand
+export function useAvailableApprovers(brandId?: string) {
+  return useQuery({
+    queryKey: brandId ? ['approvals', 'available-approvers', brandId] : ['approvals', 'available-approvers'],
+    queryFn: async (): Promise<Array<{id: string; email: string; name?: string}>> => {
+      const resp = await api.get<Array<{id: string; email: string; firstName?: string; lastName?: string}>>(endpoints.approvalAvailableApprovers(brandId!))
+      return resp.data.map(user => ({
+        id: user.id,
+        email: user.email,
+        name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email
+      }))
+    },
+    enabled: !!brandId,
+  })
+}
+
 // Delete approval with confirmation
 export function useDeleteApprovalWithConfirm() {
   const qc = useQueryClient()

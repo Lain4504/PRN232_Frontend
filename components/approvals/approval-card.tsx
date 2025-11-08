@@ -4,13 +4,14 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   Eye,
   MessageSquare,
   Check,
   X,
   Clock,
-  Trash2
+  Trash2,
+  User
 } from "lucide-react";
 import { ApprovalResponseDto, ContentStatusEnum } from "@/lib/types/aisam-types";
 
@@ -20,16 +21,18 @@ interface ApprovalCardProps {
   onApprove?: (approvalId: string) => void;
   onReject?: (approvalId: string) => void;
   onDelete?: (approval: ApprovalResponseDto) => void;
+  onChangeApprover?: (approval: ApprovalResponseDto) => void;
   isProcessing?: boolean;
 }
 
-export function ApprovalCard({ 
-  approval, 
-  onReview, 
-  onApprove, 
-  onReject, 
+export function ApprovalCard({
+  approval,
+  onReview,
+  onApprove,
+  onReject,
   onDelete,
-  isProcessing = false 
+  onChangeApprover,
+  isProcessing = false
 }: ApprovalCardProps) {
   const getStatusBadge = (status: ContentStatusEnum) => {
     switch (status) {
@@ -64,20 +67,32 @@ export function ApprovalCard({
           </div>
           
           <div className="flex gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => onReview(approval)}
             >
               <Eye className="mr-2 h-4 w-4" />
               Review
             </Button>
+            {onChangeApprover && approval.status === ContentStatusEnum.PendingApproval && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onChangeApprover(approval)}
+                disabled={isProcessing}
+              >
+                <User className="mr-2 h-4 w-4" />
+                Change Approver
+              </Button>
+            )}
             {onDelete && (
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => onDelete(approval)}
                 className="text-destructive hover:text-destructive"
+                disabled={isProcessing}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

@@ -252,51 +252,52 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
 
   return (
     <>
-      {/* Single Row Layout - Stats, Rows, Search */}
-      <div className="flex items-center gap-4">
-        {/* Stats */}
-        <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 rounded-xl border border-gray-200 text-sm shadow-sm">
-          <Users className="h-4 w-4 text-gray-500 flex-shrink-0" />
-          <span className="font-semibold text-gray-700">{totalMembers}</span>
-          <span className="text-gray-500">Members</span>
-        </div>
-
-        {/* Page Size Selector */}
-        <Select
-          value={String(pageSize)}
-          onValueChange={(value) => setPageSize(Number(value))}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue placeholder="Rows" />
-          </SelectTrigger>
-          <SelectContent>
-            {[5, 10, 20, 30, 40, 50].map((size) => (
-              <SelectItem key={size} value={String(size)}>
-                {size} rows
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        {/* Search */}
-        <div className="relative w-80">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search members..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-9"
-          />
-        </div>
-
-        {/* Invite Button */}
-        {canManage && (
-          <div className="ml-auto">
-            <Button size="sm" onClick={onInviteMember}>
-              <User2 className="mr-2 h-4 w-4" />
-              Add Member
-            </Button>
+      {/* Two Row Layout - Controls on top row, Button on bottom row */}
+      <div className="space-y-3">
+        {/* Row 1: Stats, Page Selector, Search */}
+        <div className="flex items-center gap-3">
+          {/* Stats Badge */}
+          <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg border border-gray-200 text-sm shadow-sm flex-shrink-0">
+            <Users className="h-4 w-4 text-gray-500 flex-shrink-0" />
+            <span className="font-semibold text-gray-700">{totalMembers}</span>
+            <span className="text-gray-500 hidden md:inline">Members</span>
           </div>
+
+          {/* Page Size Selector */}
+          <Select
+            value={String(pageSize)}
+            onValueChange={(value) => setPageSize(Number(value))}
+          >
+            <SelectTrigger className="w-20 h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[5, 10, 20, 30, 40, 50].map((size) => (
+                <SelectItem key={size} value={String(size)} className="text-xs">
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Search Input */}
+          <div className="relative flex-1 min-w-0 max-w-sm">
+            <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search members..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8 h-8 text-sm"
+            />
+          </div>
+        </div>
+
+        {/* Row 2: Add Member Button - Full Width */}
+        {canManage && (
+          <Button size="sm" onClick={onInviteMember} className="w-full h-10 text-sm">
+            <User2 className="mr-2 h-4 w-4" />
+            Add Member
+          </Button>
         )}
       </div>
 

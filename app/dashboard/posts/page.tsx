@@ -192,52 +192,56 @@ export default function PostsPage() {
         </p>
       </div>
 
-      {/* Single Row Layout - Status Filter, Brand Selector, Page Size, Search */}
-      <div className="flex items-center gap-4">
-        {/* Status Filter Dropdown */}
-        <Select 
-          value={filters.status || 'all'} 
-          onValueChange={handleStatusFilter}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="published">Published</SelectItem>
-            <SelectItem value="failed">Failed</SelectItem>
-            <SelectItem value="deleted">Deleted</SelectItem>
-          </SelectContent>
-        </Select>
+      {/* Two Row Layout - Filters on top row, Search on bottom row */}
+      <div className="space-y-3">
+        {/* Row 1: Status Filter, Brand Selector, Page Size */}
+        <div className="flex items-center gap-4">
+          {/* Status Filter Dropdown */}
+          <Select
+            value={filters.status || 'all'}
+            onValueChange={handleStatusFilter}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="published">Published</SelectItem>
+              <SelectItem value="failed">Failed</SelectItem>
+              <SelectItem value="deleted">Deleted</SelectItem>
+            </SelectContent>
+          </Select>
 
-        {/* Brand Selector */}
-        <div className="w-64">
-          <ProfileBrandSelector
-            selectedBrandId={filters.brandId}
-            onBrandChange={handleBrandChange}
-            placeholder="Select a brand"
-            showAllOption={true}
-          />
+          {/* Brand Selector */}
+          <div className="w-64">
+            <ProfileBrandSelector
+              selectedBrandId={filters.brandId}
+              onBrandChange={handleBrandChange}
+              placeholder="Select a brand"
+              showAllOption={true}
+            />
+          </div>
+
+          {/* Page Size Selector */}
+          <Select
+            value={String(pageSize)}
+            onValueChange={(value) => setPageSize(Number(value))}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Rows" />
+            </SelectTrigger>
+            <SelectContent>
+              {[5, 10, 20, 30, 40, 50].map((size) => (
+                <SelectItem key={size} value={String(size)}>
+                  {size} rows
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Page Size Selector */}
-        <Select
-          value={String(pageSize)}
-          onValueChange={(value) => setPageSize(Number(value))}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue placeholder="Rows" />
-          </SelectTrigger>
-          <SelectContent>
-            {[5, 10, 20, 30, 40, 50].map((size) => (
-              <SelectItem key={size} value={String(size)}>
-                {size} rows
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {/* Search */}
-        <div className="relative w-80">
+        {/* Row 2: Search Input - Full Width */}
+        <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search posts..."
@@ -249,7 +253,7 @@ export default function PostsPage() {
                 setFilters(prev => ({ ...prev, searchTerm: searchQuery, page: 1 }));
               }
             }}
-            className="pl-10 h-9"
+            className="pl-10 h-10 w-full"
           />
         </div>
       </div>
