@@ -50,6 +50,8 @@ import {
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useProfile } from "@/lib/contexts/profile-context";
+import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 
 interface SharedApprovalManagementProps {
   context: 'dashboard' | 'team';
@@ -66,7 +68,8 @@ const createColumns = (
   handleQuickReject: (approvalId: string) => void,
   handleDelete: (approval: ApprovalResponseDto) => void,
   handleChangeApprover: (approval: ApprovalResponseDto) => void,
-  isProcessing: boolean
+  isProcessing: boolean,
+  canUseTeamFeatures: boolean
 ): ColumnDef<ApprovalResponseDto>[] => [
     {
       accessorKey: "contentTitle",
@@ -184,8 +187,8 @@ const createColumns = (
 
         // Quick Approve/Reject removed per requirement
 
-        // Add Change Approver action for pending approvals
-        if (approval.status === ContentStatusEnum.PendingApproval) {
+        // Add Change Approver action for pending approvals (only for Basic/Pro profiles)
+        if (approval.status === ContentStatusEnum.PendingApproval && canUseTeamFeatures) {
           actions.push({
             label: "Change Approver",
             icon: <User className="h-4 w-4" />,
@@ -218,6 +221,9 @@ export function SharedApprovalManagement({
   title = "Content Approvals",
   description = "Review and approve content before publishing"
 }: SharedApprovalManagementProps) {
+  const { profileType } = useProfile();
+  const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free;
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ContentStatusEnum | "all">("all");
   const [selectedApproval, setSelectedApproval] = useState<ApprovalResponseDto | null>(null);
@@ -472,7 +478,8 @@ export function SharedApprovalManagement({
               handleQuickReject,
               handleDelete,
               handleChangeApprover,
-              approveApprovalMutation.isPending || rejectApprovalMutation.isPending
+              approveApprovalMutation.isPending || rejectApprovalMutation.isPending,
+              canUseTeamFeatures
             )}
             data={filteredApprovals}
             pageSize={10}

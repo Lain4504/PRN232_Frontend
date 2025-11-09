@@ -14,6 +14,8 @@ import {
   User
 } from "lucide-react";
 import { ApprovalResponseDto, ContentStatusEnum } from "@/lib/types/aisam-types";
+import { useProfile } from "@/lib/contexts/profile-context";
+import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 
 interface ApprovalCardProps {
   approval: ApprovalResponseDto;
@@ -34,6 +36,9 @@ export function ApprovalCard({
   onChangeApprover,
   isProcessing = false
 }: ApprovalCardProps) {
+  const { profileType } = useProfile();
+  const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free;
+
   const getStatusBadge = (status: ContentStatusEnum) => {
     switch (status) {
       case ContentStatusEnum.PendingApproval:
@@ -75,7 +80,7 @@ export function ApprovalCard({
               <Eye className="mr-2 h-4 w-4" />
               Review
             </Button>
-            {onChangeApprover && approval.status === ContentStatusEnum.PendingApproval && (
+            {onChangeApprover && approval.status === ContentStatusEnum.PendingApproval && canUseTeamFeatures && (
               <Button
                 variant="outline"
                 size="sm"

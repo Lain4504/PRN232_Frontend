@@ -41,6 +41,7 @@ import {
 // import { ContentList } from "@/components/contents/content-list"; // Removed unused import
 import { ContentModal } from "@/components/contents/content-modal";
 import { ContentPreviewModal } from "@/components/contents/content-preview-modal";
+import { ChangeStatusModal } from "@/components/contents/change-status-modal";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Calendar, Edit, Trash2, Send, Eye } from "lucide-react";
@@ -50,6 +51,8 @@ import { useCreateApproval } from "@/hooks/use-approvals";
 import { useQueryClient } from "@tanstack/react-query";
 import { api, endpoints } from "@/lib/api";
 import type { ApiResponse } from "@/lib/types/aisam-types";
+import { useProfile } from "@/lib/contexts/profile-context";
+import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 
 // TODO: Replace with actual auth hook
 const useCurrentUser = () => {
@@ -63,8 +66,10 @@ const createColumns = (
   handleDeleteContent: (contentId: string) => void,
   handleSubmitContent: (contentId: string) => void,
   handleCloneContent: (contentId: string) => void,
+  handleChangeStatus: (content: ContentResponseDto) => void,
   brands: { id: string; name: string }[] = [],
-  isProcessing: boolean
+  isProcessing: boolean,
+  canUseTeamFeatures: boolean
 ): ColumnDef<ContentResponseDto>[] => [
   {
     accessorKey: "title",
@@ -84,6 +89,7 @@ const createColumns = (
             <div className="font-medium">
               {row.getValue("title")}
             </div>
+            {/* Status badge shown for all profiles */}
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="secondary" className={
                 status === ContentStatusEnum.Published ? "bg-green-100 text-green-800" :
@@ -94,7 +100,6 @@ const createColumns = (
               }>
                 {status}
               </Badge>
-
             </div>
           </div>
         </div>
@@ -175,7 +180,7 @@ const createColumns = (
     },
   },
   {
-    accessorKey: "status",
+    accessorKey: "actions",
     header: "Actions",
     cell: ({ row }) => {
       const content = row.original;
@@ -190,11 +195,22 @@ const createColumns = (
         onClick: () => handleViewContent(content),
       });
       
-      if (canSubmit) {
+      // Submit for Approval only available for Basic/Pro profiles (team features)
+      if (canSubmit && canUseTeamFeatures) {
         actions.push({
           label: "Submit for Approval",
           icon: <Send className="h-4 w-4" />,
           onClick: () => handleSubmitContent(content.id),
+          disabled: isProcessing,
+        });
+      }
+      
+      // Change Status only available for Free profiles
+      if (!canUseTeamFeatures) {
+        actions.push({
+          label: "Change Status",
+          icon: <Edit className="h-4 w-4" />,
+          onClick: () => handleChangeStatus(content),
           disabled: isProcessing,
         });
       }
@@ -204,11 +220,13 @@ const createColumns = (
           label: "Edit",
           icon: <Edit className="h-4 w-4" />,
           onClick: () => handleEditContent(content.id),
+          disabled: isProcessing,
         },
         {
           label: "Clone",
           icon: <FileText className="h-4 w-4" />,
           onClick: () => handleCloneContent(content.id),
+          disabled: isProcessing,
         },
         {
           label: "Delete",
@@ -230,6 +248,9 @@ interface ContentsManagementProps {
 }
 
 export function ContentsManagement({ initialBrandId, teamId }: ContentsManagementProps = {}) {
+  const { profileType } = useProfile();
+  const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free;
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ContentStatusEnum | "all">("all");
   const [adTypeFilter, setAdTypeFilter] = useState<AdTypeEnum | "all">("all");
@@ -240,6 +261,8 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
   const [isApprovalDialogOpen, setIsApprovalDialogOpen] = useState(false);
   const [previewContent, setPreviewContent] = useState<ContentResponseDto | null>(null);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [statusChangeContent, setStatusChangeContent] = useState<ContentResponseDto | null>(null);
+  const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
 
   // State for current content operations
   const [currentContentId, setCurrentContentId] = useState<string>("");
@@ -390,6 +413,21 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
     setCurrentContentId(contentId);
     // Open approver selection dialog instead of direct submit
     setIsApprovalDialogOpen(true);
+  };
+
+  const handleChangeStatus = (content: ContentResponseDto) => {
+    setStatusChangeContent(content);
+    setIsChangeStatusModalOpen(true);
+  };
+
+  const handleChangeStatusModalClose = () => {
+    setIsChangeStatusModalOpen(false);
+    setStatusChangeContent(null);
+  };
+
+  const handleChangeStatusSuccess = () => {
+    // Refresh the contents list
+    queryClient.invalidateQueries({ queryKey: ['contents'] });
   };
 
 
@@ -589,11 +627,13 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
               handleDeleteContent,
               handleSubmitContent,
               handleCloneContent,
+              handleChangeStatus,
               brands,
               createContentMutation.isPending ||
               updateContentMutation.isPending ||
               deleteContentMutation.isPending ||
-              submitContentMutation.isPending
+              submitContentMutation.isPending,
+              canUseTeamFeatures
             )}
             data={filteredContents}
             pageSize={10}
@@ -744,6 +784,14 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
             brands={brands}
           />
         )}
+
+        {/* Change Status Modal - Only for Free profiles */}
+        <ChangeStatusModal
+          content={statusChangeContent}
+          isOpen={isChangeStatusModalOpen}
+          onClose={handleChangeStatusModalClose}
+          onSuccess={handleChangeStatusSuccess}
+        />
       </div>
     </div>
   );
