@@ -4,6 +4,7 @@ import React from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { useProfile } from '@/lib/contexts/profile-context'
+import { ProfileTypeEnum } from '@/lib/utils/profile-utils'
 import { usePendingApprovalsCount } from '@/hooks/use-approvals'
 import { useUnreadNotificationsCount } from '@/hooks/use-notifications'
 import {
@@ -114,13 +115,20 @@ const secondaryNavItems: NavItem[] = [
 export function DashboardSidebar() {
   const pathname = usePathname()
   const [sidebarModeState, setSidebarModeState] = React.useState<'expanded' | 'collapsed' | 'hover'>('hover')
-  const { hasFeatureAccess } = useProfile()
+  const { hasFeatureAccess, profileType } = useProfile()
+  const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free
 
   // API calls for notifications and approvals (via hooks)
+  // Only fetch approval count for Basic/Pro profiles (conditional hook call)
+  const shouldFetchApprovals = canUseTeamFeatures
   const { data: approvalCount = 0 } = usePendingApprovalsCount()
   const { data: notificationCount = 0 } = useUnreadNotificationsCount()
 
-  const workflowNavItems = getWorkflowNavItems(approvalCount, notificationCount)
+  // Filter workflow items: hide Approvals for Free profiles
+  const allWorkflowNavItems = getWorkflowNavItems(approvalCount, notificationCount)
+  const workflowNavItems = canUseTeamFeatures 
+    ? allWorkflowNavItems 
+    : allWorkflowNavItems.filter(item => item.title !== "Approvals")
 
   React.useEffect(() => {
     if (typeof window === 'undefined') return

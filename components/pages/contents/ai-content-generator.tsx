@@ -765,7 +765,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
         </header>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-4" ref={chatScrollRef}>
+        <div className="flex-1 overflow-y-auto p-3 pb-16 sm:p-4 sm:pb-4" ref={chatScrollRef}>
           {!currentSession ? (
             <div className="h-full flex items-center justify-center px-4">
               <div className="text-center max-w-md space-y-4 sm:space-y-6">
@@ -870,7 +870,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
 
         {/* Chat Input */}
         {currentSession && (
-          <div className="border-t p-2 sm:p-3 md:p-4">
+          <div className="border-t p-2 sm:p-3 md:p-4 sm:relative fixed bottom-0 left-0 right-0 bg-background z-10 sm:static sm:z-auto">
             <div className="max-w-3xl mx-auto">
               <div className="flex gap-2">
                 <Input

@@ -19,6 +19,8 @@ import {
 import { useSocialIntegrations } from "@/hooks/use-social-integrations";
 import { Send, FileText, Image, Video, Calendar, Package, Share, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useProfile } from "@/lib/contexts/profile-context";
+import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 
 interface ContentPreviewViewProps {
   content: ContentResponseDto;
@@ -37,6 +39,8 @@ export function ContentPreviewView({
   showActions = true,
   brands = [],
 }: ContentPreviewViewProps) {
+  const { profileType } = useProfile();
+  const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free;
   const [selectedIntegrationId, setSelectedIntegrationId] = useState<string>("");
   
   // Get social integrations for the content's brand
@@ -277,7 +281,8 @@ export function ContentPreviewView({
       {/* Action Buttons */}
       {showActions && (
         <div className="space-y-4 pt-4 border-t">
-          {content.status === ContentStatusEnum.Draft && onSubmit && (
+          {/* Submit for Approval only available for Basic/Pro profiles (team features) */}
+          {content.status === ContentStatusEnum.Draft && onSubmit && canUseTeamFeatures && (
             <Button
               onClick={handleSubmit}
               disabled={isProcessing}

@@ -24,6 +24,8 @@ import {
 import { api, endpoints } from "@/lib/api";
 import { ProfileContentForm } from "./content-form-profile";
 import { TeamContentForm } from "./content-form-team";
+import { useProfile } from "@/lib/contexts/profile-context";
+import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 
 interface ContentModalProps {
   content?: ContentResponseDto | null; // Optional - if null, it's create mode
@@ -58,6 +60,8 @@ export function ContentModal({
   showButtons = true,
   defaultBrandId
 }: ContentModalProps) {
+  const { profileType } = useProfile();
+  const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free;
   const [formData, setFormData] = useState<CreateContentRequest>({
     brandId: '',
     productId: undefined,
@@ -453,7 +457,8 @@ export function ContentModal({
               </Button>
             )}
             
-            {content && content.status === ContentStatusEnum.Draft && onSubmit && !isEditing && (
+            {/* Submit for Approval only available for Basic/Pro profiles (team features) */}
+            {content && content.status === ContentStatusEnum.Draft && onSubmit && !isEditing && canUseTeamFeatures && (
               <Button
                 onClick={handleSubmit}
                 disabled={isProcessing}

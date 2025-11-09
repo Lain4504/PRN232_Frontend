@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CheckCircle, Search, Filter, X, Calendar, User, FileText, Eye, Check, X as XIcon, Trash2, Plus } from "lucide-react";
+import { CheckCircle, Search, Calendar, User, FileText, Eye, Trash2, Plus } from "lucide-react";
 import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import {
   Dialog,
@@ -39,6 +39,7 @@ import {
   ApprovalFilters
 } from "@/lib/types/aisam-types";
 import { ApprovalModal } from "@/components/approvals/approval-modal";
+import { ChangeApproverDialog } from "@/components/approvals/change-approver-dialog";
 import { toast } from "sonner";
 import {
   Breadcrumb,
@@ -48,8 +49,9 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useProfile } from "@/lib/contexts/profile-context";
+import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 
 interface SharedApprovalManagementProps {
   context: 'dashboard' | 'team';
@@ -65,13 +67,14 @@ const createColumns = (
   handleQuickApprove: (approvalId: string) => void,
   handleQuickReject: (approvalId: string) => void,
   handleDelete: (approval: ApprovalResponseDto) => void,
-  isProcessing: boolean
+  handleChangeApprover: (approval: ApprovalResponseDto) => void,
+  isProcessing: boolean,
+  canUseTeamFeatures: boolean
 ): ColumnDef<ApprovalResponseDto>[] => [
     {
       accessorKey: "contentTitle",
       header: "Content Title",
       cell: ({ row }) => {
-        const approval = row.original;
 
         return (
           <div className="flex items-center gap-3">
@@ -173,8 +176,6 @@ const createColumns = (
       maxSize: 50,
       cell: ({ row }) => {
         const approval = row.original;
-        const canApprove = approval.status === ContentStatusEnum.PendingApproval;
-        const canReject = approval.status === ContentStatusEnum.PendingApproval;
 
         const actions: ActionItem[] = [
           {
@@ -185,6 +186,16 @@ const createColumns = (
         ];
 
         // Quick Approve/Reject removed per requirement
+
+        // Add Change Approver action for pending approvals (only for Basic/Pro profiles)
+        if (approval.status === ContentStatusEnum.PendingApproval && canUseTeamFeatures) {
+          actions.push({
+            label: "Change Approver",
+            icon: <User className="h-4 w-4" />,
+            onClick: () => handleChangeApprover(approval),
+            disabled: isProcessing,
+          });
+        }
 
         actions.push({
           label: "Delete",
@@ -210,12 +221,17 @@ export function SharedApprovalManagement({
   title = "Content Approvals",
   description = "Review and approve content before publishing"
 }: SharedApprovalManagementProps) {
+  const { profileType } = useProfile();
+  const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free;
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ContentStatusEnum | "all">("all");
   const [selectedApproval, setSelectedApproval] = useState<ApprovalResponseDto | null>(null);
-  const [approvalNotes, setApprovalNotes] = useState("");
+  const [, setApprovalNotes] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [approvalToDelete, setApprovalToDelete] = useState<ApprovalResponseDto | null>(null);
+  const [showChangeApproverDialog, setShowChangeApproverDialog] = useState(false);
+  const [approvalToChange, setApprovalToChange] = useState<ApprovalResponseDto | null>(null);
 
   // Build filters for approvals query
   const filters: ApprovalFilters = {
@@ -228,7 +244,7 @@ export function SharedApprovalManagement({
   };
 
   // Hooks
-  const { data: brands = [] } = useBrands();
+  useBrands();
   const { data: pendingApprovalsData } = usePendingApprovals(1, 50);
   const { data: approvalsData, isLoading } = useApprovals(filters);
   const approveApprovalMutation = useApproveApproval(selectedApproval?.id || "");
@@ -311,6 +327,11 @@ export function SharedApprovalManagement({
     setShowDeleteDialog(true);
   };
 
+  const handleChangeApprover = (approval: ApprovalResponseDto) => {
+    setApprovalToChange(approval);
+    setShowChangeApproverDialog(true);
+  };
+
   const handleConfirmDelete = async () => {
     if (!approvalToDelete) return;
 
@@ -323,6 +344,11 @@ export function SharedApprovalManagement({
       console.error('Failed to delete approval:', error);
       toast.error('Failed to delete approval');
     }
+  };
+
+  const handleChangeApproverClose = () => {
+    setShowChangeApproverDialog(false);
+    setApprovalToChange(null);
   };
 
 
@@ -451,7 +477,9 @@ export function SharedApprovalManagement({
               handleQuickApprove,
               handleQuickReject,
               handleDelete,
-              approveApprovalMutation.isPending || rejectApprovalMutation.isPending
+              handleChangeApprover,
+              approveApprovalMutation.isPending || rejectApprovalMutation.isPending,
+              canUseTeamFeatures
             )}
             data={filteredApprovals}
             pageSize={10}
@@ -526,6 +554,13 @@ export function SharedApprovalManagement({
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Change Approver Dialog */}
+        <ChangeApproverDialog
+          approval={approvalToChange}
+          isOpen={showChangeApproverDialog}
+          onClose={handleChangeApproverClose}
+        />
       </div>
     </div>
   );

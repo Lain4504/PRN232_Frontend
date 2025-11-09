@@ -16,6 +16,8 @@ import {
   ContentStatusEnum, 
   AdTypeEnum 
 } from "@/lib/types/aisam-types";
+import { useProfile } from "@/lib/contexts/profile-context";
+import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 
 interface ContentFormSharedProps {
   formData: CreateContentRequest;
@@ -56,6 +58,8 @@ export function ContentFormShared({
   imagePreviews,
   videoPreview
 }: ContentFormSharedProps) {
+  const { profileType } = useProfile();
+  const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free;
   // Derive preview sources from existing content if user hasn't selected new media
   const existingImageUrls = React.useMemo(() => {
     const normalize = (val: unknown): string[] => {
@@ -308,7 +312,8 @@ export function ContentFormShared({
             </Button>
           )}
           
-          {content && content.status === ContentStatusEnum.Draft && onSubmit && !isEditing && (
+          {/* Submit for Approval only available for Basic/Pro profiles (team features) */}
+          {content && content.status === ContentStatusEnum.Draft && onSubmit && !isEditing && canUseTeamFeatures && (
             <Button
               onClick={handleSubmit}
               disabled={isProcessing}
