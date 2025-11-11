@@ -37,8 +37,6 @@ import {
   CreateContentRequest,
   UpdateContentRequest
 } from "@/lib/types/aisam-types";
-// import { ContentFilters as ContentFiltersComponent } from "@/components/contents/content-filters"; // Removed unused import
-// import { ContentList } from "@/components/contents/content-list"; // Removed unused import
 import { ContentModal } from "@/components/contents/content-modal";
 import { ContentPreviewModal } from "@/components/contents/content-preview-modal";
 import { ChangeStatusModal } from "@/components/contents/change-status-modal";
@@ -53,11 +51,8 @@ import { api, endpoints } from "@/lib/api";
 import type { ApiResponse } from "@/lib/types/aisam-types";
 import { useProfile } from "@/lib/contexts/profile-context";
 import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
+import { useUser } from "@/hooks/use-user";
 
-// TODO: Replace with actual auth hook
-const useCurrentUser = () => {
-  return { userId: 'current-user-id' }; // This should come from your auth system
-};
 
 // Create columns for the data table
 const createColumns = (
@@ -268,7 +263,8 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
   const [currentContentId, setCurrentContentId] = useState<string>("");
 
   // Hooks
-  const { userId } = useCurrentUser();
+  const { data: currentUser } = useUser();
+  const userId = currentUser?.id || "";
   const { data: brandsData, isLoading: brandsLoading } = useBrands();
   const { data: teamBrands = [] } = useTeamBrands(teamId || "");
   const { data: products = [] } = useProducts();
