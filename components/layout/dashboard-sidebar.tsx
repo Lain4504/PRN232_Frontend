@@ -126,8 +126,8 @@ export function DashboardSidebar() {
 
   // Filter workflow items: hide Approvals for Free profiles
   const allWorkflowNavItems = getWorkflowNavItems(approvalCount, notificationCount)
-  const workflowNavItems = canUseTeamFeatures 
-    ? allWorkflowNavItems 
+  const workflowNavItems = canUseTeamFeatures
+    ? allWorkflowNavItems
     : allWorkflowNavItems.filter(item => item.title !== "Approvals")
 
   React.useEffect(() => {
@@ -189,250 +189,177 @@ export function DashboardSidebar() {
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col h-full">
-        {/* CSS để ẩn scrollbar */}
+      <div className="flex flex-col h-full bg-sidebar/50 backdrop-blur-md">
+        {/* CSS for custom styling */}
         <style jsx>{`
           .sidebar-scroll::-webkit-scrollbar {
             display: none;
           }
         `}</style>
+
         {/* Navigation Content */}
         <div
-          className="flex-1 overflow-y-auto sidebar-scroll"
+          className="flex-1 overflow-y-auto sidebar-scroll px-3 py-6"
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none'
           }}
         >
-          <div className="p-2 lg:p-2">
+          <div className="space-y-10">
             {/* Main Navigation */}
-            <div className="mb-6">
+            <div className="space-y-4">
               <h3 className={cn(
-                "text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
-                sidebarModeState === 'collapsed' && "hidden"
+                "px-4 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] transition-all duration-300",
+                sidebarModeState === 'collapsed' && "opacity-0 translate-x-[-10px]"
               )}>
-                Main Navigation
+                Menu
               </h3>
-              {/* Main Navigation Items */}
-              <div className="space-y-1">
-                {mainNavItems.map((item) => (
+              <div className="space-y-1.5">
+                {mainNavItems.map((item) => {
+                  const isActive = pathname === item.url
+                  return (
                     <Tooltip key={item.title}>
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
                           asChild
                           className={cn(
-                            "relative w-full h-8 lg:h-8 px-2",
+                            "relative w-full h-11 px-4 rounded-xl transition-all duration-300 group",
                             sidebarModeState === 'expanded' && "justify-start",
-                            sidebarModeState === 'collapsed' && "lg:justify-center",
-                            sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start",
-                            pathname === item.url && "bg-accent"
+                            sidebarModeState === 'collapsed' && "lg:justify-center px-2",
+                            sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start px-2 lg:group-hover:px-4",
+                            isActive ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/95" : "text-muted-foreground hover:bg-muted"
                           )}
                         >
                           <Link href={item.url}>
                             <item.icon className={cn(
-                              "size-4",
-                              sidebarModeState === 'expanded' && "mr-2",
-                              sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-2"
+                              "size-5 shrink-0 transition-transform duration-300 group-hover:scale-110",
+                              sidebarModeState === 'expanded' && "mr-3",
+                              sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-3",
+                              isActive ? "text-primary-foreground" : "text-muted-foreground"
                             )} />
                             <span className={cn(
-                              "transition-opacity duration-300 whitespace-nowrap",
-                              sidebarModeState === 'expanded' && "inline",
-                              sidebarModeState === 'collapsed' && "hidden",
-                              sidebarModeState === 'hover' && "hidden lg:group-hover:inline"
+                              "font-black text-[10px] uppercase tracking-[0.25em] transition-all duration-300 whitespace-nowrap",
+                              sidebarModeState === 'expanded' && "opacity-100 translate-x-0",
+                              sidebarModeState === 'collapsed' && "opacity-0 translate-x-[-10px] pointer-events-none",
+                              sidebarModeState === 'hover' && "opacity-0 translate-x-[-10px] lg:group-hover:opacity-100 lg:group-hover:translate-x-0"
                             )}>
                               {item.title}
                             </span>
                             {item.badge && (
-                              <>
-                                {sidebarModeState === 'collapsed' && (
-                                  <span className="absolute right-0 top-1 hidden lg:inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none text-white">
-                                    {item.badge}
-                                  </span>
-                                )}
-                                {sidebarModeState === 'hover' && (
-                                  <>
-                                    <span className="absolute right-0 top-1 hidden lg:inline-flex lg:group-hover:hidden h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none text-white">
-                                      {item.badge}
-                                    </span>
-                                    <span className="ml-auto hidden lg:group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                                      {item.badge}
-                                    </span>
-                                  </>
-                                )}
-                                {sidebarModeState === 'expanded' && (
-                                  <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                                    {item.badge}
-                                  </span>
-                                )}
-                              </>
+                              <span className={cn(
+                                "absolute right-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-black text-destructive-foreground shadow-sm transition-all duration-300",
+                                sidebarModeState === 'collapsed' && "scale-50 translate-x-2 translate-y-[-2]",
+                                sidebarModeState === 'hover' && "scale-50 translate-x-2 lg:group-hover:scale-100 lg:group-hover:translate-x-0"
+                              )}>
+                                {item.badge}
+                              </span>
                             )}
                           </Link>
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden")}>
-                        <p>{item.title}</p>
+                        <p className="font-bold">{item.title}</p>
                       </TooltipContent>
                     </Tooltip>
-                  ))}
+                  )
+                })}
               </div>
             </div>
 
             {/* Workflow Navigation */}
-            <div className="mb-6">
+            <div className="space-y-4">
               <h3 className={cn(
-                "text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
-                sidebarModeState === 'collapsed' && "hidden"
+                "px-4 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] transition-all duration-300",
+                sidebarModeState === 'collapsed' && "opacity-0 translate-x-[-10px]"
               )}>
                 Workflow
               </h3>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {workflowNavItems
                   .filter((item) => {
-                    // Show Teams only if current profile has access to 'teams'
-                    if (item.title === "Team") {
-                      return hasFeatureAccess('teams')
-                    }
+                    if (item.title === "Team") return hasFeatureAccess('teams')
                     return true
                   })
-                  .map((item) => (
-                  <Tooltip key={item.title}>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        asChild
-                        className={cn(
-                          "relative w-full h-8 lg:h-8 px-2",
-                          sidebarModeState === 'expanded' && "justify-start",
-                          sidebarModeState === 'collapsed' && "lg:justify-center",
-                          sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start",
-                          pathname === item.url && "bg-accent"
-                        )}
-                      >
-                        <Link href={item.url}>
-                          <item.icon className={cn(
-                            "size-4",
-                            sidebarModeState === 'expanded' && "mr-2",
-                            sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-2"
-                          )} />
-                          <span className={cn(
-                            "transition-opacity duration-300 whitespace-nowrap",
-                            sidebarModeState === 'expanded' && "inline",
-                            sidebarModeState === 'collapsed' && "hidden",
-                            sidebarModeState === 'hover' && "hidden lg:group-hover:inline"
-                          )}>
-                            {item.title}
-                          </span>
-                          {item.badge && (
-                            <>
-                              {sidebarModeState === 'collapsed' && (
-                                <span className="absolute right-0 top-1 hidden lg:inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none text-white">
+                  .map((item) => {
+                    const isActive = pathname === item.url
+                    return (
+                      <Tooltip key={item.title}>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            asChild
+                            className={cn(
+                              "relative w-full h-11 px-4 rounded-xl transition-all duration-300 group",
+                              sidebarModeState === 'expanded' && "justify-start",
+                              sidebarModeState === 'collapsed' && "lg:justify-center px-2",
+                              sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start px-2 lg:group-hover:px-4",
+                              isActive ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/95" : "text-muted-foreground hover:bg-muted"
+                            )}
+                          >
+                            <Link href={item.url}>
+                              <item.icon className={cn(
+                                "size-5 shrink-0 transition-transform duration-300 group-hover:scale-110",
+                                sidebarModeState === 'expanded' && "mr-3",
+                                sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-3",
+                                isActive ? "text-primary-foreground" : "text-muted-foreground"
+                              )} />
+                              <span className={cn(
+                                "font-black text-[10px] uppercase tracking-[0.25em] transition-all duration-300 whitespace-nowrap",
+                                sidebarModeState === 'expanded' && "opacity-100 translate-x-0",
+                                sidebarModeState === 'collapsed' && "opacity-0 translate-x-[-10px] pointer-events-none",
+                                sidebarModeState === 'hover' && "opacity-0 translate-x-[-10px] lg:group-hover:opacity-100 lg:group-hover:translate-x-0"
+                              )}>
+                                {item.title}
+                              </span>
+                              {item.badge && (
+                                <span className={cn(
+                                  "absolute right-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/20 px-1 text-[10px] font-black text-primary backdrop-blur-sm shadow-sm transition-all duration-300",
+                                  sidebarModeState === 'collapsed' && "scale-50 translate-x-2 translate-y-[-2]",
+                                  sidebarModeState === 'hover' && "scale-50 translate-x-2 lg:group-hover:scale-100 lg:group-hover:translate-x-0",
+                                  isActive && "bg-background/20 text-primary-foreground"
+                                )}>
                                   {item.badge}
                                 </span>
                               )}
-                              {sidebarModeState === 'hover' && (
-                                <>
-                                  <span className="absolute right-0 top-1 hidden lg:inline-flex lg:group-hover:hidden h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none text-white">
-                                    {item.badge}
-                                  </span>
-                                  <span className="ml-auto hidden lg:group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                                    {item.badge}
-                                  </span>
-                                </>
-                              )}
-                              {sidebarModeState === 'expanded' && (
-                                <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                                  {item.badge}
-                                </span>
-                              )}
-                            </>
-                          )}
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden")}>
-                      <p>{item.title}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                ))}
-              </div>
-            </div>
-
-            {/* Separator */}
-            <div className={cn(
-              "border-t border-sidebar-border my-4 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
-              sidebarModeState === 'collapsed' && "hidden"
-            )} />
-
-            {/* System Navigation */}
-            <div className="mb-4">
-              <h3 className={cn(
-                "text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300",
-                sidebarModeState === 'collapsed' && "hidden"
-              )}>
-                System
-              </h3>
-              <div className="space-y-1">
-                {secondaryNavItems.map((item) => (
-                  <Tooltip key={item.title}>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        asChild
-                        className={cn(
-                          "relative w-full h-8 lg:h-8 px-2",
-                          sidebarModeState === 'expanded' && "justify-start",
-                          sidebarModeState === 'collapsed' && "lg:justify-center",
-                          sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start",
-                          pathname === item.url && "bg-accent"
-                        )}
-                      >
-                        <Link href={item.url}>
-                          <item.icon className={cn(
-                            "size-4",
-                            sidebarModeState === 'expanded' && "mr-2",
-                            sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-2"
-                          )} />
-                          <span className={cn(
-                            "transition-opacity duration-300 whitespace-nowrap",
-                            sidebarModeState === 'expanded' && "inline",
-                            sidebarModeState === 'collapsed' && "hidden",
-                            sidebarModeState === 'hover' && "hidden lg:group-hover:inline"
-                          )}>
-                            {item.title}
-                          </span>
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden")}>
-                      <p>{item.title}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                ))}
+                            </Link>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden")}>
+                          <p className="font-bold">{item.title}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  })}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Footer with subscription status and mode switcher - hidden on mobile */}
-        <div className="p-2 border-t border-sidebar-border hidden lg:block space-y-2">
-
+        {/* Footer */}
+        <div className="p-4 border-t border-border/40 space-y-4">
           {/* Mode Switcher */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full h-10 lg:h-10 px-2 lg:justify-center">
-                <PanelLeftDashed className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="top" align="center" className="min-w-48">
-              <DropdownMenuLabel>Sidebar mode</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setSidebarMode('expanded')}>Expanded</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSidebarMode('collapsed')}>Collapsed</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSidebarMode('hover')}>Expand on hover</DropdownMenuItem>
-              <DropdownMenuSeparator />
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center justify-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-muted transition-colors">
+                  <PanelLeftDashed className="size-5 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="right" align="end" className="w-56 p-2 rounded-2xl border-border/40 bg-background/95 backdrop-blur-xl">
+                <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Interface Preference</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => setSidebarMode('expanded')} className="rounded-xl px-3 py-2 cursor-pointer">
+                  Standard Mode
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSidebarMode('collapsed')} className="rounded-xl px-3 py-2 cursor-pointer">
+                  Minimized Mode
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSidebarMode('hover')} className="rounded-xl px-3 py-2 cursor-pointer font-bold text-primary italic">
+                  Dynamic Adaptive
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </TooltipProvider>

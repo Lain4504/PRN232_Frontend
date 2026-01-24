@@ -5,10 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { 
-  Target, 
-  Package, 
-  FileText, 
+import {
+  Target,
+  Package,
+  FileText,
   Calendar,
   Plus,
   Zap,
@@ -97,76 +97,68 @@ interface QuickActionsPanelProps {
 
 export function QuickActionsPanel({ className }: QuickActionsPanelProps) {
   return (
-    <Card className={cn("", className)}>
-      <CardHeader>
+    <Card className={cn("overflow-hidden flex flex-col p-8", className)}>
+      <CardHeader className="p-0 mb-10">
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-primary" />
-              Quick Actions
-            </CardTitle>
-            <CardDescription>
-              Jump into your most common tasks
-            </CardDescription>
+          <div className="space-y-1">
+            <h3 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
+              <Zap className="h-6 w-6 text-primary" />
+              Quick Launch
+            </h3>
+            <p className="text-muted-foreground text-sm">
+              One-click access to core AI workflows
+            </p>
           </div>
-          <Button asChild variant="ghost" size="sm">
+          <Button asChild variant="ghost" size="sm" className="rounded-xl hover:bg-muted/50 translate-x-2">
             <Link href="/dashboard/actions">
               View All
-              <ArrowRight className="ml-1 h-3 w-3" />
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+
+      <CardContent className="p-0 space-y-10 flex-1">
         {/* Primary Actions */}
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground">Primary Actions</h4>
-          <div className="grid gap-2">
+        <div className="space-y-4">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 px-1">
+            Core Operations
+          </div>
+          <div className="grid gap-3">
             {quickActions.map((action, index) => (
               <Button
                 key={index}
                 asChild
-                variant={action.variant}
+                variant="ghost"
                 className={cn(
-                  "w-full justify-start h-auto p-3 relative",
-                  action.isNew && "ring-2 ring-primary/20",
-                  action.isPopular && "bg-gradient-to-r from-primary/10 to-primary/5"
+                  "w-full justify-start h-auto p-4 rounded-3xl border border-border/40 bg-background/40 transition-all duration-300 hover:bg-muted hover:border-primary/20 group relative overflow-hidden",
+                  action.isPopular && "bg-primary/[0.03] border-primary/10"
                 )}
               >
                 <Link href={action.href}>
-                  <div className="flex items-center gap-3 w-full">
+                  <div className="flex items-center gap-4 w-full relative z-10">
                     <div className={cn(
-                      "flex-shrink-0 p-2 rounded-md",
-                      action.variant === "default" ? "bg-primary/10" : "bg-muted"
+                      "flex-shrink-0 p-3 rounded-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
+                      action.variant === "default" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
                     )}>
-                      <action.icon className={cn(
-                        "h-4 w-4",
-                        action.variant === "default" ? "text-primary" : "text-muted-foreground"
-                      )} />
+                      <action.icon className="h-5 w-5" />
                     </div>
                     <div className="flex-1 text-left">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">{action.title}</span>
-                        {action.isNew && (
-                          <Badge variant="secondary" className="text-xs">
-                            New
-                          </Badge>
-                        )}
+                        <span className="font-bold text-foreground text-sm md:text-base leading-none">
+                          {action.title}
+                        </span>
                         {action.isPopular && (
-                          <Badge variant="default" className="text-xs">
-                            Popular
+                          <Badge className="bg-primary/10 text-primary border-none text-[9px] font-black h-4 px-1.5 rounded-sm">
+                            HOT
                           </Badge>
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      <p className="text-xs text-muted-foreground mt-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
                         {action.description}
                       </p>
                     </div>
-                    {action.badge && (
-                      <Badge variant={action.badgeVariant || "secondary"} className="text-xs">
-                        {action.badge}
-                      </Badge>
-                    )}
+                    <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-1 transition-all" />
                   </div>
                 </Link>
               </Button>
@@ -174,32 +166,31 @@ export function QuickActionsPanel({ className }: QuickActionsPanelProps) {
           </div>
         </div>
 
-        {/* Secondary Actions */}
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground">Recommended</h4>
-          <div className="grid gap-2">
+        {/* Recommended / Secondary */}
+        <div className="space-y-4">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 px-1">
+            Suggested
+          </div>
+          <div className="grid gap-3">
             {secondaryActions.map((action, index) => (
               <Button
                 key={index}
                 asChild
-                variant={action.variant}
-                className="w-full justify-start h-auto p-3"
+                variant="ghost"
+                className="w-full justify-start h-auto p-4 rounded-3xl border border-transparent bg-muted/30 transition-all hover:bg-muted/60 group"
               >
                 <Link href={action.href}>
-                  <div className="flex items-center gap-3 w-full">
-                    <div className="flex-shrink-0 p-2 rounded-md bg-muted">
-                      <action.icon className="h-4 w-4 text-muted-foreground" />
+                  <div className="flex items-center gap-4 w-full">
+                    <div className="flex-shrink-0 p-2.5 rounded-xl bg-background border border-border/50 text-muted-foreground group-hover:text-primary transition-colors">
+                      <action.icon className="h-4 w-4" />
                     </div>
                     <div className="flex-1 text-left">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">{action.title}</span>
-                        {action.badge && (
-                          <Badge variant={action.badgeVariant || "secondary"} className="text-xs">
-                            {action.badge}
-                          </Badge>
-                        )}
+                        <span className="font-semibold text-foreground text-sm leading-none">
+                          {action.title}
+                        </span>
                       </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      <p className="text-xs text-muted-foreground mt-1.5 opacity-70">
                         {action.description}
                       </p>
                     </div>

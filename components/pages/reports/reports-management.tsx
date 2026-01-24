@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  BarChart3, 
+import {
+  BarChart3,
   TrendingUp,
   TrendingDown,
   Eye,
@@ -18,12 +18,12 @@ import {
   Target,
   Zap,
 } from "lucide-react";
-import { 
-  SiFacebook, 
-  SiInstagram, 
-  SiX, 
-  SiYoutube, 
-  SiTiktok 
+import {
+  SiFacebook,
+  SiInstagram,
+  SiX,
+  SiYoutube,
+  SiTiktok
 } from "@icons-pack/react-simple-icons";
 // Removed mock-api import - using real API instead
 import { User, PerformanceReport } from "@/lib/types/aisam-types";
@@ -40,13 +40,13 @@ export function ReportsManagement() {
     const loadData = async () => {
       try {
         setLoading(true);
-        
+
         // Get current user
         const userResponse = await api.get<User>(endpoints.userProfile);
         if (userResponse.success && userResponse.data) {
           setUser(userResponse.data);
         }
-        
+
         // Get performance report - using a custom endpoint
         const reportResponse = await api.get<PerformanceReport>(`/reports/performance?period=${selectedPeriod}`);
         if (reportResponse.success) {
@@ -74,14 +74,14 @@ export function ReportsManagement() {
 
   const getTrendIcon = (value: number) => {
     return value > 0 ? (
-      <TrendingUp className="h-4 w-4 text-chart-2" />
+      <TrendingUp className="h-4 w-4 text-emerald-500" />
     ) : (
       <TrendingDown className="h-4 w-4 text-destructive" />
     );
   };
 
   const getTrendColor = (value: number) => {
-    return value > 0 ? 'text-chart-2' : 'text-destructive';
+    return value > 0 ? 'text-emerald-500' : 'text-destructive';
   };
 
   const getPlatformIcon = (platform: string) => {
@@ -89,13 +89,13 @@ export function ReportsManagement() {
       case 'facebook':
         return <SiFacebook className="h-4 w-4" color="#1877F2" />;
       case 'instagram':
-        return <SiInstagram className="h-4 w-4" color="#E4405F" />;
+        return <SiInstagram className="h-4 w-4" color="#ff006e" />;
       case 'twitter':
-        return <SiX className="h-4 w-4" color="#000000" />;
+        return <SiX className="h-4 w-4 text-foreground" />;
       case 'youtube':
         return <SiYoutube className="h-4 w-4" color="#FF0000" />;
       case 'tiktok':
-        return <SiTiktok className="h-4 w-4" color="#000000" />;
+        return <SiTiktok className="h-4 w-4 text-foreground" />;
       default:
         return <Share className="h-4 w-4" />;
     }
@@ -103,11 +103,11 @@ export function ReportsManagement() {
 
   if (loading) {
     return (
-      <div className="flex-1 space-y-6 p-6 bg-background">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading reports...</p>
+      <div className="w-full max-w-full overflow-x-hidden font-fira-sans">
+        <div className="space-y-10 p-6 lg:p-10 bg-background">
+          <div className="flex flex-col items-center justify-center h-[60vh] space-y-6">
+            <div className="h-20 w-20 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+            <p className="text-xs font-black uppercase tracking-[0.3em] text-primary/70 animate-pulse italic">Compiling Intelligence Matrix...</p>
           </div>
         </div>
       </div>
@@ -115,274 +115,178 @@ export function ReportsManagement() {
   }
 
   return (
-    <div className="flex-1 space-y-6 p-6 bg-background">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Performance Reports</h1>
-          <p className="text-muted-foreground">
-            Detailed analytics and insights for your campaigns
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Filter className="mr-2 h-4 w-4" />
-            Filter
-          </Button>
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export
-          </Button>
-        </div>
-      </div>
+    <div className="max-w-[1440px] mx-auto font-fira-sans">
+      <div className="space-y-12 p-6 lg:p-10 bg-background">
 
-      {/* Period Selector */}
-      <Card>
-        <CardContent className="pt-6">
+        {/* Tactical Header */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-2 w-8 bg-primary rounded-full" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Strategic Analytics Sector</span>
+            </div>
+            <h1 className="text-4xl lg:text-5xl font-black tracking-tighter text-foreground uppercase leading-none">
+              Intelligence <span className="text-primary italic">Matrix</span>
+            </h1>
+            <p className="text-lg text-muted-foreground font-medium max-w-2xl tracking-tight leading-relaxed">
+              Deep-layer analysis of asset engagement and performance metrics. Synchronizing data shards from all active delivery nodes.
+            </p>
+          </div>
+
           <div className="flex items-center gap-4">
-            <span className="text-sm font-medium">Report Period:</span>
-            <div className="flex gap-2">
-              {['7', '30', '90'].map(period => (
-                <Button
-                  key={period}
-                  variant={selectedPeriod === period ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedPeriod(period)}
-                >
-                  Last {period} days
-                </Button>
+            <Button variant="outline" className="h-14 px-8 rounded-2xl border-border/40 font-black text-[10px] uppercase tracking-widest hover:bg-muted/50 transition-all">
+              <Download className="mr-3 h-4 w-4 stroke-[2.5]" />
+              EXPORT DATASET
+            </Button>
+            <Button className="h-14 px-8 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary/30 transition-all hover:scale-105">
+              <Filter className="mr-3 h-4 w-4 stroke-[2.5]" />
+              FILTERS
+            </Button>
+          </div>
+        </div>
+
+        {/* Period Tactical Selector */}
+        <div className="flex items-center gap-6 p-4 bg-muted/20 border border-border/40 rounded-[2rem] w-fit">
+          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">Temporal Range:</span>
+          <div className="flex gap-2">
+            {['7', '30', '90'].map(period => (
+              <Button
+                key={period}
+                variant={selectedPeriod === period ? "default" : "ghost"}
+                className={`h-10 px-6 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all
+                  ${selectedPeriod === period ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:bg-primary/10 hover:text-primary'}`}
+                onClick={() => setSelectedPeriod(period)}
+              >
+                {period} DAYS
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {report && (
+          <div className="space-y-12">
+            {/* Neural Metrics Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { title: "IMPULSE FLOW", value: report.total_impressions, icon: Eye, trend: 12.5, color: "text-blue-500" },
+                { title: "NEURAL ENGAGEMENT", value: report.total_engagement, icon: Heart, trend: 8.2, color: "text-rose-500" },
+                { title: "NODE CLICKS", value: report.total_clicks, icon: Target, trend: 15.3, color: "text-amber-500" },
+                { title: "TRANSMISSION RATE", value: `${report.average_ctr}%`, icon: BarChart3, trend: 2.1, color: "text-emerald-500" },
+              ].map((metric) => (
+                <Card key={metric.title} className="bg-card/40 backdrop-blur-3xl border-border/40 hover:border-primary/50 rounded-[2.5rem] transition-all duration-300 shadow-xl shadow-black/5 overflow-hidden group">
+                  <CardContent className="p-8 space-y-4 text-center sm:text-left">
+                    <div className="flex items-center justify-center sm:justify-between">
+                      <div className={`h-12 w-12 rounded-2xl bg-muted/50 flex items-center justify-center ${metric.color} transition-transform group-hover:scale-110 duration-500`}>
+                        <metric.icon className="h-6 w-6 stroke-[2.5]" />
+                      </div>
+                      <div className="hidden sm:flex items-center gap-2">
+                        {getTrendIcon(metric.trend)}
+                        <span className={`text-[10px] font-black tracking-widest ${getTrendColor(metric.trend)}`}>+{metric.trend}%</span>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-4xl font-black font-fira-mono tracking-tighter tabular-nums text-foreground">
+                        {typeof metric.value === 'number' ? formatNumber(metric.value) : metric.value}
+                      </p>
+                      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{metric.title}</p>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      {report && (
-        <>
-          {/* Key Metrics */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Impressions</CardTitle>
-                <Eye className="h-4 w-4 text-muted-foreground" />
+            {/* Performance Visualization SHARD */}
+            <Card className="bg-card/40 backdrop-blur-3xl border-border/40 rounded-[3rem] shadow-2xl overflow-hidden group">
+              <CardHeader className="p-10 pb-4">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-1 bg-primary rounded-full transition-all group-hover:h-14 duration-500" />
+                  <div>
+                    <CardTitle className="text-2xl font-black uppercase tracking-tight">Temporal Pulse</CardTitle>
+                    <CardDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 italic">Neural transmission over {selectedPeriod} day cycle</CardDescription>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{formatNumber(report.total_impressions)}</div>
-                <div className="flex items-center text-xs text-muted-foreground">
-                  {getTrendIcon(12.5)}
-                  <span className={`ml-1 ${getTrendColor(12.5)}`}>+12.5%</span>
-                  <span className="ml-1">from last period</span>
+              <CardContent className="p-10 pt-4">
+                <div className="h-80 w-full bg-muted/20 border border-border/40 rounded-[2.5rem] flex flex-col items-center justify-center overflow-hidden relative">
+                  <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]" />
+                  <div className="text-center relative z-10 space-y-6">
+                    <div className="relative">
+                      <div className="h-20 w-20 rounded-full border-2 border-primary/20 border-t-primary animate-spin mx-auto scale-110" />
+                      <BarChart3 className="h-8 w-8 text-primary absolute inset-0 m-auto stroke-[2.5]" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-black uppercase tracking-[0.3em] text-xs text-primary/70">Rendering Analytical Map...</p>
+                      <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-60">High-fidelity visualization protocol initializing</p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Engagement</CardTitle>
-                <Heart className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{formatNumber(report.total_engagement)}</div>
-                <div className="flex items-center text-xs text-muted-foreground">
-                  {getTrendIcon(8.2)}
-                  <span className={`ml-1 ${getTrendColor(8.2)}`}>+8.2%</span>
-                  <span className="ml-1">from last period</span>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Sub-Node Intelligence Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Clicks</CardTitle>
-                <Target className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{formatNumber(report.total_clicks)}</div>
-                <div className="flex items-center text-xs text-muted-foreground">
-                  {getTrendIcon(15.3)}
-                  <span className={`ml-1 ${getTrendColor(15.3)}`}>+15.3%</span>
-                  <span className="ml-1">from last period</span>
+              {/* Alpha Assets */}
+              <div className="lg:col-span-12 space-y-6">
+                <div className="flex items-center gap-4 px-4">
+                  <div className="h-5 w-1 bg-primary rounded-full" />
+                  <h2 className="text-xl font-black uppercase tracking-tight">Alpha Asset Deployment</h2>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Average CTR</CardTitle>
-                <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{report.average_ctr}%</div>
-                <div className="flex items-center text-xs text-muted-foreground">
-                  {getTrendIcon(2.1)}
-                  <span className={`ml-1 ${getTrendColor(2.1)}`}>+2.1%</span>
-                  <span className="ml-1">from last period</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Performance Chart */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
-                Performance Over Time
-              </CardTitle>
-              <CardDescription>
-                Daily performance metrics for the selected period
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64 flex items-center justify-center bg-muted rounded-lg">
-                <div className="text-center">
-                  <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">Chart visualization would be here</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Integration with charting library like Recharts or Chart.js
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Detailed Metrics */}
-          <div className="grid gap-6 lg:grid-cols-2">
-            {/* Top Performing Content */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="h-5 w-5" />
-                  Top Performing Content
-                </CardTitle>
-                <CardDescription>
-                  Your best performing posts this period
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[
-                    { title: "AI Analytics Platform Launch", impressions: 12500, engagement: 450, ctr: 3.6 },
-                    { title: "Smart Automation Suite Demo", impressions: 8900, engagement: 320, ctr: 3.6 },
-                    { title: "Bamboo Phone Case Feature", impressions: 6700, engagement: 280, ctr: 4.2 },
+                    { title: "AI Analytics Platform Launch", impressions: 12500, engagement: 450, ctr: 3.6, color: "bg-blue-500" },
+                    { title: "Smart Automation Suite Demo", impressions: 8900, engagement: 320, ctr: 3.6, color: "bg-emerald-500" },
+                    { title: "Bamboo Phone Case Feature", impressions: 6700, engagement: 280, ctr: 4.2, color: "bg-rose-500" },
                   ].map((content, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm">{content.title}</h4>
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
-                          <span>{formatNumber(content.impressions)} impressions</span>
-                          <span>{content.engagement} engagement</span>
-                          <span>{content.ctr}% CTR</span>
-                        </div>
+                    <div key={index} className="group p-8 rounded-[2.5rem] bg-card/40 backdrop-blur-xl border border-border/40 hover:border-primary/50 transition-all duration-300 shadow-xl shadow-black/5 space-y-6 relative overflow-hidden">
+                      <div className={`absolute top-0 right-0 p-8 font-fira-mono font-black text-6xl opacity-5 italic group-hover:scale-110 transition-transform duration-700`}>0{index + 1}</div>
+                      <div className="space-y-2 relative z-10">
+                        <Badge className="h-6 px-3 rounded-lg bg-primary/10 text-primary border-none font-black text-[9px] uppercase tracking-widest">RANK SECTOR: OMEGA</Badge>
+                        <h4 className="font-black text-lg uppercase tracking-tight line-clamp-1">{content.title}</h4>
                       </div>
-                      <Badge variant="secondary">#{index + 1}</Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Platform Performance */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Share className="h-5 w-5" />
-                  Platform Performance
-                </CardTitle>
-                <CardDescription>
-                  Performance breakdown by platform
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    { platform: "Facebook", impressions: 45000, engagement: 1800, ctr: 4.0 },
-                    { platform: "Instagram", impressions: 32000, engagement: 2100, ctr: 6.6 },
-                    { platform: "LinkedIn", impressions: 18000, engagement: 900, ctr: 5.0 },
-                    { platform: "Twitter", impressions: 12000, engagement: 600, ctr: 5.0 },
-                  ].map((platform, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center">
-                          {getPlatformIcon(platform.platform)}
+                      <div className="grid grid-cols-2 gap-4 relative z-10 pt-2 border-t border-border/20">
+                        <div className="space-y-1">
+                          <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Impressions</p>
+                          <p className="text-sm font-black font-fira-mono tracking-tight tabular-nums">{formatNumber(content.impressions)}</p>
                         </div>
-                        <div>
-                          <h4 className="font-medium text-sm">{platform.platform}</h4>
-                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                            <span>{formatNumber(platform.impressions)} impressions</span>
-                            <span>{platform.engagement} engagement</span>
-                          </div>
+                        <div className="space-y-1">
+                          <p className="text-[9px] font-black text-primary uppercase tracking-widest">Efficiency</p>
+                          <p className="text-sm font-black font-fira-mono tracking-tight text-primary tabular-nums">{content.ctr}%</p>
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-medium">{platform.ctr}% CTR</div>
-                        <div className="text-xs text-muted-foreground">Avg. CTR</div>
                       </div>
                     </div>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* AI Insights */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5" />
-                AI Insights & Recommendations
-              </CardTitle>
-              <CardDescription>
-                AI-powered insights to improve your campaign performance
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="p-4 bg-chart-2/10 border border-chart-2/20 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="h-4 w-4 text-chart-2" />
-                    <h4 className="font-medium text-chart-2">Performance Boost</h4>
-                  </div>
-                  <p className="text-sm text-chart-2">
-                    Your Instagram posts are performing 40% better than average. Consider increasing your Instagram posting frequency.
-                  </p>
-                </div>
-                
-                <div className="p-4 bg-chart-1/10 border border-chart-1/20 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Target className="h-4 w-4 text-chart-1" />
-                    <h4 className="font-medium text-chart-1">Optimization Tip</h4>
-                  </div>
-                  <p className="text-sm text-chart-1">
-                    Posts with images perform 2.3x better than text-only posts. Consider adding visuals to your content.
-                  </p>
-                </div>
-                
-                <div className="p-4 bg-chart-4/10 border border-chart-4/20 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="h-4 w-4 text-chart-4" />
-                    <h4 className="font-medium text-chart-4">Timing Insight</h4>
-                  </div>
-                  <p className="text-sm text-chart-4">
-                    Your audience is most active on weekdays between 2-4 PM. Schedule more posts during this time.
-                  </p>
-                </div>
-                
-                <div className="p-4 bg-chart-3/10 border border-chart-3/20 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Users className="h-4 w-4 text-chart-3" />
-                    <h4 className="font-medium text-chart-3">Audience Growth</h4>
-                  </div>
-                  <p className="text-sm text-chart-3">
-                    Your follower growth rate is 15% above industry average. Keep up the great content strategy!
-                  </p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </>
-      )}
+
+              {/* Neural Insight Shards */}
+              <div className="lg:col-span-12 space-y-6">
+                <div className="flex items-center gap-4 px-4">
+                  <div className="h-5 w-1 bg-primary rounded-full" />
+                  <h2 className="text-xl font-black uppercase tracking-tight">AI Neural Insights</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {[
+                    { title: "Node Optimization", icon: TrendingUp, color: "bg-emerald-500", text: "Instagram nodes are performing 40% above sector average. Intensify deployment frequency.", border: "border-emerald-500/30" },
+                    { title: "Visual Synthesis", icon: Target, color: "bg-primary", text: "High-contrast visual assets trigger 2.3x superior engagement. Synchronize all current shards.", border: "border-primary/30" },
+                    { title: "Temporal Sync", icon: Calendar, color: "bg-blue-500", text: "Peak operative activity detected between 14:00 - 16:00 UTC. Re-align schedule axis.", border: "border-blue-500/30" },
+                    { title: "Sector Growth", icon: Users, color: "bg-amber-500", text: "Growth velocity is 15% above industry baseline. Maintain current creative momentum.", border: "border-amber-500/30" },
+                  ].map((insight, idx) => (
+                    <div key={idx} className={`p-8 rounded-[2.5rem] bg-card/40 backdrop-blur-xl border ${insight.border} space-y-6 group hover:scale-[1.02] transition-transform duration-500`}>
+                      <div className={`h-14 w-14 rounded-2xl ${insight.color} text-white flex items-center justify-center shadow-2xl shadow-black/20 shrink-0`}>
+                        <insight.icon className="h-7 w-7 stroke-[2.5]" />
+                      </div>
+                      <div className="space-y-3">
+                        <h4 className="font-black uppercase tracking-tight text-foreground">{insight.title}</h4>
+                        <p className="text-sm font-medium text-muted-foreground tracking-tight leading-relaxed">{insight.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

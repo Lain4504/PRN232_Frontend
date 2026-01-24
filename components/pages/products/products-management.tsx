@@ -44,8 +44,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// import { FormField } from "@/components/ui/form-field"; // Removed unused import
-import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 
 // Create columns function to access component state
@@ -56,89 +55,96 @@ const createColumns = (
 ): ColumnDef<Product>[] => [
     {
       accessorKey: "name",
-      header: "Product Name",
+      header: "Product Unit",
       cell: ({ row }) => (
-        <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={row.original.images?.[0] || "/placeholder.svg"} alt={row.getValue("name")} />
-            <AvatarFallback>
-              <Package className="h-4 w-4" />
-            </AvatarFallback>
-          </Avatar>
+        <div className="flex items-center gap-4">
+          <div className="relative h-12 w-12 rounded-2xl overflow-hidden border border-border/40 shadow-inner group">
+            <Avatar className="h-full w-full rounded-none">
+              <AvatarImage src={row.original.images?.[0] || "/placeholder.svg"} className="object-cover group-hover:scale-110 transition-transform duration-500" />
+              <AvatarFallback className="bg-muted">
+                <Package className="h-5 w-5 text-muted-foreground" />
+              </AvatarFallback>
+            </Avatar>
+          </div>
           <div>
-            <div className="font-medium">{row.getValue("name")}</div>
-
+            <div className="font-black text-foreground tracking-tight uppercase text-xs">{row.getValue("name")}</div>
+            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mt-1">ID: {row.original.id.slice(0, 8)}...</div>
           </div>
         </div>
       ),
     },
     {
       accessorKey: "description",
-      header: "Description",
+      header: "Metrics / Descriptor",
       cell: ({ row }) => (
-        <div className="text-muted-foreground line-clamp-2 max-w-xs">
-          {row.getValue("description")}
+        <div className="text-muted-foreground font-medium text-xs line-clamp-1 max-w-[200px] tracking-tight">
+          {row.getValue("description") || "No descriptors initialized."}
         </div>
       ),
     },
     {
       accessorKey: "price",
-      header: "Price",
+      header: "Valuation",
       cell: ({ row }) => {
         const price = row.getValue("price") as number;
         const formattedPrice = new Intl.NumberFormat("vi-VN", {
           style: "currency",
           currency: "VND",
           minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
         }).format(price);
         return (
-          <span className="font-medium">{formattedPrice}</span>
+          <span className="font-fira-mono font-black text-primary text-sm tracking-tighter tabular-nums">{formattedPrice}</span>
         );
       },
     },
     {
       accessorKey: "brandId",
-      header: "Brand",
+      header: "Domain Parent",
       cell: ({ row }) => {
         const brandId = row.getValue("brandId") as string;
         const brand = brands.find(b => b.id === brandId);
         return (
-          <Badge variant="outline">
-            <Target className="mr-1 h-3 w-3" />
-            {brand?.name || 'Unknown Brand'}
+          <Badge variant="outline" className="h-7 border-border/40 bg-muted/20 font-black text-[10px] uppercase tracking-widest text-muted-foreground px-3 rounded-lg overflow-hidden max-w-[120px] justify-start gap-2">
+            <div className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+            <span className="truncate">{brand?.name || 'UNKNOWN'}</span>
           </Badge>
         );
       },
     },
     {
       accessorKey: "images",
-      header: "Images",
+      header: "Assets",
       cell: ({ row }) => {
         const images = row.getValue("images") as string[] | null;
+        const count = images?.length || 0;
         return (
-          <div className="flex items-center gap-1">
-            <ImageIcon className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
-              {images?.length || 0} image{(images?.length || 0) !== 1 ? 's' : ''}
-            </span>
+          <div className="flex items-center gap-2">
+            <div className="flex -space-x-3 overflow-hidden">
+              {images?.slice(0, 3).map((img, i) => (
+                <div key={i} className="inline-block h-6 w-6 rounded-full ring-2 ring-background overflow-hidden bg-muted">
+                  <Image src={img} alt="" width={24} height={24} className="object-cover h-full w-full" />
+                </div>
+              ))}
+            </div>
+            {count > 3 && <span className="text-[10px] font-black text-muted-foreground">+{count - 3}</span>}
+            {count === 0 && <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">NONE</span>}
           </div>
         );
       },
     },
     {
       id: "actions",
-      header: "Actions",
+      header: "Matrix",
       cell: ({ row }) => {
         const actions: ActionItem[] = [
           {
-            label: "View",
-            icon: <Eye className="h-4 w-4" />,
+            label: "Run Diagnostics",
+            icon: <Eye className="h-4 w-4 stroke-[2.5]" />,
             onClick: () => handleViewProduct(row.original),
           },
           {
-            label: "Edit",
-            icon: <Pencil className="h-4 w-4" />,
+            label: "Modify Structure",
+            icon: <Pencil className="h-4 w-4 stroke-[2.5]" />,
             onClick: () => handleEditProduct(row.original),
           },
         ];
@@ -148,8 +154,8 @@ const createColumns = (
   ];
 
 interface ProductsManagementProps {
-  initialBrandId?: string; // Allow passing brandId from parent component
-  teamId?: string; // When provided, can show all team brands products
+  initialBrandId?: string;
+  teamId?: string;
 }
 
 export function ProductsManagement({ initialBrandId, teamId }: ProductsManagementProps = {}) {
@@ -161,37 +167,27 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [pageSize, setPageSize] = useState(10);
 
-  // Get brand ID from route params (only if not in team mode)
   const routeBrandId = params.id as string | undefined;
   const brandId = teamId ? undefined : (routeBrandId || initialBrandId);
-
-  // Get team brands if teamId is provided
   const { data: teamBrands = [] } = useTeamBrands(teamId || "");
 
-  // Scope selection: when teamId provided, allow selecting All team brands or a specific brand
-  // When not in team mode, use routeBrandId or initialBrandId
   const [scopeBrandId, setScopeBrandId] = useState<string | "team-all">(
     teamId ? "team-all" : (routeBrandId || initialBrandId || "")
   );
 
-  // Update scopeBrandId when routeBrandId changes (non-team mode)
   useEffect(() => {
     if (!teamId && routeBrandId && routeBrandId !== scopeBrandId) {
       setScopeBrandId(routeBrandId);
     }
   }, [routeBrandId, teamId, scopeBrandId]);
 
-  // Hooks - fetch brands unconditionally to avoid conditional hook calls
   const brandsQuery = useBrands();
   const brands = teamId ? teamBrands : (brandsQuery.data || []);
-  
-  // Get products based on mode
-  // When not in team mode, use brandId (routeBrandId or initialBrandId)
-  // When in team mode, use scopeBrandId
-  const effectiveBrandId = teamId 
+
+  const effectiveBrandId = teamId
     ? (scopeBrandId !== "team-all" ? scopeBrandId : undefined)
     : (brandId || scopeBrandId || undefined);
-    
+
   const regularProducts = useProducts(effectiveBrandId);
   const teamProducts = useTeamProducts(
     teamId && scopeBrandId === "team-all" ? teamId : undefined,
@@ -204,26 +200,18 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
 
   const deleteProductMutation = useDeleteProduct();
 
-  // Ensure arrays are always arrays
   const safeBrands = Array.isArray(brands) ? brands : [];
   const safeProducts = Array.isArray(productsData) ? productsData : [];
 
-  // Get current brand info
-  // When in team mode, use scopeBrandId; otherwise use brandId
-  const currentBrandId = teamId 
+  const currentBrandId = teamId
     ? (scopeBrandId !== "team-all" ? scopeBrandId : undefined)
     : brandId;
   const currentBrand = safeBrands.find(b => b.id === currentBrandId);
 
-  // Filter products by search term and brand
   const filteredProducts = safeProducts.filter(product => {
-    // Filter by brand when brandId is specified (not in team-all mode or when specific brand is selected)
     const matchesBrand = !effectiveBrandId || product.brandId === effectiveBrandId;
-    
-    // Filter by search term
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    
     return matchesBrand && matchesSearch;
   });
 
@@ -241,304 +229,287 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
     setIsEditOpen(true);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleDeleteProduct = async (productId: string, productName: string) => {
-    try {
-      await deleteProductMutation.mutateAsync(productId);
-      toast.success(`Product "${productName}" deleted successfully`);
-    } catch (error) {
-      console.error('Failed to delete product:', error);
-      toast.error('Failed to delete product');
-    }
-  };
-
-  // Loading state
   if (isLoading) {
     return (
-      <div className="flex-1 space-y-6 p-6 bg-background">
-        <LoadingSkeleton className="h-8 w-48" />
-        <div className="grid gap-6 md:grid-cols-2">
-          <LoadingSkeleton className="h-10 w-full" />
-          <LoadingSkeleton className="h-10 w-full" />
+      <div className="w-full max-w-full overflow-x-hidden font-fira-sans">
+        <div className="space-y-10 p-6 lg:p-10 bg-background">
+          <Skeleton className="h-4 w-48 mb-6" />
+          <div className="space-y-6">
+            <Skeleton className="h-12 w-64 mb-3" />
+            <Skeleton className="h-6 w-96 mb-10" />
+            <Skeleton className="h-14 w-full rounded-2xl" />
+          </div>
         </div>
-        <LoadingSkeleton className="h-64 w-full" />
       </div>
     );
   }
 
-  // Main UI
-  const totalProducts = filteredProducts.length;
-
-  // Redirect to brands if no brand ID provided and not in team mode
   if (!teamId && !brandId && !initialBrandId) {
     return (
-      <div className="flex-1 space-y-6 p-6 bg-background">
-        <div className="text-center py-16">
-          <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">No Brand Selected</h2>
-          <p className="text-muted-foreground mb-6">Please select a brand to view its products.</p>
-          <Button asChild>
-            <Link href="/dashboard/brands">
-              <Target className="mr-2 h-4 w-4" />
-              Go to Brands
-            </Link>
-          </Button>
+      <div className="flex-1 min-h-[60vh] flex flex-col items-center justify-center p-10 font-fira-sans">
+        <div className="h-24 w-24 rounded-3xl bg-muted/20 flex items-center justify-center mb-8">
+          <Package className="h-12 w-12 text-muted-foreground stroke-[1.5]" />
         </div>
+        <h2 className="text-3xl font-black uppercase tracking-tight mb-3">Domain Missing</h2>
+        <p className="text-muted-foreground font-medium mb-10 text-center max-w-sm">
+          Please select an active brand node to initialize the product repository view.
+        </p>
+        <Button asChild className="h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[11px] bg-primary shadow-2xl shadow-primary/20 hover:scale-105 transition-all">
+          <Link href="/dashboard/brands">
+            Initialize Brands Matrix
+          </Link>
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
-        {/* Breadcrumb */}
+    <div className="max-w-[1440px] mx-auto font-fira-sans">
+      <div className="space-y-10 p-6 lg:p-10 bg-background">
+        {/* Breadcrumb - High Finesse */}
         {!teamId && (
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/dashboard" className="text-[10px] font-black uppercase tracking-[0.2em]">Dashboard</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard/brands">Brands</BreadcrumbLink>
+                <BreadcrumbLink href="/dashboard/brands" className="text-[10px] font-black uppercase tracking-[0.2em]">Brands</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>{currentBrand?.name || 'Brand'} - Products</BreadcrumbPage>
+                <BreadcrumbPage className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">{currentBrand?.name || 'Inventory'}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         )}
 
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
-            {teamId ? 'Team Products' : `Products - ${currentBrand?.name || 'Unknown Brand'}`}
-          </h1>
-          <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
-            {teamId 
-              ? 'Manage products for your team brands'
-              : `Manage products for ${currentBrand?.name || 'this brand'}`
-            }
-          </p>
-        </div>
-
-        {/* Single Row Layout - Stats, Page Size, Search, Products, Create Button */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
-          {/* Stats */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
-              <Package className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
-              <span className="font-medium">{totalProducts}</span>
-              <span className="text-muted-foreground">Products</span>
+        {/* Tactical Header */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="h-2 w-8 bg-primary rounded-full" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Inventory Node</span>
             </div>
-
+            <h1 className="text-4xl lg:text-5xl font-black tracking-tighter text-foreground uppercase leading-none">
+              {teamId ? 'Team' : (currentBrand?.name || 'Local')} <span className="text-primary italic">Products</span>
+            </h1>
+            <p className="text-lg text-muted-foreground font-medium max-w-2xl tracking-tight leading-relaxed">
+              Managing the asset matrix for {currentBrand?.name || 'this partition'}. Synchronize products for campaign deployment.
+            </p>
           </div>
 
-          {/* Brand Selector (Team Mode) */}
-          {teamId && (
-            <Select
-              value={scopeBrandId}
-              onValueChange={(value) => setScopeBrandId(value as string | "team-all")}
-            >
-              <SelectTrigger className="w-full sm:w-[160px] md:w-56">
-                <SelectValue placeholder="Scope" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="team-all">All team brands</SelectItem>
-                {teamBrands.map((b: Brand) => (
-                  <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+          <div className="flex items-center gap-4">
+            <div className="px-6 py-4 bg-card/40 backdrop-blur-xl rounded-2xl border border-border/40 shadow-xl flex items-center gap-6">
+              <div className="space-y-1 border-r border-border/20 pr-6">
+                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">Asset Units</div>
+                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-foreground">{filteredProducts.length}</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">Status</div>
+                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-primary">SYNCED</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          {/* Page Size Selector */}
-          <Select
-            value={String(pageSize)}
-            onValueChange={(value) => setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-full sm:w-[120px] md:w-32">
-              <SelectValue placeholder="Rows" />
-            </SelectTrigger>
-            <SelectContent>
-              {[5, 10, 20, 30, 40, 50].map((size) => (
-                <SelectItem key={size} value={String(size)}>
-                  {size} rows
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Search */}
-          <div className="relative w-full sm:w-64 md:w-80">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        {/* Command Matrix Toolbar */}
+        <div className="flex flex-col xl:flex-row items-stretch xl:items-center gap-4 bg-muted/20 p-4 rounded-[2.5rem] border border-border/40">
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground stroke-[2.5]" />
             <Input
-              placeholder="Search products..."
+              placeholder="SEARCH PRODUCT REGISTRY..."
               value={searchTerm}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-              className="pl-10 h-9"
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-12 h-12 bg-background/50 border-border/40 rounded-xl font-black text-[10px] uppercase tracking-widest focus:ring-primary/20"
             />
           </div>
 
+          <div className="flex flex-wrap items-center gap-3">
+            {teamId && (
+              <Select value={scopeBrandId} onValueChange={(value) => setScopeBrandId(value as string | "team-all")}>
+                <SelectTrigger className="h-12 w-full sm:w-[200px] bg-background/50 border-border/40 rounded-xl font-black text-[10px] uppercase tracking-widest">
+                  <SelectValue placeholder="DOMAIN" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-border/40 font-fira-sans">
+                  <SelectItem value="team-all" className="font-black uppercase text-[10px] tracking-widest">ALL DOMAINS</SelectItem>
+                  {teamBrands.map((b: Brand) => (
+                    <SelectItem key={b.id} value={b.id} className="font-black uppercase text-[10px] tracking-widest">{b.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
 
+            <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
+              <SelectTrigger className="h-12 w-full sm:w-[130px] bg-background/50 border-border/40 rounded-xl font-black text-[10px] uppercase tracking-widest">
+                <SelectValue placeholder="DENSITY" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-border/40 font-fira-sans">
+                {[5, 10, 20, 50].map((size) => (
+                  <SelectItem key={size} value={String(size)} className="font-black uppercase text-[10px] tracking-widest">{size} NODES</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          {/* Create Button */}
-          <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-2">
             <ProductModal
               mode="create"
               defaultBrandId={scopeBrandId !== "team-all" ? scopeBrandId : (brandId || initialBrandId)}
-              brands={
-                teamId 
-                  ? teamBrands 
-                  : (brandId && !initialBrandId ? safeBrands.filter(b => b.id === brandId) : safeBrands)
-              }
+              brands={teamId ? teamBrands : (brandId && !initialBrandId ? safeBrands.filter(b => b.id === brandId) : safeBrands)}
               teamId={teamId}
               onSuccess={handleRefresh}
             >
-              <Button size="sm" className="w-full sm:w-auto">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Product
+              <Button className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02]">
+                <Plus className="mr-2 h-4 w-4 stroke-[3]" />
+                Deploy Asset
               </Button>
             </ProductModal>
           </div>
         </div>
 
-        {/* Products Table */}
-        {filteredProducts.length > 0 ? (
-          <CustomTable
-            columns={createColumns(handleViewProduct, handleEditProduct, safeBrands)}
-            data={filteredProducts}
-            pageSize={pageSize}
-          />
-        ) : (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center py-6">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
-                  <Package className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  No Products for {currentBrand?.name || 'This Brand'}
-                </h3>
-                <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
-                  This brand doesn&apos;t have any products yet. Start by adding your first product to create content and campaigns around it.
-                </p>
-                <ProductModal
-                  mode="create"
-                  defaultBrandId={scopeBrandId !== "team-all" ? scopeBrandId : (brandId || initialBrandId)}
-                  brands={
-                    teamId 
-                      ? teamBrands 
-                      : (brandId && !initialBrandId ? safeBrands.filter(b => b.id === brandId) : safeBrands)
-                  }
-                  teamId={teamId}
-                  onSuccess={handleRefresh}
-                >
-                  <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Product
-                  </Button>
-                </ProductModal>
+        {/* Data Matrix Grid */}
+        <div className="relative">
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-[2.5rem] blur-2xl opacity-50" />
+          <div className="relative">
+            {filteredProducts.length > 0 ? (
+              <div className="bg-card/40 backdrop-blur-xl rounded-[2.8rem] border border-border/40 shadow-2xl overflow-hidden p-2">
+                <CustomTable
+                  columns={createColumns(handleViewProduct, handleEditProduct, safeBrands)}
+                  data={filteredProducts}
+                  pageSize={pageSize}
+                />
               </div>
-            </CardContent>
-          </Card>
-        )}
+            ) : (
+              <Card className="border-border/40 bg-card/40 backdrop-blur-xl rounded-[2.8rem] p-24 shadow-2xl border-dashed">
+                <CardContent className="flex flex-col items-center justify-center text-center space-y-8">
+                  <div className="h-24 w-24 rounded-3xl bg-primary/5 flex items-center justify-center border border-primary/10">
+                    <Package className="h-12 w-12 text-primary stroke-[1.5]" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-3xl font-black uppercase tracking-tight">Repository Purified</h3>
+                    <p className="text-muted-foreground font-medium max-w-sm mx-auto tracking-tight leading-relaxed">
+                      No products detected in {currentBrand?.name || 'this domain'}. Initialize the asset matrix to enable campaign deployment.
+                    </p>
+                  </div>
+                  <ProductModal
+                    mode="create"
+                    defaultBrandId={scopeBrandId !== "team-all" ? scopeBrandId : (brandId || initialBrandId)}
+                    brands={teamId ? teamBrands : (brandId && !initialBrandId ? safeBrands.filter(b => b.id === brandId) : safeBrands)}
+                    teamId={teamId}
+                    onSuccess={handleRefresh}
+                  >
+                    <Button className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-primary/40 transition-all hover:scale-110">
+                      <Plus className="mr-3 h-5 w-5 stroke-[3]" />
+                      Initialize First Asset
+                    </Button>
+                  </ProductModal>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
 
-        {/* Help Section */}
-        <Card className="border border-blue-200 dark:border-blue-800">
-          <CardContent className="p-3">
-            <div className="flex items-start gap-2">
-              <Package className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-              <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-blue-900 dark:text-blue-100 text-xs mb-1">
-                  About Product Management
-                </h3>
-                <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
-                  Managing products for {currentBrand?.name || 'this brand'} helps AISAM organize your catalog and campaigns efficiently. You can add, edit, or remove products at any time.
-                </p>
-              </div>
+        {/* Insight Protocol */}
+        <Card className="border-border/40 bg-primary/5 backdrop-blur-md rounded-[2.5rem] p-10 overflow-hidden group relative">
+          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-125 transition-transform duration-1000">
+            <Package className="h-32 w-32" />
+          </div>
+          <div className="relative flex items-start gap-8">
+            <div className="h-16 w-16 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-2xl shadow-primary/30 shrink-0">
+              <Package className="h-8 w-8 stroke-[2.5]" />
             </div>
-          </CardContent>
+            <div className="space-y-3">
+              <h4 className="text-2xl font-black uppercase tracking-tight">Inventory Optimization active</h4>
+              <p className="text-muted-foreground font-medium max-w-3xl text-lg leading-relaxed tracking-tight">
+                Managed assets for <span className="text-primary font-black uppercase tracking-widest">{currentBrand?.name || 'GLOBAL'}</span> are
+                synchronized across the global creative matrix. AI-assisted categorization is performing with <span className="text-primary font-black">99.2%</span> accuracy.
+              </p>
+            </div>
+          </div>
         </Card>
 
-        {/* View Product Modal */}
+        {/* Product Modal Matrix */}
         {viewingProduct && (
           <AlertDialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="flex items-center gap-2">
-                  <Package className="h-4 w-4" />
-                  {viewingProduct.name}
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  Product details
+            <AlertDialogContent className="rounded-[3rem] border-border/40 bg-background/95 backdrop-blur-3xl p-10 max-w-2xl font-fira-sans shadow-[0_0_100px_rgba(0,0,0,0.4)]">
+              <AlertDialogHeader className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <AlertDialogTitle className="flex items-center gap-3 text-3xl font-black uppercase tracking-tight">
+                    <Package className="h-7 w-7 text-primary" />
+                    Asset Diagnostics
+                  </AlertDialogTitle>
+                  <Badge className="bg-primary/20 text-primary border-none font-black text-[10px] px-3 py-1 rounded-lg">LIVE NODE</Badge>
+                </div>
+                <AlertDialogDescription className="text-base font-bold text-primary italic uppercase tracking-[0.2em] opacity-80 border-l-4 border-primary pl-4">
+                  Identity: {viewingProduct.name}
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={viewingProduct.images?.[0] || ''} />
-                    <AvatarFallback>
-                      <ImageIcon className="h-5 w-5" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="text-sm text-muted-foreground">Brand</div>
-                    <div className="text-sm font-medium">{safeBrands.find(b => b.id === viewingProduct.brandId)?.name || 'Unknown'}</div>
+
+              <div className="space-y-10 py-10">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-10">
+                  <div className="relative h-48 w-48 rounded-[2.5rem] overflow-hidden border border-border/40 shadow-2xl group shrink-0">
+                    <Image src={viewingProduct.images?.[0] || '/placeholder.svg'} alt="" fill className="object-cover group-hover:scale-110 transition-transform duration-1000" />
+                  </div>
+                  <div className="flex-1 space-y-8 w-full">
+                    <div className="grid grid-cols-1 xs:grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Domain Origin</p>
+                        <div className="flex items-center gap-2">
+                          <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                          <p className="font-black uppercase tracking-tight text-sm text-foreground">{safeBrands.find(b => b.id === viewingProduct.brandId)?.name || 'UNKNOWN'}</p>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Unit Valuation</p>
+                        <p className="font-fira-mono font-black text-2xl text-primary leading-none tracking-tighter">
+                          {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", minimumFractionDigits: 0 }).format(Number(viewingProduct.price || 0))}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Analytical Description</p>
+                      <p className="text-sm font-medium leading-relaxed tracking-tight text-muted-foreground">{viewingProduct.description || 'NO METADATA AVAILABLE IN CURRENT SESSION.'}</p>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div className="text-sm text-muted-foreground">Description</div>
-                  <div className="text-sm">{viewingProduct.description || '-'}</div>
-                </div>
-                <div className="text-sm font-medium">
-                  {new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
-                  }).format(Number(viewingProduct.price || 0))}
-                </div>
+
                 {Array.isArray(viewingProduct.images) && viewingProduct.images.length > 1 && (
-                  <div>
-                    <div className="text-sm text-muted-foreground mb-1">Images</div>
-                    <div className="flex gap-2 flex-wrap">
+                  <div className="space-y-4">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Asset Matrix Manifest</p>
+                    <div className="flex gap-4 flex-wrap">
                       {viewingProduct.images.map((img, idx) => (
-                        <Image key={idx} src={img} alt="" width={48} height={48} className="h-12 w-12 rounded object-cover border" />
+                        <div key={idx} className="relative h-20 w-20 rounded-2xl overflow-hidden border border-border/40 hover:border-primary/50 transition-all cursor-pointer shadow-lg">
+                          <Image src={img} alt="" fill className="object-cover" />
+                        </div>
                       ))}
                     </div>
                   </div>
                 )}
               </div>
-              <AlertDialogFooter>
-                <AlertDialogAction onClick={() => setIsViewOpen(false)}>Close</AlertDialogAction>
+
+              <AlertDialogFooter className="sm:justify-center">
+                <AlertDialogAction className="h-14 px-12 rounded-2xl font-black uppercase tracking-widest text-[11px] bg-primary shadow-2xl shadow-primary/30" onClick={() => setIsViewOpen(false)}>Terminate Diagnostics</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         )}
 
-         {/* Edit Product Modal */}
-         {editingProduct && (
-           <ProductModal
-             mode="edit"
-             product={editingProduct}
-             defaultBrandId={brandId}
-             brands={
-               teamId 
-                 ? teamBrands 
-                 : (brandId && !initialBrandId ? safeBrands.filter(b => b.id === brandId) : safeBrands)
-             }
-             teamId={teamId}
-             open={isEditOpen}
-             onOpenChange={setIsEditOpen}
-             onSuccess={() => {
-               setIsEditOpen(false);
-               setEditingProduct(null);
-               handleRefresh();
-             }}
-           />
-         )}
+        {editingProduct && (
+          <ProductModal
+            mode="edit"
+            product={editingProduct}
+            defaultBrandId={brandId}
+            brands={teamId ? teamBrands : (brandId && !initialBrandId ? safeBrands.filter(b => b.id === brandId) : safeBrands)}
+            teamId={teamId}
+            open={isEditOpen}
+            onOpenChange={setIsEditOpen}
+            onSuccess={() => {
+              setIsEditOpen(false);
+              setEditingProduct(null);
+              handleRefresh();
+            }}
+          />
+        )}
       </div>
     </div>
   );

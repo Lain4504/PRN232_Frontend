@@ -5,9 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
-import { 
-  Target, 
-  FileText, 
+import {
+  Target,
+  FileText,
   Activity,
   Calendar,
   Plus,
@@ -29,47 +29,48 @@ import { QuickActionsPanel } from "./quick-actions-panel"
 const getStatsData = (stats: DashboardStats) => {
   const teamsVal = stats.total_teams ?? 0
   return [
-  {
-    title: "Total Teams",
-    value: teamsVal.toString(),
-    icon: Users,
-    color: "text-chart-2",
-    bgColor: "bg-chart-2/10",
-    borderColor: "border-chart-2/20",
-    description: "Teams you belong to",
-    href: "/overview/teams"
-  },
-  {
-    title: "Total Brands",
-    value: stats.total_brands.toString(),
-    icon: Target,
-    color: "text-chart-1",
-    bgColor: "bg-chart-1/10",
-    borderColor: "border-chart-1/20",
-    description: "Active brand profiles",
-    href: "/dashboard/brands"
-  },
-  {
-    title: "Total Contents",
-    value: stats.total_contents.toString(),
-    icon: FileText,
-    color: "text-chart-3",
-    bgColor: "bg-chart-3/10",
-    borderColor: "border-chart-3/20",
-    description: "AI-generated content",
-    href: "/dashboard/contents"
-  },
-  {
-    title: "Published Posts",
-    value: stats.total_posts.toString(),
-    icon: Send,
-    color: "text-chart-4",
-    bgColor: "bg-chart-4/10",
-    borderColor: "border-chart-4/20",
-    description: "Social media posts",
-    href: "/dashboard/posts"
-  },
-]} 
+    {
+      title: "Total Teams",
+      value: teamsVal.toString(),
+      icon: Users,
+      color: "text-chart-2",
+      bgColor: "bg-chart-2/10",
+      borderColor: "border-chart-2/20",
+      description: "Teams you belong to",
+      href: "/overview/teams"
+    },
+    {
+      title: "Total Brands",
+      value: stats.total_brands.toString(),
+      icon: Target,
+      color: "text-chart-1",
+      bgColor: "bg-chart-1/10",
+      borderColor: "border-chart-1/20",
+      description: "Active brand profiles",
+      href: "/dashboard/brands"
+    },
+    {
+      title: "Total Contents",
+      value: stats.total_contents.toString(),
+      icon: FileText,
+      color: "text-chart-3",
+      bgColor: "bg-chart-3/10",
+      borderColor: "border-chart-3/20",
+      description: "AI-generated content",
+      href: "/dashboard/contents"
+    },
+    {
+      title: "Published Posts",
+      value: stats.total_posts.toString(),
+      icon: Send,
+      color: "text-chart-4",
+      bgColor: "bg-chart-4/10",
+      borderColor: "border-chart-4/20",
+      description: "Social media posts",
+      href: "/dashboard/posts"
+    },
+  ]
+}
 
 // Recent Activities Data - will be populated from API
 
@@ -82,13 +83,13 @@ const DashboardContent = () => {
     const loadDashboardData = async () => {
       try {
         setLoading(true)
-        
+
         // Get current user
         const userResponse = await api.get<User>(endpoints.userProfile)
         if (userResponse.success) {
           setUser(userResponse.data)
         }
-        
+
         // Get dashboard stats for current profile
         const statsResponse = await api.get<DashboardStats>(endpoints.dashboardStats())
         if (statsResponse.success) {
@@ -112,7 +113,7 @@ const DashboardContent = () => {
           }
           setStats(normalized)
         }
-        
+
         // Recent activities removed from dashboard UI
       } catch (error) {
         console.error('Failed to load dashboard data:', error)
@@ -120,7 +121,7 @@ const DashboardContent = () => {
         setLoading(false)
       }
     }
-    
+
     loadDashboardData()
   }, [])
 
@@ -140,108 +141,171 @@ const DashboardContent = () => {
   }
 
   return (
-    <div className="flex-1 space-y-4 p-4 bg-background">
-      <div className="max-w-7xl mx-auto">
-        {/* Compact Header */}
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between mb-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-primary/10">
-              <Sparkles className="h-4 w-4 text-primary" />
+    <div className="flex-1 min-h-screen bg-background font-fira-sans selection:bg-primary/20">
+      <div className="max-w-[1440px] mx-auto px-6 py-10 lg:px-10 lg:py-14 space-y-12">
+        {/* Mission Control Header */}
+        <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
+          <div className="space-y-4 max-w-2xl">
+            <div className="flex items-center gap-3">
+              <div className="h-2 w-8 bg-primary rounded-full" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Terminal Intelligence</span>
             </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">
-                Welcome back, {user?.first_name || user?.email?.split('@')[0] || 'User'}!
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Here&apos;s what&apos;s happening with your AISAM campaigns today.
-              </p>
-            </div>
+            <h1 className="text-4xl lg:text-5xl font-black tracking-tighter text-foreground leading-[1.1] selection:bg-primary/20">
+              Welcome Back, <span className="text-primary italic tracking-tight">{user?.first_name || user?.email?.split('@')[0] || 'Operator'}</span>
+            </h1>
+            <p className="text-lg text-muted-foreground font-medium leading-relaxed max-w-xl">
+              Platform state is nominal. All autonomous creative nodes are synchronized and performing within parameters.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-4 p-1">
+            <Button variant="outline" className="h-12 px-6 rounded-2xl border-border/40 bg-muted/20 hover:bg-muted/40 font-bold text-[11px] uppercase tracking-widest transition-all">
+              <Filter className="h-4 w-4 mr-2 stroke-[2.5]" />
+              Filter Domain
+            </Button>
+            <Button className="h-12 px-8 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
+              <Plus className="h-4 w-4 mr-2 stroke-[3]" />
+              New Deployment
+            </Button>
           </div>
         </div>
-      </div>
 
-      {/* Compact Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats && getStatsData(stats).map((stat, index) => (
-          <Card key={index} className={`group shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md transition-colors duration-200 cursor-pointer`}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
-              <div className="space-y-0.5">
-                <CardTitle className="text-xs font-medium text-muted-foreground">
-                  {stat.title}
-                </CardTitle>
-                <p className="text-xs text-muted-foreground/70">{stat.description}</p>
+        {/* Global Performance Pulse - Stats Grid */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {stats && getStatsData(stats).map((stat, index) => (
+            <Card key={index} className="group relative overflow-hidden border-border/40 bg-card/40 backdrop-blur-xl rounded-[2.5rem] p-4 shadow-2xl transition-all hover:translate-y-[-4px] hover:bg-card/60">
+              <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-10 transition-opacity">
+                <stat.icon className="h-24 w-24 stroke-[1]" />
               </div>
-              <div className={`p-1.5 rounded-lg ${stat.bgColor}`}>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
-              </div>
-            </CardHeader>
-            <CardContent className="pt-1">
-              <div className="text-2xl font-bold">{stat.value}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              <CardHeader className="pb-2">
+                <div className={`h-12 w-12 rounded-2xl ${stat.bgColor} flex items-center justify-center transition-transform duration-500 group-hover:scale-110 shadow-inner`}>
+                  <stat.icon className={`h-6 w-6 ${stat.color} stroke-[2.5]`} />
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-1">
+                <div className="text-5xl font-black text-foreground font-fira-mono tracking-tighter tabular-nums leading-none">
+                  {stat.value}
+                </div>
+                <div className="flex items-center justify-between pt-1">
+                  <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{stat.title}</div>
+                  <div className="h-1 w-8 bg-primary/20 rounded-full" />
+                </div>
+                <p className="text-[10px] text-muted-foreground/50 font-medium tracking-tight pt-1">{stat.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
-      {/* Main Content Grid with two items */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        {/* Quick Actions */}
-        <QuickActionsPanel />
+        {/* Tactical Matrix Layout */}
+        <div className="grid gap-10 lg:grid-cols-12">
+          {/* Action Hub - 5 cols */}
+          <div className="lg:col-span-5 relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-[3rem] blur-2xl opacity-50" />
+            <QuickActionsPanel className="relative h-full border-border/40 bg-card/60 backdrop-blur-xl rounded-[2.8rem] shadow-2xl" />
+          </div>
 
-        {/* Campaign Status */}
-        <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Activity className="h-4 w-4 text-primary" />
-              Campaign Status
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Current campaign health and system status
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-2 space-y-2">
-            <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
-              <div className="flex items-center gap-2">
-                <Clock className="h-3 w-3 text-chart-4" />
-                <span className="text-xs font-medium">Pending Approvals</span>
-              </div>
-              <Badge variant="secondary" className="bg-chart-4/10 text-chart-4 border-chart-4/20 text-xs px-2 py-0.5">
-                {stats?.pending_approvals || 0}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-3 w-3 text-chart-1" />
-                <span className="text-xs font-medium">Scheduled Posts</span>
-              </div>
-              <Badge variant="secondary" className="bg-chart-1/10 text-chart-1 border-chart-1/20 text-xs px-2 py-0.5">
-                {stats?.scheduled_posts || 0}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-3 w-3 text-chart-2" />
-                <span className="text-xs font-medium">AI Generation</span>
-              </div>
-              <Badge variant="secondary" className="bg-chart-2/10 text-chart-2 border-chart-2/20 text-xs px-2 py-0.5">
-                Active
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
-              <div className="flex items-center gap-2">
-                <Share2 className="h-3 w-3 text-chart-3" />
-                <span className="text-xs font-medium">Social Accounts</span>
-              </div>
-              <Badge variant="secondary" className="bg-chart-3/10 text-chart-3 border-chart-3/20 text-xs px-2 py-0.5">
-                Connected
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      {/* End Main Content Grid */}
+          {/* Neural Diagnostics - 7 cols */}
+          <div className="lg:col-span-7 space-y-8">
+            <Card className="relative border-border/40 bg-card/60 backdrop-blur-xl rounded-[2.8rem] shadow-2xl overflow-hidden group">
+              <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-20" />
+              <CardHeader className="p-10 pb-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Activity className="h-5 w-5 text-primary animate-pulse stroke-[2.5]" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/70 italic">Dynamic Status</span>
+                    </div>
+                    <CardTitle className="text-3xl font-black uppercase tracking-tight">System Dynamics</CardTitle>
+                    <CardDescription className="text-base font-medium">Real-time heuristics and workflow monitoring.</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
 
-      {/* End Main Content Grid */}
+              <CardContent className="p-10 pt-4 space-y-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {/* Status Node 1: Pending */}
+                  <div className="group/node flex items-center justify-between p-6 rounded-[2rem] bg-background/40 border border-border/40 transition-all hover:bg-background/80 hover:border-primary/20">
+                    <div className="flex items-center gap-5">
+                      <div className="h-12 w-12 rounded-2xl bg-amber-600/10 flex items-center justify-center text-amber-600 shadow-inner group-hover/node:scale-110 transition-transform">
+                        <Clock className="h-6 w-6 stroke-[2.5]" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <p className="font-black text-sm uppercase tracking-wider">Queue</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">Pending Validation</p>
+                      </div>
+                    </div>
+                    <div className="text-3xl font-black font-fira-mono tracking-tighter">{stats?.pending_approvals || 0}</div>
+                  </div>
+
+                  {/* Status Node 2: Scheduled */}
+                  <div className="group/node flex items-center justify-between p-6 rounded-[2rem] bg-background/40 border border-border/40 transition-all hover:bg-background/80 hover:border-primary/20">
+                    <div className="flex items-center gap-5">
+                      <div className="h-12 w-12 rounded-2xl bg-blue-600/10 flex items-center justify-center text-blue-600 shadow-inner group-hover/node:scale-110 transition-transform">
+                        <Calendar className="h-6 w-6 stroke-[2.5]" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <p className="font-black text-sm uppercase tracking-wider">Protocol</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">Automated Postings</p>
+                      </div>
+                    </div>
+                    <div className="text-3xl font-black font-fira-mono tracking-tighter">{stats?.scheduled_posts || 0}</div>
+                  </div>
+
+                  {/* Status Node 3: AI Engine */}
+                  <div className="group/node flex items-center justify-between p-6 rounded-[2rem] bg-background/40 border border-border/40 transition-all hover:bg-background/80 hover:border-primary/20">
+                    <div className="flex items-center gap-5">
+                      <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner group-hover/node:scale-110 transition-transform">
+                        <Sparkles className="h-6 w-6 stroke-[2.5]" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <p className="font-black text-sm uppercase tracking-wider">Neural Hub</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">Cognitive Services</p>
+                      </div>
+                    </div>
+                    <Badge className="bg-primary/20 text-primary border-none font-black text-[10px] px-3 py-1 rounded-lg">NOMINAL</Badge>
+                  </div>
+
+                  {/* Status Node 4: Accounts */}
+                  <div className="group/node flex items-center justify-between p-6 rounded-[2rem] bg-background/40 border border-border/40 transition-all hover:bg-background/80 hover:border-primary/20">
+                    <div className="flex items-center gap-5">
+                      <div className="h-12 w-12 rounded-2xl bg-indigo-600/10 flex items-center justify-center text-indigo-600 shadow-inner group-hover/node:scale-110 transition-transform">
+                        <Share2 className="h-6 w-6 stroke-[2.5]" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <p className="font-black text-sm uppercase tracking-wider">Matrix</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">Social Integrations</p>
+                      </div>
+                    </div>
+                    <Badge className="bg-indigo-600/20 text-indigo-600 border-none font-black text-[10px] px-3 py-1 rounded-lg">SYNCED</Badge>
+                  </div>
+                </div>
+
+                {/* Analytical Insight Token */}
+                <div className="relative p-8 rounded-[2rem] bg-primary/5 border border-primary/10 mt-6 group/insight overflow-hidden">
+                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover/insight:scale-125 transition-transform duration-700">
+                    <TrendingUp className="h-24 w-24" />
+                  </div>
+                  <div className="relative flex items-start gap-6">
+                    <div className="h-14 w-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-2xl shadow-primary/40 group-hover/insight:rotate-12 transition-transform">
+                      <TrendingUp className="h-7 w-7 stroke-[3]" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">Efficiency Optimization Active</span>
+                        <div className="h-1 w-1 rounded-full bg-primary animate-ping" />
+                      </div>
+                      <h4 className="text-xl font-black uppercase tracking-tight">Performance Vector Update</h4>
+                      <p className="text-muted-foreground font-medium leading-relaxed tracking-tight">
+                        Engagement metrics have experienced a <span className="text-primary font-black">+14.2%</span> delta this session.
+                        AI engine recommends increasing asset density in TikTok campaign nodes.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   )

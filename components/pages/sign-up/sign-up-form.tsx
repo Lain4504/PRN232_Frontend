@@ -47,13 +47,13 @@ export function SignUpForm({
           emailRedirectTo: `${getBaseUrl()}/auth/verify-email`,
         },
       });
-      
+
       if (error) {
         throw new Error(error.message);
       }
-      
+
       setSuccessOpen(true);
-      toast.success("Account created successfully! Please check your email to verify your account.");
+      toast.success("Protocol sequence initiated. Check your link.");
     } catch (error: unknown) {
       const authError: AuthError = {
         message: error instanceof Error ? error.message : "An unexpected error occurred",
@@ -78,7 +78,7 @@ export function SignUpForm({
           redirectTo: `${getBaseUrl()}/auth/callback`,
         },
       });
-      
+
       if (error) {
         throw new Error(error.message);
       }
@@ -94,79 +94,83 @@ export function SignUpForm({
   };
 
   return (
-    <div className={cn("space-y-4 sm:space-y-6", className)} {...props}>
-      {/* Success Dialog */}
+    <div className={cn("space-y-10 font-fira-sans", className)} {...props}>
+      {/* Success Modal */}
       <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <div className="flex items-center gap-2 justify-center">
-              <CheckCircle className="h-5 w-5 text-green-500" />
-              <DialogTitle>Account created successfully!</DialogTitle>
+        <DialogContent className="rounded-[2.5rem] border-border/40 bg-card/90 backdrop-blur-3xl p-10 max-w-md">
+          <DialogHeader className="space-y-6">
+            <div className="flex flex-col items-center gap-6">
+              <div className="h-20 w-20 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30">
+                <CheckCircle className="h-10 w-10 text-emerald-500 stroke-[2.5]" />
+              </div>
+              <DialogTitle className="text-3xl font-black uppercase tracking-tighter text-center leading-none">Registration <br /><span className="text-emerald-500 italic">Successful</span></DialogTitle>
             </div>
-            <DialogDescription className="text-center">
-              Please check your email to verify your account before signing in.
+            <DialogDescription className="text-center font-medium text-muted-foreground leading-relaxed">
+              We have sent a verification link to your email address. Please confirm your email to activate your account.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="sm:justify-center">
-            <Button onClick={() => setSuccessOpen(false)}>Got it</Button>
+          <DialogFooter className="mt-4">
+            <Button onClick={() => setSuccessOpen(false)} className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-emerald-500/20">
+              DISMISS
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Google Sign Up */}
-      <div className="space-y-2 sm:space-y-3">
-        <Button 
-          variant="outline" 
-          className="w-full h-11 sm:h-10 text-sm font-medium"
+      {/* Google Login */}
+      <div className="space-y-4">
+        <Button
+          variant="outline"
+          className="w-full h-14 rounded-2xl border-border/40 bg-muted/20 hover:bg-primary/5 hover:border-primary/50 transition-all font-black text-[10px] uppercase tracking-[0.2em] group shadow-xl"
           onClick={handleGoogleSignUp}
           disabled={isGoogleLoading || isLoading}
-          aria-label="Sign up with Google"
         >
           {isGoogleLoading ? (
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            <Loader2 className="w-4 h-4 mr-3 animate-spin" />
           ) : (
-            <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            <svg className="w-4 h-4 mr-3 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+              <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
           )}
-          Continue with Google
+          CONTINUE WITH GOOGLE
         </Button>
-        
+
         <div className="relative">
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 text-muted-foreground bg-background">or</span>
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-border/20" />
+          </div>
+          <div className="relative flex justify-center text-[9px] font-black uppercase tracking-[0.4em] italic">
+            <span className="bg-background px-4 text-muted-foreground/40">OR CREATE ACCOUNT WITH EMAIL</span>
           </div>
         </div>
       </div>
 
-      {/* Sign Up Form */}
+      {/* SignUp Form */}
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSignUp)} className="space-y-3 sm:space-y-4">
-          <div className="space-y-3 sm:space-y-4">
+        <form onSubmit={form.handleSubmit(handleSignUp)} className="space-y-6">
+          <div className="space-y-6">
             {/* Email Field */}
             <FormField
               control={form.control}
               name="email"
-              render={({ field }: { field: ControllerRenderProps<RegistrationFormData, "email"> }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">Email</FormLabel>
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 italic">EMAIL ADDRESS</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <div className="relative group">
+                      <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 h-4 w-4 group-focus-within:text-primary transition-colors" />
                       <Input
                         {...field}
                         type="email"
-                        placeholder="Enter your email"
-                        className="pl-10 h-11 sm:h-10 text-sm"
-                        aria-describedby={form.formState.errors.email ? "email-error" : undefined}
-                        aria-invalid={!!form.formState.errors.email}
+                        placeholder="your@email.com"
+                        className="pl-12 h-14 rounded-2xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
                       />
                     </div>
                   </FormControl>
-                  <FormMessage id="email-error" />
+                  <FormMessage className="text-[10px] font-bold uppercase tracking-widest text-destructive" />
                 </FormItem>
               )}
             />
@@ -175,24 +179,22 @@ export function SignUpForm({
             <FormField
               control={form.control}
               name="password"
-              render={({ field }: { field: ControllerRenderProps<RegistrationFormData, "password"> }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">Password</FormLabel>
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground italic ml-1">PASSWORD</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <div className="relative group">
+                      <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 h-4 w-4 group-focus-within:text-primary transition-colors" />
                       <PasswordInput
                         {...field}
-                        placeholder="Enter your password"
-                        className="pl-10 h-11 sm:h-10 text-sm"
-                        aria-describedby={form.formState.errors.password ? "password-error" : undefined}
-                        aria-invalid={!!form.formState.errors.password}
+                        placeholder="••••••••••••"
+                        className="pl-12 h-14 rounded-2xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
                       />
                     </div>
                   </FormControl>
-                  <FormMessage id="password-error" />
-                  <div className="text-xs text-muted-foreground">
-                    Password must be at least 8 characters with uppercase, lowercase, and number
+                  <FormMessage className="text-[10px] font-bold uppercase tracking-widest text-destructive" />
+                  <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 leading-none px-1">
+                    Req: 8+ Chars / Alpha-Numeric Composite
                   </div>
                 </FormItem>
               )}
@@ -202,22 +204,20 @@ export function SignUpForm({
             <FormField
               control={form.control}
               name="confirmPassword"
-              render={({ field }: { field: ControllerRenderProps<RegistrationFormData, "confirmPassword"> }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">Confirm Password</FormLabel>
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground italic ml-1">CONFIRM PASSWORD</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <div className="relative group">
+                      <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 h-4 w-4 group-focus-within:text-primary transition-colors" />
                       <PasswordInput
                         {...field}
-                        placeholder="Re-enter your password"
-                        className="pl-10 h-11 sm:h-10 text-sm"
-                        aria-describedby={form.formState.errors.confirmPassword ? "confirm-password-error" : undefined}
-                        aria-invalid={!!form.formState.errors.confirmPassword}
+                        placeholder="••••••••••••"
+                        className="pl-12 h-14 rounded-2xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
                       />
                     </div>
                   </FormControl>
-                  <FormMessage id="confirm-password-error" />
+                  <FormMessage className="text-[10px] font-bold uppercase tracking-widest text-destructive" />
                 </FormItem>
               )}
             />
@@ -225,40 +225,41 @@ export function SignUpForm({
 
           {/* Error Alert */}
           {error && (
-            <Alert variant="destructive" role="alert" aria-live="polite">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error.message}</AlertDescription>
-            </Alert>
+            <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-2xl flex items-center gap-3">
+              <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
+              <p className="text-[10px] font-black uppercase tracking-widest text-destructive leading-tight">{error.message}</p>
+            </div>
           )}
 
           {/* Submit Button */}
-          <Button 
-            type="submit" 
-            className="w-full h-11 sm:h-10 text-sm font-medium" 
+          <Button
+            type="submit"
+            className="w-full h-16 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
             disabled={isLoading || isGoogleLoading}
-            aria-describedby={error ? "signup-error" : undefined}
           >
             {isLoading ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Creating account...
+                <Loader2 className="w-4 h-4 mr-3 animate-spin" />
+                CREATING ACCOUNT...
               </>
             ) : (
-              "Create account"
+              "CREATE ACCOUNT"
             )}
           </Button>
         </form>
       </Form>
 
-      {/* Login link */}
-      <div className="text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
-        <Link
-          href="/auth/login"
-          className="text-primary hover:text-primary/80 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm"
-        >
-          Sign in now
-        </Link>
+      {/* Switch to Login */}
+      <div className="text-center pt-4">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+          ALREADY HAVE AN ACCOUNT?{" "}
+          <Link
+            href="/auth/login"
+            className="text-primary hover:text-primary/80 transition-all border-b border-primary/20 pb-0.5 ml-2"
+          >
+            LOG IN HERE
+          </Link>
+        </p>
       </div>
     </div>
   );
