@@ -1,8 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { User } from "@supabase/supabase-js"
+import { useAuth } from "@/lib/contexts/auth-context"
 import { TeamSidebar } from "@/components/layout/team-sidebar"
 import { TeamHeader } from "@/components/layout/team-header"
 import { useTeam } from "@/lib/contexts/team-context"
@@ -13,8 +12,7 @@ interface TeamLayoutProps {
 }
 
 export default function TeamLayout({ children }: TeamLayoutProps) {
-  const [user, setUser] = useState<User | null>(null)
-  const supabase = createClient()
+  const { user } = useAuth()
   const [sidebarMode, setSidebarMode] = useState<"expanded" | "collapsed" | "hover">("hover")
   const { activeTeam, activeTeamId, isLoading: teamLoading } = useTeam()
 
@@ -30,24 +28,10 @@ export default function TeamLayout({ children }: TeamLayoutProps) {
     }
     window.addEventListener('sidebar-mode-change', onModeChange as unknown as EventListener)
 
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-    }
-
-    getUser()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        (event, session) => {
-          setUser(session?.user ?? null)
-        }
-    )
-
     return () => {
-      subscription.unsubscribe()
       window.removeEventListener('sidebar-mode-change', onModeChange as unknown as EventListener)
     }
-  }, [supabase.auth])
+  }, [])
 
   // Show loading while team context is loading or if we have an activeTeamId but not activeTeam yet
   // Only show loading if we have an activeTeamId (meaning we're trying to load a specific team)
@@ -88,27 +72,27 @@ export default function TeamLayout({ children }: TeamLayoutProps) {
   }
 
   return (
-      <div className="h-screen w-full overflow-hidden">
-        <div className="flex h-full w-full max-w-full">
-          {/* Custom Sidebar với hover expand - chỉ hiện trên desktop */}
-          <div className="group relative hidden lg:block">
-            <div className={"fixed left-0 top-12 h-[calc(100vh-3rem)] bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out z-40 overflow-hidden " + (sidebarMode === 'expanded' ? 'w-64' : sidebarMode === 'collapsed' ? 'w-12' : 'w-12 hover:w-64')}>
-              <TeamSidebar/>
-            </div>
-          </div>
-
-          {/* Main Content Area */}
-          <div className={"flex flex-col flex-1 pt-12 min-h-0 max-w-full overflow-hidden team-content " + (sidebarMode === 'expanded' ? 'lg:ml-64' : 'lg:ml-12')}>
-            <main className="flex-1 overflow-x-hidden max-w-full">
-              {children}
-            </main>
+    <div className="h-screen w-full overflow-hidden">
+      <div className="flex h-full w-full max-w-full">
+        {/* Custom Sidebar với hover expand - chỉ hiện trên desktop */}
+        <div className="group relative hidden lg:block">
+          <div className={"fixed left-0 top-12 h-[calc(100vh-3rem)] bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out z-40 overflow-hidden " + (sidebarMode === 'expanded' ? 'w-64' : sidebarMode === 'collapsed' ? 'w-12' : 'w-12 hover:w-64')}>
+            <TeamSidebar />
           </div>
         </div>
 
-        {/* Header được đặt ngoài sidebar để trải dài hết màn hình */}
-        <div className="fixed top-0 left-0 right-0 z-50">
-          <TeamHeader user={user} team={activeTeam} />
+        {/* Main Content Area */}
+        <div className={"flex flex-col flex-1 pt-12 min-h-0 max-w-full overflow-hidden team-content " + (sidebarMode === 'expanded' ? 'lg:ml-64' : 'lg:ml-12')}>
+          <main className="flex-1 overflow-x-hidden max-w-full">
+            {children}
+          </main>
         </div>
       </div>
+
+      {/* Header được đặt ngoài sidebar để trải dài hết màn hình */}
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <TeamHeader user={user} team={activeTeam} />
+      </div>
+    </div>
   )
 }

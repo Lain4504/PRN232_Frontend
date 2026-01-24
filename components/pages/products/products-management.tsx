@@ -55,7 +55,7 @@ const createColumns = (
 ): ColumnDef<Product>[] => [
     {
       accessorKey: "name",
-      header: "Product Unit",
+      header: "Product",
       cell: ({ row }) => (
         <div className="flex items-center gap-4">
           <div className="relative h-12 w-12 rounded-2xl overflow-hidden border border-border/40 shadow-inner group">
@@ -67,7 +67,7 @@ const createColumns = (
             </Avatar>
           </div>
           <div>
-            <div className="font-black text-foreground tracking-tight uppercase text-xs">{row.getValue("name")}</div>
+            <div className="font-bold text-foreground tracking-tight text-sm">{row.getValue("name")}</div>
             <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mt-1">ID: {row.original.id.slice(0, 8)}...</div>
           </div>
         </div>
@@ -75,16 +75,16 @@ const createColumns = (
     },
     {
       accessorKey: "description",
-      header: "Metrics / Descriptor",
+      header: "Description",
       cell: ({ row }) => (
         <div className="text-muted-foreground font-medium text-xs line-clamp-1 max-w-[200px] tracking-tight">
-          {row.getValue("description") || "No descriptors initialized."}
+          {row.getValue("description") || "No description provided."}
         </div>
       ),
     },
     {
       accessorKey: "price",
-      header: "Valuation",
+      header: "Price",
       cell: ({ row }) => {
         const price = row.getValue("price") as number;
         const formattedPrice = new Intl.NumberFormat("vi-VN", {
@@ -93,27 +93,27 @@ const createColumns = (
           minimumFractionDigits: 0,
         }).format(price);
         return (
-          <span className="font-fira-mono font-black text-primary text-sm tracking-tighter tabular-nums">{formattedPrice}</span>
+          <span className="font-fira-mono font-bold text-primary text-sm tracking-tighter tabular-nums">{formattedPrice}</span>
         );
       },
     },
     {
       accessorKey: "brandId",
-      header: "Domain Parent",
+      header: "Brand",
       cell: ({ row }) => {
         const brandId = row.getValue("brandId") as string;
         const brand = brands.find(b => b.id === brandId);
         return (
-          <Badge variant="outline" className="h-7 border-border/40 bg-muted/20 font-black text-[10px] uppercase tracking-widest text-muted-foreground px-3 rounded-lg overflow-hidden max-w-[120px] justify-start gap-2">
+          <Badge variant="outline" className="h-7 border-border/40 bg-muted/20 font-bold text-[10px] uppercase tracking-widest text-muted-foreground px-3 rounded-lg overflow-hidden max-w-[120px] justify-start gap-2">
             <div className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
-            <span className="truncate">{brand?.name || 'UNKNOWN'}</span>
+            <span className="truncate">{brand?.name || 'Unknown'}</span>
           </Badge>
         );
       },
     },
     {
       accessorKey: "images",
-      header: "Assets",
+      header: "Images",
       cell: ({ row }) => {
         const images = row.getValue("images") as string[] | null;
         const count = images?.length || 0;
@@ -126,24 +126,24 @@ const createColumns = (
                 </div>
               ))}
             </div>
-            {count > 3 && <span className="text-[10px] font-black text-muted-foreground">+{count - 3}</span>}
-            {count === 0 && <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">NONE</span>}
+            {count > 3 && <span className="text-[10px] font-bold text-muted-foreground">+{count - 3}</span>}
+            {count === 0 && <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">NONE</span>}
           </div>
         );
       },
     },
     {
       id: "actions",
-      header: "Matrix",
+      header: "",
       cell: ({ row }) => {
         const actions: ActionItem[] = [
           {
-            label: "Run Diagnostics",
+            label: "View Details",
             icon: <Eye className="h-4 w-4 stroke-[2.5]" />,
             onClick: () => handleViewProduct(row.original),
           },
           {
-            label: "Modify Structure",
+            label: "Edit Product",
             icon: <Pencil className="h-4 w-4 stroke-[2.5]" />,
             onClick: () => handleEditProduct(row.original),
           },
@@ -250,13 +250,13 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
         <div className="h-24 w-24 rounded-3xl bg-muted/20 flex items-center justify-center mb-8">
           <Package className="h-12 w-12 text-muted-foreground stroke-[1.5]" />
         </div>
-        <h2 className="text-3xl font-black uppercase tracking-tight mb-3">Domain Missing</h2>
+        <h2 className="text-3xl font-black uppercase tracking-tight mb-3">No Brand Selected</h2>
         <p className="text-muted-foreground font-medium mb-10 text-center max-w-sm">
-          Please select an active brand node to initialize the product repository view.
+          Please select an active brand node to view its products.
         </p>
-        <Button asChild className="h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[11px] bg-primary shadow-2xl shadow-primary/20 hover:scale-105 transition-all">
+        <Button asChild className="h-12 px-8 rounded-xl font-bold uppercase tracking-widest text-[11px] bg-primary shadow-2xl shadow-primary/20 hover:scale-105 transition-all">
           <Link href="/dashboard/brands">
-            Initialize Brands Matrix
+            Go to Brands
           </Link>
         </Button>
       </div>
@@ -266,88 +266,88 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
   return (
     <div className="max-w-[1440px] mx-auto font-fira-sans">
       <div className="space-y-10 p-6 lg:p-10 bg-background">
-        {/* Breadcrumb - High Finesse */}
+        {/* Breadcrumb */}
         {!teamId && (
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard" className="text-[10px] font-black uppercase tracking-[0.2em]">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/dashboard" className="text-[10px] font-bold uppercase tracking-[0.2em]">Dashboard</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard/brands" className="text-[10px] font-black uppercase tracking-[0.2em]">Brands</BreadcrumbLink>
+                <BreadcrumbLink href="/dashboard/brands" className="text-[10px] font-bold uppercase tracking-[0.2em]">Brands</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">{currentBrand?.name || 'Inventory'}</BreadcrumbPage>
+                <BreadcrumbPage className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">{currentBrand?.name || 'Inventory'}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         )}
 
-        {/* Tactical Header */}
+        {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <div className="h-2 w-8 bg-primary rounded-full" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Inventory Node</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary/70">Product Inventory</span>
             </div>
             <h1 className="text-4xl lg:text-5xl font-black tracking-tighter text-foreground uppercase leading-none">
               {teamId ? 'Team' : (currentBrand?.name || 'Local')} <span className="text-primary italic">Products</span>
             </h1>
             <p className="text-lg text-muted-foreground font-medium max-w-2xl tracking-tight leading-relaxed">
-              Managing the asset matrix for {currentBrand?.name || 'this partition'}. Synchronize products for campaign deployment.
+              Manage your product catalog for {currentBrand?.name || 'this brand'}. Add products for use in your campaigns.
             </p>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="px-6 py-4 bg-card/40 backdrop-blur-xl rounded-2xl border border-border/40 shadow-xl flex items-center gap-6">
               <div className="space-y-1 border-r border-border/20 pr-6">
-                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">Asset Units</div>
+                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">Total Costs</div>
                 <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-foreground">{filteredProducts.length}</div>
               </div>
               <div className="space-y-1">
-                <div className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">Status</div>
-                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-primary">SYNCED</div>
+                <div className="text-[10px] font-bold text-primary uppercase tracking-widest leading-none">Status</div>
+                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-primary">Active</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Command Matrix Toolbar */}
+        {/* Action Toolbar */}
         <div className="flex flex-col xl:flex-row items-stretch xl:items-center gap-4 bg-muted/20 p-4 rounded-[2.5rem] border border-border/40">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground stroke-[2.5]" />
             <Input
-              placeholder="SEARCH PRODUCT REGISTRY..."
+              placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 h-12 bg-background/50 border-border/40 rounded-xl font-black text-[10px] uppercase tracking-widest focus:ring-primary/20"
+              className="pl-12 h-12 bg-background/50 border-border/40 rounded-xl font-bold text-[10px] uppercase tracking-widest focus:ring-primary/20"
             />
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             {teamId && (
               <Select value={scopeBrandId} onValueChange={(value) => setScopeBrandId(value as string | "team-all")}>
-                <SelectTrigger className="h-12 w-full sm:w-[200px] bg-background/50 border-border/40 rounded-xl font-black text-[10px] uppercase tracking-widest">
-                  <SelectValue placeholder="DOMAIN" />
+                <SelectTrigger className="h-12 w-full sm:w-[200px] bg-background/50 border-border/40 rounded-xl font-bold text-[10px] uppercase tracking-widest">
+                  <SelectValue placeholder="BRAND" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-border/40 font-fira-sans">
-                  <SelectItem value="team-all" className="font-black uppercase text-[10px] tracking-widest">ALL DOMAINS</SelectItem>
+                  <SelectItem value="team-all" className="font-bold uppercase text-[10px] tracking-widest">All Brands</SelectItem>
                   {teamBrands.map((b: Brand) => (
-                    <SelectItem key={b.id} value={b.id} className="font-black uppercase text-[10px] tracking-widest">{b.name}</SelectItem>
+                    <SelectItem key={b.id} value={b.id} className="font-bold uppercase text-[10px] tracking-widest">{b.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             )}
 
             <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
-              <SelectTrigger className="h-12 w-full sm:w-[130px] bg-background/50 border-border/40 rounded-xl font-black text-[10px] uppercase tracking-widest">
-                <SelectValue placeholder="DENSITY" />
+              <SelectTrigger className="h-12 w-full sm:w-[130px] bg-background/50 border-border/40 rounded-xl font-bold text-[10px] uppercase tracking-widest">
+                <SelectValue placeholder="ROWS" />
               </SelectTrigger>
               <SelectContent className="rounded-xl border-border/40 font-fira-sans">
                 {[5, 10, 20, 50].map((size) => (
-                  <SelectItem key={size} value={String(size)} className="font-black uppercase text-[10px] tracking-widest">{size} NODES</SelectItem>
+                  <SelectItem key={size} value={String(size)} className="font-bold uppercase text-[10px] tracking-widest">{size} Products</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -359,15 +359,15 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
               teamId={teamId}
               onSuccess={handleRefresh}
             >
-              <Button className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02]">
+              <Button className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-bold uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02]">
                 <Plus className="mr-2 h-4 w-4 stroke-[3]" />
-                Deploy Asset
+                Add Product
               </Button>
             </ProductModal>
           </div>
         </div>
 
-        {/* Data Matrix Grid */}
+        {/* Product List */}
         <div className="relative">
           <div className="absolute -inset-1 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-[2.5rem] blur-2xl opacity-50" />
           <div className="relative">
@@ -386,9 +386,9 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
                     <Package className="h-12 w-12 text-primary stroke-[1.5]" />
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-3xl font-black uppercase tracking-tight">Repository Purified</h3>
+                    <h3 className="text-3xl font-black uppercase tracking-tight">No Products Found</h3>
                     <p className="text-muted-foreground font-medium max-w-sm mx-auto tracking-tight leading-relaxed">
-                      No products detected in {currentBrand?.name || 'this domain'}. Initialize the asset matrix to enable campaign deployment.
+                      No products found in {currentBrand?.name || 'this brand'}. Add your first product to get started.
                     </p>
                   </div>
                   <ProductModal
@@ -398,9 +398,9 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
                     teamId={teamId}
                     onSuccess={handleRefresh}
                   >
-                    <Button className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-primary/40 transition-all hover:scale-110">
+                    <Button className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-bold uppercase tracking-[0.2em] text-xs shadow-2xl shadow-primary/40 transition-all hover:scale-110">
                       <Plus className="mr-3 h-5 w-5 stroke-[3]" />
-                      Initialize First Asset
+                      Add First Product
                     </Button>
                   </ProductModal>
                 </CardContent>
@@ -409,7 +409,7 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
           </div>
         </div>
 
-        {/* Insight Protocol */}
+        {/* Insights */}
         <Card className="border-border/40 bg-primary/5 backdrop-blur-md rounded-[2.5rem] p-10 overflow-hidden group relative">
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-125 transition-transform duration-1000">
             <Package className="h-32 w-32" />
@@ -419,16 +419,16 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
               <Package className="h-8 w-8 stroke-[2.5]" />
             </div>
             <div className="space-y-3">
-              <h4 className="text-2xl font-black uppercase tracking-tight">Inventory Optimization active</h4>
+              <h4 className="text-2xl font-bold uppercase tracking-tight">Inventory Insights</h4>
               <p className="text-muted-foreground font-medium max-w-3xl text-lg leading-relaxed tracking-tight">
-                Managed assets for <span className="text-primary font-black uppercase tracking-widest">{currentBrand?.name || 'GLOBAL'}</span> are
-                synchronized across the global creative matrix. AI-assisted categorization is performing with <span className="text-primary font-black">99.2%</span> accuracy.
+                Product catalog for <span className="text-primary font-bold uppercase tracking-widest">{currentBrand?.name || 'Global'}</span> is
+                up to date. AI categorization accuracy is <span className="text-primary font-bold">99.2%</span>.
               </p>
             </div>
           </div>
         </Card>
 
-        {/* Product Modal Matrix */}
+        {/* Product Details Modal */}
         {viewingProduct && (
           <AlertDialog open={isViewOpen} onOpenChange={setIsViewOpen}>
             <AlertDialogContent className="rounded-[3rem] border-border/40 bg-background/95 backdrop-blur-3xl p-10 max-w-2xl font-fira-sans shadow-[0_0_100px_rgba(0,0,0,0.4)]">
@@ -436,12 +436,12 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
                 <div className="flex items-center justify-between">
                   <AlertDialogTitle className="flex items-center gap-3 text-3xl font-black uppercase tracking-tight">
                     <Package className="h-7 w-7 text-primary" />
-                    Asset Diagnostics
+                    Product Details
                   </AlertDialogTitle>
-                  <Badge className="bg-primary/20 text-primary border-none font-black text-[10px] px-3 py-1 rounded-lg">LIVE NODE</Badge>
+                  <Badge className="bg-primary/20 text-primary border-none font-bold text-[10px] px-3 py-1 rounded-lg">Active</Badge>
                 </div>
                 <AlertDialogDescription className="text-base font-bold text-primary italic uppercase tracking-[0.2em] opacity-80 border-l-4 border-primary pl-4">
-                  Identity: {viewingProduct.name}
+                  Product: {viewingProduct.name}
                 </AlertDialogDescription>
               </AlertDialogHeader>
 
@@ -453,29 +453,29 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
                   <div className="flex-1 space-y-8 w-full">
                     <div className="grid grid-cols-1 xs:grid-cols-2 gap-8">
                       <div className="space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Domain Origin</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Brand</p>
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                          <p className="font-black uppercase tracking-tight text-sm text-foreground">{safeBrands.find(b => b.id === viewingProduct.brandId)?.name || 'UNKNOWN'}</p>
+                          <p className="font-bold uppercase tracking-tight text-sm text-foreground">{safeBrands.find(b => b.id === viewingProduct.brandId)?.name || 'Unknown'}</p>
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Unit Valuation</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</p>
                         <p className="font-fira-mono font-black text-2xl text-primary leading-none tracking-tighter">
                           {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", minimumFractionDigits: 0 }).format(Number(viewingProduct.price || 0))}
                         </p>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Analytical Description</p>
-                      <p className="text-sm font-medium leading-relaxed tracking-tight text-muted-foreground">{viewingProduct.description || 'NO METADATA AVAILABLE IN CURRENT SESSION.'}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Description</p>
+                      <p className="text-sm font-medium leading-relaxed tracking-tight text-muted-foreground">{viewingProduct.description || 'No description available.'}</p>
                     </div>
                   </div>
                 </div>
 
                 {Array.isArray(viewingProduct.images) && viewingProduct.images.length > 1 && (
                   <div className="space-y-4">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Asset Matrix Manifest</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Product Images</p>
                     <div className="flex gap-4 flex-wrap">
                       {viewingProduct.images.map((img, idx) => (
                         <div key={idx} className="relative h-20 w-20 rounded-2xl overflow-hidden border border-border/40 hover:border-primary/50 transition-all cursor-pointer shadow-lg">
@@ -488,7 +488,7 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
               </div>
 
               <AlertDialogFooter className="sm:justify-center">
-                <AlertDialogAction className="h-14 px-12 rounded-2xl font-black uppercase tracking-widest text-[11px] bg-primary shadow-2xl shadow-primary/30" onClick={() => setIsViewOpen(false)}>Terminate Diagnostics</AlertDialogAction>
+                <AlertDialogAction className="h-14 px-12 rounded-2xl font-bold uppercase tracking-widest text-[11px] bg-primary shadow-2xl shadow-primary/30" onClick={() => setIsViewOpen(false)}>Close</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

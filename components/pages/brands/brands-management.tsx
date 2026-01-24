@@ -52,7 +52,7 @@ const createColumns = (
 ): ColumnDef<Brand>[] => [
     {
       accessorKey: "name",
-      header: "Brand Profile",
+      header: "Brand Name",
       cell: ({ row }) => (
         <div className="flex items-center gap-4 py-1">
           <div className="relative group">
@@ -72,7 +72,7 @@ const createColumns = (
           </div>
           <div className="space-y-0.5">
             <div className="font-bold text-foreground text-base leading-none">{row.getValue("name")}</div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">Verified Identity</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Verified Brand</p>
           </div>
         </div>
       ),
@@ -83,8 +83,8 @@ const createColumns = (
       cell: ({ row }) => (
         <div className="text-sm text-balance max-w-[280px]">
           {row.getValue("description") ? (
-            <p className="text-muted-foreground line-clamp-2 italic leading-relaxed">
-              &ldquo;{row.getValue("description")}&rdquo;
+            <p className="text-muted-foreground line-clamp-2 leading-relaxed">
+              {row.getValue("description")}
             </p>
           ) : (
             <span className="text-muted-foreground/40 italic">No description provided</span>
@@ -143,7 +143,6 @@ export function BrandsManagement() {
 
   // Ensure brands and profiles are always arrays
   const safeBrands = Array.isArray(brands) ? brands : [];
-  // Profiles removed from this page
 
   // Filter brands based on search term
   const filteredBrands = safeBrands.filter(brand => {
@@ -216,12 +215,11 @@ export function BrandsManagement() {
 
   // Main UI
   const totalBrands = safeBrands.length;
-  // Profiles stat removed
 
   return (
     <div className="max-w-[1440px] mx-auto px-6 lg:px-10 py-10 lg:py-14 bg-background font-fira-sans">
       <div className="space-y-12">
-        {/* Breadcrumb - Clean & Strategic */}
+        {/* Breadcrumb */}
         <Breadcrumb className="mb-4">
           <BreadcrumbList className="gap-2">
             <BreadcrumbItem>
@@ -229,30 +227,30 @@ export function BrandsManagement() {
             </BreadcrumbItem>
             <BreadcrumbSeparator className="text-muted-foreground/30 scale-75" />
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground/80">Entity Vault</BreadcrumbPage>
+              <BreadcrumbPage className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground/80">My Brands</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
-        {/* Header Section - Modern SaaS Aesthetic */}
+        {/* Header Section */}
         <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-10">
           <div className="space-y-4 max-w-2xl">
             <div className="flex items-center gap-3">
               <div className="h-2 w-8 bg-primary rounded-full" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Identity Architecture</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary/70">Brand Management</span>
             </div>
             <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-foreground leading-[1.1] selection:bg-primary/20">
-              Brand Identities
+              My <span className="text-primary">Brands</span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed font-medium">
-              Consolidate and govern your brand assets, guidelines, and visual identities within a central AI-powered vault.
+              Manage your brand profiles, assets, and visual identities in one place.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-8 p-1">
             <div className="group relative flex flex-col min-w-[140px] transition-all">
               <span className="text-4xl font-black text-foreground font-fira-mono tracking-tighter group-hover:text-primary transition-colors">{totalBrands}</span>
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1 px-0.5">Primary Entities</span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1 px-0.5">Active Brands</span>
               <div className="absolute -bottom-2 left-0 w-0 h-0.5 bg-primary/20 group-hover:w-full transition-all duration-500" />
             </div>
 
@@ -261,20 +259,20 @@ export function BrandsManagement() {
                 <span className="text-4xl font-black text-primary font-fira-mono tracking-tighter">Active</span>
                 <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
               </div>
-              <span className="text-[10px] font-bold text-primary/70 uppercase tracking-widest mt-1 px-0.5">Deployment Status</span>
+              <span className="text-[10px] font-bold text-primary/70 uppercase tracking-widest mt-1 px-0.5">System Status</span>
               <div className="absolute -bottom-2 left-0 w-0 h-0.5 bg-primary/20 group-hover:w-full transition-all duration-500" />
             </div>
           </div>
         </div>
 
-        {/* Toolbar - Precision Controls */}
+        {/* Toolbar */}
         <div className="sticky top-20 z-40 flex flex-col md:flex-row items-center justify-between gap-6 p-5 bg-background/60 backdrop-blur-xl border border-border/40 rounded-[2rem] shadow-xl shadow-foreground/[0.02]">
           <div className="flex items-center gap-5 flex-wrap w-full md:w-auto">
             {/* Search */}
             <div className="relative w-full sm:w-96 group">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input
-                placeholder="Search vault for brand keys..."
+                placeholder="Search brands..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-11 h-12 border-none bg-muted/30 focus-visible:ring-primary/20 rounded-2xl font-medium transition-all duration-300 placeholder:text-muted-foreground/40"
@@ -286,12 +284,12 @@ export function BrandsManagement() {
             {/* Rows Selector */}
             <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
               <SelectTrigger className="h-10 px-4 border-none shadow-none bg-muted/30 hover:bg-muted/50 rounded-xl transition-all font-bold text-[11px] uppercase tracking-wider min-w-[150px]">
-                <SelectValue placeholder="DENSITY" />
+                <SelectValue placeholder="ROWS" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-border/40">
                 {[5, 10, 20, 50].map((size) => (
                   <SelectItem key={size} value={String(size)} className="rounded-xl font-bold">
-                    {size} ENTITIES / PAGE
+                    {size} PER PAGE
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -299,14 +297,10 @@ export function BrandsManagement() {
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
-            <div className="hidden sm:flex flex-col items-end px-2 pointer-events-none opacity-40 text-right">
-              <span className="text-[9px] font-black uppercase tracking-widest leading-tight">Sync New</span>
-              <span className="text-[11px] font-bold">Asset Node</span>
-            </div>
             <BrandModal mode="create" onSuccess={handleRefresh}>
-              <Button className="w-full md:w-auto rounded-[1.2rem] h-14 px-8 bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-wider shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
+              <Button className="w-full md:w-auto rounded-[1.2rem] h-14 px-8 bg-primary hover:bg-primary/95 text-primary-foreground font-bold uppercase tracking-wider shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
                 <Plus className="mr-2 h-5 w-5 stroke-[3]" />
-                Register Identity
+                Add New Brand
               </Button>
             </BrandModal>
           </div>
@@ -340,21 +334,21 @@ export function BrandsManagement() {
             </div>
             <div className="space-y-4 relative z-10 max-w-sm mx-auto">
               <h3 className="text-3xl font-black text-foreground tracking-tight leading-none uppercase">
-                {searchTerm ? 'Zero Matches' : 'Vault Empty'}
+                {searchTerm ? 'No Matches Found' : 'No Brands Yet'}
               </h3>
               <p className="text-muted-foreground font-medium leading-relaxed">
                 {searchTerm
-                  ? 'The identity search did not yield any registered nodes matching your query parameters.'
-                  : 'Start by establishing your brand identities. These nodes serve as the foundation for all AI content generation.'
+                  ? 'We couldn\'t find any brands matching your search.'
+                  : 'Start by creating your first brand profile. This will act as the home for your brand assets.'
                 }
               </p>
             </div>
             {!searchTerm && (
               <div className="mt-12 relative z-10">
                 <BrandModal mode="create" onSuccess={handleRefresh}>
-                  <Button className="rounded-full px-12 h-16 text-lg font-black uppercase tracking-widest transition-all hover:scale-110 active:scale-90 shadow-2xl shadow-primary/20">
+                  <Button className="rounded-full px-12 h-16 text-lg font-bold uppercase tracking-widest transition-all hover:scale-110 active:scale-90 shadow-2xl shadow-primary/20">
                     <Plus className="mr-3 h-5 w-5 stroke-[3]" />
-                    Initiate Setup
+                    Create Brand
                   </Button>
                 </BrandModal>
               </div>
@@ -376,7 +370,7 @@ export function BrandsManagement() {
           />
         )}
 
-        {/* Terminate Sequence Dialog */}
+        {/* Delete Dialog */}
         <AlertDialog open={!!deleteBrandId} onOpenChange={() => setDeleteBrandId(null)}>
           <AlertDialogContent className="rounded-[2.5rem] border-border/40 bg-background/95 backdrop-blur-xl">
             <AlertDialogHeader className="space-y-4">
@@ -384,20 +378,20 @@ export function BrandsManagement() {
                 <AlertTriangle className="h-8 w-8" />
               </div>
               <AlertDialogTitle className="text-3xl font-black uppercase tracking-tight">
-                Purge Identity?
+                Delete Brand?
               </AlertDialogTitle>
               <AlertDialogDescription className="text-base font-medium leading-relaxed">
-                This action initiates a permanent deletion protocol. The brand identity and all associated product nodes will be purged from the archive. This sequence cannot be reversed.
+                This will permanently delete this brand and all associated products. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="mt-10 gap-3">
-              <AlertDialogCancel className="rounded-2xl h-12 px-6 font-bold border-border/40">Abort</AlertDialogCancel>
+              <AlertDialogCancel className="rounded-2xl h-12 px-6 font-bold border-border/40">Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={confirmDeleteBrand}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-2xl h-12 px-8 font-black uppercase tracking-widest shadow-xl shadow-destructive/20"
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-2xl h-12 px-8 font-bold uppercase tracking-widest shadow-xl shadow-destructive/20"
                 disabled={deleteBrandMutation.isPending}
               >
-                {deleteBrandMutation.isPending ? 'Purging...' : 'Confirm Purge'}
+                {deleteBrandMutation.isPending ? 'Deleting...' : 'Delete Brand'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

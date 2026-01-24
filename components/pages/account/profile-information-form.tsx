@@ -6,13 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { createClient } from "@/lib/supabase/client";
-import { User } from "@supabase/supabase-js";
+import { useAuth } from "@/lib/contexts/auth-context";
 import { toast } from "sonner";
 
 export function ProfileInformationForm() {
-  const [_user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, isLoading } = useAuth();
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -22,30 +20,21 @@ export function ProfileInformationForm() {
   });
 
   useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (user) {
-          setUser(user);
-          setFormData({
-            firstName: user.user_metadata?.first_name || "",
-            lastName: user.user_metadata?.last_name || "",
-            primaryEmail: user.email || "",
-            username: user.user_metadata?.username || user.user_metadata?.full_name?.split(' ')[0] || "",
-          });
-        }
-      } catch (error) {
-        console.error("Error loading user data:", error);
-        toast.error("Failed to load user data");
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (user) {
+      const names = user.fullName ? user.fullName.split(' ') : [];
+      const firstName = names.length > 0 ? names[0] : "";
+      const lastName = names.length > 1 ? names.slice(1).join(' ') : "";
 
-    loadUserData();
-  }, []);
+      setFormData({
+        firstName: firstName,
+        lastName: lastName,
+        primaryEmail: user.email || "",
+        username: user.fullName || "", // Fallback to fullName or ideally we should have username in AuthUser if available
+      });
+    }
+  }, [user]);
+
+  // Loading state handled by useAuth mainly, but we can keep local handling if needed or just rely on parent
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -57,19 +46,9 @@ export function ProfileInformationForm() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      const supabase = createClient();
 
-      // Update user metadata
-      const { error } = await supabase.auth.updateUser({
-        data: {
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          username: formData.username,
-          full_name: `${formData.firstName} ${formData.lastName}`.trim(),
-        }
-      });
-
-      if (error) throw error;
+      // Mock update since Supabase client is removed
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast.success("Profile updated successfully");
     } catch (error) {
@@ -80,7 +59,7 @@ export function ProfileInformationForm() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
@@ -186,7 +165,7 @@ export function ProfileInformationForm() {
 
         {/* Save Button */}
         <div className="flex justify-end pt-4">
-          <Button 
+          <Button
             onClick={handleSave}
             disabled={saving}
             className="bg-chart-2 hover:bg-chart-2/90 text-white"

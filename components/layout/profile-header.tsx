@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import Link from "next/link"
 import { ProfileSidebar } from "@/components/layout/profile-sidebar"
 import { Zap, Menu } from "lucide-react"
 import { SearchCommand } from "@/components/search/search-command"
@@ -18,31 +19,36 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
 
   return (
     <>
-      <header className="flex h-12 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-2 px-2 lg:px-3">
+      <header className="fixed top-0 left-0 right-0 z-50 flex h-16 shrink-0 items-center gap-2 border-b border-border/40 bg-background/80 backdrop-blur-3xl supports-[backdrop-filter]:bg-background/60 shadow-sm">
+        <div className="flex items-center gap-2 px-4 lg:px-6">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden">
-                <Menu className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="lg:hidden rounded-xl">
+                <Menu className="h-5 w-5 stroke-[2.5]" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 p-0">
+            <SheetContent side="left" className="w-72 p-0 border-r border-border/40 bg-background/95 backdrop-blur-3xl">
               <SheetTitle className="sr-only">Profile Navigation</SheetTitle>
               <div className="h-full">
-                <ProfileSidebar/>
+                <ProfileSidebar />
               </div>
             </SheetContent>
           </Sheet>
 
-          <div className="flex items-center gap-2">
-            <Zap className="size-4 lg:size-5 text-primary" />
-            <span className="font-semibold text-sm lg:text-base">AISAM</span>
-          </div>
+          <Link href="/overview" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
+            <div className="h-9 w-9 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.2)]">
+              <Zap className="size-5 text-primary stroke-[3]" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-black text-lg tracking-tight leading-none">AISAM</span>
+              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] leading-none">Nexus Protocol</span>
+            </div>
+          </Link>
         </div>
 
         <div className="flex-1"></div>
 
-        <div className="flex items-center gap-1 lg:gap-2 px-2 lg:px-3">
+        <div className="flex items-center gap-2 lg:gap-4 px-4 lg:px-6">
           <div className="hidden lg:block">
             <SearchCommand />
           </div>
@@ -51,9 +57,14 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
             <MobileSearchCommand />
           </div>
 
+          <div className="h-8 w-px bg-border/40 mx-2 hidden lg:block" />
+
           <EnhancedUserMenu user={user} />
         </div>
       </header>
+      {/* Spacer to prevent content from going under fixed header */}
+      <div className="h-16" />
     </>
   )
 }
+

@@ -8,7 +8,6 @@ import {
 } from '@/hooks/use-teams'
 import { TeamMemberResponseDto } from '@/lib/types/aisam-types'
 import { toast } from 'sonner'
-import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -42,100 +41,100 @@ const createColumns = (
   canManage: boolean,
   isDeleting: boolean
 ): ColumnDef<TeamMemberResponseDto>[] => [
-  {
-    accessorKey: "userEmail",
-    header: "Member",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-3">
-        <Avatar className="h-10 w-10">
-          <AvatarFallback>
-            <User2 className="h-4 w-4" />
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <div className="font-semibold text-gray-800">{row.original.userEmail || '(no email)'}</div>
-          <div className="text-sm text-muted-foreground">
-            {row.original.userEmail ? row.original.userEmail.split('@')[0] : `User-${row.original.userId.slice(0, 8)}`}
+    {
+      accessorKey: "userEmail",
+      header: "Member",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <Avatar className="h-10 w-10">
+            <AvatarFallback>
+              <User2 className="h-4 w-4" />
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <div className="font-semibold text-gray-800">{row.original.userEmail || '(no email)'}</div>
+            <div className="text-sm text-muted-foreground">
+              {row.original.userEmail ? row.original.userEmail.split('@')[0] : `User-${row.original.userId.slice(0, 8)}`}
+            </div>
           </div>
         </div>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => (
-      <div className="text-center">
-        <Badge variant="outline" className="text-xs">
-          {row.getValue("role") || 'member'}
-        </Badge>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "permissions",
-    header: "Permissions",
-    cell: ({ row }) => {
-      const permissions = row.getValue("permissions") as string[] || [];
-      return (
+      ),
+    },
+    {
+      accessorKey: "role",
+      header: "Role",
+      cell: ({ row }) => (
         <div className="text-center">
           <Badge variant="outline" className="text-xs">
-            {permissions.length} permission{permissions.length !== 1 ? 's' : ''}
+            {row.getValue("role") || 'member'}
           </Badge>
         </div>
-      );
+      ),
     },
-  },
-  {
-    accessorKey: "isActive",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="text-center">
-        <Badge variant={row.getValue("isActive") ? 'default' : 'secondary'} className="text-xs">
-          {row.getValue("isActive") ? 'Active' : 'Inactive'}
-        </Badge>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "joinedAt",
-    header: "Joined",
-    cell: ({ row }) => {
-      const date = row.getValue("joinedAt") as string;
-      return (
-        <span className="text-sm text-muted-foreground text-center block">
-          {date ? new Date(date).toLocaleDateString() : '-'}
-        </span>
-      );
+    {
+      accessorKey: "permissions",
+      header: "Permissions",
+      cell: ({ row }) => {
+        const permissions = row.getValue("permissions") as string[] || [];
+        return (
+          <div className="text-center">
+            <Badge variant="outline" className="text-xs">
+              {permissions.length} permission{permissions.length !== 1 ? 's' : ''}
+            </Badge>
+          </div>
+        );
+      },
     },
-  },
-  {
-    id: "actions",
-    header: "",
-    size: 50,
-    maxSize: 50,
-    cell: ({ row }) => {
-      if (!canManage) return null;
-      
-      const actions: ActionItem[] = [
-        {
-          label: "Update",
-          icon: <Edit className="h-4 w-4" />,
-          onClick: () => handleEditMember(row.original),
-        },
-        {
-          label: "Delete",
-          icon: <Trash2 className="h-4 w-4" />,
-          onClick: () => handleDeleteMember(row.original.id),
-          variant: "destructive" as const,
-          disabled: isDeleting,
-        },
-      ];
+    {
+      accessorKey: "isActive",
+      header: "Status",
+      cell: ({ row }) => (
+        <div className="text-center">
+          <Badge variant={row.getValue("isActive") ? 'default' : 'secondary'} className="text-xs">
+            {row.getValue("isActive") ? 'Active' : 'Inactive'}
+          </Badge>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "joinedAt",
+      header: "Joined",
+      cell: ({ row }) => {
+        const date = row.getValue("joinedAt") as string;
+        return (
+          <span className="text-sm text-muted-foreground text-center block">
+            {date ? new Date(date).toLocaleDateString() : '-'}
+          </span>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "",
+      size: 50,
+      maxSize: 50,
+      cell: ({ row }) => {
+        if (!canManage) return null;
 
-      return <ActionsDropdown actions={actions} disabled={isDeleting} />;
+        const actions: ActionItem[] = [
+          {
+            label: "Update",
+            icon: <Edit className="h-4 w-4" />,
+            onClick: () => handleEditMember(row.original),
+          },
+          {
+            label: "Delete",
+            icon: <Trash2 className="h-4 w-4" />,
+            onClick: () => handleDeleteMember(row.original.id),
+            variant: "destructive" as const,
+            disabled: isDeleting,
+          },
+        ];
+
+        return <ActionsDropdown actions={actions} disabled={isDeleting} />;
+      },
     },
-  },
-];
+  ];
 
 export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInviteMember }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -155,47 +154,37 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
     return data.filter(member => {
       if (!searchTerm) return true;
       return member.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-             member.role?.toLowerCase().includes(searchTerm.toLowerCase());
+        member.role?.toLowerCase().includes(searchTerm.toLowerCase());
     });
   }, [data, searchTerm]);
 
   const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
-    const checkPermissions = async () => {
-      try {
-        const supabase = createClient()
-        const { data: { session } } = await supabase.auth.getSession()
-
-        // Check if team has no members (team creator case)
-        if (!data || data.length === 0) {
-          setAllowed(true)
-          return
-        }
-
-        // Check if user is in team members and has ADD_MEMBER permission
-        const currentUserMember = data?.find(member =>
-          member.userEmail === session?.user?.email
-        )
-
-        if (currentUserMember) {
-          // If user has ADD_MEMBER permission, allow
-          if (currentUserMember.permissions?.includes('ADD_MEMBER')) {
-            setAllowed(true)
-            return
-          }
-        }
-
-        setAllowed(false)
-      } catch {
-        setAllowed(false)
+    const checkPermissions = () => {
+      // Check if team has no members (team creator case)
+      if (!data || data.length === 0) {
+        setAllowed(true)
+        return
       }
+
+      // Get current user email from local storage or context if you have it
+      // For now assuming canManage prop is passed correctly from parent which knows user
+      // But if we need user, we should pass it or use useAuth
+      // setAllowed(canManage) - just rely on parent prop or check data
+      // Let's assume canManage prop is sufficient for UI, but if we need deeper check:
+      /*
+      const currentUserMember = data?.find(member =>
+        // member.userEmail === user?.email
+        false
+      )
+      */
+      // For now respect canManage prop
+      setAllowed(canManage)
     }
 
-    if (data) {
-      checkPermissions()
-    }
-  }, [canManage, teamQuery.data, data.length]) // Use data.length instead of data to prevent infinite loop
+    checkPermissions()
+  }, [canManage, data]) // Removed teamQuery.data to reduce dependencies
 
 
 
@@ -205,7 +194,7 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
 
   const confirmDeleteMember = async () => {
     if (!deleteMemberId) return;
-    
+
     const memberToDelete = data.find(m => m.id === deleteMemberId);
     const memberEmail = memberToDelete?.userEmail || 'this member';
 
@@ -305,7 +294,7 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
       {filteredMembers.length > 0 ? (
         <CustomTable
           columns={createColumns(
-            onEditMember || (() => {}),
+            onEditMember || (() => { }),
             handleDeleteMember,
             canManage,
             deleteMemberMutation.isPending

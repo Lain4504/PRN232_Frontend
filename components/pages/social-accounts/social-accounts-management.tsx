@@ -11,41 +11,12 @@ import { ConnectModal } from "@/components/social/connect-modal";
 import { EmptyState } from "@/components/social/empty-state";
 import { LoadingState } from "@/components/social/loading-state";
 import { ErrorState } from "@/components/social/error-state";
-import { createClient } from "@/lib/supabase/client";
-import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/contexts/auth-context";
 
 export function SocialAccountsManagement() {
-  const [user, setUser] = useState<User | null>(null);
-  const [userLoading, setUserLoading] = useState(true);
+  const { user, isLoading: userLoading } = useAuth();
   const { data: accountsWithTargets = [], isLoading, error, refetch } = useGetAccountsWithTargets();
-  const supabase = createClient();
-
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        setUser(user);
-      } catch (error) {
-        console.error('Error getting user:', error);
-        toast.error('Failed to get user information');
-      } finally {
-        setUserLoading(false);
-      }
-    };
-
-    getUser();
-
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null);
-        setUserLoading(false);
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, [supabase.auth]);
 
   const handleRefresh = () => {
     refetch();
@@ -60,7 +31,7 @@ export function SocialAccountsManagement() {
             <Skeleton className="h-12 w-64 mb-3" />
             <Skeleton className="h-6 w-96 mb-10" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-10">
-              {[1, 2, 3].map(i => <Skeleton key={i} className="h-48 rounded-[2.5rem]" />)}
+              {[1, 2, 3].map(i => <Skeleton key={i} className="h-48 rounded-[2rem]" />)}
             </div>
           </div>
         </div>
@@ -142,7 +113,7 @@ export function SocialAccountsManagement() {
             </div>
 
             {socialAccounts.length > 0 ? (
-              <div className="bg-card/20 backdrop-blur-3xl rounded-[3rem] border border-border/40 p-2 shadow-2xl">
+              <div className="bg-card/20 backdrop-blur-3xl rounded-[2rem] border border-border/40 p-2 shadow-2xl">
                 <SocialAccountList
                   accounts={socialAccounts}
                   userId={user?.id || ""}
@@ -150,8 +121,8 @@ export function SocialAccountsManagement() {
                 />
               </div>
             ) : (
-              <div className="py-32 bg-card/20 backdrop-blur-sm border-4 border-dashed border-border/40 rounded-[4rem] text-center space-y-10 group">
-                <div className="mx-auto h-32 w-32 rounded-[3.5rem] bg-muted/20 flex items-center justify-center border-2 border-transparent group-hover:border-primary/20 transition-all duration-700">
+              <div className="py-32 bg-card/20 backdrop-blur-sm border-4 border-dashed border-border/40 rounded-[2rem] text-center space-y-10 group">
+                <div className="mx-auto h-32 w-32 rounded-[2rem] bg-muted/20 flex items-center justify-center border-2 border-transparent group-hover:border-primary/20 transition-all duration-700">
                   <Users className="h-16 w-16 text-muted-foreground stroke-[1]" />
                 </div>
                 <div className="space-y-3">
@@ -161,7 +132,7 @@ export function SocialAccountsManagement() {
                   </p>
                 </div>
                 <ConnectModal>
-                  <Button className="h-16 px-12 rounded-3xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-[0.2em] text-sm shadow-2xl shadow-primary/40 transition-all hover:scale-110">
+                  <Button className="h-16 px-12 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-[0.2em] text-sm shadow-2xl shadow-primary/40 transition-all hover:scale-110">
                     <Plus className="mr-4 h-6 w-6 stroke-[3]" />
                     Initialize Sync
                   </Button>
@@ -172,7 +143,7 @@ export function SocialAccountsManagement() {
 
           {/* Infrastructure Insight Section */}
           <div className="lg:col-span-12">
-            <Card className="bg-primary/5 border-primary/20 rounded-[3rem] overflow-hidden group">
+            <Card className="bg-primary/5 border-primary/20 rounded-[2rem] overflow-hidden group">
               <CardContent className="p-10 flex flex-col md:flex-row items-center gap-10">
                 <div className="h-20 w-20 rounded-[2rem] bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-2xl shadow-primary/30">
                   <AlertCircle className="h-10 w-10 stroke-[2.5]" />

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { User } from "@supabase/supabase-js"
+import { AuthUser } from "@/lib/types/auth"
 import { useTeam } from "@/lib/contexts/team-context"
 import { useUser } from "@/hooks/use-user"
 import { useQuery } from "@tanstack/react-query"
@@ -22,19 +22,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
 } from "@/components/ui/alert-dialog"
 
 interface TeamHeaderProps {
-  user?: User | null
+  user?: AuthUser | null
   team: {
     id: string
     name: string
@@ -103,7 +103,7 @@ export function TeamHeader({ user, team }: TeamHeaderProps) {
             <SheetContent side="left" className="w-72 p-0">
               <SheetTitle className="sr-only">Team Navigation</SheetTitle>
               <div className="h-full">
-                <TeamSidebar/>
+                <TeamSidebar />
               </div>
             </SheetContent>
           </Sheet>

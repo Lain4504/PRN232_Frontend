@@ -18,15 +18,15 @@ export function DashboardHeader() {
 
   return (
     <>
-      <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b border-border/40 bg-background/60 backdrop-blur-2xl px-6 sticky top-0 z-50 transition-all duration-300 font-fira-sans">
-        <div className="flex items-center gap-6">
+      <header className="fixed top-0 left-0 right-0 z-50 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-border/40 bg-background/80 backdrop-blur-3xl px-4 lg:px-6 transition-all duration-300 font-fira-sans shadow-sm">
+        <div className="flex items-center gap-4 lg:gap-6">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden rounded-xl hover:bg-muted/50 transition-colors">
-                <Menu className="h-5 w-5" />
+                <Menu className="h-5 w-5 stroke-[2.5]" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] p-0 border-r border-border/40 bg-background/95 backdrop-blur-xl">
+            <SheetContent side="left" className="w-[300px] p-0 border-r border-border/40 bg-background/95 backdrop-blur-3xl">
               <SheetTitle className="sr-only">Platform Navigation</SheetTitle>
               <div className="h-full py-4">
                 <DashboardSidebar />
@@ -34,13 +34,13 @@ export function DashboardHeader() {
             </SheetContent>
           </Sheet>
 
-          <Link href="/dashboard" className="flex items-center gap-3 group transition-all duration-300 hover:scale-[1.02]">
-            <div className="h-8 w-8 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25 transition-transform group-hover:rotate-[15deg] group-hover:scale-105">
-              <Zap className="h-4 w-4 text-primary-foreground fill-current" />
+          <Link href="/dashboard" className="flex items-center gap-3 group transition-all duration-300 hover:opacity-80">
+            <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.2)] transition-transform group-hover:scale-105">
+              <Zap className="h-5 w-5 text-primary stroke-[3]" />
             </div>
             <div className="flex flex-col">
-              <span className="font-black text-[10px] uppercase tracking-[0.4em] leading-none mb-0.5 text-primary/80">Aisam</span>
-              <span className="font-bold text-[8px] uppercase tracking-widest leading-none text-muted-foreground/60">Intelligence</span>
+              <span className="font-black text-lg tracking-tight leading-none text-foreground">AISAM</span>
+              <span className="font-bold text-[9px] uppercase tracking-[0.2em] leading-none text-muted-foreground">Intelligence</span>
             </div>
           </Link>
 
@@ -52,7 +52,7 @@ export function DashboardHeader() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 lg:gap-4">
           <div className="hidden md:block">
             <SearchCommand />
           </div>
@@ -61,7 +61,7 @@ export function DashboardHeader() {
             <MobileSearchCommand />
           </div>
 
-          <div className="h-6 w-px bg-border/40 mx-1" />
+          <div className="h-8 w-px bg-border/40 mx-1 hidden lg:block" />
 
           {user && (
             <div className="pl-1 transition-all duration-300 hover:scale-110 active:scale-95">
@@ -70,6 +70,8 @@ export function DashboardHeader() {
           )}
         </div>
       </header>
+      {/* Spacer to prevent content from going under fixed header */}
+      <div className="h-16" />
     </>
   )
 }

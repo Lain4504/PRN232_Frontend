@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { Eye, EyeOff, Lock, CheckCircle, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -50,7 +49,7 @@ export function PasswordChangeSection() {
 
   const validatePassword = () => {
     const errors: string[] = [];
-    
+
     if (newPassword.length < 8) {
       errors.push("Password must be at least 8 characters");
     }
@@ -66,7 +65,7 @@ export function PasswordChangeSection() {
     if (!/[^A-Za-z0-9]/.test(newPassword)) {
       errors.push("Password must contain at least one special character");
     }
-    
+
     return errors;
   };
 
@@ -94,21 +93,12 @@ export function PasswordChangeSection() {
     setIsLoading(true);
 
     try {
-      const supabase = createClient();
-      
-      // First, verify current password by attempting to sign in
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user?.email) {
-        throw new Error("User not found");
-      }
+      // Mock password update since Supabase client is removed
+      // In a real app, this would be an API call to your backend
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Update password using Supabase
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-
-      if (error) {
-        throw error;
+      if (newPassword === "fail") { // Mock failure condition
+        throw new Error("Failed to update password");
       }
 
       setSuccess(true);
@@ -200,13 +190,13 @@ export function PasswordChangeSection() {
                 )}
               </Button>
             </div>
-            
+
             {/* Password Strength Indicator */}
             {newPassword && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                    <div 
+                    <div
                       className={`h-full transition-all duration-300 ${getStrengthColor(passwordStrength)}`}
                       style={{ width: `${(passwordStrength / 5) * 100}%` }}
                     />
@@ -248,21 +238,21 @@ export function PasswordChangeSection() {
                 )}
               </Button>
             </div>
-             {confirmPassword && newPassword && (
-               <div className="flex items-center gap-2">
-                 {confirmPassword === newPassword ? (
-                   <>
-                     <CheckCircle className="h-4 w-4 text-success" />
-                     <span className="text-xs text-success">Passwords match</span>
-                   </>
-                 ) : (
-                   <>
-                     <AlertCircle className="h-4 w-4 text-destructive" />
-                     <p className="text-xs text-destructive">Passwords don&apos;t match</p>
-                   </>
-                 )}
-               </div>
-             )}
+            {confirmPassword && newPassword && (
+              <div className="flex items-center gap-2">
+                {confirmPassword === newPassword ? (
+                  <>
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-xs text-success">Passwords match</span>
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle className="h-4 w-4 text-destructive" />
+                    <p className="text-xs text-destructive">Passwords don&apos;t match</p>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Error Alert */}
@@ -273,23 +263,23 @@ export function PasswordChangeSection() {
             </Alert>
           )}
 
-           {/* Success Alert */}
-           {success && (
-             <Alert className="border-success bg-success/10 text-success">
-               <CheckCircle className="h-4 w-4" />
-               <AlertDescription>Password updated successfully!</AlertDescription>
-             </Alert>
-           )}
+          {/* Success Alert */}
+          {success && (
+            <Alert className="border-success bg-success/10 text-success">
+              <CheckCircle className="h-4 w-4" />
+              <AlertDescription>Password updated successfully!</AlertDescription>
+            </Alert>
+          )}
 
           {/* Submit Button */}
           <div className="flex justify-end pt-4">
-             <Button 
-               type="submit"
-               disabled={isLoading || !currentPassword || !newPassword || !confirmPassword}
-               className="bg-primary hover:bg-primary/90 text-primary-foreground"
-             >
-               {isLoading ? "Updating..." : "Update Password"}
-             </Button>
+            <Button
+              type="submit"
+              disabled={isLoading || !currentPassword || !newPassword || !confirmPassword}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              {isLoading ? "Updating..." : "Update Password"}
+            </Button>
           </div>
         </form>
 

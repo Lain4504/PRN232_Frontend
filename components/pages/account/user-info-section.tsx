@@ -3,30 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { createClient } from "@/lib/supabase/client";
-import { User } from "@supabase/supabase-js";
+import { useAuth } from "@/lib/contexts/auth-context";
 import { Mail, User as UserIcon, Calendar, Shield } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function UserInfoSection() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        setUser(user);
-      } catch (error) {
-        console.error("Error loading user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUserData();
-  }, []);
+  const { user, isLoading: loading } = useAuth();
 
   if (loading) {
     return (
@@ -106,7 +88,7 @@ export function UserInfoSection() {
               Member Since
             </div>
             <p className="text-sm font-medium">
-              {formatDate(user.created_at)}
+              {formatDate(user.createdAt)}
             </p>
           </div>
 
@@ -117,12 +99,11 @@ export function UserInfoSection() {
               Email Status
             </div>
             <p className="text-sm font-medium">
-               <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
-                 user.email_confirmed_at 
-                   ? 'bg-success/10 text-success border border-success/20' 
-                   : 'bg-warning/10 text-warning border border-warning/20'
-               }`}>
-                {user.email_confirmed_at ? 'Verified' : 'Pending Verification'}
+              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${user.isEmailVerified
+                  ? 'bg-success/10 text-success border border-success/20'
+                  : 'bg-warning/10 text-warning border border-warning/20'
+                }`}>
+                {user.isEmailVerified ? 'Verified' : 'Pending Verification'}
               </span>
             </p>
           </div>

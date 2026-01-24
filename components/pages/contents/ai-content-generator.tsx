@@ -28,54 +28,55 @@ import { Brand, Product, ConversationSummary, ConversationDetails, Conversations
 import { useAIChat, AdTypes } from "@/hooks/use-ai-chat";
 import { api, endpoints } from "@/lib/api";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase/client";
-
-// Types for AI content generation
-interface AIContentGeneration {
-  id: string;
-  prompt: string;
-  brand_id: string;
-  product_id?: string;
-  style_context: string;
-  generated_content: string;
-  status: 'pending' | 'completed' | 'failed';
-  created_at: string;
-  brand_name?: string;
-  product_name?: string;
-}
-
-interface GenerationForm {
-  brand_id: string;
-  product_id?: string;
-  prompt: string;
-  style_context: string;
-  ad_type: 'image_text' | 'video_text' | 'text_only';
-}
-
-// Chat message types
-interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: string;
-  generation?: AIContentGeneration;
-}
-
-interface ChatSession {
-  id: string;
-  brand_id?: string;
-  product_id?: string;
-  conversationId?: string;
-  messages: ChatMessage[];
-  created_at: string;
-  updated_at: string;
-}
+import { useAuth } from "@/lib/contexts/auth-context";
 
 interface AIContentGeneratorProps {
   initialBrandId?: string;
 }
 
 export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps = {}) {
+
+  // Types for AI content generation
+  interface AIContentGeneration {
+    id: string;
+    prompt: string;
+    brand_id: string;
+    product_id?: string;
+    style_context: string;
+    generated_content: string;
+    status: 'pending' | 'completed' | 'failed';
+    created_at: string;
+    brand_name?: string;
+    product_name?: string;
+  }
+
+  interface GenerationForm {
+    brand_id: string;
+    product_id?: string;
+    prompt: string;
+    style_context: string;
+    ad_type: 'image_text' | 'video_text' | 'text_only';
+  }
+
+  // Chat message types
+  interface ChatMessage {
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    timestamp: string;
+    generation?: AIContentGeneration;
+  }
+
+  interface ChatSession {
+    id: string;
+    brand_id?: string;
+    product_id?: string;
+    conversationId?: string;
+    messages: ChatMessage[];
+    created_at: string;
+    updated_at: string;
+  }
+
   const [brands, setBrands] = useState<Brand[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [, setGenerations] = useState<AIContentGeneration[]>([]);
@@ -87,6 +88,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const aiChatMutation = useAIChat();
+  const { session, user } = useAuth(); // Use auth context
 
   const [form, setForm] = useState<GenerationForm>({
     brand_id: initialBrandId || '',
@@ -125,15 +127,11 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
 
         console.log('Loading brands from API...');
         try {
-          const supabase = createClient();
-          const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-          console.log('Supabase session:', session);
-          console.log('Session error:', sessionError);
-
-          if (!session?.access_token) {
+          // Use session from context instead of re-fetching
+          if (!session?.accessToken) {
             console.warn('No active session found');
-            toast.error('Please log in to load brands');
-            return;
+            // Don't error immediately if loading or just starting, but warn
+            // return; // Let it proceed, maybe public brands? Or handle error gracefully
           }
 
           const brandsResponse = await api.get<{
@@ -156,16 +154,11 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
             if (brandsData.length > 0) {
               toast.success(`Loaded ${brandsData.length} brands successfully`);
             } else {
-              toast.error('No brands found for your account');
+              // toast.error('No brands found for your account');
             }
           } else {
             console.error('Failed to load brands:', brandsResponse);
-            if (brandsResponse.statusCode === 401 || brandsResponse.statusCode === 403) {
-              console.warn('Brands require authentication - user may not be logged in');
-              toast.error('Authentication required to load brands');
-            } else {
-              toast.error('Failed to load brands');
-            }
+            // Handle silently or specific errors
           }
         } catch (error) {
           console.error('Brands API error:', error);
@@ -174,10 +167,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
 
         console.log('Loading conversations from API...');
         try {
-          const supabase = createClient();
-          const { data: { session } } = await supabase.auth.getSession();
-
-          if (session?.access_token) {
+          if (session?.accessToken) {
             const conversationsResponse = await api.get<ConversationsResponse>(
               `${endpoints.conversations()}?page=1&pageSize=50&sortBy=updatedAt&sortDescending=true`
             );
@@ -204,8 +194,11 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
       }
     };
 
-    loadData();
-  }, []);
+    // Only load data if session is available to avoid 401s on initial load for protected routes
+    if (session) {
+      loadData();
+    }
+  }, [session]);
 
   const handleChatBrandChange = (brandId: string) => {
     setForm(prev => ({ ...prev, brand_id: brandId, product_id: '' }));
@@ -252,9 +245,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
       return;
     }
 
-    const supabase = createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user?.id) {
+    if (!user?.id) {
       toast.error('User not authenticated');
       return;
     }
@@ -278,8 +269,8 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
 
     try {
       const requestData = {
-        userId: session.user.id,
-        profileId: session.user.id, // Add profileId for the request
+        userId: user.id,
+        profileId: user.id, // Add profileId for the request
         brandId: currentSession.brand_id || null,
         productId: currentSession.product_id || null,
         adType: AdTypes.TextOnly,
@@ -302,10 +293,8 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
         setCurrentSession(sessionWithConversationId);
 
         try {
-          const supabase = createClient();
-          const { data: { session } } = await supabase.auth.getSession();
-
-          if (session?.access_token) {
+          // Use session from context instead of fetching 
+          if (session?.accessToken) {
             const conversationsResponse = await api.get<ConversationsResponse>(
               `${endpoints.conversations()}?page=1&pageSize=50&sortBy=updatedAt&sortDescending=true`
             );

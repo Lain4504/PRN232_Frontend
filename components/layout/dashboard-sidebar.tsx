@@ -224,42 +224,34 @@ export function DashboardSidebar() {
                           variant="ghost"
                           asChild
                           className={cn(
-                            "relative w-full h-10 px-4 rounded-lg transition-all duration-300 group",
+                            "relative w-full h-10 lg:h-12 px-3 rounded-xl transition-all duration-300",
                             sidebarModeState === 'expanded' && "justify-start",
-                            sidebarModeState === 'collapsed' && "lg:justify-center px-2",
-                            sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start px-2 lg:group-hover:px-4",
-                            isActive ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/95" : "text-muted-foreground hover:bg-muted"
+                            sidebarModeState === 'collapsed' && "lg:justify-center",
+                            sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start",
+                            isActive
+                              ? "bg-primary/10 text-primary shadow-[0_0_20px_rgba(var(--primary),0.3)]"
+                              : "hover:bg-primary/5 hover:text-foreground text-muted-foreground"
                           )}
                         >
                           <Link href={item.url}>
                             <item.icon className={cn(
-                              "size-5 shrink-0 transition-transform duration-300 group-hover:scale-110",
+                              "size-5 stroke-[2.5]",
                               sidebarModeState === 'expanded' && "mr-3",
-                              sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-3",
-                              isActive ? "text-primary-foreground" : "text-muted-foreground"
+                              sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-3"
                             )} />
                             <span className={cn(
-                              "font-black text-[10px] uppercase tracking-[0.25em] transition-all duration-300 whitespace-nowrap",
-                              sidebarModeState === 'expanded' && "opacity-100 translate-x-0",
-                              sidebarModeState === 'collapsed' && "opacity-0 translate-x-[-10px] pointer-events-none",
-                              sidebarModeState === 'hover' && "opacity-0 translate-x-[-10px] lg:group-hover:opacity-100 lg:group-hover:translate-x-0"
+                              "transition-all duration-300 whitespace-nowrap font-black uppercase tracking-widest text-[10px]",
+                              sidebarModeState === 'expanded' && "inline opacity-100 translate-x-0",
+                              sidebarModeState === 'collapsed' && "hidden opacity-0 -translate-x-4",
+                              sidebarModeState === 'hover' && "hidden opacity-0 -translate-x-4 lg:group-hover:inline lg:group-hover:opacity-100 lg:group-hover:translate-x-0"
                             )}>
                               {item.title}
                             </span>
-                            {item.badge && (
-                              <span className={cn(
-                                "absolute right-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-black text-destructive-foreground shadow-sm transition-all duration-300",
-                                sidebarModeState === 'collapsed' && "scale-50 translate-x-2 translate-y-[-2]",
-                                sidebarModeState === 'hover' && "scale-50 translate-x-2 lg:group-hover:scale-100 lg:group-hover:translate-x-0"
-                              )}>
-                                {item.badge}
-                              </span>
-                            )}
                           </Link>
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden")}>
-                        <p className="font-bold">{item.title}</p>
+                      <TooltipContent side="right" className={cn("lg:block hidden bg-popover/80 backdrop-blur-xl border-border/40 font-black uppercase text-[10px] tracking-widest", sidebarModeState === 'expanded' && "hidden")}>
+                        <p>{item.title}</p>
                       </TooltipContent>
                     </Tooltip>
                   )
@@ -290,25 +282,26 @@ export function DashboardSidebar() {
                             variant="ghost"
                             asChild
                             className={cn(
-                              "relative w-full h-10 px-4 rounded-lg transition-all duration-300 group",
+                              "relative w-full h-10 lg:h-12 px-3 rounded-xl transition-all duration-300",
                               sidebarModeState === 'expanded' && "justify-start",
-                              sidebarModeState === 'collapsed' && "lg:justify-center px-2",
-                              sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start px-2 lg:group-hover:px-4",
-                              isActive ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/95" : "text-muted-foreground hover:bg-muted"
+                              sidebarModeState === 'collapsed' && "lg:justify-center",
+                              sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start",
+                              isActive
+                                ? "bg-primary/10 text-primary shadow-[0_0_20px_rgba(var(--primary),0.3)]"
+                                : "hover:bg-primary/5 hover:text-foreground text-muted-foreground"
                             )}
                           >
                             <Link href={item.url}>
                               <item.icon className={cn(
-                                "size-5 shrink-0 transition-transform duration-300 group-hover:scale-110",
+                                "size-5 stroke-[2.5]",
                                 sidebarModeState === 'expanded' && "mr-3",
-                                sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-3",
-                                isActive ? "text-primary-foreground" : "text-muted-foreground"
+                                sidebarModeState === 'hover' && "lg:mr-0 lg:group-hover:mr-3"
                               )} />
                               <span className={cn(
-                                "font-black text-[10px] uppercase tracking-[0.25em] transition-all duration-300 whitespace-nowrap",
-                                sidebarModeState === 'expanded' && "opacity-100 translate-x-0",
-                                sidebarModeState === 'collapsed' && "opacity-0 translate-x-[-10px] pointer-events-none",
-                                sidebarModeState === 'hover' && "opacity-0 translate-x-[-10px] lg:group-hover:opacity-100 lg:group-hover:translate-x-0"
+                                "transition-all duration-300 whitespace-nowrap font-black uppercase tracking-widest text-[10px]",
+                                sidebarModeState === 'expanded' && "inline opacity-100 translate-x-0",
+                                sidebarModeState === 'collapsed' && "hidden opacity-0 -translate-x-4",
+                                sidebarModeState === 'hover' && "hidden opacity-0 -translate-x-4 lg:group-hover:inline lg:group-hover:opacity-100 lg:group-hover:translate-x-0"
                               )}>
                                 {item.title}
                               </span>
@@ -325,7 +318,7 @@ export function DashboardSidebar() {
                             </Link>
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent side="right" className={cn("lg:block hidden", sidebarModeState === 'expanded' && "hidden")}>
+                        <TooltipContent side="right" className={cn("lg:block hidden bg-popover/80 backdrop-blur-xl border-border/40 font-black uppercase text-[10px] tracking-widest", sidebarModeState === 'expanded' && "hidden")}>
                           <p className="font-bold">{item.title}</p>
                         </TooltipContent>
                       </Tooltip>

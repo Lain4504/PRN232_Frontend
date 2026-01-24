@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { Monitor, Smartphone, Globe, Shield, LogOut, RefreshCw } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -29,41 +28,36 @@ export function SessionManagementSection() {
 
   const loadSessions = async () => {
     try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        // Mock session data - Supabase doesn't provide session management API directly
-        // In a real implementation, you would call your backend API to get session info
-        const mockSessions: SessionInfo[] = [
-          {
-            id: "current-session",
-            device: "Desktop",
-            browser: "Chrome 120.0",
-            location: "Ho Chi Minh City, Vietnam",
-            lastActive: new Date().toISOString(),
-            current: true
-          },
-          {
-            id: "mobile-session",
-            device: "Mobile",
-            browser: "Safari 17.0",
-            location: "Ho Chi Minh City, Vietnam",
-            lastActive: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-            current: false
-          },
-          {
-            id: "tablet-session",
-            device: "Tablet",
-            browser: "Chrome 119.0",
-            location: "Hanoi, Vietnam",
-            lastActive: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-            current: false
-          }
-        ];
-        
-        setSessions(mockSessions);
-      }
+      // Mock session data - Supabase doesn't provide session management API directly
+      // In a real implementation, you would call your backend API to get session info
+      const mockSessions: SessionInfo[] = [
+        {
+          id: "current-session",
+          device: "Desktop",
+          browser: "Chrome 120.0",
+          location: "Ho Chi Minh City, Vietnam",
+          lastActive: new Date().toISOString(),
+          current: true
+        },
+        {
+          id: "mobile-session",
+          device: "Mobile",
+          browser: "Safari 17.0",
+          location: "Ho Chi Minh City, Vietnam",
+          lastActive: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+          current: false
+        },
+        {
+          id: "tablet-session",
+          device: "Tablet",
+          browser: "Chrome 119.0",
+          location: "Hanoi, Vietnam",
+          lastActive: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+          current: false
+        }
+      ];
+
+      setSessions(mockSessions);
     } catch (error) {
       console.error("Error loading sessions:", error);
       toast.error("Failed to load session information");
@@ -75,10 +69,10 @@ export function SessionManagementSection() {
   const revokeSession = async (sessionId: string) => {
     try {
       setRevokingSession(sessionId);
-      
+
       // Mock revoke session - In real implementation, call your backend API
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       setSessions(prev => prev.filter(session => session.id !== sessionId));
       toast.success("Session revoked successfully");
     } catch (error) {
@@ -92,10 +86,10 @@ export function SessionManagementSection() {
   const revokeAllOtherSessions = async () => {
     try {
       setRevokingSession("all-other");
-      
+
       // Mock revoke all other sessions
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       setSessions(prev => prev.filter(session => session.current));
       toast.success("All other sessions revoked successfully");
     } catch (error) {
@@ -121,7 +115,7 @@ export function SessionManagementSection() {
     const date = new Date(lastActive);
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 1) {
       return "Just now";
     } else if (diffInHours < 24) {
@@ -205,7 +199,7 @@ export function SessionManagementSection() {
                   </div>
                 </div>
               </div>
-              
+
               {!session.current && (
                 <Button
                   variant="outline"

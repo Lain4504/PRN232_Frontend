@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { ProfileTypeEnum, getActiveProfileId, setActiveProfileId, clearActiveProfileId, getProfileType, setProfileType, clearProfileType, checkFeatureAccess, clearProfileContext } from '@/lib/utils/profile-utils'
+import { useAuth } from '@/lib/contexts/auth-context'
+
 import { api, endpoints } from '@/lib/api'
 
 interface Profile {
@@ -43,6 +45,7 @@ interface ProfileProviderProps {
 }
 
 export function ProfileProvider({ children }: ProfileProviderProps) {
+  const { session, isLoading: isAuthLoading } = useAuth()
   const [activeProfileId, setActiveProfileIdState] = useState<string | null>(null)
   const [activeProfile, setActiveProfileState] = useState<Profile | null>(null)
   const [profileType, setProfileTypeState] = useState<ProfileTypeEnum>(ProfileTypeEnum.Free)
@@ -51,23 +54,39 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
   // Load profile context from localStorage on mount and hydrate from API
   useEffect(() => {
     let cancelled = false
+
     const loadProfileContext = async () => {
+      // Wait for auth to initialize
+      if (isAuthLoading) return
+
+      // If not authenticated, clear profile and return
+      if (!session) {
+        if (!cancelled) {
+          setActiveProfileIdState(null)
+          setActiveProfileState(null)
+          setProfileTypeState(ProfileTypeEnum.Free)
+          setIsLoading(false)
+        }
+        return
+      }
+
       try {
         const savedProfileId = getActiveProfileId()
         const savedProfileType = getProfileType()
 
         if (savedProfileId) {
-          setActiveProfileIdState(savedProfileId)
-          setProfileTypeState(savedProfileType)
+          if (!cancelled) {
+            setActiveProfileIdState(savedProfileId)
+            setProfileTypeState(savedProfileType)
 
-          // Optimistic placeholder while fetching
-          setActiveProfileState({
-            id: savedProfileId,
-            name: 'Loading...'
-            ,
-            type: savedProfileType,
-            companyName: 'Loading...'
-          })
+            // Optimistic placeholder while fetching
+            setActiveProfileState({
+              id: savedProfileId,
+              name: 'Loading...',
+              type: savedProfileType,
+              companyName: 'Loading...'
+            })
+          }
 
           // Fetch full profile details
           try {
@@ -88,6 +107,10 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
             }
           } catch (err) {
             console.error('Failed to hydrate profile from API:', err)
+            // If 401 happens here, api.ts might redirect, BUT since we checked session exists, 
+            // it's less likely to be a "missing token" issue. 
+            // If the token is invalid, api.ts handles refresh or redirect, which is correct BEHAVIOR for logged in user.
+            // But we prevented this call for NON-logged in users.
           }
         }
       } catch (error) {
@@ -98,16 +121,15 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
       }
     }
 
-    setIsLoading(true)
     loadProfileContext()
     return () => { cancelled = true }
-  }, [])
+  }, [session, isAuthLoading])
 
   const setActiveProfile = (profileId: string, profile: Profile) => {
     setActiveProfileIdState(profileId)
     setActiveProfileState(profile)
     setProfileTypeState(profile.type)
-    
+
     // Persist to localStorage
     setActiveProfileId(profileId)
     setProfileType(profile.type)
@@ -117,7 +139,7 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
     setActiveProfileIdState(null)
     setActiveProfileState(null)
     setProfileTypeState(ProfileTypeEnum.Free)
-    
+
     // Clear localStorage
     clearActiveProfileId()
     clearProfileType()

@@ -30,7 +30,7 @@ const getStatsData = (stats: DashboardStats) => {
   const teamsVal = stats.total_teams ?? 0
   return [
     {
-      title: "Total Teams",
+      title: "Active Teams",
       value: teamsVal.toString(),
       icon: Users,
       color: "text-chart-2",
@@ -40,7 +40,7 @@ const getStatsData = (stats: DashboardStats) => {
       href: "/overview/teams"
     },
     {
-      title: "Total Brands",
+      title: "My Brands",
       value: stats.total_brands.toString(),
       icon: Target,
       color: "text-chart-1",
@@ -50,7 +50,7 @@ const getStatsData = (stats: DashboardStats) => {
       href: "/dashboard/brands"
     },
     {
-      title: "Total Contents",
+      title: "Generated Content",
       value: stats.total_contents.toString(),
       icon: FileText,
       color: "text-chart-3",
@@ -143,34 +143,34 @@ const DashboardContent = () => {
   return (
     <div className="flex-1 min-h-screen bg-background font-fira-sans selection:bg-primary/20">
       <div className="max-w-[1440px] mx-auto px-6 py-10 lg:px-10 lg:py-14 space-y-12">
-        {/* Mission Control Header */}
+        {/* Header */}
         <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
           <div className="space-y-4 max-w-2xl">
             <div className="flex items-center gap-3">
               <div className="h-2 w-8 bg-primary rounded-full" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Terminal Intelligence</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary/70">Dashboard</span>
             </div>
             <h1 className="text-3xl lg:text-4xl font-black tracking-tighter text-foreground leading-[1.1] selection:bg-primary/20">
-              Welcome Back, <span className="text-primary italic tracking-tight">{user?.first_name || user?.email?.split('@')[0] || 'Operator'}</span>
+              Welcome Back, <span className="text-primary italic tracking-tight">{user?.first_name || user?.email?.split('@')[0] || 'User'}</span>
             </h1>
             <p className="text-base text-muted-foreground font-medium leading-relaxed max-w-xl">
-              Platform state is nominal. All autonomous creative nodes are synchronized and performing within parameters.
+              Here is an overview of your AI content generation and social media performance today.
             </p>
           </div>
 
           <div className="flex items-center gap-4 p-1">
             <Button variant="outline" className="h-11 px-6 rounded-xl border-border/40 bg-muted/20 hover:bg-muted/40 font-bold text-[10px] uppercase tracking-widest transition-all">
               <Filter className="h-3.5 w-3.5 mr-2 stroke-[2.5]" />
-              Filter Domain
+              Filter
             </Button>
             <Button className="h-11 px-8 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
               <Plus className="h-3.5 w-3.5 mr-2 stroke-[3]" />
-              New Deployment
+              Create New
             </Button>
           </div>
         </div>
 
-        {/* Global Performance Pulse - Stats Grid */}
+        {/* Overview Stats */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {stats && getStatsData(stats).map((stat, index) => (
             <Card key={index} className="group relative overflow-hidden border-border/40 bg-card/40 backdrop-blur-xl rounded-[2rem] p-4 shadow-2xl transition-all hover:translate-y-[-4px] hover:bg-card/60">
@@ -187,7 +187,7 @@ const DashboardContent = () => {
                   {stat.value}
                 </div>
                 <div className="flex items-center justify-between pt-1">
-                  <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{stat.title}</div>
+                  <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">{stat.title}</div>
                   <div className="h-1 w-8 bg-primary/20 rounded-full" />
                 </div>
                 <p className="text-[9px] text-muted-foreground/50 font-medium tracking-tight pt-1">{stat.description}</p>
@@ -196,15 +196,15 @@ const DashboardContent = () => {
           ))}
         </div>
 
-        {/* Tactical Matrix Layout */}
+        {/* Layout */}
         <div className="grid gap-10 lg:grid-cols-12">
-          {/* Action Hub - 5 cols */}
+          {/* Quick Actions - 5 cols */}
           <div className="lg:col-span-5 relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-[3rem] blur-2xl opacity-50" />
             <QuickActionsPanel className="relative h-full border-border/40 bg-card/60 backdrop-blur-xl rounded-[2rem] shadow-2xl" />
           </div>
 
-          {/* Neural Diagnostics - 7 cols */}
+          {/* System Status - 7 cols */}
           <div className="lg:col-span-7 space-y-8">
             <Card className="relative border-border/40 bg-card/60 backdrop-blur-xl rounded-[2rem] shadow-2xl overflow-hidden group">
               <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-20" />
@@ -213,10 +213,10 @@ const DashboardContent = () => {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Activity className="h-4 w-4 text-primary animate-pulse stroke-[2.5]" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/70 italic">Dynamic Status</span>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-primary/70 italic">Status</span>
                     </div>
-                    <CardTitle className="text-2xl font-black uppercase tracking-tight">System Dynamics</CardTitle>
-                    <CardDescription className="text-sm font-medium">Real-time heuristics and workflow monitoring.</CardDescription>
+                    <CardTitle className="text-2xl font-black uppercase tracking-tight">System Status</CardTitle>
+                    <CardDescription className="text-sm font-medium">Overview of your current activities and status.</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -230,8 +230,8 @@ const DashboardContent = () => {
                         <Clock className="h-5 w-5 stroke-[2.5]" />
                       </div>
                       <div className="space-y-0.5">
-                        <p className="font-black text-xs uppercase tracking-wider">Queue</p>
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Pending Validation</p>
+                        <p className="font-bold text-xs uppercase tracking-wider">Pending</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Approvals Needed</p>
                       </div>
                     </div>
                     <div className="text-2xl font-black font-fira-mono tracking-tighter">{stats?.pending_approvals || 0}</div>
@@ -244,8 +244,8 @@ const DashboardContent = () => {
                         <Calendar className="h-5 w-5 stroke-[2.5]" />
                       </div>
                       <div className="space-y-0.5">
-                        <p className="font-black text-xs uppercase tracking-wider">Protocol</p>
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Automated Postings</p>
+                        <p className="font-bold text-xs uppercase tracking-wider">Scheduled</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Upcoming Posts</p>
                       </div>
                     </div>
                     <div className="text-2xl font-black font-fira-mono tracking-tighter">{stats?.scheduled_posts || 0}</div>
@@ -258,11 +258,11 @@ const DashboardContent = () => {
                         <Sparkles className="h-5 w-5 stroke-[2.5]" />
                       </div>
                       <div className="space-y-0.5">
-                        <p className="font-black text-xs uppercase tracking-wider">Neural Hub</p>
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Cognitive Services</p>
+                        <p className="font-bold text-xs uppercase tracking-wider">AI Assistant</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Content Engine</p>
                       </div>
                     </div>
-                    <Badge className="bg-primary/20 text-primary border-none font-black text-[9px] px-3 py-1 rounded-lg">NOMINAL</Badge>
+                    <Badge className="bg-primary/20 text-primary border-none font-bold text-[9px] px-3 py-1 rounded-lg">Active</Badge>
                   </div>
 
                   {/* Status Node 4: Accounts */}
@@ -272,11 +272,11 @@ const DashboardContent = () => {
                         <Share2 className="h-5 w-5 stroke-[2.5]" />
                       </div>
                       <div className="space-y-0.5">
-                        <p className="font-black text-xs uppercase tracking-wider">Matrix</p>
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Social Integrations</p>
+                        <p className="font-bold text-xs uppercase tracking-wider">Accounts</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Connected</p>
                       </div>
                     </div>
-                    <Badge className="bg-indigo-600/20 text-indigo-600 border-none font-black text-[9px] px-3 py-1 rounded-lg">SYNCED</Badge>
+                    <Badge className="bg-indigo-600/20 text-indigo-600 border-none font-bold text-[9px] px-3 py-1 rounded-lg">Active</Badge>
                   </div>
                 </div>
 
@@ -291,13 +291,13 @@ const DashboardContent = () => {
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-primary">Efficiency Optimization Active</span>
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-primary">Smart Insight</span>
                         <div className="h-1 w-1 rounded-full bg-primary animate-ping" />
                       </div>
-                      <h4 className="text-lg font-black uppercase tracking-tight">Performance Vector Update</h4>
+                      <h4 className="text-lg font-black uppercase tracking-tight">Growth Update</h4>
                       <p className="text-muted-foreground font-medium text-sm leading-relaxed tracking-tight">
-                        Engagement metrics have experienced a <span className="text-primary font-black">+14.2%</span> delta this session.
-                        AI engine recommends increasing asset density in TikTok campaign nodes.
+                        Engagement metrics have increased by <span className="text-primary font-black">+14.2%</span> recently.
+                        We recommend posting more frequently on TikTok to maintain momentum.
                       </p>
                     </div>
                   </div>
