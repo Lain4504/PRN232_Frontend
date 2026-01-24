@@ -150,21 +150,21 @@ const DashboardContent = () => {
               <div className="h-2 w-8 bg-primary rounded-full" />
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Terminal Intelligence</span>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-black tracking-tighter text-foreground leading-[1.1] selection:bg-primary/20">
+            <h1 className="text-3xl lg:text-4xl font-black tracking-tighter text-foreground leading-[1.1] selection:bg-primary/20">
               Welcome Back, <span className="text-primary italic tracking-tight">{user?.first_name || user?.email?.split('@')[0] || 'Operator'}</span>
             </h1>
-            <p className="text-lg text-muted-foreground font-medium leading-relaxed max-w-xl">
+            <p className="text-base text-muted-foreground font-medium leading-relaxed max-w-xl">
               Platform state is nominal. All autonomous creative nodes are synchronized and performing within parameters.
             </p>
           </div>
 
           <div className="flex items-center gap-4 p-1">
-            <Button variant="outline" className="h-12 px-6 rounded-2xl border-border/40 bg-muted/20 hover:bg-muted/40 font-bold text-[11px] uppercase tracking-widest transition-all">
-              <Filter className="h-4 w-4 mr-2 stroke-[2.5]" />
+            <Button variant="outline" className="h-11 px-6 rounded-xl border-border/40 bg-muted/20 hover:bg-muted/40 font-bold text-[10px] uppercase tracking-widest transition-all">
+              <Filter className="h-3.5 w-3.5 mr-2 stroke-[2.5]" />
               Filter Domain
             </Button>
-            <Button className="h-12 px-8 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
-              <Plus className="h-4 w-4 mr-2 stroke-[3]" />
+            <Button className="h-11 px-8 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
+              <Plus className="h-3.5 w-3.5 mr-2 stroke-[3]" />
               New Deployment
             </Button>
           </div>
@@ -173,24 +173,24 @@ const DashboardContent = () => {
         {/* Global Performance Pulse - Stats Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {stats && getStatsData(stats).map((stat, index) => (
-            <Card key={index} className="group relative overflow-hidden border-border/40 bg-card/40 backdrop-blur-xl rounded-[2.5rem] p-4 shadow-2xl transition-all hover:translate-y-[-4px] hover:bg-card/60">
+            <Card key={index} className="group relative overflow-hidden border-border/40 bg-card/40 backdrop-blur-xl rounded-[2rem] p-4 shadow-2xl transition-all hover:translate-y-[-4px] hover:bg-card/60">
               <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-10 transition-opacity">
-                <stat.icon className="h-24 w-24 stroke-[1]" />
+                <stat.icon className="h-20 w-20 stroke-[1]" />
               </div>
               <CardHeader className="pb-2">
-                <div className={`h-12 w-12 rounded-2xl ${stat.bgColor} flex items-center justify-center transition-transform duration-500 group-hover:scale-110 shadow-inner`}>
-                  <stat.icon className={`h-6 w-6 ${stat.color} stroke-[2.5]`} />
+                <div className={`h-10 w-10 rounded-xl ${stat.bgColor} flex items-center justify-center transition-transform duration-500 group-hover:scale-110 shadow-inner`}>
+                  <stat.icon className={`h-5 w-5 ${stat.color} stroke-[2.5]`} />
                 </div>
               </CardHeader>
               <CardContent className="space-y-1">
-                <div className="text-5xl font-black text-foreground font-fira-mono tracking-tighter tabular-nums leading-none">
+                <div className="text-4xl font-black text-foreground font-fira-mono tracking-tighter tabular-nums leading-none">
                   {stat.value}
                 </div>
                 <div className="flex items-center justify-between pt-1">
                   <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{stat.title}</div>
                   <div className="h-1 w-8 bg-primary/20 rounded-full" />
                 </div>
-                <p className="text-[10px] text-muted-foreground/50 font-medium tracking-tight pt-1">{stat.description}</p>
+                <p className="text-[9px] text-muted-foreground/50 font-medium tracking-tight pt-1">{stat.description}</p>
               </CardContent>
             </Card>
           ))}
@@ -201,101 +201,101 @@ const DashboardContent = () => {
           {/* Action Hub - 5 cols */}
           <div className="lg:col-span-5 relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-[3rem] blur-2xl opacity-50" />
-            <QuickActionsPanel className="relative h-full border-border/40 bg-card/60 backdrop-blur-xl rounded-[2.8rem] shadow-2xl" />
+            <QuickActionsPanel className="relative h-full border-border/40 bg-card/60 backdrop-blur-xl rounded-[2rem] shadow-2xl" />
           </div>
 
           {/* Neural Diagnostics - 7 cols */}
           <div className="lg:col-span-7 space-y-8">
-            <Card className="relative border-border/40 bg-card/60 backdrop-blur-xl rounded-[2.8rem] shadow-2xl overflow-hidden group">
+            <Card className="relative border-border/40 bg-card/60 backdrop-blur-xl rounded-[2rem] shadow-2xl overflow-hidden group">
               <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-20" />
-              <CardHeader className="p-10 pb-6">
+              <CardHeader className="p-8 pb-6">
                 <div className="flex items-center justify-between">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Activity className="h-5 w-5 text-primary animate-pulse stroke-[2.5]" />
+                      <Activity className="h-4 w-4 text-primary animate-pulse stroke-[2.5]" />
                       <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/70 italic">Dynamic Status</span>
                     </div>
-                    <CardTitle className="text-3xl font-black uppercase tracking-tight">System Dynamics</CardTitle>
-                    <CardDescription className="text-base font-medium">Real-time heuristics and workflow monitoring.</CardDescription>
+                    <CardTitle className="text-2xl font-black uppercase tracking-tight">System Dynamics</CardTitle>
+                    <CardDescription className="text-sm font-medium">Real-time heuristics and workflow monitoring.</CardDescription>
                   </div>
                 </div>
               </CardHeader>
 
-              <CardContent className="p-10 pt-4 space-y-8">
+              <CardContent className="p-8 pt-4 space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {/* Status Node 1: Pending */}
-                  <div className="group/node flex items-center justify-between p-6 rounded-[2rem] bg-background/40 border border-border/40 transition-all hover:bg-background/80 hover:border-primary/20">
-                    <div className="flex items-center gap-5">
-                      <div className="h-12 w-12 rounded-2xl bg-amber-600/10 flex items-center justify-center text-amber-600 shadow-inner group-hover/node:scale-110 transition-transform">
-                        <Clock className="h-6 w-6 stroke-[2.5]" />
+                  <div className="group/node flex items-center justify-between p-5 rounded-[1.5rem] bg-background/40 border border-border/40 transition-all hover:bg-background/80 hover:border-primary/20">
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-xl bg-amber-600/10 flex items-center justify-center text-amber-600 shadow-inner group-hover/node:scale-110 transition-transform">
+                        <Clock className="h-5 w-5 stroke-[2.5]" />
                       </div>
                       <div className="space-y-0.5">
-                        <p className="font-black text-sm uppercase tracking-wider">Queue</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">Pending Validation</p>
+                        <p className="font-black text-xs uppercase tracking-wider">Queue</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Pending Validation</p>
                       </div>
                     </div>
-                    <div className="text-3xl font-black font-fira-mono tracking-tighter">{stats?.pending_approvals || 0}</div>
+                    <div className="text-2xl font-black font-fira-mono tracking-tighter">{stats?.pending_approvals || 0}</div>
                   </div>
 
                   {/* Status Node 2: Scheduled */}
-                  <div className="group/node flex items-center justify-between p-6 rounded-[2rem] bg-background/40 border border-border/40 transition-all hover:bg-background/80 hover:border-primary/20">
-                    <div className="flex items-center gap-5">
-                      <div className="h-12 w-12 rounded-2xl bg-blue-600/10 flex items-center justify-center text-blue-600 shadow-inner group-hover/node:scale-110 transition-transform">
-                        <Calendar className="h-6 w-6 stroke-[2.5]" />
+                  <div className="group/node flex items-center justify-between p-5 rounded-[1.5rem] bg-background/40 border border-border/40 transition-all hover:bg-background/80 hover:border-primary/20">
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center text-blue-600 shadow-inner group-hover/node:scale-110 transition-transform">
+                        <Calendar className="h-5 w-5 stroke-[2.5]" />
                       </div>
                       <div className="space-y-0.5">
-                        <p className="font-black text-sm uppercase tracking-wider">Protocol</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">Automated Postings</p>
+                        <p className="font-black text-xs uppercase tracking-wider">Protocol</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Automated Postings</p>
                       </div>
                     </div>
-                    <div className="text-3xl font-black font-fira-mono tracking-tighter">{stats?.scheduled_posts || 0}</div>
+                    <div className="text-2xl font-black font-fira-mono tracking-tighter">{stats?.scheduled_posts || 0}</div>
                   </div>
 
                   {/* Status Node 3: AI Engine */}
-                  <div className="group/node flex items-center justify-between p-6 rounded-[2rem] bg-background/40 border border-border/40 transition-all hover:bg-background/80 hover:border-primary/20">
-                    <div className="flex items-center gap-5">
-                      <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner group-hover/node:scale-110 transition-transform">
-                        <Sparkles className="h-6 w-6 stroke-[2.5]" />
+                  <div className="group/node flex items-center justify-between p-5 rounded-[1.5rem] bg-background/40 border border-border/40 transition-all hover:bg-background/80 hover:border-primary/20">
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-inner group-hover/node:scale-110 transition-transform">
+                        <Sparkles className="h-5 w-5 stroke-[2.5]" />
                       </div>
                       <div className="space-y-0.5">
-                        <p className="font-black text-sm uppercase tracking-wider">Neural Hub</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">Cognitive Services</p>
+                        <p className="font-black text-xs uppercase tracking-wider">Neural Hub</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Cognitive Services</p>
                       </div>
                     </div>
-                    <Badge className="bg-primary/20 text-primary border-none font-black text-[10px] px-3 py-1 rounded-lg">NOMINAL</Badge>
+                    <Badge className="bg-primary/20 text-primary border-none font-black text-[9px] px-3 py-1 rounded-lg">NOMINAL</Badge>
                   </div>
 
                   {/* Status Node 4: Accounts */}
-                  <div className="group/node flex items-center justify-between p-6 rounded-[2rem] bg-background/40 border border-border/40 transition-all hover:bg-background/80 hover:border-primary/20">
-                    <div className="flex items-center gap-5">
-                      <div className="h-12 w-12 rounded-2xl bg-indigo-600/10 flex items-center justify-center text-indigo-600 shadow-inner group-hover/node:scale-110 transition-transform">
-                        <Share2 className="h-6 w-6 stroke-[2.5]" />
+                  <div className="group/node flex items-center justify-between p-5 rounded-[1.5rem] bg-background/40 border border-border/40 transition-all hover:bg-background/80 hover:border-primary/20">
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-xl bg-indigo-600/10 flex items-center justify-center text-indigo-600 shadow-inner group-hover/node:scale-110 transition-transform">
+                        <Share2 className="h-5 w-5 stroke-[2.5]" />
                       </div>
                       <div className="space-y-0.5">
-                        <p className="font-black text-sm uppercase tracking-wider">Matrix</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">Social Integrations</p>
+                        <p className="font-black text-xs uppercase tracking-wider">Matrix</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Social Integrations</p>
                       </div>
                     </div>
-                    <Badge className="bg-indigo-600/20 text-indigo-600 border-none font-black text-[10px] px-3 py-1 rounded-lg">SYNCED</Badge>
+                    <Badge className="bg-indigo-600/20 text-indigo-600 border-none font-black text-[9px] px-3 py-1 rounded-lg">SYNCED</Badge>
                   </div>
                 </div>
 
                 {/* Analytical Insight Token */}
-                <div className="relative p-8 rounded-[2rem] bg-primary/5 border border-primary/10 mt-6 group/insight overflow-hidden">
+                <div className="relative p-6 rounded-[1.5rem] bg-primary/5 border border-primary/10 mt-6 group/insight overflow-hidden">
                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover/insight:scale-125 transition-transform duration-700">
-                    <TrendingUp className="h-24 w-24" />
+                    <TrendingUp className="h-20 w-20" />
                   </div>
                   <div className="relative flex items-start gap-6">
-                    <div className="h-14 w-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-2xl shadow-primary/40 group-hover/insight:rotate-12 transition-transform">
-                      <TrendingUp className="h-7 w-7 stroke-[3]" />
+                    <div className="h-12 w-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-2xl shadow-primary/40 group-hover/insight:rotate-12 transition-transform">
+                      <TrendingUp className="h-6 w-6 stroke-[3]" />
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">Efficiency Optimization Active</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-primary">Efficiency Optimization Active</span>
                         <div className="h-1 w-1 rounded-full bg-primary animate-ping" />
                       </div>
-                      <h4 className="text-xl font-black uppercase tracking-tight">Performance Vector Update</h4>
-                      <p className="text-muted-foreground font-medium leading-relaxed tracking-tight">
+                      <h4 className="text-lg font-black uppercase tracking-tight">Performance Vector Update</h4>
+                      <p className="text-muted-foreground font-medium text-sm leading-relaxed tracking-tight">
                         Engagement metrics have experienced a <span className="text-primary font-black">+14.2%</span> delta this session.
                         AI engine recommends increasing asset density in TikTok campaign nodes.
                       </p>

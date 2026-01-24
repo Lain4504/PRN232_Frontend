@@ -1,7 +1,6 @@
 "use client";
 
 import { cn, getBaseUrl } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -14,6 +13,8 @@ import { Mail, Lock, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { useForm, type ControllerRenderProps } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registrationSchema, type RegistrationFormData, type AuthError } from "@/lib/types/auth";
+import { useAuth } from "@/lib/contexts/auth-context";
+import { User } from "lucide-react";
 import { toast } from "sonner";
 
 export function SignUpForm({
@@ -24,10 +25,12 @@ export function SignUpForm({
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
+  const { register } = useAuth();
 
   const form = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
+      fullName: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -35,57 +38,32 @@ export function SignUpForm({
   });
 
   const handleSignUp = async (data: RegistrationFormData) => {
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          emailRedirectTo: `${getBaseUrl()}/auth/verify-email`,
-        },
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      setSuccessOpen(true);
-      toast.success("Protocol sequence initiated. Check your link.");
-    } catch (error: unknown) {
+      await register(data);
+    } catch (error: any) {
       const authError: AuthError = {
-        message: error instanceof Error ? error.message : "An unexpected error occurred",
-        code: error instanceof Error && 'code' in error ? String(error.code) : undefined,
+        message: error.message || "An unexpected error occurred",
       };
       setError(authError);
-      toast.error(authError.message);
+      // toast already handled in context
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGoogleSignUp = async () => {
-    const supabase = createClient();
     setIsGoogleLoading(true);
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${getBaseUrl()}/auth/callback`,
-        },
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
+      // Redirect to backend social auth endpoint
+      window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5283/api'}/auth/social/google`;
     } catch (error: unknown) {
       const authError: AuthError = {
-        message: error instanceof Error ? error.message : "Failed to sign up with Google",
-        code: error instanceof Error && 'code' in error ? String(error.code) : undefined,
+        message: "Failed to initiate Google sign up",
       };
       setError(authError);
       toast.error(authError.message);
@@ -121,7 +99,7 @@ export function SignUpForm({
       <div className="space-y-4">
         <Button
           variant="outline"
-          className="w-full h-14 rounded-2xl border-border/40 bg-muted/20 hover:bg-primary/5 hover:border-primary/50 transition-all font-black text-[10px] uppercase tracking-[0.2em] group shadow-xl"
+          className="w-full h-11 rounded-xl border-border/40 bg-muted/20 hover:bg-primary/5 hover:border-primary/50 transition-all font-black text-[10px] uppercase tracking-[0.2em] group shadow-xl"
           onClick={handleGoogleSignUp}
           disabled={isGoogleLoading || isLoading}
         >
@@ -152,6 +130,29 @@ export function SignUpForm({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSignUp)} className="space-y-6">
           <div className="space-y-6">
+            {/* Full Name Field */}
+            <FormField
+              control={form.control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 italic">FULL NAME</FormLabel>
+                  <FormControl>
+                    <div className="relative group">
+                      <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 h-4 w-4 group-focus-within:text-primary transition-colors" />
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder="John Doe"
+                        className="pl-12 h-11 rounded-xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-[10px] font-bold uppercase tracking-widest text-destructive" />
+                </FormItem>
+              )}
+            />
+
             {/* Email Field */}
             <FormField
               control={form.control}
@@ -166,7 +167,7 @@ export function SignUpForm({
                         {...field}
                         type="email"
                         placeholder="your@email.com"
-                        className="pl-12 h-14 rounded-2xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
+                        className="pl-12 h-11 rounded-xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
                       />
                     </div>
                   </FormControl>
@@ -188,7 +189,7 @@ export function SignUpForm({
                       <PasswordInput
                         {...field}
                         placeholder="••••••••••••"
-                        className="pl-12 h-14 rounded-2xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
+                        className="pl-12 h-11 rounded-xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
                       />
                     </div>
                   </FormControl>
@@ -213,7 +214,7 @@ export function SignUpForm({
                       <PasswordInput
                         {...field}
                         placeholder="••••••••••••"
-                        className="pl-12 h-14 rounded-2xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
+                        className="pl-12 h-11 rounded-xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
                       />
                     </div>
                   </FormControl>
@@ -225,16 +226,16 @@ export function SignUpForm({
 
           {/* Error Alert */}
           {error && (
-            <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-2xl flex items-center gap-3">
-              <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
-              <p className="text-[10px] font-black uppercase tracking-widest text-destructive leading-tight">{error.message}</p>
+            <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-xl flex items-center gap-3">
+              <AlertCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+              <p className="text-[10px] font-bold uppercase tracking-widest text-destructive leading-tight">{error.message}</p>
             </div>
           )}
 
           {/* Submit Button */}
           <Button
             type="submit"
-            className="w-full h-16 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full h-12 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-[0.2em] text-[10px] shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
             disabled={isLoading || isGoogleLoading}
           >
             {isLoading ? (

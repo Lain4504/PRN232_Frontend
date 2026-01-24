@@ -11,9 +11,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Link, Building2, AlertCircle } from 'lucide-react'
 import { useGetAvailableTargets, useGetBrands, useLinkTargets } from '@/hooks/use-social-accounts'
-import { createClient } from '@/lib/supabase/client'
-import { User } from '@supabase/supabase-js'
 import { toast } from 'sonner'
+import { useAuth } from '@/lib/contexts/auth-context'
 
 interface LinkIntegrationModalProps {
   socialAccountId: string
@@ -23,12 +22,12 @@ interface LinkIntegrationModalProps {
   onOpenChange?: (open: boolean) => void
 }
 
-export function LinkIntegrationModal({ 
-  socialAccountId, 
-  provider, 
-  children, 
-  open: controlledOpen, 
-  onOpenChange 
+export function LinkIntegrationModal({
+  socialAccountId,
+  provider,
+  children,
+  open: controlledOpen,
+  onOpenChange
 }: LinkIntegrationModalProps) {
   const [internalOpen, setInternalOpen] = useState(false)
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
@@ -54,7 +53,7 @@ export function LinkIntegrationModal({
             </DrawerDescription>
           </DrawerHeader>
           <div className="px-4 overflow-y-auto flex-1">
-            <LinkIntegrationForm 
+            <LinkIntegrationForm
               socialAccountId={socialAccountId}
               provider={provider}
               onSuccess={() => setOpen(false)}
@@ -88,7 +87,7 @@ export function LinkIntegrationModal({
           </DialogDescription>
         </DialogHeader>
         <div className="overflow-y-auto flex-1">
-          <LinkIntegrationForm 
+          <LinkIntegrationForm
             socialAccountId={socialAccountId}
             provider={provider}
             onSuccess={() => setOpen(false)}
@@ -99,54 +98,26 @@ export function LinkIntegrationModal({
   )
 }
 
-function LinkIntegrationForm({ 
-  socialAccountId, 
-  provider, 
-  className, 
-  onSuccess 
-}: { 
+function LinkIntegrationForm({
+  socialAccountId,
+  provider,
+  className,
+  onSuccess
+}: {
   socialAccountId: string
   provider: string
   className?: string
-  onSuccess: () => void 
+  onSuccess: () => void
 }) {
   const [selectedBrandId, setSelectedBrandId] = useState<string>('')
   const [selectedTargets, setSelectedTargets] = useState<string[]>([])
   const [isLinking, setIsLinking] = useState(false)
-  const [user, setUser] = useState<User | null>(null)
-  const [userLoading, setUserLoading] = useState(true)
+
+  const { user, isLoading: userLoading } = useAuth()
 
   const { data: brands = [], isLoading: brandsLoading } = useGetBrands()
   const { data: availableTargets = [], isLoading: targetsLoading, error: targetsError } = useGetAvailableTargets(socialAccountId)
   const linkTargetsMutation = useLinkTargets()
-  const supabase = createClient()
-
-  // Get current user
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
-        setUser(user)
-      } catch (error) {
-        console.error('Error getting user:', error)
-        toast.error('Failed to get user information')
-      } finally {
-        setUserLoading(false)
-      }
-    }
-
-    getUser()
-
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null)
-        setUserLoading(false)
-      }
-    )
-
-    return () => subscription.unsubscribe()
-  }, [supabase.auth])
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -155,8 +126,8 @@ function LinkIntegrationForm({
   }, [socialAccountId])
 
   const handleTargetToggle = (targetId: string) => {
-    setSelectedTargets(prev => 
-      prev.includes(targetId) 
+    setSelectedTargets(prev =>
+      prev.includes(targetId)
         ? prev.filter(id => id !== targetId)
         : [...prev, targetId]
     )
@@ -195,7 +166,7 @@ function LinkIntegrationForm({
           brandId: selectedBrandId
         }
       })
-      
+
       toast.success('Successfully linked pages to brand')
       onSuccess()
     } catch (error) {
@@ -310,9 +281,9 @@ function LinkIntegrationForm({
       )}
 
       <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-4">
-        <Button 
-          onClick={handleLink} 
-          disabled={!selectedBrandId || selectedTargets.length === 0 || isLinking || brands.length === 0 || userLoading || !user?.id} 
+        <Button
+          onClick={handleLink}
+          disabled={!selectedBrandId || selectedTargets.length === 0 || isLinking || brands.length === 0 || userLoading || !user?.id}
           className="w-full sm:w-auto"
         >
           {isLinking ? (

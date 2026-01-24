@@ -224,7 +224,7 @@ export function DashboardSidebar() {
                           variant="ghost"
                           asChild
                           className={cn(
-                            "relative w-full h-11 px-4 rounded-xl transition-all duration-300 group",
+                            "relative w-full h-10 px-4 rounded-lg transition-all duration-300 group",
                             sidebarModeState === 'expanded' && "justify-start",
                             sidebarModeState === 'collapsed' && "lg:justify-center px-2",
                             sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start px-2 lg:group-hover:px-4",
@@ -290,7 +290,7 @@ export function DashboardSidebar() {
                             variant="ghost"
                             asChild
                             className={cn(
-                              "relative w-full h-11 px-4 rounded-xl transition-all duration-300 group",
+                              "relative w-full h-10 px-4 rounded-lg transition-all duration-300 group",
                               sidebarModeState === 'expanded' && "justify-start",
                               sidebarModeState === 'collapsed' && "lg:justify-center px-2",
                               sidebarModeState === 'hover' && "lg:justify-center lg:group-hover:justify-start px-2 lg:group-hover:px-4",
@@ -342,11 +342,11 @@ export function DashboardSidebar() {
           <div className="flex items-center justify-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-muted transition-colors">
-                  <PanelLeftDashed className="size-5 text-muted-foreground" />
+                <Button variant="ghost" size="icon" className="size-9 rounded-lg hover:bg-muted transition-colors">
+                  <PanelLeftDashed className="size-4 text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent side="right" align="end" className="w-56 p-2 rounded-2xl border-border/40 bg-background/95 backdrop-blur-xl">
+              <DropdownMenuContent side="right" align="end" className="w-56 p-2 rounded-xl border-border/40 bg-background/95 backdrop-blur-xl">
                 <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Interface Preference</DropdownMenuLabel>
                 <DropdownMenuItem onClick={() => setSidebarMode('expanded')} className="rounded-xl px-3 py-2 cursor-pointer">
                   Standard Mode

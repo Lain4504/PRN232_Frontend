@@ -22,11 +22,11 @@ export default function AiContentPage() {
                         <Badge variant="outline" className="px-6 py-2 rounded-full border-blue-500/20 bg-blue-500/5 text-blue-500 font-black uppercase tracking-[0.3em] text-[10px]">
                             Content Feature
                         </Badge>
-                        <h1 className="text-6xl md:text-9xl font-black tracking-tight uppercase leading-[0.85] text-foreground">
+                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight uppercase leading-[0.85] text-foreground">
                             AI Content <br />
                             <span className="text-blue-500 italic">Creator</span>.
                         </h1>
-                        <p className="text-xl md:text-3xl text-muted-foreground font-medium leading-relaxed tracking-tight">
+                        <p className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed tracking-tight">
                             A professional AI engine optimized for high-conversion social content across all platform formats.
                         </p>
                     </section>
@@ -41,23 +41,23 @@ export default function AiContentPage() {
                             { icon: Brain, title: "Smart Adapting", desc: "The creator adapts to your successful posts to improve future results.", color: "text-indigo-500" },
                             { icon: Zap, title: "Bulk Generation", desc: "Generate dozens of variations for a single concept in under a minute.", color: "text-orange-500" },
                         ].map((cap) => (
-                            <div key={cap.title} className="p-12 rounded-[3rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group">
-                                <div className={`h-16 w-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-8 ${cap.color} group-hover:scale-110 transition-transform`}>
-                                    <cap.icon className="h-8 w-8 stroke-[2.5]" />
+                            <div key={cap.title} className="p-8 rounded-[2rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group">
+                                <div className={`h-12 w-12 rounded-xl bg-muted/50 flex items-center justify-center mb-6 ${cap.color} group-hover:scale-110 transition-transform`}>
+                                    <cap.icon className="h-6 w-6 stroke-[2.5]" />
                                 </div>
-                                <h3 className="text-2xl font-black uppercase tracking-tight mb-4">{cap.title}</h3>
-                                <p className="text-muted-foreground font-medium leading-relaxed">{cap.desc}</p>
+                                <h3 className="text-xl font-black uppercase tracking-tight mb-3">{cap.title}</h3>
+                                <p className="text-sm text-muted-foreground font-medium leading-relaxed">{cap.desc}</p>
                             </div>
                         ))}
                     </section>
 
-                    <section className="relative py-32 px-10 rounded-[5rem] bg-blue-600 overflow-hidden group text-center space-y-12 shadow-2xl shadow-blue-500/20">
+                    <section className="relative py-24 px-10 rounded-[3rem] bg-blue-600 overflow-hidden group text-center space-y-10 shadow-2xl shadow-blue-500/20">
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-700 to-indigo-900 opacity-90" />
                         <div className="space-y-6 relative z-10">
-                            <h2 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter leading-none">Start <br /><span className="text-white/40 italic">Creating</span></h2>
+                            <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none">Start <br /><span className="text-white/40 italic">Creating</span></h2>
                         </div>
                         <div className="flex justify-center gap-6 relative z-10">
-                            <Button asChild size="lg" className="h-20 px-16 bg-white text-blue-600 font-black uppercase tracking-[0.2em] rounded-[2.5rem] shadow-2xl hover:scale-110 transition-all text-sm">
+                            <Button asChild size="lg" className="h-14 px-12 bg-white text-blue-600 font-black uppercase tracking-[0.2em] rounded-xl shadow-2xl hover:scale-110 transition-all text-xs">
                                 <Link href="/auth/sign-up">GET STARTED</Link>
                             </Button>
                         </div>

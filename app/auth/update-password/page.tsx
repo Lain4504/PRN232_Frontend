@@ -1,15 +1,19 @@
+import type { Metadata } from "next";
 import { UpdatePasswordForm } from "@/components/pages/update-password/update-password-form";
+import { AuthSplitLayout } from "@/components/pages/auth/auth-split-layout";
+
+export const metadata: Metadata = {
+  title: "Update Password | AISAM",
+  description: "Update your biometric and security credentials for account access.",
+};
 
 export default function Page() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-6">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">Reset password</h1>
-          <p className="text-muted-foreground text-lg mt-2">Create a new password to secure your account</p>
-        </div>
-        <UpdatePasswordForm />
-      </div>
-    </div>
+    <AuthSplitLayout
+      title="Security Protocol"
+      subtitle="Complete your password reset sequence below"
+    >
+      <UpdatePasswordForm />
+    </AuthSplitLayout>
   );
 }

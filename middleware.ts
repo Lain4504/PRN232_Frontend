@@ -1,45 +1,46 @@
-import { updateSession } from "@/lib/supabase/middleware";
-import { getSubscriptionMiddleware } from "@/lib/middleware/subscription-middleware";
+import { NextResponse } from "next/server";
 import { type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  // First, handle authentication
-  const authResponse = await updateSession(request);
-  
-  // Check if this is a dashboard route that needs profile context
-  const pathname = request.nextUrl.pathname;
-  
-  // Routes that require profile context
-  const profileRequiredRoutes = [
-    '/dashboard'
-  ];
-  
-  // Routes that require team context
-  const teamRequiredRoutes = [
-    '/teams'
-  ];
-  
-  // Check if current path requires profile context
-  const needsProfileContext = profileRequiredRoutes.some(route => 
-    pathname.startsWith(route)
-  );
-  
-  const needsTeamContext = teamRequiredRoutes.some(route => 
-    pathname.startsWith(route)
-  );
-  
-  // For now, let the client-side handle profile context validation
-  // The dashboard layout will redirect to /overview if no active profile
-  
-  // Temporarily disable subscription middleware for debugging
-  // const subscriptionMiddleware = getSubscriptionMiddleware();
-  // return await subscriptionMiddleware(request);
+  const { pathname } = request.nextUrl;
 
-  return authResponse;
+  // Get token from cookies
+  const token = request.cookies.get("auth_token")?.value;
+  const refreshToken = request.cookies.get("refresh_token")?.value;
+
+  // Define protected and auth routes
+  const isAuthRoute = pathname.startsWith("/auth") &&
+    !pathname.startsWith("/auth/callback") &&
+    !pathname.startsWith("/auth/error");
+
+  const isProtectedRoute = pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/overview") ||
+    pathname.startsWith("/teams") ||
+    pathname.startsWith("/account") ||
+    pathname.startsWith("/subscription");
+
+  // Logic: 
+  // 1. If trying to access protected route without any token, redirect to login
+  if (isProtectedRoute && !token && !refreshToken) {
+    const url = new URL("/auth/login", request.url);
+    url.searchParams.set("return_to", pathname);
+    return NextResponse.redirect(url);
+  }
+
+  // 2. If trying to access auth routes while already logged in, redirect to overview
+  // Commented out to prevent infinite redirect loops if client side session is invalid
+  // if (isAuthRoute && (token || refreshToken)) {
+  //   return NextResponse.redirect(new URL("/overview", request.url));
+  // }
+
+  // For now, we trust the client-side auto-refresh logic in api.ts
+  // If the token is expired but refreshToken exists, the first request on the client side will refresh it.
+
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

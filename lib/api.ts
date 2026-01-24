@@ -1,5 +1,3 @@
-import { createClient } from '@/lib/supabase/client'
-
 // Types
 export interface ApiResponse<T> {
   success: boolean
@@ -29,57 +27,87 @@ export interface ApiRequestOptions {
   headers?: Record<string, string>
 }
 
+// Token refresh management
+let isRefreshing = false;
+let refreshPromise: Promise<boolean> | null = null;
+
+async function refreshAccessToken(): Promise<boolean> {
+  if (isRefreshing) return refreshPromise!;
+
+  isRefreshing = true;
+  refreshPromise = (async () => {
+    try {
+      const savedSession = localStorage.getItem("auth_session");
+      if (!savedSession) {
+        // If no session but cookies might exist (desync), clear cookies
+        document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        document.cookie = "refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        return false;
+      }
+
+      const session = JSON.parse(savedSession);
+      const refreshToken = session.refreshToken;
+
+      if (!refreshToken) return false;
+
+      const response = await fetch(`${API_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (response.ok) {
+        const json = await response.json();
+        if (json.success && json.data) {
+          localStorage.setItem("auth_session", JSON.stringify(json.data));
+          // Update cookies for middleware
+          document.cookie = `auth_token=${json.data.accessToken}; path=/; max-age=${60 * 60}; SameSite=Lax`;
+          document.cookie = `refresh_token=${json.data.refreshToken}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
+          return true;
+        }
+      }
+
+      // If refresh fails, clear session
+      localStorage.removeItem("auth_session");
+      document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      return false;
+    } catch (error) {
+      console.error("Token refresh failed", error);
+      return false;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
 // Auth fetch helper
-async function fetchWithAuth(url: string, options: RequestInit = {}, reqOptions: ApiRequestOptions = {}) {
-   const { requireAuth = true } = reqOptions
+async function fetchWithAuth(url: string, options: RequestInit = {}, reqOptions: ApiRequestOptions = {}): Promise<Response> {
+  const { requireAuth = true } = reqOptions
 
-   const authHeader: Record<string, string> = {}
-   if (requireAuth) {
-     const supabase = createClient()
-     // Try to get current session token
-     const { data: { session } } = await supabase.auth.getSession()
-     let accessToken = session?.access_token
+  let accessToken: string | undefined
 
-     // If no token yet (e.g., session not hydrated), try refreshing once
-     if (!accessToken) {
-       try {
-         const { data: refreshed } = await supabase.auth.refreshSession()
-         accessToken = refreshed.session?.access_token || undefined
-       } catch {
-         // ignore, will proceed without auth header
-       }
-     }
+  if (requireAuth) {
+    const savedSession = localStorage.getItem("auth_session");
+    if (savedSession) {
+      const session = JSON.parse(savedSession);
+      accessToken = session.accessToken;
+    }
+  }
 
-     if (accessToken) {
-       authHeader['Authorization'] = `Bearer ${accessToken}`
-     }
-   }
+  const authHeader: Record<string, string> = {}
+  if (accessToken) {
+    authHeader['Authorization'] = `Bearer ${accessToken}`
+  }
 
   // Add profile and team context headers
   const contextHeaders: Record<string, string> = {}
   if (typeof window !== 'undefined') {
-    let activeProfileId = localStorage.getItem('activeProfileId')
+    const activeProfileId = localStorage.getItem('activeProfileId')
     const activeTeamId = localStorage.getItem('activeTeamId')
-
-    // If profile id is missing but we have an access token, hydrate it once from API
-    if (!activeProfileId && requireAuth && authHeader['Authorization']) {
-      try {
-        const meResponse = await fetch(`${API_URL}/users/profile/me`, {
-          headers: { 'Authorization': authHeader['Authorization'] },
-        })
-        if (meResponse.ok) {
-          const meJson = await meResponse.json().catch(() => null) as { data?: { id?: string }; id?: string } | null
-          const profileData = (meJson && (meJson.data || meJson)) || null
-          const newProfileId = profileData?.id
-          if (newProfileId && typeof newProfileId === 'string') {
-            localStorage.setItem('activeProfileId', newProfileId)
-            activeProfileId = newProfileId
-          }
-        }
-      } catch {
-        // ignore
-      }
-    }
 
     if (activeProfileId) {
       contextHeaders['X-Profile-Id'] = activeProfileId
@@ -99,10 +127,45 @@ async function fetchWithAuth(url: string, options: RequestInit = {}, reqOptions:
     ...contextHeaders,
   }
 
-  return fetch(`${API_URL}${url}`, {
+  let response = await fetch(`${API_URL}${url}`, {
     ...options,
     headers,
   })
+
+  // Handle auto refresh on 401
+  if (response.status === 401 && requireAuth && !url.includes('/auth/login') && !url.includes('/auth/refresh')) {
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      // Retry with new token
+      const savedSession = localStorage.getItem("auth_session");
+      if (savedSession) {
+        const session = JSON.parse(savedSession);
+        const newAccessToken = session.accessToken;
+        const newHeaders = {
+          ...headers,
+          'Authorization': `Bearer ${newAccessToken}`
+        };
+        response = await fetch(`${API_URL}${url}`, {
+          ...options,
+          headers: newHeaders,
+        });
+      }
+    } else {
+      // Refresh failed, redirect to login if we're in the browser
+      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/auth/')) {
+        // Clear all auth cookies to ensure middleware doesn't redirect back
+        document.cookie = "auth_token=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+        document.cookie = "refresh_token=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+
+        // Clear local storage just in case
+        localStorage.removeItem("auth_session");
+
+        window.location.href = '/auth/login';
+      }
+    }
+  }
+
+  return response;
 }
 
 // API methods
@@ -110,10 +173,23 @@ export const api = {
   // GET
   get: async <T>(url: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     const response = await fetchWithAuth(url, {}, options)
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`)
+
+    let json
+    try {
+      const text = await response.text()
+      json = text ? JSON.parse(text) : {}
+    } catch (e) {
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      // If OK but parsing failed/empty, default to empty object
+      json = {}
     }
-    return response.json()
+
+    if (!response.ok) {
+      throw new Error(json.message || `HTTP ${response.status}`)
+    }
+    return json
   },
 
   // POST
@@ -122,22 +198,41 @@ export const api = {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
     }, options)
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`)
+
+    let json
+    try {
+      const text = await response.text()
+      json = text ? JSON.parse(text) : {}
+    } catch (e) {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      json = {}
     }
-    return response.json()
+
+    if (!response.ok) {
+      throw new Error(json.message || `HTTP ${response.status}`)
+    }
+    return json
   },
 
   // POST multipart/form-data
   postForm: async <T>(url: string, formData: FormData, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
-    // Let browser set the multipart boundary; do not set Content-Type
     const response = await fetchWithAuth(url, {
       method: 'POST',
       body: formData,
       headers: {},
     }, { ...options, headers: {} })
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    return response.json()
+
+    let json
+    try {
+      const text = await response.text()
+      json = text ? JSON.parse(text) : {}
+    } catch (e) {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      json = {}
+    }
+
+    if (!response.ok) throw new Error(json.message || `HTTP ${response.status}`)
+    return json
   },
 
   // PUT
@@ -146,8 +241,18 @@ export const api = {
       method: 'PUT',
       body: data ? JSON.stringify(data) : undefined,
     }, options)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    return response.json()
+
+    let json
+    try {
+      const text = await response.text()
+      json = text ? JSON.parse(text) : {}
+    } catch (e) {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      json = {}
+    }
+
+    if (!response.ok) throw new Error(json.message || `HTTP ${response.status}`)
+    return json
   },
 
   // PUT multipart/form-data
@@ -157,22 +262,42 @@ export const api = {
       body: formData,
       headers: {},
     }, { ...options, headers: {} })
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    return response.json()
+
+    let json
+    try {
+      const text = await response.text()
+      json = text ? JSON.parse(text) : {}
+    } catch (e) {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      json = {}
+    }
+
+    if (!response.ok) throw new Error(json.message || `HTTP ${response.status}`)
+    return json
   },
 
   // DELETE
   delete: async <T>(url: string, data?: unknown, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     const requestOptions: RequestInit = { method: 'DELETE' }
-    
+
     if (data) {
       requestOptions.body = JSON.stringify(data)
       requestOptions.headers = { 'Content-Type': 'application/json' }
     }
-    
+
     const response = await fetchWithAuth(url, requestOptions, options)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    return response.json()
+
+    let json
+    try {
+      const text = await response.text()
+      json = text ? JSON.parse(text) : {}
+    } catch (e) {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      json = {}
+    }
+
+    if (!response.ok) throw new Error(json.message || `HTTP ${response.status}`)
+    return json
   },
 
   // PATCH
@@ -181,81 +306,59 @@ export const api = {
       method: 'PATCH',
       body: data ? JSON.stringify(data) : undefined,
     }, options)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    return response.json()
+
+    let json
+    try {
+      const text = await response.text()
+      json = text ? JSON.parse(text) : {}
+    } catch (e) {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      json = {}
+    }
+
+    if (!response.ok) throw new Error(json.message || `HTTP ${response.status}`)
+    return json
   },
 
   // POST Multipart (for file uploads)
   postMultipart: async <T>(url: string, formData: FormData, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
-    const { requireAuth = true } = options || {}
-
-    const authHeader: Record<string, string> = {}
-    if (requireAuth) {
-      const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session?.access_token) {
-        authHeader['Authorization'] = `Bearer ${session.access_token}`
-      }
-    }
-
-    // Don't set Content-Type for FormData, let browser set it with boundary
-    const headers: Record<string, string> = {
-      ...(options?.headers || {}),
-      ...authHeader,
-    }
-
-    console.log('Sending multipart request to:', `${API_URL}${url}`)
-    console.log('Headers:', headers)
-
-    const response = await fetch(`${API_URL}${url}`, {
+    const response = await fetchWithAuth(url, {
       method: 'POST',
       body: formData,
-      headers,
-    })
+    }, options)
 
-    console.log('Response status:', response.status)
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error(`API Error ${response.status}:`, errorText)
-      throw new Error(`HTTP ${response.status}: ${errorText}`)
+    let json
+    try {
+      const text = await response.text()
+      json = text ? JSON.parse(text) : {}
+    } catch (e) {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      json = {}
     }
-    return response.json()
+
+    if (!response.ok) throw new Error(json.message || `HTTP ${response.status}`)
+    return json
   },
 
   // PUT Multipart (for file uploads)
   putMultipart: async <T>(url: string, formData: FormData, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
-    const { requireAuth = true } = options || {}
-
-    const authHeader: Record<string, string> = {}
-    if (requireAuth) {
-      const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session?.access_token) {
-        authHeader['Authorization'] = `Bearer ${session.access_token}`
-      }
-    }
-
-    // Don't set Content-Type for FormData, let browser set it with boundary
-    const headers: Record<string, string> = {
-      ...(options?.headers || {}),
-      ...authHeader,
-    }
-
-    const response = await fetch(`${API_URL}${url}`, {
+    const response = await fetchWithAuth(url, {
       method: 'PUT',
       body: formData,
-      headers,
-    })
+    }, options)
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error(`API Error ${response.status}:`, errorText)
-      throw new Error(`HTTP ${response.status}: ${errorText}`)
+    let json
+    try {
+      const text = await response.text()
+      json = text ? JSON.parse(text) : {}
+    } catch (e) {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      json = {}
     }
-    return response.json()
-  },
 
+    if (!response.ok) throw new Error(json.message || `HTTP ${response.status}`)
+    return json
+  },
 }
 
 // Endpoints
@@ -311,7 +414,10 @@ export const endpoints = {
   restoreTeam: (teamId: string) => `/team/${teamId}/restore`,
 
   // User endpoints
-  userProfile: "/users/profile/me",
+  userProfile: "/auth/me",
+  forgotPassword: "/auth/forgot-password",
+  resetPassword: "/auth/change-password-with-token",
+  resendVerification: "/auth/verify-email/resend",
   userSearch: "/users",
 
   // Social Auth endpoints

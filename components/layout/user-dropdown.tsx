@@ -1,6 +1,6 @@
 "use client"
 
-import { User } from "@supabase/supabase-js"
+import { AuthUser } from "@/lib/types/auth"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useTheme } from "next-themes"
@@ -22,7 +22,7 @@ type ViewTransitionDoc = Document & {
 }
 
 interface UserDropdownProps {
-  user?: User | null
+  user?: AuthUser | null
 }
 
 export function UserDropdown({ user }: UserDropdownProps) {
@@ -49,16 +49,16 @@ export function UserDropdown({ user }: UserDropdownProps) {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <AvatarImage
-              src={user?.user_metadata?.avatar_url}
-              alt={user?.user_metadata?.full_name}
+              src={user?.avatarUrl}
+              alt={user?.fullName}
             />
             <AvatarFallback className="text-xs">
-              {user?.user_metadata?.full_name
-                ? user.user_metadata.full_name
-                    .split(" ")
-                    .map((n: string) => n[0])
-                    .join("")
-                    .toUpperCase()
+              {user?.fullName
+                ? user.fullName
+                  .split(" ")
+                  .map((n: string) => n[0])
+                  .join("")
+                  .toUpperCase()
                 : user?.email?.[0]?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
@@ -68,7 +68,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {user?.user_metadata?.full_name || "User"}
+              {user?.fullName || "User"}
             </p>
             <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
           </div>

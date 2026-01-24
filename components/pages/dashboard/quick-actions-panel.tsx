@@ -101,8 +101,8 @@ export function QuickActionsPanel({ className }: QuickActionsPanelProps) {
       <CardHeader className="p-0 mb-10">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h3 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
-              <Zap className="h-6 w-6 text-primary" />
+            <h3 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+              <Zap className="h-5 w-5 text-primary" />
               Quick Launch
             </h3>
             <p className="text-muted-foreground text-sm">
@@ -131,17 +131,17 @@ export function QuickActionsPanel({ className }: QuickActionsPanelProps) {
                 asChild
                 variant="ghost"
                 className={cn(
-                  "w-full justify-start h-auto p-4 rounded-3xl border border-border/40 bg-background/40 transition-all duration-300 hover:bg-muted hover:border-primary/20 group relative overflow-hidden",
+                  "w-full justify-start h-auto p-3 rounded-2xl border border-border/40 bg-background/40 transition-all duration-300 hover:bg-muted hover:border-primary/20 group relative overflow-hidden",
                   action.isPopular && "bg-primary/[0.03] border-primary/10"
                 )}
               >
                 <Link href={action.href}>
                   <div className="flex items-center gap-4 w-full relative z-10">
                     <div className={cn(
-                      "flex-shrink-0 p-3 rounded-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
+                      "flex-shrink-0 p-2.5 rounded-xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
                       action.variant === "default" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
                     )}>
-                      <action.icon className="h-5 w-5" />
+                      <action.icon className="h-4 w-4" />
                     </div>
                     <div className="flex-1 text-left">
                       <div className="flex items-center gap-2">
@@ -177,12 +177,12 @@ export function QuickActionsPanel({ className }: QuickActionsPanelProps) {
                 key={index}
                 asChild
                 variant="ghost"
-                className="w-full justify-start h-auto p-4 rounded-3xl border border-transparent bg-muted/30 transition-all hover:bg-muted/60 group"
+                className="w-full justify-start h-auto p-3 rounded-2xl border border-transparent bg-muted/30 transition-all hover:bg-muted/60 group"
               >
                 <Link href={action.href}>
                   <div className="flex items-center gap-4 w-full">
-                    <div className="flex-shrink-0 p-2.5 rounded-xl bg-background border border-border/50 text-muted-foreground group-hover:text-primary transition-colors">
-                      <action.icon className="h-4 w-4" />
+                    <div className="flex-shrink-0 p-2 rounded-lg bg-background border border-border/50 text-muted-foreground group-hover:text-primary transition-colors">
+                      <action.icon className="h-3.5 w-3.5" />
                     </div>
                     <div className="flex-1 text-left">
                       <div className="flex items-center gap-2">

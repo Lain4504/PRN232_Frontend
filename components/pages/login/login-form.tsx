@@ -1,7 +1,6 @@
 "use client";
 
 import { cn, getBaseUrl } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -14,6 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useForm, type ControllerRenderProps } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginFormData, type AuthError } from "@/lib/types/auth";
+import { useAuth } from "@/lib/contexts/auth-context";
 import { toast } from "sonner";
 
 export function LoginForm({
@@ -23,6 +23,7 @@ export function LoginForm({
   const [error, setError] = useState<AuthError | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const { login } = useAuth();
   const router = useRouter();
 
   const form = useForm<LoginFormData>({
@@ -34,54 +35,32 @@ export function LoginForm({
   });
 
   const handleLogin = async (data: LoginFormData) => {
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      toast.success("Identity verified. Access granted.");
-      router.push("/overview");
-    } catch (error: unknown) {
+      await login(data);
+    } catch (error: any) {
       const authError: AuthError = {
-        message: error instanceof Error ? error.message : "An unexpected error occurred",
-        code: error instanceof Error && 'code' in error ? String(error.code) : undefined,
+        message: error.message || "An unexpected error occurred",
       };
       setError(authError);
-      toast.error(authError.message);
+      // toast already handled in context
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
-    const supabase = createClient();
     setIsGoogleLoading(true);
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${getBaseUrl()}/auth/callback`,
-        },
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
+      // Redirect to backend social auth endpoint
+      window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5283/api'}/auth/social/google`;
     } catch (error: unknown) {
       const authError: AuthError = {
-        message: error instanceof Error ? error.message : "Failed to sign in with Google",
-        code: error instanceof Error && 'code' in error ? String(error.code) : undefined,
+        message: "Failed to initiate Google login",
       };
       setError(authError);
       toast.error(authError.message);
@@ -95,7 +74,7 @@ export function LoginForm({
       <div className="space-y-4">
         <Button
           variant="outline"
-          className="w-full h-14 rounded-2xl border-border/40 bg-muted/20 hover:bg-primary/5 hover:border-primary/50 transition-all font-black text-[10px] uppercase tracking-[0.2em] group shadow-xl"
+          className="w-full h-11 rounded-xl border-border/40 bg-muted/20 hover:bg-primary/5 hover:border-primary/50 transition-all font-black text-[10px] uppercase tracking-[0.2em] group shadow-xl"
           onClick={handleGoogleLogin}
           disabled={isGoogleLoading || isLoading}
         >
@@ -140,7 +119,7 @@ export function LoginForm({
                         {...field}
                         type="email"
                         placeholder="your@email.com"
-                        className="pl-12 h-14 rounded-2xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
+                        className="pl-12 h-11 rounded-xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
                       />
                     </div>
                   </FormControl>
@@ -170,7 +149,7 @@ export function LoginForm({
                       <PasswordInput
                         {...field}
                         placeholder="••••••••••••"
-                        className="pl-12 h-14 rounded-2xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
+                        className="pl-12 h-11 rounded-xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight placeholder:opacity-30"
                       />
                     </div>
                   </FormControl>
@@ -182,16 +161,16 @@ export function LoginForm({
 
           {/* Error Alert */}
           {error && (
-            <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-2xl flex items-center gap-3">
-              <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
-              <p className="text-[10px] font-black uppercase tracking-widest text-destructive leading-tight">{error.message}</p>
+            <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-xl flex items-center gap-3">
+              <AlertCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+              <p className="text-[10px] font-bold uppercase tracking-widest text-destructive leading-tight">{error.message}</p>
             </div>
           )}
 
           {/* Submit Button */}
           <Button
             type="submit"
-            className="w-full h-16 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full h-12 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-[0.2em] text-[10px] shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
             disabled={isLoading || isGoogleLoading}
           >
             {isLoading ? (

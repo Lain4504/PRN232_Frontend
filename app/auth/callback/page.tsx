@@ -1,28 +1,22 @@
 "use client";
-import { useEffect } from "react"; 
-import { useRouter } from "next/navigation"; 
-import { createClient } from "@/lib/supabase/client"; 
 
-export default function AuthCallbackPage() { 
-  const router = useRouter(); 
-  
-  useEffect(() => { 
-    const processLogin = async () => { 
-      const supabase = createClient(); 
-      
-      const { 
-        data,
-      }: { data: { session: { access_token: string } | null } | null; error: { message: string } | null } = 
-      await supabase.auth.getSession(); 
-      
-      if (data?.session) { 
-        router.replace("/overview"); 
-      } else { 
-        router.replace("/auth/login");
-      } 
-    }; processLogin(); 
-  }, [router]); 
-  
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/contexts/auth-context";
+
+export default function AuthCallbackPage() {
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.replace("/overview");
+    } else if (!isLoading && !user) {
+      // If loading is done and still no user, maybe the token was invalid
+      router.replace("/auth/login");
+    }
+  }, [user, isLoading, router]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-6">
       <div className="w-full max-w-md space-y-8">

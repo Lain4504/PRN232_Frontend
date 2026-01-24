@@ -29,34 +29,34 @@ export function AuthSplitLayout({
 
         {/* Left: Login Area */}
         <div className="lg:col-span-5 flex items-center justify-center p-6 sm:p-12 xl:p-24 relative overflow-hidden bg-background/80 backdrop-blur-xl border-r border-border/40">
-          <div className="w-full max-w-sm space-y-12">
+          <div className="w-full max-w-md space-y-10">
 
             {/* Header Identity */}
-            <div className="space-y-10">
+            <div className="space-y-8">
               <Link href="/" className="flex items-center gap-3 w-fit group">
-                <div className="size-10 rounded-xl bg-primary flex items-center justify-center shadow-2xl shadow-primary/30 group-hover:rotate-[15deg] transition-all duration-500">
-                  <Zap className="size-6 text-primary-foreground fill-current" />
+                <div className="size-9 rounded-lg bg-primary flex items-center justify-center shadow-2xl shadow-primary/30 group-hover:rotate-[15deg] transition-all duration-500">
+                  <Zap className="size-5 text-primary-foreground fill-current" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xl font-black text-foreground tracking-[0.2em] uppercase leading-none">AISAM</span>
-                  <span className="text-[9px] font-black text-primary uppercase tracking-[0.4em] italic leading-none">AI Platform</span>
+                  <span className="text-lg font-black text-foreground tracking-[0.2em] uppercase leading-none">AISAM</span>
+                  <span className="text-[8px] font-black text-primary uppercase tracking-[0.4em] italic leading-none">AI Platform</span>
                 </div>
               </Link>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <div className="h-1 w-6 bg-primary rounded-full" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Secure Access</span>
+                  <div className="h-0.5 w-5 bg-primary rounded-full" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-primary/70">Secure Access</span>
                 </div>
-                <h1 className="text-4xl font-black tracking-tighter text-foreground uppercase leading-[0.9]">{title}</h1>
-                <p className="text-muted-foreground font-medium text-lg tracking-tight">{subtitle}</p>
+                <h1 className="text-3xl font-black tracking-tighter text-foreground uppercase leading-[0.9]">{title}</h1>
+                <p className="text-muted-foreground font-medium text-base tracking-tight">{subtitle}</p>
               </div>
             </div>
 
             {/* Content Core */}
-            <div className="bg-card/40 border border-border/40 rounded-[2.5rem] p-8 sm:p-10 shadow-2xl shadow-black/5 relative group overflow-hidden">
-              <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:rotate-12 transition-transform duration-1000">
-                <Shield className="size-32" />
+            <div className="bg-card/40 border border-border/40 rounded-[2rem] p-8 sm:p-10 shadow-2xl shadow-black/5 relative group overflow-hidden">
+              <div className="absolute top-0 right-0 p-6 opacity-3 group-hover:rotate-12 transition-transform duration-1000">
+                <Shield className="size-24" />
               </div>
               <div className="relative z-10">
                 {children}

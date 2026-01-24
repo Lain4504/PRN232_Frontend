@@ -53,17 +53,17 @@ export default function PricingPage() {
                         <Badge variant="outline" className="px-6 py-2 rounded-full border-primary/20 bg-primary/5 text-primary font-black uppercase tracking-[0.3em] text-[10px]">
                             Access Protocols
                         </Badge>
-                        <h1 className="text-6xl md:text-8xl font-black tracking-tight uppercase leading-none">
+                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight uppercase leading-none">
                             Operational <span className="text-primary italic">Tiers</span>.
                         </h1>
-                        <p className="text-xl text-muted-foreground font-medium">
+                        <p className="text-lg text-muted-foreground font-medium">
                             Choose your tactical scale. No hidden fees. Instant activation.
                         </p>
                     </section>
 
                     <section className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                         {tiers.map((tier) => (
-                            <div key={tier.name} className={`relative p-12 rounded-[3.5rem] bg-card/40 border ${tier.featured ? 'border-primary/50 border-2 shadow-2xl shadow-primary/20 scale-105 z-10' : 'border-border/40'} backdrop-blur-3xl space-y-10 group`}>
+                            <div key={tier.name} className={`relative p-8 rounded-[2rem] bg-card/40 border ${tier.featured ? 'border-primary/50 border-2 shadow-2xl shadow-primary/20 scale-105 z-10' : 'border-border/40'} backdrop-blur-3xl space-y-8 group`}>
                                 {tier.featured && (
                                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-6 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.3em]">
                                         Most Deployed
@@ -92,7 +92,7 @@ export default function PricingPage() {
                                     ))}
                                 </div>
 
-                                <Button asChild className={`w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs transition-all ${tier.featured ? 'bg-primary text-primary-foreground hover:scale-105 shadow-xl shadow-primary/20' : 'bg-muted/20 text-foreground hover:bg-muted/40'}`}>
+                                <Button asChild className={`w-full h-12 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all ${tier.featured ? 'bg-primary text-primary-foreground hover:scale-105 shadow-xl shadow-primary/20' : 'bg-muted/20 text-foreground hover:bg-muted/40'}`}>
                                     <Link href="/auth/sign-up">INITIALIZE {tier.name}</Link>
                                 </Button>
                             </div>
@@ -111,7 +111,7 @@ export default function PricingPage() {
                                 { q: "What social nodes are supported?", a: "TikTok, Meta (FB/IG), and X are currently operational." },
                                 { q: "Are there long-term contracts?", a: "No. All protocols are month-to-month by default." },
                             ].map((item) => (
-                                <div key={item.q} className="p-8 rounded-[2rem] bg-muted/20 border border-border/20">
+                                <div key={item.q} className="p-6 rounded-[1.5rem] bg-muted/20 border border-border/20">
                                     <h4 className="text-xs font-black uppercase tracking-widest text-primary mb-2 italic px-1">{item.q}</h4>
                                     <p className="text-sm font-medium text-muted-foreground leading-relaxed">{item.a}</p>
                                 </div>

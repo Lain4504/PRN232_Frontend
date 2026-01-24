@@ -34,6 +34,10 @@ export const registrationStep2Schema = z.object({
 
 // Full registration form validation schema
 export const registrationSchema = z.object({
+  fullName: z
+    .string()
+    .min(1, 'Full name is required')
+    .min(2, 'Full name must be at least 2 characters'),
   email: z
     .string()
     .min(1, 'Email is required')
@@ -97,14 +101,17 @@ export type SocialProvider = 'google' | 'facebook' | 'github'
 export interface AuthUser {
   id: string
   email: string
-  email_confirmed_at?: string
-  created_at: string
-  updated_at?: string
+  fullName: string
+  role: string
+  isEmailVerified: boolean
+  createdAt: string
+  avatarUrl?: string
 }
 
 export interface AuthSession {
+  accessToken: string
+  refreshToken: string
+  expiresAt: string
+  tokenType: string
   user: AuthUser
-  access_token: string
-  refresh_token: string
-  expires_at: number
 }

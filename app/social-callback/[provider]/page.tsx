@@ -6,7 +6,6 @@ import { Loader2, CheckCircle, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useConnectSocialAccount } from '@/hooks/use-social-accounts'
-import { createClient } from '@/lib/supabase/client'
 import { SocialCallbackResponse } from '@/lib/types/aisam-types'
 import { toast } from 'sonner'
 
@@ -18,7 +17,7 @@ function GenericCallbackContent() {
   const [status, setStatus] = useState<LoadState>('loading')
   const [message, setMessage] = useState('')
   const [data, setData] = useState<SocialCallbackResponse | null>(null)
-  
+
   const connectSocialAccountMutation = useConnectSocialAccount()
 
   useEffect(() => {
@@ -27,7 +26,7 @@ function GenericCallbackContent() {
         const code = searchParams.get('code')
         const state = searchParams.get('state') || ''
         const error = searchParams.get('error')
-        
+
         // Check for OAuth error
         if (error) {
           throw new Error(`OAuth error: ${error}`)
@@ -49,7 +48,7 @@ function GenericCallbackContent() {
         setStatus('success')
         setMessage(`${provider.charAt(0).toUpperCase() + provider.slice(1)} account connected successfully!`)
         setData(result)
-        
+
         toast.success('Social account connected successfully!')
 
         // Redirect to social accounts page after a short delay

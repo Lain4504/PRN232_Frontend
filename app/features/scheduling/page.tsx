@@ -22,11 +22,11 @@ export default function SchedulingPage() {
                         <Badge variant="outline" className="px-6 py-2 rounded-full border-amber-500/20 bg-amber-500/5 text-amber-500 font-black uppercase tracking-[0.3em] text-[10px]">
                             Automation Feature
                         </Badge>
-                        <h1 className="text-6xl md:text-9xl font-black tracking-tight uppercase leading-[0.85] text-foreground">
+                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight uppercase leading-[0.85] text-foreground">
                             Post <br />
                             <span className="text-amber-500 italic">Scheduling</span>.
                         </h1>
-                        <p className="text-xl md:text-3xl text-muted-foreground font-medium leading-relaxed tracking-tight">
+                        <p className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed tracking-tight">
                             Precise automated posting. Schedule your creative content for the exact moments your audience is online.
                         </p>
                     </section>
@@ -41,23 +41,23 @@ export default function SchedulingPage() {
                             { icon: Repeat, title: "Automated Loops", desc: "Easily set up recurring posts and evergreen content sequences.", color: "text-indigo-500" },
                             { icon: Zap, title: "Pause All Posts", desc: "Instantly halt all upcoming posts across your entire account in one click.", color: "text-orange-500" },
                         ].map((mod) => (
-                            <div key={mod.title} className="p-12 rounded-[3rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group">
-                                <div className={`h-16 w-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-8 ${mod.color} group-hover:scale-110 transition-transform`}>
-                                    <mod.icon className="h-8 w-8 stroke-[2.5]" />
+                            <div key={mod.title} className="p-8 rounded-[2rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group">
+                                <div className={`h-12 w-12 rounded-xl bg-muted/50 flex items-center justify-center mb-6 ${mod.color} group-hover:scale-110 transition-transform`}>
+                                    <mod.icon className="h-6 w-6 stroke-[2.5]" />
                                 </div>
-                                <h3 className="text-2xl font-black uppercase tracking-tight mb-4">{mod.title}</h3>
-                                <p className="text-muted-foreground font-medium leading-relaxed">{mod.desc}</p>
+                                <h3 className="text-xl font-black uppercase tracking-tight mb-3">{mod.title}</h3>
+                                <p className="text-sm text-muted-foreground font-medium leading-relaxed">{mod.desc}</p>
                             </div>
                         ))}
                     </section>
 
-                    <section className="relative py-32 px-10 rounded-[5rem] bg-amber-600 overflow-hidden group text-center space-y-12 shadow-2xl shadow-amber-500/20">
+                    <section className="relative py-24 px-10 rounded-[3rem] bg-amber-600 overflow-hidden group text-center space-y-10 shadow-2xl shadow-amber-500/20">
                         <div className="absolute inset-0 bg-gradient-to-br from-amber-600 via-orange-700 to-amber-900 opacity-90" />
                         <div className="space-y-6 relative z-10">
-                            <h2 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter leading-none">Control the <br /><span className="text-white/40 italic">Timeline</span></h2>
+                            <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none">Control the <br /><span className="text-white/40 italic">Timeline</span></h2>
                         </div>
                         <div className="flex justify-center gap-6 relative z-10">
-                            <Button asChild size="lg" className="h-20 px-16 bg-white text-amber-600 font-black uppercase tracking-[0.2em] rounded-[2.5rem] shadow-2xl hover:scale-110 transition-all text-sm">
+                            <Button asChild size="lg" className="h-14 px-12 bg-white text-amber-600 font-black uppercase tracking-[0.2em] rounded-xl shadow-2xl hover:scale-110 transition-all text-xs">
                                 <Link href="/auth/sign-up">START SCHEDULING</Link>
                             </Button>
                         </div>

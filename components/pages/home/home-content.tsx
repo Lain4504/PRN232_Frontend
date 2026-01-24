@@ -42,7 +42,7 @@ export function HomeContent() {
               </Badge>
             </div>
 
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-foreground leading-[0.85] animate-reveal">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-foreground leading-[0.85] animate-reveal">
               Social Ads, <br />
               <span className="relative inline-block mt-4">
                 <span className="text-primary italic">Perfected.</span>
@@ -50,20 +50,20 @@ export function HomeContent() {
               </span>
             </h1>
 
-            <p className="max-w-3xl mx-auto text-xl md:text-2xl text-muted-foreground/80 font-medium leading-relaxed font-fira-sans tracking-tight">
+            <p className="max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground/80 font-medium leading-relaxed font-fira-sans tracking-tight">
               Scale your creative studio across TikTok, Meta, and Instagram with
               an enterprise AI engine built for hyper-growth.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
-            <Button asChild size="lg" className="h-16 px-12 text-lg font-black uppercase tracking-widest rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground shadow-2xl shadow-primary/30 transition-all hover:scale-[1.05] active:scale-[0.95]">
+            <Button asChild size="lg" className="h-12 px-10 text-sm font-black uppercase tracking-widest rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground shadow-2xl shadow-primary/30 transition-all hover:scale-[1.05] active:scale-[0.95]">
               <Link href="/auth/sign-up" className="flex items-center gap-3">
                 Start Free Trial
-                <ArrowRight className="h-5 w-5 stroke-[3]" />
+                <ArrowRight className="h-4 w-4 stroke-[3]" />
               </Link>
             </Button>
-            <Button asChild variant="ghost" size="lg" className="h-16 px-10 text-lg font-bold rounded-2xl border border-border/40 hover:bg-muted/50 backdrop-blur-sm transition-all">
+            <Button asChild variant="ghost" size="lg" className="h-12 px-8 text-sm font-bold rounded-xl border border-border/40 hover:bg-muted/50 backdrop-blur-sm transition-all">
               <Link href="/solutions/startup" className="flex items-center gap-3">
                 <Play className="h-5 w-5 fill-current" />
                 View Solutions
@@ -72,8 +72,8 @@ export function HomeContent() {
           </div>
 
           {/* Stats Section */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-px py-12 px-10 bg-card/40 backdrop-blur-2xl border border-border/40 rounded-[3rem] shadow-2xl mt-20 max-w-6xl mx-auto relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 rounded-[3rem]" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-px py-12 px-10 bg-card/40 backdrop-blur-2xl border border-border/40 rounded-[2rem] shadow-2xl mt-20 max-w-6xl mx-auto relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 rounded-[2rem]" />
 
             <div className="relative space-y-2 md:px-6">
               <div className="text-4xl font-black text-foreground font-fira-mono tracking-tighter">12k<span className="text-primary">+</span></div>
@@ -112,28 +112,28 @@ export function HomeContent() {
                 <div className="h-2 w-10 bg-primary rounded-full" />
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/70 italic">Core AI Capabilities</span>
               </div>
-              <h2 className="text-5xl md:text-7xl font-black tracking-tight text-foreground leading-none uppercase">
+              <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground leading-none uppercase">
                 The Complete <span className="text-primary">Marketing</span> Suite.
               </h2>
             </div>
-            <p className="text-xl text-muted-foreground font-medium max-w-sm leading-relaxed tracking-tight border-l-2 border-primary/20 pl-6">
+            <p className="text-lg text-muted-foreground font-medium max-w-sm leading-relaxed tracking-tight border-l-2 border-primary/20 pl-6">
               Shatter the creative bottleneck. AISAM provides a robust platform for modern marketing teams.
             </p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {/* AI Creator */}
-            <Card className="group relative border-border/40 bg-card/60 backdrop-blur-xl rounded-[2.5rem] p-10 overflow-hidden shadow-2xl transition-all hover:scale-[1.02] hover:bg-card/80">
+            <Card className="group relative border-border/40 bg-card/60 backdrop-blur-xl rounded-[2rem] p-10 overflow-hidden shadow-2xl transition-all hover:scale-[1.02] hover:bg-card/80">
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Brain className="h-32 w-32 stroke-[1]" />
               </div>
               <div className="relative space-y-8 h-full flex flex-col justify-between">
                 <div className="space-y-6">
-                  <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
-                    <Brain className="h-7 w-7 stroke-[2.5]" />
+                  <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
+                    <Brain className="h-6 w-6 stroke-[2.5]" />
                   </div>
                   <div className="space-y-3">
-                    <h3 className="text-2xl font-black uppercase tracking-tight">AI Content Creator</h3>
+                    <h3 className="text-xl font-black uppercase tracking-tight">AI Content Creator</h3>
                     <p className="text-muted-foreground font-medium text-sm leading-relaxed">
                       Deep-learning generative models optimized for high-conversion social assets across all platform formats.
                     </p>
@@ -147,17 +147,17 @@ export function HomeContent() {
             </Card>
 
             {/* Brand Control */}
-            <Card className="group relative border-border/40 bg-card/60 backdrop-blur-xl rounded-[2.5rem] p-10 overflow-hidden shadow-2xl transition-all hover:scale-[1.02] hover:bg-card/80">
+            <Card className="group relative border-border/40 bg-card/60 backdrop-blur-xl rounded-[2rem] p-10 overflow-hidden shadow-2xl transition-all hover:scale-[1.02] hover:bg-card/80">
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Target className="h-32 w-32 stroke-[1]" />
               </div>
               <div className="relative space-y-8 h-full flex flex-col justify-between">
                 <div className="space-y-6">
-                  <div className="h-14 w-14 rounded-2xl bg-blue-600/10 flex items-center justify-center text-blue-600 shadow-inner">
-                    <Target className="h-7 w-7 stroke-[2.5]" />
+                  <div className="h-12 w-12 rounded-xl bg-blue-600/10 flex items-center justify-center text-blue-600 shadow-inner">
+                    <Target className="h-6 w-6 stroke-[2.5]" />
                   </div>
                   <div className="space-y-3">
-                    <h3 className="text-2xl font-black uppercase tracking-tight">Brand Management</h3>
+                    <h3 className="text-xl font-black uppercase tracking-tight">Brand Management</h3>
                     <p className="text-muted-foreground font-medium text-sm leading-relaxed">
                       Maintain absolute brand consistency with AI-enforced visual guidelines and tone-of-voice control.
                     </p>
@@ -171,17 +171,17 @@ export function HomeContent() {
             </Card>
 
             {/* Scheduling */}
-            <Card className="group relative border-border/40 bg-card/60 backdrop-blur-xl rounded-[2.5rem] p-10 overflow-hidden shadow-2xl transition-all hover:scale-[1.02] hover:bg-card/80">
+            <Card className="group relative border-border/40 bg-card/60 backdrop-blur-xl rounded-[2rem] p-10 overflow-hidden shadow-2xl transition-all hover:scale-[1.02] hover:bg-card/80">
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Zap className="h-32 w-32 stroke-[1]" />
               </div>
               <div className="relative space-y-8 h-full flex flex-col justify-between">
                 <div className="space-y-6">
-                  <div className="h-14 w-14 rounded-2xl bg-amber-600/10 flex items-center justify-center text-amber-600 shadow-inner">
-                    <Zap className="h-7 w-7 stroke-[2.5]" />
+                  <div className="h-12 w-12 rounded-xl bg-amber-600/10 flex items-center justify-center text-amber-600 shadow-inner">
+                    <Zap className="h-6 w-6 stroke-[2.5]" />
                   </div>
                   <div className="space-y-3">
-                    <h3 className="text-2xl font-black uppercase tracking-tight">Automated Scheduling</h3>
+                    <h3 className="text-xl font-black uppercase tracking-tight">Automated Scheduling</h3>
                     <p className="text-muted-foreground font-medium text-sm leading-relaxed">
                       Optimize your post timing across global networks with centralized approval and automated workflows.
                     </p>
@@ -202,7 +202,7 @@ export function HomeContent() {
         <div className="max-w-[1440px] mx-auto space-y-24">
           <div className="text-center space-y-6">
             <Badge variant="outline" className="px-4 py-1 rounded-full border-border/60 font-black text-[10px] uppercase tracking-[0.3em]">Client Success</Badge>
-            <h2 className="text-5xl md:text-7xl font-black tracking-tight uppercase leading-none">
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight uppercase leading-none">
               Trusted by the <br />
               <span className="text-primary italic">Modern</span> Marketing Elite.
             </h2>
@@ -214,7 +214,7 @@ export function HomeContent() {
               { name: "Minh Tran", role: "Marketing Director, LuxBrand", initial: "MT", quote: "The AI content creator is truly impressive. We save 70% of creative production time while maintaining extreme quality standards." },
               { name: "Hoang Le", role: "Founder, Zenith Digital", initial: "HL", quote: "The interface is professional and intuitive. Integration with our social channels was seamless. Support is top-tier." }
             ].map((t, idx) => (
-              <Card key={idx} className="bg-muted/30 border-none rounded-[2.5rem] p-10 space-y-8 group transition-all hover:bg-primary/5">
+              <Card key={idx} className="bg-muted/30 border-none rounded-[2rem] p-10 space-y-8 group transition-all hover:bg-primary/5">
                 <div className="flex gap-1">
                   {[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-primary text-primary stroke-0" />)}
                 </div>
@@ -222,8 +222,8 @@ export function HomeContent() {
                   &ldquo;{t.quote}&rdquo;
                 </p>
                 <div className="flex items-center gap-4 pt-4">
-                  <Avatar className="h-12 w-12 rounded-2xl border-2 border-primary/20">
-                    <AvatarFallback className="bg-primary text-primary-foreground font-black text-xs">{t.initial}</AvatarFallback>
+                  <Avatar className="h-10 w-10 rounded-xl border-2 border-primary/20">
+                    <AvatarFallback className="bg-primary text-primary-foreground font-black text-[10px]">{t.initial}</AvatarFallback>
                   </Avatar>
                   <div className="space-y-0.5">
                     <p className="font-black text-sm uppercase tracking-wider">{t.name}</p>
@@ -237,13 +237,13 @@ export function HomeContent() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-32 lg:py-48 px-6 overflow-hidden bg-primary shadow-[0_0_120px_-20px_rgba(var(--color-primary),0.3)] mx-6 lg:mx-10 rounded-[3rem] my-20 group">
+      <section className="relative py-32 lg:py-48 px-6 overflow-hidden bg-primary shadow-[0_0_120px_-20px_rgba(var(--color-primary),0.3)] mx-6 lg:mx-10 rounded-[2rem] my-20 group">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-blue-700 to-indigo-900 opacity-90" />
         <div className="absolute top-0 right-0 w-[50%] h-full bg-white/5 skew-x-[-20deg] translate-x-1/2 group-hover:translate-x-1/3 transition-transform duration-1000" />
 
         <div className="relative z-10 max-w-4xl mx-auto text-center space-y-12">
           <div className="space-y-6">
-            <h2 className="text-5xl md:text-8xl font-black tracking-tighter text-white leading-[0.9] uppercase">
+            <h2 className="text-4xl md:text-7xl font-black tracking-tighter text-white leading-[0.9] uppercase">
               Ready to Grow <br />
               <span className="text-white/40 italic">Your</span> Brand?
             </h2>
@@ -253,12 +253,12 @@ export function HomeContent() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <Button asChild size="lg" className="h-20 px-16 text-xl font-black uppercase tracking-[0.2em] rounded-3xl bg-white text-primary hover:bg-white/95 shadow-2xl transition-all hover:scale-110 active:scale-90">
+            <Button asChild size="lg" className="h-14 px-12 text-sm font-black uppercase tracking-widest rounded-xl bg-white text-primary hover:bg-white/95 shadow-2xl transition-all hover:scale-110 active:scale-90">
               <Link href="/auth/sign-up">
                 Get Started
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="h-20 px-12 text-lg font-bold rounded-3xl border-2 border-white/30 bg-transparent text-white hover:bg-white/10 backdrop-blur-md transition-all">
+            <Button asChild variant="outline" size="lg" className="h-14 px-10 text-sm font-bold rounded-xl border-2 border-white/30 bg-transparent text-white hover:bg-white/10 backdrop-blur-md transition-all">
               <Link href="/about">
                 Our Mission
               </Link>
@@ -279,8 +279,8 @@ export function HomeContent() {
           <div className="grid gap-16 md:grid-cols-2 lg:grid-cols-4 pb-20">
             <div className="space-y-8">
               <Link href="/" className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                  <Zap className="h-6 w-6 text-primary-foreground fill-current" />
+                <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+                  <Zap className="h-5 w-5 text-primary-foreground fill-current" />
                 </div>
                 <div className="flex flex-col">
                   <span className="font-black text-sm uppercase tracking-[0.4em] leading-none mb-0.5">Aisam</span>

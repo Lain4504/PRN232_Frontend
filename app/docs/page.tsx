@@ -60,32 +60,32 @@ export default function DocsPage() {
                             </div>
 
                             <div className="grid sm:grid-cols-2 gap-6">
-                                <Link href="#" className="p-10 rounded-[2.5rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group border-l-4 border-l-primary">
-                                    <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
-                                        <Book className="w-6 h-6 stroke-[2.5]" />
+                                <Link href="#" className="p-8 rounded-[2rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group border-l-4 border-l-primary">
+                                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
+                                        <Book className="w-5 h-5 stroke-[2.5]" />
                                     </div>
-                                    <h3 className="text-2xl font-black uppercase tracking-tight mb-2">QUICK START</h3>
-                                    <p className="text-muted-foreground font-medium text-sm">Set up your brand and create your first post in minutes.</p>
+                                    <h3 className="text-xl font-black uppercase tracking-tight mb-2">QUICK START</h3>
+                                    <p className="text-muted-foreground font-medium text-xs">Set up your brand and create your first post in minutes.</p>
                                 </Link>
-                                <Link href="/api" className="p-10 rounded-[2.5rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group border-l-4 border-l-blue-500">
-                                    <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 transition-transform">
-                                        <Code className="w-6 h-6 stroke-[2.5]" />
+                                <Link href="/api" className="p-8 rounded-[2rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group border-l-4 border-l-blue-500">
+                                    <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 mb-4 group-hover:scale-110 transition-transform">
+                                        <Code className="w-5 h-5 stroke-[2.5]" />
                                     </div>
-                                    <h3 className="text-2xl font-black uppercase tracking-tight mb-2">API REFERENCE</h3>
-                                    <p className="text-muted-foreground font-medium text-sm">Full developer guide for custom platform integrations.</p>
+                                    <h3 className="text-xl font-black uppercase tracking-tight mb-2">API REFERENCE</h3>
+                                    <p className="text-muted-foreground font-medium text-xs">Full developer guide for custom platform integrations.</p>
                                 </Link>
                             </div>
                         </section>
 
                         <section className="prose prose-invert max-w-none space-y-12">
-                            <div className="p-12 rounded-[3.5rem] bg-muted/20 border border-border/10 space-y-6">
-                                <h2 className="text-3xl font-black uppercase tracking-tight text-foreground m-0">Platform Overview</h2>
-                                <p className="text-muted-foreground font-medium text-lg leading-relaxed">
+                            <div className="p-8 rounded-[2rem] bg-muted/20 border border-border/10 space-y-4">
+                                <h2 className="text-2xl font-black uppercase tracking-tight text-foreground m-0">Platform Overview</h2>
+                                <p className="text-muted-foreground font-medium text-base leading-relaxed">
                                     AISAM provides a unified workspace for high-speed content generation and automated social media distribution.
                                     Manage all your brands in one place with AI-driven consistency and performance analytics.
                                 </p>
                                 <div className="h-[2px] w-20 bg-primary/40 rounded-full" />
-                                <p className="text-sm text-muted-foreground/60 italic font-medium">
+                                <p className="text-xs text-muted-foreground/60 italic font-medium">
                                     Note: Advanced automation features require a Strategic or Enterprise subscription tier.
                                 </p>
                             </div>

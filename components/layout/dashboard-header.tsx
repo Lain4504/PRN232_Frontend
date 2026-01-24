@@ -35,12 +35,12 @@ export function DashboardHeader() {
           </Sheet>
 
           <Link href="/dashboard" className="flex items-center gap-3 group transition-all duration-300 hover:scale-[1.02]">
-            <div className="h-9 w-9 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25 transition-transform group-hover:rotate-[15deg] group-hover:scale-105">
-              <Zap className="h-5 w-5 text-primary-foreground fill-current" />
+            <div className="h-8 w-8 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25 transition-transform group-hover:rotate-[15deg] group-hover:scale-105">
+              <Zap className="h-4 w-4 text-primary-foreground fill-current" />
             </div>
             <div className="flex flex-col">
-              <span className="font-black text-xs uppercase tracking-[0.4em] leading-none mb-0.5 text-primary/80">Aisam</span>
-              <span className="font-bold text-[10px] uppercase tracking-widest leading-none text-muted-foreground/60">Intelligence</span>
+              <span className="font-black text-[10px] uppercase tracking-[0.4em] leading-none mb-0.5 text-primary/80">Aisam</span>
+              <span className="font-bold text-[8px] uppercase tracking-widest leading-none text-muted-foreground/60">Intelligence</span>
             </div>
           </Link>
 

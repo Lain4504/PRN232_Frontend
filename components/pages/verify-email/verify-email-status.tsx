@@ -1,13 +1,14 @@
 "use client";
 
-import { cn, getBaseUrl } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
+import { api, endpoints } from "@/lib/api";
+import { useAuth } from "@/lib/contexts/auth-context";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { CheckCircle, AlertCircle, Loader2, Mail, RefreshCw } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { CheckCircle, AlertCircle, Loader2, Mail, RefreshCw, ArrowLeft, Shield } from "lucide-react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 type VerificationStatus = 'loading' | 'verified' | 'pending' | 'error' | 'expired';
 
@@ -22,66 +23,51 @@ export function VerifyEmailStatus({
   const [status, setStatus] = useState<VerificationStatus>('loading');
   const [error, setError] = useState<string | null>(null);
   const [isResending, setIsResending] = useState(false);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const { user, refreshSession } = useAuth();
+
+  const checkVerificationStatus = useCallback(async () => {
+    if (!user) {
+      // Allow some time for initial load
+      const timer = setTimeout(() => {
+        if (!user) {
+          setStatus('error');
+          setError('Identity not established in the current session.');
+        }
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+
+    if (user.isEmailVerified) {
+      setStatus('verified');
+    } else {
+      setStatus('pending');
+      // Try to refresh session once to check if verified recently
+      await refreshSession();
+    }
+  }, [user, refreshSession]);
 
   useEffect(() => {
     checkVerificationStatus();
-  }, []);
-
-  const checkVerificationStatus = async () => {
-    const supabase = createClient();
-    
-    try {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      
-      if (error) {
-        setStatus('error');
-        setError('Failed to check verification status');
-        return;
-      }
-
-      if (!user) {
-        setStatus('error');
-        setError('No user found');
-        return;
-      }
-
-      setUserEmail(user.email || null);
-
-      if (user.email_confirmed_at) {
-        setStatus('verified');
-      } else {
-        setStatus('pending');
-      }
-    } catch (error) {
-      setStatus('error');
-      setError('An unexpected error occurred');
-    }
-  };
+  }, [checkVerificationStatus]);
 
   const handleResendVerification = async () => {
-    if (!userEmail) return;
+    if (!user?.email) return;
 
-    const supabase = createClient();
     setIsResending(true);
     setError(null);
 
     try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: userEmail,
-        options: {
-          emailRedirectTo: `${getBaseUrl()}/auth/verify-email`,
-        },
+      const response = await api.post(endpoints.resendVerification, {
+        email: user.email
       });
 
-      if (error) {
-        throw new Error(error.message);
+      if (!response.success && response.statusCode !== 200) {
+        throw new Error(response.message || 'Failed to resend verification');
       }
 
-      toast.success("Verification email sent! Please check your inbox.");
+      toast.success("Identity verification protocol redispatched. Check your inbox.");
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to resend verification email";
+      const errorMessage = error instanceof Error ? error.message : "Failed to redispatch verification protocol.";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -89,151 +75,126 @@ export function VerifyEmailStatus({
     }
   };
 
-  const renderStatusContent = () => {
+  const renderStatusCard = (icon: React.ReactNode, title: React.ReactNode, description: string, children?: React.ReactNode, badgeText: string = "Identity Status") => (
+    <div className="space-y-10 animate-fade-in">
+      <div className="text-center space-y-4">
+        <Badge variant="outline" className="px-6 py-2 rounded-full border-primary/20 bg-primary/5 text-primary font-black uppercase tracking-[0.3em] text-[10px]">
+          {badgeText}
+        </Badge>
+        <div className="flex flex-col items-center gap-6">
+          <div className="h-20 w-20 rounded-full bg-muted/20 flex items-center justify-center border border-border/40 shadow-2xl overflow-hidden relative group">
+            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            {icon}
+          </div>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black uppercase tracking-tighter leading-none">
+              {title}
+            </h2>
+            <p className="text-muted-foreground font-medium text-sm max-w-sm mx-auto leading-relaxed">
+              {description}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="space-y-4 pt-4">
+        {children}
+      </div>
+    </div>
+  );
+
+  const renderContent = () => {
     switch (status) {
       case 'loading':
-        return (
-          <div className="text-center space-y-6">
-            <div className="flex justify-center">
-              <div className="size-16 rounded-full bg-muted flex items-center justify-center">
-                <Loader2 className="size-8 text-muted-foreground animate-spin" />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <h3 className="text-xl font-semibold">Checking verification status...</h3>
-              <p className="text-muted-foreground">
-                Please wait while we verify your email status.
-              </p>
-            </div>
-          </div>
+        return renderStatusCard(
+          <Loader2 className="h-12 w-12 text-primary animate-spin" />,
+          <>Syncing <br /><span className="text-primary italic">Status</span>.</>,
+          "Decryption and identity check in progress. Please maintain connection.",
+          null,
+          "Verification Engine"
         );
 
       case 'verified':
-        return (
-          <div className="text-center space-y-6">
-            <div className="flex justify-center">
-              <div className="size-16 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
-                <CheckCircle className="size-8 text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <h3 className="text-xl font-semibold">Email verified successfully!</h3>
-              <p className="text-muted-foreground">
-                Your email has been confirmed. You can now access all features of your account.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <Button asChild className="w-full h-10">
-                <Link href="/overview">
-                  Continue to Profiles
-                </Link>
-              </Button>
-              
-              <Button variant="outline" asChild className="w-full h-10">
-                <Link href="/auth/login">
-                  Back to sign in
-                </Link>
-              </Button>
-            </div>
-          </div>
+        return renderStatusCard(
+          <CheckCircle className="h-12 w-12 text-emerald-500 stroke-[2.5]" />,
+          <>Identity <br /><span className="text-emerald-500 italic">Confirmed</span>.</>,
+          "Protocol successfully verified. Your account access has been fully authorized.",
+          <div className="space-y-4">
+            <Button asChild className="w-full h-11 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-[10px] shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98]">
+              <Link href="/overview">
+                INITIALIZE DASHBOARD
+              </Link>
+            </Button>
+            <Button variant="ghost" asChild className="w-full text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 hover:text-primary transition-all">
+              <Link href="/auth/login" className="flex items-center justify-center gap-2">
+                <ArrowLeft className="w-4 h-4 stroke-[3]" />
+                BACK TO LOGIN
+              </Link>
+            </Button>
+          </div>,
+          "Authorization Success"
         );
 
       case 'pending':
-        return (
-          <div className="text-center space-y-6">
-            <div className="flex justify-center">
-              <div className="size-16 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center">
-                <Mail className="size-8 text-yellow-600 dark:text-yellow-400" />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <h3 className="text-xl font-semibold">Email verification pending</h3>
-              <p className="text-muted-foreground">
-                We&apos;ve sent a verification link to <strong>{userEmail}</strong>. 
-                Please check your email and click the verification link.
-              </p>
-            </div>
+        return renderStatusCard(
+          <Mail className="h-12 w-12 text-amber-500 stroke-[2.5]" />,
+          <>Action <br /><span className="text-amber-500 italic">Required</span>.</>,
+          `We have dispatched a verification shard to ${user?.email}. Confirm your identity to continue.`,
+          <div className="space-y-4">
+            <Button
+              onClick={handleResendVerification}
+              disabled={isResending}
+              className="w-full h-11 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-[10px] shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              {isResending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-3 animate-spin" />
+                  REDISPATCHING...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-4 h-4 mr-3 stroke-[2.5]" />
+                  RESEND PROTOCOL
+                </>
+              )}
+            </Button>
 
-            {error && (
-              <Alert variant="destructive" role="alert" aria-live="polite">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <div className="space-y-3">
-              <Button 
-                onClick={handleResendVerification}
-                disabled={isResending}
-                className="w-full h-10"
-              >
-                {isResending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Resend verification email
-                  </>
-                )}
-              </Button>
-              
-              <Button 
-                variant="outline" 
+            <div className="grid grid-cols-2 gap-4">
+              <Button
+                variant="outline"
                 onClick={checkVerificationStatus}
-                className="w-full h-10"
+                className="h-12 rounded-xl bg-muted/10 border-border/40 font-black text-[9px] uppercase tracking-widest hover:border-primary/50 transition-all"
               >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Check status again
+                CHECK STATUS
               </Button>
-              
-              <Button variant="ghost" asChild className="w-full h-10">
-                <Link href="/auth/login">
-                  Back to sign in
-                </Link>
+              <Button variant="ghost" asChild className="h-12 font-black text-[9px] uppercase tracking-widest text-muted-foreground/60">
+                <Link href="/auth/login">BACK TO LOGIN</Link>
               </Button>
             </div>
-          </div>
+          </div>,
+          "Pending Verification"
         );
 
       case 'error':
-        return (
-          <div className="text-center space-y-6">
-            <div className="flex justify-center">
-              <div className="size-16 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-                <AlertCircle className="size-8 text-red-600 dark:text-red-400" />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <h3 className="text-xl font-semibold">Verification failed</h3>
-              <p className="text-muted-foreground">
-                {error || "There was an error verifying your email. Please try again."}
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <Button 
-                onClick={checkVerificationStatus}
-                className="w-full h-10"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Try again
-              </Button>
-              
-              <Button variant="outline" asChild className="w-full h-10">
-                <Link href="/auth/login">
-                  Back to sign in
-                </Link>
-              </Button>
-            </div>
-          </div>
+        return renderStatusCard(
+          <AlertCircle className="h-12 w-12 text-rose-500 stroke-[2.5]" />,
+          <>Sync <br /><span className="text-rose-500 italic">Failed</span>.</>,
+          error || "A disruption occurred while validating your deployment credentials.",
+          <div className="space-y-4">
+            <Button
+              onClick={checkVerificationStatus}
+              className="w-full h-11 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-[10px] shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <RefreshCw className="w-4 h-4 mr-3 stroke-[2.5]" />
+              RETRY SEQUENCE
+            </Button>
+            <Button variant="ghost" asChild className="w-full text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 hover:text-rose-500 transition-all">
+              <Link href="/auth/login" className="flex items-center justify-center gap-2">
+                <ArrowLeft className="w-4 h-4 stroke-[3]" />
+                BACK TO LOGIN
+              </Link>
+            </Button>
+          </div>,
+          "Critical Error"
         );
 
       default:
@@ -242,8 +203,15 @@ export function VerifyEmailStatus({
   };
 
   return (
-    <div className={cn("space-y-6", className)} {...props}>
-      {renderStatusContent()}
+    <div className={cn("space-y-6 font-fira-sans", className)} {...props}>
+      <div className="bg-card/40 border border-border/40 rounded-[2rem] p-8 sm:p-12 shadow-2xl relative group overflow-hidden">
+        <div className="absolute top-0 right-0 p-10 opacity-3 group-hover:rotate-12 transition-transform duration-1000">
+          <Shield className="h-32 w-32" />
+        </div>
+        <div className="relative z-10">
+          {renderContent()}
+        </div>
+      </div>
     </div>
   );
 }

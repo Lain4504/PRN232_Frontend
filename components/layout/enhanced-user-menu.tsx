@@ -17,12 +17,12 @@ import { LogoutButton } from "@/components/auth/logout-button"
 import { Badge } from "@/components/ui/badge"
 import React from "react"
 import Link from "next/link"
-import { 
-  User as UserIcon, 
-  Settings, 
-  Bell, 
-  Moon, 
-  Sun, 
+import {
+  User as UserIcon,
+  Settings,
+  Bell,
+  Moon,
+  Sun,
   Monitor,
   Shield,
   Crown,
@@ -66,10 +66,10 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
           <Avatar className="h-8 w-8">
             <AvatarImage
               src={user?.socialAccounts?.[0]?.avatarUrl}
-              alt={user?.email}
+              alt={user?.fullName || user?.email}
             />
             <AvatarFallback className="text-xs">
-              {user?.email?.[0]?.toUpperCase() || "U"}
+              {(user?.fullName || user?.email)?.[0]?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -78,19 +78,19 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
         {/* User Info Header */}
         <DropdownMenuLabel className="font-normal p-4">
           <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12">
+            <Avatar className="h-10 w-10">
               <AvatarImage
                 src={user?.socialAccounts?.[0]?.avatarUrl}
-                alt={user?.email}
+                alt={user?.fullName || user?.email}
               />
               <AvatarFallback>
-                {user?.email?.[0]?.toUpperCase() || "U"}
+                {(user?.fullName || user?.email)?.[0]?.toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <p className="text-sm font-medium leading-none truncate">
-                  {user?.email}
+                  {user?.fullName || "AISAM User"}
                 </p>
               </div>
               <p className="text-xs leading-none text-muted-foreground mt-1 truncate">
@@ -99,7 +99,7 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
             </div>
           </div>
         </DropdownMenuLabel>
-        
+
         <DropdownMenuSeparator />
 
         {/* Account & Billing */}

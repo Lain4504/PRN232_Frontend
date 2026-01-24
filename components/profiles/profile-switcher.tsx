@@ -3,16 +3,16 @@
 import { useProfile } from '@/lib/contexts/profile-context'
 import { useGetProfiles } from '@/hooks/use-profiles'
 import { useUser } from '@/hooks/use-user'
-import {  PROFILE_TYPE_LABELS, PROFILE_TYPE_COLORS, ProfileTypeEnum } from '@/lib/utils/profile-utils'
+import { PROFILE_TYPE_LABELS, PROFILE_TYPE_COLORS, ProfileTypeEnum } from '@/lib/utils/profile-utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Building2, Plus, ChevronsUpDown } from 'lucide-react'
@@ -53,14 +53,14 @@ export function ProfileSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 px-3 gap-2 hover:bg-accent">
+        <Button variant="ghost" className="h-9 px-3 gap-2 hover:bg-accent rounded-lg">
           <div className="flex items-center gap-2">
             <Building2 className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm font-medium">
               {activeProfile.name}
             </span>
-            <Badge 
-              variant="secondary" 
+            <Badge
+              variant="secondary"
               className="text-xs bg-muted text-muted-foreground"
             >
               {PROFILE_TYPE_LABELS[activeProfile.type]}
@@ -69,11 +69,11 @@ export function ProfileSwitcher() {
           <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
-      
+
       <DropdownMenuContent className="w-80" align="start" sideOffset={8}>
         <DropdownMenuLabel>Switch Context</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        
+
         {/* Current Profile */}
         <DropdownMenuItem disabled>
           <div className="flex items-center gap-2 w-full">
@@ -87,20 +87,20 @@ export function ProfileSwitcher() {
               <div className="font-medium truncate">{activeProfile.name}</div>
               <div className="text-xs text-muted-foreground">Current</div>
             </div>
-            <Badge 
-              variant="secondary" 
+            <Badge
+              variant="secondary"
               className={`text-xs ${PROFILE_TYPE_COLORS[activeProfile.type]}`}
             >
               {PROFILE_TYPE_LABELS[activeProfile.type]}
             </Badge>
           </div>
         </DropdownMenuItem>
-        
+
         <DropdownMenuSeparator />
-        
+
         {/* Other Profiles */}
         {profiles.filter(p => p.id !== activeProfile.id).map((profile) => (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             key={profile.id}
             onClick={() => handleProfileSelect(profile)}
           >
@@ -116,8 +116,8 @@ export function ProfileSwitcher() {
                   {profile.name || profile.company_name || `${profile.profileType} Profile`}
                 </div>
               </div>
-              <Badge 
-                variant="outline" 
+              <Badge
+                variant="outline"
                 className={`text-xs ${PROFILE_TYPE_COLORS[profile.profileType]}`}
               >
                 {PROFILE_TYPE_LABELS[profile.profileType]}
@@ -125,16 +125,16 @@ export function ProfileSwitcher() {
             </div>
           </DropdownMenuItem>
         ))}
-        
-        
+
+
         <DropdownMenuSeparator />
-        
+
         {/* Actions */}
         <DropdownMenuItem onClick={handleSwitchProfile}>
           <Plus className="h-4 w-4 mr-2" />
           Create New Profile
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem onClick={handleManageProfiles}>
           <Building2 className="h-4 w-4 mr-2" />
           Manage Profiles
