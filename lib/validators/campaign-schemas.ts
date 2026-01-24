@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { CAMPAIGN_OBJECTIVES } from '@/lib/types/campaigns';
 
-export const createCampaignSchema = z.object({
+// Base schema without refinements - can be used with .partial()
+const baseCampaignSchema = z.object({
   brandId: z.string().uuid('Please select a valid brand'),
   adAccountId: z.string()
     .min(1, 'Ad Account ID is required')
@@ -15,7 +16,10 @@ export const createCampaignSchema = z.object({
     .max(1000000000, 'Budget cannot exceed ₫1,000,000,000'),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
-}).refine((data) => {
+});
+
+// Create schema with refinements for date validation
+export const createCampaignSchema = baseCampaignSchema.refine((data) => {
   // If both dates are provided, end date must be after start date
   if (data.startDate && data.endDate) {
     return new Date(data.endDate) > new Date(data.startDate);
@@ -35,7 +39,8 @@ export const createCampaignSchema = z.object({
   path: ['startDate'],
 });
 
-export const updateCampaignSchema = createCampaignSchema.partial().extend({
+// Update schema uses .partial() on the base schema (without refinements), then adds id
+export const updateCampaignSchema = baseCampaignSchema.partial().extend({
   id: z.string().uuid(),
 });
 
