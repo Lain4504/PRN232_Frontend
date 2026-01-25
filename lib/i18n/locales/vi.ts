@@ -290,11 +290,16 @@ export const vi = {
                 description: "Tạo nội dung chất lượng cao với sự hỗ trợ của AI.",
                 capabilities: "Tính năng chính",
                 features: [
-                    { title: "Tạo hình ảnh", desc: "Thiết kế hình ảnh đẹp mắt cho từng nền tảng." },
-                    { title: "Tạo video", desc: "Sản xuất và chỉnh sửa video tự động." },
-                    { title: "Viết nội dung", desc: "Viết lời quảng cáo hấp dẫn thu hút khách hàng." },
-                    { title: "Thư viện tài nguyên", desc: "Quản lý tất cả tài sản sáng tạo của bạn." }
-                ]
+                    { title: "Hình ảnh Neural", desc: "Tạo hình ảnh tuyệt đẹp được tối ưu hóa cho từng nền tảng." },
+                    { title: "Tổng hợp Video", desc: "Tự động tạo và chỉnh sửa video bằng AI." },
+                    { title: "Viết quảng cáo thông minh", desc: "Tạo nội dung quảng cáo hấp dẫn giúp tăng chuyển đổi." },
+                    { title: "Nhất quán phong cách", desc: "AI đảm bảo tuân thủ các quy tắc hình ảnh của tổ chức." },
+                    { title: "Thích ứng thông minh", desc: "Hệ thống học hỏi từ các bài đăng thành công để cải thiện kết quả." },
+                    { title: "Tạo hàng loạt", desc: "Tạo hàng chục biến thể cho một ý tưởng chỉ trong vài giây." }
+                ],
+                ctaTitle: "Mở khóa",
+                ctaAccent: "Ma trận",
+                ctaButton: "Bắt đầu miễn phí"
             },
             brandManagement: {
                 badge: "Quản lý thương hiệu",
@@ -303,11 +308,16 @@ export const vi = {
                 description: "Đảm bảo sự nhất quán trên mọi kênh truyền thông.",
                 capabilities: "Kiểm soát thương hiệu",
                 features: [
-                    { title: "Bộ quy chuẩn", desc: "Thiết lập và áp dụng quy tắc thương hiệu tự động." },
-                    { title: "Mẫu thiết kế", desc: "Sử dụng mẫu có sẵn để tạo nội dung nhanh hơn." },
-                    { title: "Đa thương hiệu", desc: "Quản lý nhiều thương hiệu trên cùng một nền tảng." },
-                    { title: "Lịch sử thay đổi", desc: "Theo dõi chỉnh sửa và đảm bảo tuân thủ." }
-                ]
+                    { title: "Cài đặt màu sắc", desc: "Luôn sử dụng đúng màu sắc thương hiệu trong mọi thiết kế." },
+                    { title: "Tiêu chuẩn bố cục", desc: "Đảm bảo logo và văn bản luôn được đặt đúng vị trí." },
+                    { title: "Quản lý tài sản", desc: "Tổ chức và lưu trữ hàng nghìn tài sản trong thư viện đơn giản." },
+                    { title: "Mẫu phong cách", desc: "Khóa các phong cách hình ảnh cụ thể để đảm bảo nhận diện." },
+                    { title: "Quyền truy cập", desc: "Kiểm soát chi tiết quyền chỉnh sửa của từng thành viên." },
+                    { title: "Điều chỉnh giọng điệu", desc: "Huấn luyện AI viết theo giọng văn độc đáo của thương hiệu." }
+                ],
+                ctaTitle: "Đồng bộ hóa",
+                ctaAccent: "Danh tính",
+                ctaButton: "Thiết lập thương hiệu"
             },
             scheduling: {
                 badge: "Lập lịch",
@@ -316,11 +326,16 @@ export const vi = {
                 description: "Tự động hóa quy trình đăng bài.",
                 capabilities: "Tính năng tự động",
                 features: [
-                    { title: "Lập lịch thông minh", desc: "AI gợi ý thời gian đăng bài hiệu quả nhất." },
-                    { title: "Đăng hàng loạt", desc: "Lên lịch hàng trăm bài viết cùng lúc." },
-                    { title: "Đa nền tảng", desc: "Đăng bài lên tất cả mạng xã hội đồng thời." },
-                    { title: "Quy trình duyệt", desc: "Hệ thống xem xét và phê duyệt nội dung." }
-                ]
+                    { title: "Lịch nội dung", desc: "Chế độ xem thống nhất cho tất cả các bài đăng sắp tới." },
+                    { title: "Đăng giờ vàng", desc: "Tự động đăng vào thời điểm có lượng tương tác cao nhất." },
+                    { title: "Kế hoạch toàn cầu", desc: "Phối hợp ra mắt chiến dịch đa quốc gia ngay lập tức." },
+                    { title: "Đẩy đa nền tảng", desc: "Xuất bản lên TikTok, Instagram, Meta và X chỉ với một cú nhấp chuột." },
+                    { title: "Vòng lặp tự động", desc: "Thiết lập bài đăng định kỳ và chuỗi nội dung thường xanh." },
+                    { title: "Tạm dừng tất cả", desc: "Dừng ngay lập tức tất cả các bài đăng sắp tới chỉ với một nút bấm." }
+                ],
+                ctaTitle: "Kiểm soát",
+                ctaAccent: "Dòng thời gian",
+                ctaButton: "Bắt đầu lập lịch"
             },
             analytics: {
                 badge: "Phân tích",
@@ -329,11 +344,16 @@ export const vi = {
                 description: "Xem báo cáo hiệu quả chiến dịch theo thời gian thực.",
                 capabilities: "Bộ công cụ phân tích",
                 features: [
-                    { title: "Chỉ số hiệu quả", desc: "Theo dõi tương tác, tiếp cận và chuyển đổi." },
-                    { title: "Phân tích đối thủ", desc: "So sánh hiệu quả với đối thủ cạnh tranh." },
-                    { title: "Báo cáo tùy chỉnh", desc: "Tạo báo cáo theo nhu cầu riêng." },
-                    { title: "Gợi ý từ AI", desc: "Nhận đề xuất cải thiện từ trí tuệ nhân tạo." }
-                ]
+                    { title: "Phân bổ thông minh", desc: "Xác định chính xác bài đăng nào đang mang lại doanh số." },
+                    { title: "Thông tin thời gian thực", desc: "Xem phản hồi trực tiếp về hiệu quả chiến dịch đang chạy." },
+                    { title: "Xu hướng tăng trưởng", desc: "Dự đoán kết quả tương lai dựa trên dữ liệu lịch sử." },
+                    { title: "Thống kê sử dụng", desc: "Theo dõi giới hạn tạo AI và mức tiêu thụ tài nguyên." },
+                    { title: "Báo cáo chi tiết", desc: "Đi sâu vào từng bài đăng hoặc chiến dịch cụ thể." },
+                    { title: "Thị phần", desc: "Trực quan hóa vị thế thương hiệu so với đối thủ cạnh tranh." }
+                ],
+                ctaTitle: "Mở khóa",
+                ctaAccent: "Thông tin chi tiết",
+                ctaButton: "Xem phân tích"
             }
         },
 

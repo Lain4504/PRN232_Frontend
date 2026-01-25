@@ -23,6 +23,12 @@ export default function OnboardingPage() {
             return
         }
 
+        if (type === 'agency') {
+            // Redirect to payment page for Agency
+            router.push(`/onboarding/payment?type=agency&companyName=My Agency`)
+            return
+        }
+
         setIsLoading(true)
         try {
             const fd = new FormData()
@@ -31,11 +37,6 @@ export default function OnboardingPage() {
                 fd.append('Name', 'Personal Profile')
                 fd.append('ProfileType', '0') // Free
                 fd.append('Bio', 'My personal creative workspace')
-            } else {
-                fd.append('Name', 'Agency Workspace')
-                fd.append('ProfileType', '1') // Basic (minimum for Agency features)
-                fd.append('CompanyName', 'My Agency')
-                fd.append('Bio', 'Collaborative agency management')
             }
 
             const response = await api.postForm<any>(endpoints.createProfile(session.user.id), fd)
@@ -47,16 +48,13 @@ export default function OnboardingPage() {
                 setActiveProfile(newProfile.id, {
                     id: newProfile.id,
                     name: newProfile.name || newProfile.companyName || 'Profile',
-                    type: (newProfile.profileType as ProfileTypeEnum) || (type === 'individual' ? ProfileTypeEnum.Free : ProfileTypeEnum.Basic),
+                    type: (newProfile.profileType as ProfileTypeEnum) || ProfileTypeEnum.Free,
                     avatarUrl: newProfile.avatarUrl,
-                    companyName: newProfile.companyName
+                    companyName: newProfile.companyName,
+                    isOwner: true
                 })
 
-                toast.success(
-                    type === 'individual'
-                        ? "Personal workspace configured! Redirecting to dashboard..."
-                        : "Agency workspace ready! Let's build your team."
-                )
+                toast.success("Personal workspace configured! Redirecting to dashboard...")
 
                 // Give small delay for state persistence
                 setTimeout(() => {

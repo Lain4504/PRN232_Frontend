@@ -10,14 +10,20 @@ import { useTranslation } from "react-i18next";
 export default function AiContentPage() {
     const { t } = useTranslation("common");
 
-    const capabilities = [
-        { icon: ImageIcon, title: t("features.aiContent.features.0.title"), desc: t("features.aiContent.features.0.desc"), color: "text-blue-500" },
-        { icon: Video, title: t("features.aiContent.features.1.title"), desc: t("features.aiContent.features.1.desc"), color: "text-rose-500" },
-        { icon: MessageSquare, title: t("features.aiContent.features.2.title"), desc: t("features.aiContent.features.2.desc"), color: "text-amber-500" },
-        { icon: Sparkles, title: "Style Consistency", desc: "AI-enforced adherence to your organization's specific visual guidelines.", color: "text-emerald-500" },
-        { icon: Brain, title: "Smart Adapting", desc: "The creator adapts to your successful posts to improve future results.", color: "text-indigo-500" },
-        { icon: Zap, title: "Bulk Generation", desc: "Generate dozens of variations for a single concept in under a minute.", color: "text-orange-500" },
-    ];
+    interface FeatureItem {
+        title: string;
+        desc: string;
+    }
+
+    const featureItems = t("features.aiContent.features", { returnObjects: true }) as FeatureItem[];
+    const icons = [ImageIcon, Video, MessageSquare, Sparkles, Brain, Zap];
+    const colors = ["text-blue-500", "text-rose-500", "text-amber-500", "text-emerald-500", "text-indigo-500", "text-orange-500"];
+
+    const capabilities = featureItems.map((item, index) => ({
+        ...item,
+        icon: icons[index] || Zap,
+        color: colors[index] || "text-primary"
+    }));
 
     return (
         <div className="min-h-screen bg-background font-fira-sans">
@@ -55,11 +61,14 @@ export default function AiContentPage() {
                     <section className="relative py-24 px-10 rounded-3xl bg-blue-600 overflow-hidden group text-center space-y-10 shadow-2xl shadow-blue-500/20">
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-700 to-indigo-900 opacity-90" />
                         <div className="space-y-6 relative z-10">
-                            <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none">{t("about.ctaTitle")} <br /><span className="text-white/40 italic">{t("common.header.buttons.deployMatrix")}</span></h2>
+                            <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none">
+                                {t("features.aiContent.ctaTitle")} <br />
+                                <span className="text-white/40 italic">{t("features.aiContent.ctaAccent")}</span>
+                            </h2>
                         </div>
                         <div className="flex justify-center gap-6 relative z-10">
                             <Button asChild size="lg" className="h-14 px-12 bg-white text-blue-600 font-black uppercase tracking-[0.2em] rounded-xl shadow-2xl hover:scale-110 transition-all text-xs">
-                                <Link href="/auth/sign-up">{t("common.getStartedFree")}</Link>
+                                <Link href="/auth/sign-up">{t("features.aiContent.ctaButton")}</Link>
                             </Button>
                         </div>
                     </section>

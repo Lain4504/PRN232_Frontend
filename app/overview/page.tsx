@@ -179,14 +179,17 @@ export default function OverviewPage() {
 }
 
 function ProfileCard({ profile, onSelect, t }: { profile: any; onSelect: (p: any) => void; t: any }) {
+  const isAgency = profile.profileType >= 1 // Basic or Pro
+  const isOwner = profile.isOwner
+
   return (
     <Card
-      className="group rounded-xl border border-border/50 shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer overflow-hidden bg-card"
+      className="group rounded-xl border border-border/50 shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer overflow-hidden bg-card flex flex-col"
       onClick={() => onSelect(profile)}
     >
-      <CardContent className="p-6">
+      <CardContent className="p-6 flex-1 flex flex-col">
         <div className="flex items-start gap-4 mb-4">
-          <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/10 shrink-0">
+          <div className={`h-12 w-12 rounded-lg flex items-center justify-center border shrink-0 ${isAgency ? 'bg-purple-500/10 border-purple-500/20 text-purple-600' : 'bg-blue-500/10 border-blue-500/20 text-blue-600'}`}>
             {profile.avatarUrl ? (
               <img
                 src={profile.avatarUrl}
@@ -194,7 +197,7 @@ function ProfileCard({ profile, onSelect, t }: { profile: any; onSelect: (p: any
                 className="h-12 w-12 rounded-lg object-cover"
               />
             ) : (
-              <User className="h-6 w-6 text-primary" />
+              isAgency ? <Building2 className="h-6 w-6" /> : <User className="h-6 w-6" />
             )}
           </div>
 
@@ -202,38 +205,57 @@ function ProfileCard({ profile, onSelect, t }: { profile: any; onSelect: (p: any
             <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
               {profile.name || profile.company_name || 'Hồ Sơ Chưa Đặt Tên'}
             </h3>
-            <div className="flex items-center gap-2 mt-1.5">
+            <div className="flex items-center gap-2 mt-1.5 align-middle flex-wrap">
               <Badge
                 variant="secondary"
                 className={`rounded-md text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 ${PROFILE_TYPE_COLORS[profile.profileType as unknown as ProfileTypeEnum] || 'bg-muted text-muted-foreground'}`}
               >
                 {PROFILE_TYPE_LABELS[profile.profileType as unknown as ProfileTypeEnum]}
               </Badge>
-              {!profile.isOwner && (
+              {!isOwner && (
                 <Badge variant="outline" className="rounded-md text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 border-primary/30 text-primary">
                   {profile.memberRole || t("overview.member", "Member")}
                 </Badge>
-              )}
-              {profile.company_name && (
-                <span className="text-xs text-muted-foreground truncate border-l pl-2 border-border">
-                  {profile.company_name}
-                </span>
               )}
             </div>
           </div>
         </div>
 
+        {profile.company_name && (
+          <div className="mb-4 text-xs font-medium text-muted-foreground flex items-center gap-2">
+            <Building2 className="h-3 w-3" />
+            {profile.company_name}
+          </div>
+        )}
+
         {profile.bio && (
-          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-6 min-h-[3em]">
+          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-6 min-h-[3em] flex-1">
             {profile.bio}
           </p>
         )}
 
-        <div className="pt-4 border-t border-border/50 flex items-center justify-between">
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
-            {profile.isOwner ? t("overview.accessWorkspace", "Truy Cập Workspace") : t("overview.accessSharedWorkspace", "Truy Cập Workspace Chia Sẻ")}
-          </span>
-          <ArrowRight className="h-4 w-4 text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+        <div className="pt-4 border-t border-border/50 mt-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
+              {isOwner ? t("overview.accessWorkspace", "Truy Cập") : t("overview.accessSharedWorkspace", "Truy Cập")}
+            </span>
+            <ArrowRight className="h-4 w-4 text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+          </div>
+
+          {isOwner && isAgency && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs hover:bg-muted text-muted-foreground hover:text-foreground z-10"
+              onClick={(e) => {
+                e.stopPropagation()
+                // In real app, navigate to billing
+                alert("Navigate to Billing Settings")
+              }}
+            >
+              {t("overview.billing", "Billing")}
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

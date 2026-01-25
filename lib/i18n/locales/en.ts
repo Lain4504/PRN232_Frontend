@@ -290,11 +290,16 @@ export const en = {
                 description: "Generate high-quality creative content with AI.",
                 capabilities: "Key Capabilities",
                 features: [
-                    { title: "Image Generation", desc: "Create stunning visuals optimized for each platform." },
-                    { title: "Video Creation", desc: "AI-powered video generation and editing." },
-                    { title: "Copy Writing", desc: "Generate compelling ad copy that converts." },
-                    { title: "Asset Library", desc: "Organize and manage all your creative assets." }
-                ]
+                    { title: "Neural Imagery", desc: "Create stunning visuals optimized for each platform." },
+                    { title: "Video Synthesis", desc: "AI-powered video generation and editing." },
+                    { title: "Smart Copy", desc: "Generate compelling ad copy that converts." },
+                    { title: "Style Consistency", desc: "AI-enforced adherence to your visual guidelines." },
+                    { title: "Smart Adapting", desc: "The creator adapts to your successful posts." },
+                    { title: "Bulk Generation", desc: "Generate dozens of variations in under a minute." }
+                ],
+                ctaTitle: "Unlock the",
+                ctaAccent: "Matrix",
+                ctaButton: "Get Started Free"
             },
             brandManagement: {
                 badge: "Brand Management",
@@ -303,11 +308,16 @@ export const en = {
                 description: "Keep your brand consistent across every channel.",
                 capabilities: "Brand Control",
                 features: [
-                    { title: "Brand Guidelines", desc: "Define and enforce brand rules automatically." },
-                    { title: "Asset Templates", desc: "Pre-approved templates for faster creation." },
-                    { title: "Multi-Brand", desc: "Manage multiple brands from one dashboard." },
-                    { title: "Audit Trail", desc: "Track all changes and maintain compliance." }
-                ]
+                    { title: "Color Presets", desc: "Always use your official brand colors." },
+                    { title: "Layout Standards", desc: "Ensure logos and text are perfectly placed." },
+                    { title: "Asset Management", desc: "Organize thousands of assets in a simple library." },
+                    { title: "Style Templates", desc: "Lock in specific visual styles." },
+                    { title: "User Permissions", desc: "Advanced controls for team access." },
+                    { title: "AI Voice Tuning", desc: "Train AI to write in your unique brand voice." }
+                ],
+                ctaTitle: "Sync Your",
+                ctaAccent: "Identity",
+                ctaButton: "Set Up Brand"
             },
             scheduling: {
                 badge: "Scheduling",
@@ -316,11 +326,16 @@ export const en = {
                 description: "Automate your content publishing workflow.",
                 capabilities: "Automation Features",
                 features: [
-                    { title: "Smart Scheduling", desc: "AI suggests optimal posting times." },
-                    { title: "Bulk Publishing", desc: "Schedule hundreds of posts at once." },
-                    { title: "Cross-Platform", desc: "Publish to all networks simultaneously." },
-                    { title: "Approval Workflow", desc: "Built-in review and approval system." }
-                ]
+                    { title: "Social Calendar", desc: "A unified view of every upcoming post." },
+                    { title: "Peak Time Posting", desc: "Automatically post during high-engagement windows." },
+                    { title: "Global Planning", desc: "Coordinate multi-region launches instantly." },
+                    { title: "Multi-Platform Push", desc: "One-click publishing to all networks." },
+                    { title: "Automated Loops", desc: "Set up recurring posts and evergreen sequences." },
+                    { title: "Pause All Posts", desc: "Instantly halt all upcoming posts." }
+                ],
+                ctaTitle: "Control the",
+                ctaAccent: "Timeline",
+                ctaButton: "Start Scheduling"
             },
             analytics: {
                 badge: "Analytics",
@@ -329,11 +344,16 @@ export const en = {
                 description: "Real-time insights into your campaign performance.",
                 capabilities: "Analytics Suite",
                 features: [
-                    { title: "Performance Metrics", desc: "Track engagement, reach, and conversions." },
-                    { title: "Competitor Analysis", desc: "See how you stack up against competitors." },
-                    { title: "Custom Reports", desc: "Generate reports tailored to your needs." },
-                    { title: "AI Insights", desc: "Get actionable recommendations from AI." }
-                ]
+                    { title: "Smart Attribution", desc: "Identify which posts drive sales." },
+                    { title: "Real-time Insights", desc: "Live feedback on active campaigns." },
+                    { title: "Growth Trends", desc: "Predict future results based on history." },
+                    { title: "Usage Stats", desc: "Monitor your AI generation limits." },
+                    { title: "Granular Reports", desc: "Drill down into specific posts." },
+                    { title: "Market Share", desc: "Compare presence against competitors." }
+                ],
+                ctaTitle: "Unlock the",
+                ctaAccent: "Insights",
+                ctaButton: "View Analytics"
             }
         },
 
