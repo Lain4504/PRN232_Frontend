@@ -21,7 +21,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useAds, useAdPreview, useBulkUpdateAdStatus } from "@/hooks/use-ads";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { AdForm } from "@/components/ads/ad-form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

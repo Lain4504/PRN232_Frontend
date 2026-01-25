@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -188,6 +189,7 @@ interface CampaignsManagementProps {
 }
 
 export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: CampaignsManagementProps = {}) {
+  const { t } = useTranslation("common");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [objectiveFilter, setObjectiveFilter] = useState("all");
@@ -255,10 +257,10 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
           </Breadcrumb>
           <div className="space-y-1">
             <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase italic leading-none">
-              Campaign <span className="text-primary italic">Operation</span>
+              {t("campaigns.title")}
             </h1>
             <p className="text-lg text-muted-foreground font-medium max-w-2xl leading-relaxed italic border-l-4 border-primary pl-6">
-              Synchronizing high-frequency performance clusters. Execute precision maneuvers across the global network.
+              {t("campaigns.description")}
             </p>
           </div>
         </div>
@@ -267,7 +269,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
           <CampaignModal mode="create" onSuccess={refetchCampaigns}>
             <Button size="lg" className="rounded-[20px] h-16 px-10 font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary">
               <Plus className="mr-3 size-6" />
-              New Deployment
+              {t("campaigns.createCampaign")}
             </Button>
           </CampaignModal>
         </div>

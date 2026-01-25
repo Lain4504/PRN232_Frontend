@@ -22,47 +22,49 @@ import { User, DashboardStats } from "@/lib/types/aisam-types"
 import { api, endpoints } from "@/lib/api"
 import { QuickActionsPanel } from "./quick-actions-panel"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
-const getStatsData = (stats: DashboardStats) => [
+const getStatsData = (stats: DashboardStats, t: (key: string) => string) => [
   {
-    title: "Global Teams",
+    title: t("dashboard.stats.globalTeams"),
     value: stats.total_teams?.toString() || "0",
     icon: Users,
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
-    description: "Connected workspaces",
+    description: t("dashboard.stats.connectedWorkspaces"),
     href: "/overview/teams"
   },
   {
-    title: "Active Identities",
+    title: t("dashboard.stats.activeIdentities"),
     value: stats.total_brands.toString(),
     icon: Target,
     color: "text-emerald-500",
     bgColor: "bg-emerald-500/10",
-    description: "Brand profiles managed",
+    description: t("dashboard.stats.brandProfilesManaged"),
     href: "/dashboard/brands"
   },
   {
-    title: "Forge Vault",
+    title: t("dashboard.stats.forgeVault"),
     value: stats.total_contents.toString(),
     icon: FileText,
     color: "text-amber-500",
     bgColor: "bg-amber-500/10",
-    description: "AI assets generated",
+    description: t("dashboard.stats.aiAssetsGenerated"),
     href: "/dashboard/contents"
   },
   {
-    title: "Distribution",
+    title: t("dashboard.stats.distribution"),
     value: stats.total_posts.toString(),
     icon: Send,
     color: "text-indigo-500",
     bgColor: "bg-indigo-500/10",
-    description: "Synchronized posts",
+    description: t("dashboard.stats.synchronizedPosts"),
     href: "/dashboard/posts"
   },
 ]
 
 const DashboardContent = () => {
+  const { t } = useTranslation("common")
   const [user, setUser] = useState<User | null>(null)
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
@@ -76,8 +78,8 @@ const DashboardContent = () => {
 
         const statsResp = await api.get<DashboardStats>(endpoints.dashboardStats())
         if (statsResp.success) {
-          const raw = statsResp.data as any
-          const n = (v: any) => typeof v === 'number' ? v : (isNaN(Number(v)) ? 0 : Number(v))
+          const raw = statsResp.data as unknown as Record<string, unknown>
+          const n = (v: unknown) => typeof v === 'number' ? v : (isNaN(Number(v)) ? 0 : Number(v))
           setStats({
             total_teams: n(raw?.total_teams ?? raw?.teamsCount),
             total_brands: n(raw?.total_brands ?? raw?.brandsCount ?? raw?.totalBrands ?? raw?.brands),
@@ -119,25 +121,25 @@ const DashboardContent = () => {
           <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8 p-10 rounded-3xl border bg-card/40 backdrop-blur-md shadow-2xl shadow-foreground/5">
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">System Online</div>
-                <span className="text-xs font-bold text-muted-foreground italic">Last update: Moments ago</span>
+                <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">{t("dashboard.systemOnline")}</div>
+                <span className="text-xs font-bold text-muted-foreground italic">{t("dashboard.lastUpdate")}</span>
               </div>
               <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-foreground">
-                Control <span className="text-primary italic">Center</span>
+                {t("dashboard.title")} <span className="text-primary italic">{t("dashboard.accent")}</span>
               </h1>
               <p className="text-lg text-muted-foreground font-medium max-w-lg leading-relaxed italic">
-                Welcome back, <span className="text-foreground font-extrabold">{user?.first_name || user?.email?.split('@')[0]}</span>. Your AI-driven workspace is optimized and ready for deployment.
+                {t("dashboard.welcome")}, <span className="text-foreground font-extrabold">{user?.first_name || user?.email?.split('@')[0]}</span>. {t("dashboard.subtitle")}
               </p>
             </div>
 
             <div className="flex items-center gap-4">
               <Button variant="outline" size="lg" className="rounded-2xl h-14 px-8 border-2 font-bold hover:bg-muted/50">
                 <Filter className="size-5 mr-3" />
-                Analytics
+                {t("dashboard.analyticsButton")}
               </Button>
               <Button size="lg" className="rounded-2xl h-14 px-8 font-bold shadow-xl shadow-primary/25 hover:scale-[1.02] transition-all">
                 <Plus className="size-5 mr-3" />
-                New Engine
+                {t("dashboard.newEngineButton")}
               </Button>
             </div>
           </div>
@@ -145,7 +147,7 @@ const DashboardContent = () => {
 
         {/* Intelligence Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {stats && getStatsData(stats).map((stat, i) => (
+          {stats && getStatsData(stats, t).map((stat, i) => (
             <Card key={i} className="group relative overflow-hidden rounded-3xl border bg-card/40 hover:bg-card transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-foreground/5 cursor-pointer">
               <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
                 <stat.icon className="size-20 -rotate-12 group-hover:rotate-0 transition-transform duration-700" />

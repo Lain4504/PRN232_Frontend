@@ -32,7 +32,7 @@ export function UpdatePasswordForm() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const updatePasswordMutation = useUpdatePassword();
 
   const {
@@ -64,6 +64,7 @@ export function UpdatePasswordForm() {
       await updatePasswordMutation.mutateAsync({
         currentPassword: data.currentPassword,
         newPassword: data.newPassword,
+        confirmPassword: data.confirmPassword,
       });
       reset();
     } catch (_error) {
@@ -131,7 +132,7 @@ export function UpdatePasswordForm() {
         {errors.newPassword && (
           <p className="text-sm text-destructive">{errors.newPassword.message}</p>
         )}
-        
+
         {/* Password Strength Indicator */}
         {newPassword && (
           <div className="space-y-2">
@@ -140,15 +141,14 @@ export function UpdatePasswordForm() {
                 {[1, 2, 3, 4, 5].map((level) => (
                   <div
                     key={level}
-                    className={`h-2 w-full rounded ${
-                      level <= passwordStrength
+                    className={`h-2 w-full rounded ${level <= passwordStrength
                         ? passwordStrength <= 2
                           ? "bg-destructive"
                           : passwordStrength <= 3
-                          ? "bg-yellow-500"
-                          : "bg-green-500"
+                            ? "bg-yellow-500"
+                            : "bg-green-500"
                         : "bg-muted"
-                    }`}
+                      }`}
                   />
                 ))}
               </div>
@@ -156,50 +156,45 @@ export function UpdatePasswordForm() {
                 {passwordStrength <= 2
                   ? "Weak"
                   : passwordStrength <= 3
-                  ? "Medium"
-                  : "Strong"}
+                    ? "Medium"
+                    : "Strong"}
               </span>
             </div>
-            
+
             {/* Password Requirements */}
             <div className="space-y-1 text-xs text-muted-foreground">
               <div className="flex items-center space-x-2">
                 <CheckCircle
-                  className={`h-3 w-3 ${
-                    (newPassword?.length || 0) >= 8 ? "text-green-500" : "text-muted-foreground"
-                  }`}
+                  className={`h-3 w-3 ${(newPassword?.length || 0) >= 8 ? "text-green-500" : "text-muted-foreground"
+                    }`}
                 />
                 <span>At least 8 characters</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle
-                  className={`h-3 w-3 ${
-                    /[A-Z]/.test(newPassword || "") ? "text-green-500" : "text-muted-foreground"
-                  }`}
+                  className={`h-3 w-3 ${/[A-Z]/.test(newPassword || "") ? "text-green-500" : "text-muted-foreground"
+                    }`}
                 />
                 <span>One uppercase letter</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle
-                  className={`h-3 w-3 ${
-                    /[a-z]/.test(newPassword || "") ? "text-green-500" : "text-muted-foreground"
-                  }`}
+                  className={`h-3 w-3 ${/[a-z]/.test(newPassword || "") ? "text-green-500" : "text-muted-foreground"
+                    }`}
                 />
                 <span>One lowercase letter</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle
-                  className={`h-3 w-3 ${
-                    /[0-9]/.test(newPassword || "") ? "text-green-500" : "text-muted-foreground"
-                  }`}
+                  className={`h-3 w-3 ${/[0-9]/.test(newPassword || "") ? "text-green-500" : "text-muted-foreground"
+                    }`}
                 />
                 <span>One number</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle
-                  className={`h-3 w-3 ${
-                    /[^A-Za-z0-9]/.test(newPassword || "") ? "text-green-500" : "text-muted-foreground"
-                  }`}
+                  className={`h-3 w-3 ${/[^A-Za-z0-9]/.test(newPassword || "") ? "text-green-500" : "text-muted-foreground"
+                    }`}
                 />
                 <span>One special character</span>
               </div>

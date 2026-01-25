@@ -7,9 +7,18 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 
 export default function BlogContent() {
+    interface BlogPost {
+        image: string;
+        tag: string;
+        title: string;
+        desc: string;
+        date: string;
+        author: string;
+    }
+
     const { t } = useTranslation("common");
-    const featured = t("blog.featured", { returnObjects: true }) as any;
-    const posts = t("blog.posts", { returnObjects: true }) as any[];
+    const featured = t("blog.featured", { returnObjects: true }) as BlogPost;
+    const posts = t("blog.posts", { returnObjects: true }) as BlogPost[];
 
     return (
         <div className="min-h-screen bg-background font-fira-sans">
@@ -62,7 +71,7 @@ export default function BlogContent() {
 
                     {/* Grid Section */}
                     <section className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                        {posts.map((post: any) => (
+                        {posts.map((post) => (
                             <div key={post.title} className="p-8 rounded-[2rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group flex flex-col justify-between h-[500px]">
                                 <div className="space-y-6">
                                     <div className="h-48 relative rounded-[1.5rem] overflow-hidden mb-6">

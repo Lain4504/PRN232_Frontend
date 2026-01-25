@@ -115,8 +115,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } else {
                 throw new Error(response.message || "Login failed");
             }
-        } catch (error: any) {
-            toast.error(error.message || "Login failed");
+        } catch (error: unknown) {
+            toast.error((error as Error).message || "Login failed");
             throw error;
         }
     };
@@ -131,8 +131,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } else {
                 throw new Error(response.message || "Registration failed");
             }
-        } catch (error: any) {
-            toast.error(error.message || "Registration failed");
+        } catch (error: unknown) {
+            toast.error((error as Error).message || "Registration failed");
             throw error;
         }
     };

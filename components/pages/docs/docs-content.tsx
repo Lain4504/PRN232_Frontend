@@ -8,9 +8,19 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
 export default function DocsContent() {
+    interface DocSection {
+        title: string;
+        items: string[];
+    }
+
+    interface DocCard {
+        title: string;
+        description: string;
+    }
+
     const { t } = useTranslation("common");
-    const sections = t("docs.sections", { returnObjects: true }) as any[];
-    const cards = t("docs.cards", { returnObjects: true }) as any[];
+    const sections = t("docs.sections", { returnObjects: true }) as DocSection[];
+    const cards = t("docs.cards", { returnObjects: true }) as DocCard[];
 
     return (
         <div className="min-h-screen bg-background font-fira-sans">
@@ -21,7 +31,7 @@ export default function DocsContent() {
 
                     {/* Sidebar Nav */}
                     <aside className="hidden lg:block lg:col-span-3 space-y-12">
-                        {sections.map((section: any) => (
+                        {sections.map((section: DocSection) => (
                             <div key={section.title} className="space-y-4">
                                 <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary italic px-2">{section.title}</h4>
                                 <nav className="flex flex-col">

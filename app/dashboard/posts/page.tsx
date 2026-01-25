@@ -239,7 +239,9 @@ export default function PostsPage() {
               <div className="space-y-1">
                 <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">Total Posts</div>
                 <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-foreground">
-                  {(postsData as any)?.total || (postsData as any)?.totalCount || postsData?.data?.length || 0}
+                  {(postsData && typeof postsData === 'object' && 'total' in postsData) ? (postsData as { total?: number }).total :
+                    (postsData && typeof postsData === 'object' && 'totalCount' in postsData) ? (postsData as { totalCount?: number }).totalCount :
+                      (postsData && typeof postsData === 'object' && 'data' in postsData) ? (postsData as { data?: unknown[] }).data?.length || 0 : 0}
                 </div>
               </div>
               <div className="h-10 w-px bg-border/20" />

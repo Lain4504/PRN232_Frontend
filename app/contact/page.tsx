@@ -28,7 +28,7 @@ export default function ContactPage() {
                             <span className="text-primary italic">Us</span>.
                         </h1>
                         <p className="text-xl text-muted-foreground font-medium">
-                            Have questions or want to partner with us? Reach out and we'll get back to you within 24 hours.
+                            Have questions or want to partner with us? Reach out and we&apos;ll get back to you within 24 hours.
                         </p>
                     </section>
 

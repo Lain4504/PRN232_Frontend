@@ -12,8 +12,10 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Building2, Search, ChevronRight, User, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 
 export default function OverviewPage() {
+  const { t } = useTranslation("common")
   const router = useRouter()
   const { data: user, isLoading: userLoading } = useUser()
   const { data: profiles = [], isLoading: profilesLoading, error: profilesError } = useGetProfiles(user?.id || '')
@@ -74,16 +76,16 @@ export default function OverviewPage() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              Profiles
+              {t("overview.myProfiles")}
             </h1>
             <p className="text-muted-foreground font-medium">
-              Manage and switch between your workspace identities.
+              {t("overview.description")}
             </p>
           </div>
           <Link href="/overview/profile/new">
             <Button className="rounded-lg h-10 px-6 font-semibold">
               <Plus className="h-4 w-4 mr-2" />
-              New Profile
+              {t("overview.createProfile")}
             </Button>
           </Link>
         </div>
@@ -106,9 +108,9 @@ export default function OverviewPage() {
               <Building2 className="h-8 w-8 text-muted-foreground/40" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-lg font-semibold">No profiles found</h3>
+              <h3 className="text-lg font-semibold">{t("overview.noProfiles")}</h3>
               <p className="text-muted-foreground max-w-sm mx-auto">
-                {searchQuery ? 'Try searching with a different term.' : 'Get started by creating your first brand profile.'}
+                {searchQuery ? 'Try searching with a different term.' : t("overview.description")}
               </p>
             </div>
             {!searchQuery && (
@@ -116,7 +118,7 @@ export default function OverviewPage() {
                 <Link href="/overview/profile/new">
                   <Button className="rounded-lg h-10 px-8 font-semibold">
                     <Plus className="h-4 w-4 mr-2" />
-                    Create First Profile
+                    {t("overview.createProfile")}
                   </Button>
                 </Link>
               </div>

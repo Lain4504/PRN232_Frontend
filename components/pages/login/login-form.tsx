@@ -44,9 +44,9 @@ export function LoginForm({
 
     try {
       await login(data);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const authError: AuthError = {
-        message: error.message || "An unexpected error occurred",
+        message: (error as Error).message || "An unexpected error occurred",
       };
       setError(authError);
       // toast already handled in context

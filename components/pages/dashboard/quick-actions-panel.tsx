@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
+import { useTranslation } from "react-i18next"
 import {
   Target,
   Package,
@@ -96,6 +97,66 @@ interface QuickActionsPanelProps {
 }
 
 export function QuickActionsPanel({ className }: QuickActionsPanelProps) {
+  const { t } = useTranslation("common")
+
+  const quickActions: QuickAction[] = [
+    {
+      title: t("dashboard.quickActions.createBrand"),
+      description: t("brands.createBrand"),
+      icon: Target,
+      href: "/dashboard/brands/new",
+      variant: "default",
+      isNew: true
+    },
+    {
+      title: t("contents.aiGenerate"),
+      description: t("contents.createContent"),
+      icon: Sparkles,
+      href: "/dashboard/contents/new",
+      variant: "default",
+      isPopular: true
+    },
+    {
+      title: t("dashboard.quickActions.schedulePost"),
+      description: t("calendar.description"),
+      icon: Calendar,
+      href: "/dashboard/calendar",
+      variant: "outline"
+    },
+    {
+      title: t("dashboard.quickActions.viewReports"),
+      description: t("analytics.description"),
+      icon: BarChart3,
+      href: "/dashboard/reports",
+      variant: "outline"
+    },
+    {
+      title: t("teams.title"),
+      description: t("teams.description"),
+      icon: Users,
+      href: "/teams",
+      variant: "outline"
+    }
+  ]
+
+  const secondaryActions: QuickAction[] = [
+    {
+      title: t("common.setup"),
+      description: t("overview.description"),
+      icon: Zap,
+      href: "/dashboard/setup",
+      variant: "secondary",
+      badge: t("common.recommended")
+    },
+    {
+      title: t("analytics.title"),
+      description: t("analytics.overview"),
+      icon: TrendingUp,
+      href: "/dashboard/insights",
+      variant: "secondary"
+    }
+  ]
+
   return (
     <Card className={cn("overflow-hidden flex flex-col p-8", className)}>
       <CardHeader className="p-0 mb-10">
@@ -103,15 +164,15 @@ export function QuickActionsPanel({ className }: QuickActionsPanelProps) {
           <div className="space-y-1">
             <h3 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
               <Zap className="h-5 w-5 text-primary" />
-              Quick Launch
+              {t("dashboard.quickActions.title")}
             </h3>
             <p className="text-muted-foreground text-sm">
-              One-click access to core AI workflows
+              {t("common.quickAccess")}
             </p>
           </div>
           <Button asChild variant="ghost" size="sm" className="rounded-xl hover:bg-muted/50 translate-x-2">
             <Link href="/dashboard/actions">
-              View All
+              {t("common.viewAll")}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
@@ -122,7 +183,7 @@ export function QuickActionsPanel({ className }: QuickActionsPanelProps) {
         {/* Primary Actions */}
         <div className="space-y-4">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 px-1">
-            Core Operations
+            {t("common.coreOperations")}
           </div>
           <div className="grid gap-3">
             {quickActions.map((action, index) => (
@@ -169,7 +230,7 @@ export function QuickActionsPanel({ className }: QuickActionsPanelProps) {
         {/* Recommended / Secondary */}
         <div className="space-y-4">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 px-1">
-            Suggested
+            {t("common.suggested")}
           </div>
           <div className="grid gap-3">
             {secondaryActions.map((action, index) => (

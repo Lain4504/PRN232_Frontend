@@ -138,7 +138,7 @@ export function Header() {
                                 activeMenu === 'resources' ? "text-primary" : "text-muted-foreground/80 hover:text-foreground"
                             )}>
                                 {t("header.menu.knowledge")}
-                                <ChevronDown className={cn("size-3 transition-transform duration-300", activeMenu === 'resources' && "rotate-180 text-primary" )} />
+                                <ChevronDown className={cn("size-3 transition-transform duration-300", activeMenu === 'resources' && "rotate-180 text-primary")} />
                             </button>
 
                             {/* Resources Dropdown */}
@@ -221,7 +221,7 @@ export function Header() {
                             </div>
 
                             <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
-                                {navMenuItems.map((item: { href: string; icon: any; title: string }) => (
+                                {navMenuItems.map((item: { href: string; icon: React.ComponentType<{ className?: string }>; title: string }) => (
                                     <Link
                                         key={item.title}
                                         href={item.href}

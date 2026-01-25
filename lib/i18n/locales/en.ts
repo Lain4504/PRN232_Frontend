@@ -212,6 +212,442 @@ export const en = {
                 }
             ],
             footer: "© 2026 AISAM Platform. Latest Insights."
+        },
+
+        about: {
+            badge: "Our Vision",
+            title: "The Modern AI",
+            accent: "Marketing",
+            subtitle: "Hub.",
+            description: "We build the infrastructure for the next generation of social advertisers. AISAM is designed to simplify creative work and unify global brand management.",
+            values: [
+                { title: "Control", desc: "Maintain absolute control over your brand identity and digital assets." },
+                { title: "Precision", desc: "Surgical accuracy in content generation and deployment timing." },
+                { title: "Speed", desc: "Faster creative cycles to stay ahead of market trends and competitors." },
+                { title: "Collaboration", desc: "Seamless orchestration across multiple brands and global teams." },
+                { title: "Global Reach", desc: "Instant deployment across all major social media platforms." },
+                { title: "Automation", desc: "Self-optimizing AI engines that learn from performance data." }
+            ],
+            ctaTitle: "Ready to Grow Your",
+            ctaAccent: "Social",
+            ctaSuffix: "Presence?",
+            ctaButton: "GET STARTED NOW"
+        },
+
+        contact: {
+            badge: "Get In Touch",
+            title: "Contact",
+            accent: "Us.",
+            description: "Have questions or want to partner with us? Reach out and we'll get back to you within 24 hours.",
+            detailsTitle: "Contact Details.",
+            contactInfo: [
+                { label: "Email Address", value: "hello@aisam.app" },
+                { label: "Live Support", value: "Chat Available" },
+                { label: "Location", value: "Global (Distributed)" },
+                { label: "Availability", value: "24/7 Digital Hub" }
+            ],
+            globalPulse: "Global Pulse Active",
+            supportMessage: "Our support team is always active. We prioritize inquiries from our Enterprise and Strategic partners.",
+            formLabels: {
+                name: "YOUR NAME",
+                namePlaceholder: "John Doe",
+                email: "EMAIL ADDRESS",
+                emailPlaceholder: "john@example.com",
+                inquiryType: "INQUIRY TYPE",
+                inquiryPlaceholder: "Strategic Partnership / Support / Billing",
+                message: "YOUR MESSAGE",
+                messagePlaceholder: "How can we help you today?",
+                sendButton: "SEND MESSAGE"
+            },
+            footer: "© 2026 AISAM Platform. Contact Us Anytime."
+        },
+
+        features: {
+            aiContent: {
+                badge: "AI Content",
+                title: "Neural",
+                accent: "Synthesis.",
+                description: "Generate high-quality creative content with AI.",
+                capabilities: "Key Capabilities",
+                features: [
+                    { title: "Image Generation", desc: "Create stunning visuals optimized for each platform." },
+                    { title: "Video Creation", desc: "AI-powered video generation and editing." },
+                    { title: "Copy Writing", desc: "Generate compelling ad copy that converts." },
+                    { title: "Asset Library", desc: "Organize and manage all your creative assets." }
+                ]
+            },
+            brandManagement: {
+                badge: "Brand Management",
+                title: "Identity",
+                accent: "Matrix.",
+                description: "Keep your brand consistent across every channel.",
+                capabilities: "Brand Control",
+                features: [
+                    { title: "Brand Guidelines", desc: "Define and enforce brand rules automatically." },
+                    { title: "Asset Templates", desc: "Pre-approved templates for faster creation." },
+                    { title: "Multi-Brand", desc: "Manage multiple brands from one dashboard." },
+                    { title: "Audit Trail", desc: "Track all changes and maintain compliance." }
+                ]
+            },
+            scheduling: {
+                badge: "Scheduling",
+                title: "Temporal",
+                accent: "Sync.",
+                description: "Automate your content publishing workflow.",
+                capabilities: "Automation Features",
+                features: [
+                    { title: "Smart Scheduling", desc: "AI suggests optimal posting times." },
+                    { title: "Bulk Publishing", desc: "Schedule hundreds of posts at once." },
+                    { title: "Cross-Platform", desc: "Publish to all networks simultaneously." },
+                    { title: "Approval Workflow", desc: "Built-in review and approval system." }
+                ]
+            },
+            analytics: {
+                badge: "Analytics",
+                title: "Data",
+                accent: "Velocity.",
+                description: "Real-time insights into your campaign performance.",
+                capabilities: "Analytics Suite",
+                features: [
+                    { title: "Performance Metrics", desc: "Track engagement, reach, and conversions." },
+                    { title: "Competitor Analysis", desc: "See how you stack up against competitors." },
+                    { title: "Custom Reports", desc: "Generate reports tailored to your needs." },
+                    { title: "AI Insights", desc: "Get actionable recommendations from AI." }
+                ]
+            }
+        },
+
+        solutions: {
+            startup: {
+                badge: "For Startups",
+                title: "Launch",
+                accent: "Fast.",
+                description: "Everything you need to start your social media presence.",
+                benefits: [
+                    { title: "Quick Setup", desc: "Get started in minutes, not days." },
+                    { title: "Affordable", desc: "Pricing that scales with your growth." },
+                    { title: "Templates", desc: "Pre-built templates to speed up creation." }
+                ]
+            },
+            enterprise: {
+                badge: "For Enterprise",
+                title: "Scale",
+                accent: "Globally.",
+                description: "Enterprise-grade features for large organizations.",
+                benefits: [
+                    { title: "Unlimited Scale", desc: "No limits on users, brands, or content." },
+                    { title: "Custom Integration", desc: "Integrate with your existing tools." },
+                    { title: "Dedicated Support", desc: "Priority support and account management." }
+                ]
+            }
+        },
+
+        dashboard: {
+            title: "Control",
+            accent: "Center",
+            subtitle: "Your AI-driven workspace is optimized and ready for deployment.",
+            welcome: "Welcome back",
+            systemOnline: "System Online",
+            lastUpdate: "Last update: Moments ago",
+            analyticsButton: "Analytics",
+            newEngineButton: "New Engine",
+
+            stats: {
+                globalTeams: "Global Teams",
+                connectedWorkspaces: "Connected workspaces",
+                activeIdentities: "Active Identities",
+                brandProfilesManaged: "Brand profiles managed",
+                forgeVault: "Forge Vault",
+                aiAssetsGenerated: "AI assets generated",
+                distribution: "Distribution",
+                synchronizedPosts: "Synchronized posts"
+            },
+
+            recentActivity: {
+                title: "Recent Activity",
+                noActivity: "No recent activity",
+                viewAll: "View All Activity"
+            },
+
+            quickActions: {
+                title: "Quick Actions",
+                createBrand: "Create Brand",
+                createContent: "Create Content",
+                schedulePost: "Schedule Post",
+                viewReports: "View Reports"
+            },
+
+            upcomingSchedules: {
+                title: "Upcoming Schedules",
+                noSchedules: "No upcoming schedules",
+                scheduled: "Scheduled",
+                viewCalendar: "View Calendar"
+            },
+
+            pendingApprovals: {
+                title: "Pending Approvals",
+                noApprovals: "No pending approvals",
+                approve: "Approve",
+                reject: "Reject",
+                viewAll: "View All Approvals"
+            }
+        },
+
+        overview: {
+            title: "Overview",
+            description: "Manage your workspace and settings",
+            myProfiles: "My Profiles",
+            myTeams: "My Teams",
+            createProfile: "Create Profile",
+            createTeam: "Create Team",
+            viewAll: "View All",
+            noProfiles: "No profiles yet",
+            noTeams: "No teams yet"
+        },
+
+        brands: {
+            title: "Brand Management",
+            description: "Create and manage your brand identities",
+            createBrand: "Create Brand",
+            noBrands: "No brands yet",
+            noBrandsDescription: "Get started by creating your first brand",
+            searchPlaceholder: "Search brands...",
+            edit: "Edit",
+            delete: "Delete",
+            brandName: "Brand Name",
+            brandDescription: "Brand Description",
+            brandWebsite: "Website",
+            brandColor: "Brand Color",
+            save: "Save",
+            cancel: "Cancel",
+            deleteConfirm: "Are you sure you want to delete this brand?",
+            created: "Created",
+            updated: "Updated"
+        },
+
+        contents: {
+            title: "Content Management",
+            description: "Create and manage your AI content",
+            createContent: "Create Content",
+            noContents: "No contents yet",
+            noContentsDescription: "Get started by creating your first content with AI",
+            searchPlaceholder: "Search contents...",
+            filterByBrand: "Filter by brand",
+            filterByStatus: "Filter by status",
+            allBrands: "All brands",
+            allStatuses: "All statuses",
+            draft: "Draft",
+            published: "Published",
+            scheduled: "Scheduled",
+            archived: "Archived",
+            edit: "Edit",
+            delete: "Delete",
+            publish: "Publish",
+            schedule: "Schedule",
+            duplicate: "Duplicate",
+            preview: "Preview",
+            aiGenerate: "Generate with AI",
+            contentTitle: "Content Title",
+            contentBody: "Content Body",
+            selectBrand: "Select Brand",
+            save: "Save",
+            cancel: "Cancel"
+        },
+
+        posts: {
+            title: "Posts Management",
+            description: "Manage and schedule social media posts",
+            createPost: "Create Post",
+            noPosts: "No posts yet",
+            noPostsDescription: "Get started by creating your first post",
+            searchPlaceholder: "Search posts...",
+            filterByPlatform: "Filter by platform",
+            filterByStatus: "Filter by status",
+            allPlatforms: "All platforms",
+            allStatuses: "All statuses",
+            pending: "Pending",
+            published: "Published",
+            scheduled: "Scheduled",
+            failed: "Failed",
+            edit: "Edit",
+            delete: "Delete",
+            viewAnalytics: "View Analytics",
+            postContent: "Post Content",
+            scheduledTime: "Scheduled Time",
+            platform: "Platform",
+            status: "Status"
+        },
+
+        campaigns: {
+            title: "Campaigns",
+            description: "Manage your marketing campaigns",
+            createCampaign: "Create Campaign",
+            noCampaigns: "No campaigns yet",
+            noCampaignsDescription: "Get started by creating your first campaign",
+            campaignName: "Campaign Name",
+            campaignBudget: "Budget",
+            campaignStatus: "Status",
+            active: "Active",
+            paused: "Paused",
+            completed: "Completed",
+            startDate: "Start Date",
+            endDate: "End Date"
+        },
+
+        calendar: {
+            title: "Content Calendar",
+            description: "View and manage your content schedule",
+            today: "Today",
+            week: "Week",
+            month: "Month",
+            agenda: "Agenda",
+            noEvents: "No events",
+            addEvent: "Add Event",
+            viewDetails: "View Details"
+        },
+
+        analytics: {
+            title: "Analytics",
+            description: "Track performance and metrics",
+            overview: "Overview",
+            engagement: "Engagement",
+            reach: "Reach",
+            impressions: "Impressions",
+            clicks: "Clicks",
+            conversions: "Conversions",
+            followers: "Followers",
+            growth: "Growth",
+            topContent: "Top Content",
+            topPlatforms: "Top Platforms",
+            dateRange: "Date Range",
+            last7Days: "Last 7 days",
+            last30Days: "Last 30 days",
+            last90Days: "Last 90 days",
+            custom: "Custom",
+            exportReport: "Export Report"
+        },
+
+        teams: {
+            title: "Teams",
+            description: "Manage teams and members",
+            createTeam: "Create Team",
+            noTeams: "No teams yet",
+            noTeamsDescription: "Get started by creating your first team",
+            teamName: "Team Name",
+            teamMembers: "Members",
+            inviteMember: "Invite Member",
+            role: "Role",
+            owner: "Owner",
+            admin: "Admin",
+            member: "Member",
+            viewer: "Viewer",
+            pending: "Pending",
+            active: "Active",
+            email: "Email",
+            name: "Name",
+            joinedDate: "Joined Date",
+            actions: "Actions",
+            remove: "Remove",
+            changeRole: "Change Role"
+        },
+
+        approvals: {
+            title: "Approvals",
+            description: "Review and approve content",
+            pending: "Pending",
+            approved: "Approved",
+            rejected: "Rejected",
+            noApprovals: "No approvals pending",
+            approve: "Approve",
+            reject: "Reject",
+            comment: "Comment",
+            requestedBy: "Requested by",
+            requestedAt: "Requested at",
+            reviewedBy: "Reviewed by",
+            reviewedAt: "Reviewed at"
+        },
+
+        settings: {
+            title: "Settings",
+            description: "Manage account and application settings",
+            profile: "Profile",
+            account: "Account",
+            security: "Security",
+            notifications: "Notifications",
+            billing: "Billing",
+            integrations: "Integrations",
+            preferences: "Preferences",
+            language: "Language",
+            theme: "Theme",
+            timezone: "Timezone",
+            save: "Save Changes",
+            cancel: "Cancel",
+            changePassword: "Change Password",
+            currentPassword: "Current Password",
+            newPassword: "New Password",
+            confirmPassword: "Confirm Password",
+            twoFactor: "Two-Factor Authentication",
+            enable: "Enable",
+            disable: "Disable",
+            apiKeys: "API Keys",
+            generateKey: "Generate New Key",
+            revokeKey: "Revoke Key"
+        },
+
+        common: {
+            search: "Search",
+            filter: "Filter",
+            sort: "Sort",
+            export: "Export",
+            import: "Import",
+            refresh: "Refresh",
+            loading: "Loading...",
+            saving: "Saving...",
+            saved: "Saved",
+            error: "Error",
+            success: "Success",
+            warning: "Warning",
+            info: "Info",
+            confirm: "Confirm",
+            yes: "Yes",
+            no: "No",
+            ok: "OK",
+            close: "Close",
+            back: "Back",
+            next: "Next",
+            previous: "Previous",
+            finish: "Finish",
+            skip: "Skip",
+            required: "Required",
+            optional: "Optional",
+            selectAll: "Select All",
+            deselectAll: "Deselect All",
+            actions: "Actions",
+            viewMore: "View More",
+            viewLess: "View Less",
+            showMore: "Show More",
+            showLess: "Show Less",
+            viewAll: "View All",
+            quickAccess: "One-click access to core AI workflows",
+            coreOperations: "Core Operations",
+            suggested: "Suggested",
+            recommended: "Recommended",
+            setup: "Quick Setup"
+        },
+
+        sidebar: {
+            commandCenter: "Command Center",
+            identityMatrix: "Identity Matrix",
+            activeSignals: "Active Signals",
+            neuralForge: "Neural Forge",
+            connectors: "Connectors",
+            temporalGrid: "Temporal Grid",
+            broadcasts: "Broadcasts",
+            governance: "Governance",
+            operatives: "Operatives",
+            coreSystems: "Core Systems",
+            workflow: "Workflow",
+            console: "Console"
         }
     },
     auth: {

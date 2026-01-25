@@ -7,8 +7,10 @@ import type { ContentCalendar } from "@/lib/types/aisam-types";
 import { Plus, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useTranslation } from "react-i18next";
 
 export function CalendarManagement() {
+  const { t } = useTranslation("common");
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<ContentCalendar | null>(null);
 
@@ -28,11 +30,11 @@ export function CalendarManagement() {
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard" className="text-[10px] uppercase font-bold tracking-widest opacity-60 hover:opacity-100 transition-opacity">Command</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard" className="text-[10px] uppercase font-bold tracking-widest opacity-60 hover:opacity-100 transition-opacity">{t("dashboard.title")}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="opacity-40" />
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-[10px] uppercase font-bold tracking-widest text-primary">Content Calendar</BreadcrumbPage>
+              <BreadcrumbPage className="text-[10px] uppercase font-bold tracking-widest text-primary">{t("calendar.title")}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -46,12 +48,12 @@ export function CalendarManagement() {
               </div>
               <div>
                 <h1 className="text-4xl font-black tracking-tighter text-foreground italic uppercase">
-                  Content <span className="text-muted-foreground/30">Calendar</span>
+                  {t("calendar.title")}
                 </h1>
               </div>
             </div>
             <p className="text-muted-foreground font-medium text-lg max-w-2xl pl-1">
-              Manage and track your content schedule across all platforms.
+              {t("calendar.description")}
             </p>
           </div>
 
@@ -61,7 +63,7 @@ export function CalendarManagement() {
               className="rounded-xl h-12 px-8 font-black uppercase tracking-widest text-[10px] bg-primary hover:bg-primary/90 shadow-[0_0_25px_-5px_rgba(var(--primary),0.4)] hover:scale-105 transition-all border border-white/10"
             >
               <Plus className="mr-2 size-4" />
-              New Schedule
+              {t("calendar.addEvent")}
             </Button>
           </div>
         </div>

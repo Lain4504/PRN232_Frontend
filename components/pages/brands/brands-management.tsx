@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useTranslation } from "react-i18next";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,7 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+
 
 const createColumns = (
   handleEditBrand: (brand: Brand) => void,
@@ -52,7 +53,8 @@ const createColumns = (
       accessorKey: "name",
       header: "Brand Architecture",
       cell: ({ row }) => {
-        const logo = (row.original as any).logo_url || (row.original as any).logoUrl;
+        const brandData = row.original as Brand & { logo_url?: string; logoUrl?: string };
+        const logo = brandData.logo_url || brandData.logoUrl;
         return (
           <div className="flex items-center gap-5 py-2">
             <div className="relative group">
@@ -125,6 +127,7 @@ const createColumns = (
   ];
 
 export function BrandsManagement() {
+  const { t } = useTranslation("common");
   const [searchTerm, setSearchTerm] = useState("");
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -151,7 +154,7 @@ export function BrandsManagement() {
       await deleteBrandMutation.mutateAsync(deleteBrandId);
       toast.success("Brand purged from registry");
       setDeleteBrandId(null);
-    } catch (error) {
+    } catch {
       toast.error("Purge sequence failed");
     }
   };
@@ -179,10 +182,10 @@ export function BrandsManagement() {
           </Breadcrumb>
           <div className="space-y-1">
             <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase italic leading-none">
-              Brand <span className="text-primary italic">Architecture</span>
+              {t("brands.title")}
             </h1>
             <p className="text-lg text-muted-foreground font-medium max-w-2xl leading-relaxed italic border-l-4 border-primary pl-6">
-              Managing high-performance professional identities. Define the core descriptors for AI-driven deployment.
+              {t("brands.description")}
             </p>
           </div>
         </div>
@@ -191,7 +194,7 @@ export function BrandsManagement() {
           <BrandModal mode="create" onSuccess={refetchBrands}>
             <Button size="lg" className="rounded-[20px] h-16 px-10 font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary">
               <Plus className="mr-3 size-6" />
-              Initialize Identity
+              {t("brands.createBrand")}
             </Button>
           </BrandModal>
         </div>
@@ -201,7 +204,7 @@ export function BrandsManagement() {
         <div className="relative w-full sm:w-[500px] group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
-            placeholder="Search identity registry..."
+            placeholder={t("brands.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 bg-background"

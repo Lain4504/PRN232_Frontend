@@ -6,6 +6,7 @@ import Link from "next/link"
 import { useProfile } from '@/lib/contexts/profile-context'
 import { ProfileTypeEnum } from '@/lib/utils/profile-utils'
 import { usePendingApprovalsCount } from '@/hooks/use-approvals'
+import { useTranslation } from 'react-i18next'
 import {
   Calendar,
   Target,
@@ -66,15 +67,37 @@ const getWorkflowNavItems = (approvalCount: number): NavItem[] => [
 ]
 
 export function DashboardSidebar() {
+  const { t } = useTranslation("common");
   const pathname = usePathname()
   const { hasFeatureAccess, profileType } = useProfile()
   const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free
   const { state } = useSidebar()
 
   const { data: approvalCount = 0 } = usePendingApprovalsCount()
-  const workflowNavItems = canUseTeamFeatures
-    ? getWorkflowNavItems(approvalCount)
-    : getWorkflowNavItems(approvalCount).filter(item => item.title !== "Governance")
+
+  const mainNavItems: NavItem[] = [
+    { title: t("sidebar.commandCenter"), url: "/dashboard", icon: LayoutGrid },
+    { title: t("sidebar.identityMatrix"), url: "/dashboard/brands", icon: Target },
+    { title: t("sidebar.activeSignals"), url: "/dashboard/campaigns", icon: Megaphone },
+    { title: t("sidebar.neuralForge"), url: "/dashboard/contents/new", icon: Sparkles },
+    { title: t("sidebar.connectors"), url: "/dashboard/social-accounts", icon: Share2 },
+    { title: t("sidebar.temporalGrid"), url: "/dashboard/calendar", icon: Calendar },
+    { title: t("sidebar.broadcasts"), url: "/dashboard/posts", icon: Mail },
+  ]
+
+  const workflowNavItems: NavItem[] = [
+    {
+      title: t("sidebar.governance"),
+      url: "/dashboard/approvals",
+      icon: CheckCircle,
+      badge: approvalCount > 0 ? approvalCount.toString() : undefined,
+    },
+    { title: t("sidebar.operatives"), url: "/dashboard/teams", icon: Users },
+  ]
+
+  const filteredWorkflowItems = canUseTeamFeatures
+    ? workflowNavItems
+    : workflowNavItems.filter(item => item.title !== t("sidebar.governance"))
 
   return (
     <Sidebar collapsible="icon" className="border-r border-white/5 bg-background/40 backdrop-blur-xl">
@@ -85,7 +108,7 @@ export function DashboardSidebar() {
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden overflow-hidden transition-all duration-300">
             <span className="font-black text-base tracking-tighter text-foreground leading-none italic">AISAM</span>
-            <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em] leading-none opacity-80">Console</span>
+            <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em] leading-none opacity-80">{t("sidebar.console")}</span>
           </div>
         </div>
       </SidebarHeader>
@@ -94,7 +117,7 @@ export function DashboardSidebar() {
         {/* Core Systems Group */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 px-2 mb-2 group-data-[collapsible=icon]:hidden">
-            Core Systems
+            {t("sidebar.coreSystems")}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -131,7 +154,7 @@ export function DashboardSidebar() {
         {/* Admin Protocol Group */}
         <SidebarGroup className="mt-4">
           <SidebarGroupLabel className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 px-2 mb-2 group-data-[collapsible=icon]:hidden">
-            Admin Protocol
+            {t("sidebar.workflow")}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>

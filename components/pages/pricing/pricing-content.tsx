@@ -8,8 +8,21 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 
 export default function PricingContent() {
+    interface PricingTier {
+        name: string;
+        desc: string;
+        price: string;
+        featured: boolean;
+        features: string[];
+    }
+
+    interface FaqItem {
+        q: string;
+        a: string;
+    }
+
     const { t } = useTranslation("common");
-    const tiers = t("pricing.tiers", { returnObjects: true }) as any[];
+    const tiers = t("pricing.tiers", { returnObjects: true }) as PricingTier[];
 
     const tierIcons = [Zap, Rocket, Shield];
     const tierColors = ["text-blue-500", "text-primary", "text-emerald-500"];
@@ -35,7 +48,7 @@ export default function PricingContent() {
                     </section>
 
                     <section className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                        {tiers.map((tier: any, index: number) => {
+                        {tiers.map((tier: PricingTier, index: number) => {
                             const Icon = tierIcons[index];
                             const color = tierColors[index];
                             const bg = tierBgs[index];
@@ -86,8 +99,8 @@ export default function PricingContent() {
                             <h2 className="text-3xl font-black uppercase tracking-tight">{t("pricing.faqTitle")}</h2>
                         </div>
                         <div className="grid gap-6 md:grid-cols-2">
-                            {(t("pricing.faq", { returnObjects: true }) as any[]).map((item) => (
-                                <div key={item.q} className="p-6 rounded-[1.5rem] bg-muted/20 border border-border/20">
+                            {(t("pricing.faq", { returnObjects: true }) as FaqItem[]).map((item) => (
+                                <div key={item.q as string} className="p-6 rounded-[1.5rem] bg-muted/20 border border-border/20">
                                     <h4 className="text-xs font-black uppercase tracking-widest text-primary mb-2 italic px-1">{item.q}</h4>
                                     <p className="text-sm font-medium text-muted-foreground leading-relaxed">{item.a}</p>
                                 </div>

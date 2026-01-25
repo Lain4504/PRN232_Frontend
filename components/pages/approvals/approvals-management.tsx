@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle, Search, X, Calendar, User, FileText, Eye, Trash2, Activity } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import {
   Dialog,
@@ -163,6 +164,7 @@ const createColumns = (
   ];
 
 export function ApprovalsManagement() {
+  const { t } = useTranslation("common");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ContentStatusEnum | "all">("all");
   const [selectedApproval, setSelectedApproval] = useState<ApprovalResponseDto | null>(null);
@@ -252,9 +254,9 @@ export function ApprovalsManagement() {
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-12 font-fira-sans mb-20">
       <Breadcrumb>
         <BreadcrumbList>
-          <BreadcrumbItem><BreadcrumbLink href="/dashboard" className="text-[10px] font-black uppercase">Dashboard</BreadcrumbLink></BreadcrumbItem>
+          <BreadcrumbItem><BreadcrumbLink href="/dashboard" className="text-[10px] font-black uppercase">{t("dashboard.title")}</BreadcrumbLink></BreadcrumbItem>
           <BreadcrumbSeparator />
-          <BreadcrumbItem><BreadcrumbPage className="text-[10px] font-black uppercase text-primary">Content Forge Pipeline</BreadcrumbPage></BreadcrumbItem>
+          <BreadcrumbItem><BreadcrumbPage className="text-[10px] font-black uppercase text-primary">{t("approvals.title")}</BreadcrumbPage></BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
@@ -262,13 +264,13 @@ export function ApprovalsManagement() {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="h-2 w-10 bg-primary rounded-full" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/80">Neural Governance</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/80">{t("approvals.title")}</span>
           </div>
           <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase italic leading-none">
-            Asset <span className="text-primary italic">Approvals</span>
+            {t("approvals.title")}
           </h1>
           <p className="text-lg text-muted-foreground font-medium max-w-2xl leading-relaxed italic border-l-4 border-primary pl-6">
-            Reviewing and authorizing generated outputs for cross-channel deployment. Sovereignty through visual precision.
+            {t("approvals.description")}
           </p>
         </div>
 

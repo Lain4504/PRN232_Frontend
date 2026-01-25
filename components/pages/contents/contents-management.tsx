@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import { FileText, Brain, AlertCircle, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { CustomTable } from "@/components/ui/custom-table";
@@ -35,20 +36,20 @@ import {
   ContentStatusEnum,
   AdTypeEnum,
   CreateContentRequest,
-  UpdateContentRequest
+  UpdateContentRequest,
+  CreateApprovalRequest
 } from "@/lib/types/aisam-types";
 import { ContentModal } from "@/components/contents/content-modal";
 import { ContentPreviewModal } from "@/components/contents/content-preview-modal";
 import { ChangeStatusModal } from "@/components/contents/change-status-modal";
 import { toast } from "sonner";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Calendar, Edit, Trash2, Send, Eye } from "lucide-react";
+import { Edit, Trash2, Send, Eye } from "lucide-react";
 import { SubmitApprovalDialog } from "@/components/contents/submit-approval-dialog";
 import { useTeamMembers } from "@/hooks/use-teams";
 import { useCreateApproval } from "@/hooks/use-approvals";
 import { useQueryClient } from "@tanstack/react-query";
 import { api, endpoints } from "@/lib/api";
-import type { ApiResponse } from "@/lib/types/aisam-types";
+
 import { useProfile } from "@/lib/contexts/profile-context";
 import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 import { useUser } from "@/hooks/use-user";
@@ -220,7 +221,13 @@ const createColumns = (
     },
   ];
 
+export interface ContentsManagementProps {
+  initialBrandId?: string;
+  teamId?: string;
+}
+
 export function ContentsManagement({ initialBrandId, teamId }: ContentsManagementProps = {}) {
+  const { t } = useTranslation("common");
   const { profileType } = useProfile();
   const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free;
 
@@ -240,9 +247,8 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
   const { data: currentUser } = useUser();
   const userId = currentUser?.id || "";
   const { data: brandsData, isLoading: brandsLoading } = useBrands();
-  const { data: teamBrands = [] } = useTeamBrands(teamId || "");
   const { data: products = [] } = useProducts();
-  const [scopeBrandId, setScopeBrandId] = useState<string | "team-all">(teamId ? "team-all" : (initialBrandId || ""));
+  const [scopeBrandId] = useState<string | "team-all">(teamId ? "team-all" : (initialBrandId || ""));
 
   const byBrand = useContentsByBrandFilter({
     brandId: scopeBrandId !== "team-all" ? (scopeBrandId || initialBrandId || undefined) : undefined,
@@ -258,17 +264,14 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
 
   const brands = useMemo(() => {
     if (!brandsData) return [];
-    const brandArray = Array.isArray(brandsData) ? brandsData : (brandsData as any).data || [];
-    return brandArray.map((b: any) => ({ id: b.id, name: b.name }));
+    const brandArray = Array.isArray(brandsData) ? brandsData : (brandsData as { data: { id: string; name: string }[] }).data || [];
+    return brandArray.map((b: { id: string; name: string }) => ({ id: b.id, name: b.name }));
   }, [brandsData]);
 
   const createContentMutation = useCreateContent();
   const createApprovalMutation = useCreateApproval();
   const updateContentMutation = useUpdateContent(currentContentId || "placeholder");
-  const deleteContentMutation = useDeleteContent(currentContentId || "placeholder");
-  const submitContentMutation = useSubmitContent(currentContentId || "placeholder");
   const publishContentMutation = usePublishContent(currentContentId || "placeholder");
-  const cloneContentMutation = useCloneContent(currentContentId || "placeholder");
 
   const [activeTeamId, setActiveTeamId] = useState<string | null>(null);
   useEffect(() => {
@@ -276,7 +279,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
   }, []);
   const { data: teamMembers = [] } = useTeamMembers(activeTeamId || undefined);
 
-  const contents: ContentResponseDto[] = Array.isArray(contentsData) ? (contentsData as any) : (contentsData?.data || []);
+  const contents: ContentResponseDto[] = Array.isArray(contentsData) ? (contentsData as ContentResponseDto[]) : ((contentsData as { data: ContentResponseDto[] })?.data || []);
   const filteredContents = contents.filter(c => !searchTerm || c.title?.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const queryClient = useQueryClient();
@@ -299,7 +302,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
         await api.delete(endpoints.contentById(contentId));
         queryClient.invalidateQueries({ queryKey: ["contents"] });
         toast.success("Content deleted successfully");
-      } catch (error) {
+      } catch {
         toast.error("Failed to delete content");
       }
     }
@@ -316,7 +319,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
       await api.post(`${endpoints.contentById(contentId)}/clone`);
       queryClient.invalidateQueries({ queryKey: ["contents"] });
       toast.success("Content cloned successfully");
-    } catch (error) {
+    } catch {
       toast.error("Failed to clone content");
     }
   };
@@ -326,7 +329,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
     setIsChangeStatusModalOpen(true);
   };
 
-  const handleSaveContent = async (data: any) => {
+  const handleSaveContent = async (data: UpdateContentRequest) => {
     if (selectedContent) {
       await handleUpdateContent(selectedContent.id, data);
     }
@@ -339,7 +342,8 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
       toast.success('Content synchronized');
       setIsEditing(false);
       setSelectedContent(null);
-    } catch (e) { toast.error('Sync failed'); }
+      setSelectedContent(null);
+    } catch { toast.error('Sync failed'); }
   };
 
   if (isLoading || brandsLoading) return (
@@ -355,26 +359,26 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
         <div className="space-y-4">
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem><BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink></BreadcrumbItem>
+              <BreadcrumbItem><BreadcrumbLink href="/dashboard">{t("dashboard.title")}</BreadcrumbLink></BreadcrumbItem>
               <BreadcrumbSeparator />
-              <BreadcrumbItem><BreadcrumbPage>Creative Assets</BreadcrumbPage></BreadcrumbItem>
+              <BreadcrumbItem><BreadcrumbPage>{t("contents.title")}</BreadcrumbPage></BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight text-foreground">Content Factory</h1>
-            <p className="text-lg text-muted-foreground mt-1">Design, approve, and distribute your creative library.</p>
+            <h1 className="text-4xl font-extrabold tracking-tight text-foreground">{t("contents.title")}</h1>
+            <p className="text-lg text-muted-foreground mt-1">{t("contents.description")}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <Button variant="outline" size="lg" className="rounded-xl font-bold h-12 px-6 border-2" onClick={() => setIsCreating(true)}>
             <FileText className="mr-2 size-5" />
-            Manual Script
+            {t("contents.createContent")}
           </Button>
           <Button size="lg" className="rounded-xl font-bold h-12 px-6 shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
             onClick={() => window.location.href = `/dashboard/brands/${initialBrandId || 'all'}/contents/new`}>
             <Brain className="mr-2 size-5" />
-            Forge with AI
+            {t("contents.aiGenerate")}
           </Button>
         </div>
       </div>
@@ -384,19 +388,19 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
           <div className="relative w-full sm:w-80">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
-              placeholder="Filter by title..."
+              placeholder={t("contents.searchPlaceholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-11 h-11 bg-background rounded-xl border-border/50"
             />
           </div>
 
-          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as ContentStatusEnum | 'all')}>
             <SelectTrigger className="h-11 w-full sm:w-[150px] rounded-xl bg-background border-border/50 font-semibold">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder={t("contents.filterByStatus")} />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
-              <SelectItem value="all">All States</SelectItem>
+              <SelectItem value="all">{t("contents.allStatuses")}</SelectItem>
               {Object.values(ContentStatusEnum).map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
             </SelectContent>
           </Select>
@@ -458,13 +462,13 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
       </Card>
 
       {/* Modals & Dialogs */}
-      <ContentModal content={null} isEditing={true} open={isCreating} onOpenChange={setIsCreating} onCreate={(d: any) => createContentMutation.mutateAsync(d).then(() => setIsCreating(false))} isProcessing={createContentMutation.isPending} brands={teamId ? undefined : brands} products={teamId ? undefined : products} teamId={teamId} userId={userId} defaultBrandId={scopeBrandId !== "team-all" ? scopeBrandId : (initialBrandId || undefined)} />
+      <ContentModal content={null} isEditing={true} open={isCreating} onOpenChange={setIsCreating} onCreate={(d: CreateContentRequest) => createContentMutation.mutateAsync(d).then(() => setIsCreating(false))} isProcessing={createContentMutation.isPending} brands={teamId ? undefined : brands} products={teamId ? undefined : products} teamId={teamId} userId={userId} defaultBrandId={scopeBrandId !== "team-all" ? scopeBrandId : (initialBrandId || undefined)} />
       <ContentModal content={selectedContent} isEditing={isEditing} open={!!selectedContent} onOpenChange={o => !o && setSelectedContent(null)} onSave={handleSaveContent} isProcessing={updateContentMutation.isPending} brands={teamId ? undefined : brands} products={teamId ? undefined : products} teamId={teamId} userId={userId} showButtons={isEditing} />
 
-      <SubmitApprovalDialog content={selectedContent || contents.find(c => c.id === currentContentId) || null} isOpen={isApprovalDialogOpen} onClose={() => setIsApprovalDialogOpen(false)} isSubmitting={createApprovalMutation.isPending} approvers={teamMembers.map(m => ({ id: m.userId, email: m.userEmail, name: m.userEmail.split('@')[0], canApproveContent: m.canApproveContent }))} onSubmit={(d: any) => createApprovalMutation.mutateAsync(d).then(() => setIsApprovalDialogOpen(false))} />
+      <SubmitApprovalDialog content={selectedContent || contents.find(c => c.id === currentContentId) || null} isOpen={isApprovalDialogOpen} onClose={() => setIsApprovalDialogOpen(false)} isSubmitting={createApprovalMutation.isPending} approvers={teamMembers.map(m => ({ id: m.userId, email: m.userEmail, name: m.userEmail.split('@')[0], canApproveContent: m.canApproveContent }))} onSubmit={(d: CreateApprovalRequest) => createApprovalMutation.mutateAsync(d).then(() => setIsApprovalDialogOpen(false))} />
 
       {previewContent && (
-        <ContentPreviewModal content={previewContent} open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen} onSubmit={async (id) => { handleSubmitContent(id); setIsPreviewModalOpen(false); }} onPublish={(id, iid) => { setCurrentContentId(id); publishContentMutation.mutateAsync(iid).then(() => setIsPreviewModalOpen(false)); }} isProcessing={publishContentMutation.isPending} brands={brands} />
+        <ContentPreviewModal content={previewContent} open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen} onSubmit={async (id) => { handleSubmitContent(id); setIsPreviewModalOpen(false); }} onPublish={async (id, iid) => { setCurrentContentId(id); await publishContentMutation.mutateAsync(iid); setIsPreviewModalOpen(false); }} isProcessing={publishContentMutation.isPending} brands={brands} />
       )}
 
       <ChangeStatusModal content={statusChangeContent} isOpen={isChangeStatusModalOpen} onClose={() => setIsChangeStatusModalOpen(false)} onSuccess={() => queryClient.invalidateQueries({ queryKey: ['contents'] })} />

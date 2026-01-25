@@ -56,7 +56,7 @@ export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignD
         <Megaphone className="size-10" />
       </div>
       <h2 className="text-3xl font-extrabold text-foreground">Campaign Identity Lost</h2>
-      <p className="text-muted-foreground mt-2 max-w-md">We couldn't retrieve the details for this campaign. It may have been archived or moved.</p>
+      <p className="text-muted-foreground mt-2 max-w-md">We couldn&apos;t retrieve the details for this campaign. It may have been archived or moved.</p>
       <Button asChild className="mt-10 rounded-xl h-12 px-8 font-bold" variant="outline">
         <Link href={basePath}><ArrowLeft className="mr-2 size-4" /> Back to Dashboard</Link>
       </Button>

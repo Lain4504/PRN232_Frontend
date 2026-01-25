@@ -53,8 +53,8 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
         target_audience: brand.target_audience || '',
       });
 
-      const existingLogo = (brand as any).logo_url || (brand as any).logoUrl || null;
-      if (existingLogo) setLogoPreview(existingLogo);
+      const existingLogo = (brand as unknown as Record<string, unknown>).logo_url || (brand as unknown as Record<string, unknown>).logoUrl || null;
+      if (existingLogo) setLogoPreview(existingLogo as string);
     }
   }, [mode, brand]);
 

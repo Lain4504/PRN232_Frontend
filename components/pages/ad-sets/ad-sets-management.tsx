@@ -92,7 +92,7 @@ export function AdSetsManagement({ campaignId, basePath = '/dashboard/campaigns'
       accessorKey: "budget",
       header: "Allocation",
       cell: ({ row }: { row: { original: AdSetResponse } }) => {
-        const dailyBudget = Number(((row.original as any).dailyBudget) ?? row.original.budget ?? 0);
+        const dailyBudget = Number(((row.original as unknown as Record<string, unknown>).dailyBudget) ?? row.original.budget ?? 0);
         return (
           <div className="space-y-0.5">
             <span className="font-black text-foreground">
@@ -219,7 +219,7 @@ export function AdSetsManagement({ campaignId, basePath = '/dashboard/campaigns'
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
           { title: "Total Cluster", value: totalCount, sub: `${adSets.filter(a => getAdSetStatus(a) === 'active').length} active nodes`, icon: BarChart3, color: "text-blue-500" },
-          { title: "Global Cap", value: `₫${adSets.reduce((s, a) => s + Number((a as any).dailyBudget ?? a.budget ?? 0), 0).toLocaleString('vi-VN')}`, sub: "Total daily allocation", icon: Target, color: "text-emerald-500" },
+          { title: "Global Cap", value: `₫${adSets.reduce((s, a) => s + Number((a as unknown as Record<string, unknown>).dailyBudget ?? a.budget ?? 0), 0).toLocaleString('vi-VN')}`, sub: "Total daily allocation", icon: Target, color: "text-emerald-500" },
           { title: "Visual Reach", value: adSets.reduce((s, a) => s + (a.metrics?.impressions || 0), 0).toLocaleString(), sub: "Total impressions indexed", icon: Users, color: "text-amber-500" },
           { title: "Avg Index", value: `${adSets.length > 0 ? (adSets.reduce((s, a) => s + (a.metrics?.ctr || 0), 0) / adSets.length).toFixed(2) : '0.00'}%`, sub: "Performance performance index", icon: BarChart3, color: "text-primary" }
         ].map((stat, i) => (
