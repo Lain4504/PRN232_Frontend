@@ -44,6 +44,8 @@ export const en = {
                 capabilities: "Capabilities",
                 knowledge: "Knowledge",
                 accessPlans: "Access Plans",
+                viewAffordableTiers: "View our affordable tiers",
+                systemLanguage: "System Language",
             },
             featureItems: {
                 aiContent: {
@@ -84,6 +86,13 @@ export const en = {
                 enterConsole: "Enter Console",
                 login: "Login",
                 signUp: "Sign Up",
+            },
+            userMenu: {
+                preferences: "Preferences",
+                featurePreviews: "Feature Previews",
+                helpNexus: "Help Nexus",
+                interfaceMode: "Interface Mode",
+                anonymousUser: "Anonymous User",
             },
         },
 

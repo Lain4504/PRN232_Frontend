@@ -41,49 +41,58 @@ export const vi = {
 
         header: {
             menu: {
-                capabilities: "Khả năng",
-                knowledge: "Kiến thức",
-                accessPlans: "Gói truy cập",
+                capabilities: "Tính năng",
+                knowledge: "Tài liệu",
+                accessPlans: "Bảng giá",
+                viewAffordableTiers: "Xem các gói dịch vụ của chúng tôi",
+                systemLanguage: "Ngôn ngữ hệ thống",
             },
             featureItems: {
                 aiContent: {
-                    title: "Tổng hợp thần kinh",
-                    desc: "Tạo nội dung sáng tạo chất lượng cao.",
+                    title: "Sáng tạo Nội dung AI",
+                    desc: "Tạo hình ảnh và video chất lượng cao tự động.",
                 },
                 brandManagement: {
-                    title: "Ma trận danh tính",
-                    desc: "Giữ cho giọng nói và hình ảnh thương hiệu của bạn nhất quán trên mọi kênh.",
+                    title: "Quản lý Thương hiệu",
+                    desc: "Giữ hình ảnh thương hiệu nhất quán trên mọi nền tảng.",
                 },
                 scheduling: {
-                    title: "Đồng bộ tạm thời",
-                    desc: "Tự động hóa lịch trình triển khai và xuất bản.",
+                    title: "Lập lịch Tự động",
+                    desc: "Tự động hóa lịch đăng bài trên các mạng xã hội.",
                 },
                 analytics: {
-                    title: "Tốc độ dữ liệu",
-                    desc: "Số liệu tăng trưởng theo thời gian thực chỉ trong một cái nhìn.",
+                    title: "Thống kê & Phân tích",
+                    desc: "Theo dõi hiệu quả chiến dịch theo thời gian thực.",
                 },
             },
             knowledgeItems: {
                 docs: {
-                    title: "Lưu trữ",
-                    desc: "Sổ tay kỹ thuật và phân tích sâu.",
+                    title: "Hướng dẫn sử dụng",
+                    desc: "Tài liệu hướng dẫn chi tiết từ A-Z.",
                 },
                 api: {
-                    title: "API Nexus",
-                    desc: "Công cụ và tích hợp dành cho nhà phát triển.",
+                    title: "Kết nối API",
+                    desc: "Công cụ dành cho nhà phát triển.",
                 },
                 blog: {
-                    title: "Tín hiệu",
-                    desc: "Thông tin chi tiết về thị trường và cảm hứng.",
+                    title: "Tin tức & Blog",
+                    desc: "Cập nhật xu hướng marketing và mẹo sử dụng.",
                 },
             },
             buttons: {
-                launchConsole: "Khởi chạy Bảng điều khiển",
-                initializeSession: "Khởi tạo Phiên",
-                deployMatrix: "Triển khai Ma trận",
+                launchConsole: "Vào Bảng điều khiển",
+                initializeSession: "Đăng nhập",
+                deployMatrix: "Bắt đầu ngay",
                 enterConsole: "Vào Bảng điều khiển",
                 login: "Đăng nhập",
                 signUp: "Đăng ký",
+            },
+            userMenu: {
+                preferences: "Cài đặt cá nhân",
+                featurePreviews: "Tính năng mới",
+                helpNexus: "Trung tâm hỗ trợ",
+                interfaceMode: "Giao diện",
+                anonymousUser: "Người dùng ẩn danh",
             },
         },
 

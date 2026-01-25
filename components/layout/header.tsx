@@ -176,27 +176,23 @@ export function Header() {
                 </div>
 
                 {/* Authentication */}
-                <div className="flex items-center gap-6">
-                    <LanguageSwitcher />
+                <div className="flex items-center gap-4 sm:gap-6">
+                    <div className="hidden sm:block">
+                        <LanguageSwitcher />
+                    </div>
+
                     {user ? (
-                        <div className="flex items-center gap-6">
-                            <Button asChild className="hidden sm:flex rounded-2xl font-black uppercase tracking-widest text-[10px] h-10 px-6 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-[0.98]">
-                                <Link href="/overview">
-                                    <Layout className="size-3 mr-2" />
-                                    {t("header.launchConsole")}
-                                </Link>
-                            </Button>
-                            <div className="h-4 w-px bg-border/50" />
+                        <div className="flex items-center gap-4 sm:gap-6">
                             <UserDropdown user={user} />
                         </div>
                     ) : (
                         <div className="flex items-center gap-3">
-                            <Button asChild variant="ghost" className="hidden sm:flex text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-transparent hover:text-primary transition-colors">
-                                <Link href="/auth/login">{t("header.initializeSession")}</Link>
+                            <Button asChild variant="ghost" className="hidden lg:flex text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-transparent hover:text-primary transition-colors">
+                                <Link href="/auth/login">{t("header.buttons.initializeSession")}</Link>
                             </Button>
-                            <Button asChild className="rounded-2xl font-black uppercase tracking-widest text-[10px] h-11 px-8 shadow-xl shadow-primary/25 bg-primary hover:bg-primary/90 transition-all hover:scale-105 active:scale-95">
+                            <Button asChild className="hidden sm:flex rounded-2xl font-black uppercase tracking-widest text-[10px] h-10 px-6 shadow-xl shadow-primary/25 bg-primary hover:bg-primary/90 transition-all hover:scale-105 active:scale-95">
                                 <Link href="/auth/sign-up">
-                                    {t("header.deployMatrix")}
+                                    {t("header.buttons.deployMatrix")}
                                 </Link>
                             </Button>
                         </div>
@@ -205,51 +201,112 @@ export function Header() {
                     {/* Mobile Navigation */}
                     <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                         <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="lg:hidden rounded-xl">
-                                <Menu className="size-6" />
+                            <Button variant="ghost" size="icon" className="lg:hidden rounded-xl h-10 w-10 hover:bg-muted/30 transition-all border border-transparent hover:border-white/5 bg-muted/10">
+                                <Menu className="size-6 text-foreground" />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="right" className="w-full max-w-sm p-0 flex flex-col bg-background/95 backdrop-blur-xl border-l border-white/10">
+                        <SheetContent side="right" className="w-full max-w-sm p-0 flex flex-col bg-background/95 backdrop-blur-xl border-l border-white/10 dark:bg-background/90">
                             <SheetTitle className="sr-only">Menu</SheetTitle>
-                            <div className="flex items-center p-8 border-b border-white/5">
+
+                            {/* Mobile Menu Header */}
+                            <div className="flex items-center justify-between p-6 border-b border-white/5">
                                 <div className="flex items-center gap-3">
                                     <div className="size-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
                                         <Zap className="size-6 text-primary-foreground fill-current" />
                                     </div>
-                                    <span className="text-xl font-black text-foreground tracking-tighter italic">AISAM</span>
+                                    <div className="flex flex-col">
+                                        <span className="text-xl font-black text-foreground tracking-tighter italic leading-none">AISAM</span>
+                                        <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em] leading-none mt-1">Intelligence Grid</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
-                                {navMenuItems.map((item: { href: string; icon: React.ComponentType<{ className?: string }>; title: string }) => (
-                                    <Link
-                                        key={item.title}
-                                        href={item.href}
-                                        onClick={() => setMobileMenuOpen(false)}
-                                        className="flex items-center gap-4 p-4 rounded-2xl border border-transparent hover:bg-muted/30 hover:border-white/5 transition-all group"
-                                    >
-                                        <div className="size-10 rounded-xl bg-muted/50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            {item.icon && <item.icon className="size-5 text-muted-foreground group-hover:text-foreground transition-colors" />}
+                            <nav className="flex-1 overflow-y-auto py-6 px-4">
+                                <div className="space-y-6">
+                                    {/* Submenu: Capabilities */}
+                                    <div className="space-y-3">
+                                        <h3 className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">{t("header.menu.capabilities")}</h3>
+                                        <div className="grid gap-1">
+                                            {features.map((item) => (
+                                                <Link
+                                                    key={item.title}
+                                                    href={item.href}
+                                                    onClick={() => setMobileMenuOpen(false)}
+                                                    className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted/30 transition-all group"
+                                                >
+                                                    <div className={cn("size-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm", item.bg, item.color)}>
+                                                        <item.icon className="size-5" />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[13px] font-bold text-foreground uppercase tracking-tight">{item.title}</span>
+                                                        <span className="text-[10px] text-muted-foreground font-medium line-clamp-1">{item.desc}</span>
+                                                    </div>
+                                                </Link>
+                                            ))}
                                         </div>
-                                        <span className="text-sm font-bold text-foreground uppercase tracking-tight">{item.title}</span>
+                                    </div>
+
+                                    {/* Submenu: Knowledge */}
+                                    <div className="space-y-3">
+                                        <h3 className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">{t("header.menu.knowledge")}</h3>
+                                        <div className="grid gap-1">
+                                            {resources.map((item) => (
+                                                <Link
+                                                    key={item.title}
+                                                    href={item.href}
+                                                    onClick={() => setMobileMenuOpen(false)}
+                                                    className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted/30 transition-all group"
+                                                >
+                                                    <div className="size-10 rounded-xl bg-muted/50 flex items-center justify-center shrink-0">
+                                                        <item.icon className="size-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[13px] font-bold text-foreground uppercase tracking-tight">{item.title}</span>
+                                                        <span className="text-[10px] text-muted-foreground font-medium line-clamp-1">{item.desc}</span>
+                                                    </div>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Direct Link: Pricing */}
+                                    <Link
+                                        href="/pricing"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted/30 transition-all group border border-primary/10 bg-primary/5"
+                                    >
+                                        <div className="size-10 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
+                                            <Target className="size-5 text-primary" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-[13px] font-bold text-primary uppercase tracking-tight">{t("header.menu.accessPlans")}</span>
+                                            <span className="text-[10px] text-primary/60 font-medium">{t("header.menu.viewAffordableTiers")}</span>
+                                        </div>
                                     </Link>
-                                ))}
+                                </div>
                             </nav>
 
-                            <div className="p-8 border-t border-white/5 space-y-4 bg-muted/5">
+                            {/* Mobile Menu Footer */}
+                            <div className="p-6 border-t border-white/5 bg-muted/5 space-y-4">
+                                <div className="flex items-center justify-between px-2 mb-2">
+                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t("header.menu.systemLanguage")}</span>
+                                    <LanguageSwitcher />
+                                </div>
+
                                 {user ? (
-                                    <Button asChild className="w-full rounded-2xl font-black uppercase tracking-widest h-14 text-xs shadow-xl shadow-primary/20">
+                                    <Button asChild className="w-full rounded-2xl font-black uppercase tracking-widest h-14 text-xs shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90">
                                         <Link href="/overview" onClick={() => setMobileMenuOpen(false)}>
-                                            {t("header.enterConsole")}
+                                            <Layout className="size-4 mr-2" />
+                                            {t("header.buttons.enterConsole")}
                                         </Link>
                                     </Button>
                                 ) : (
                                     <div className="grid grid-cols-2 gap-4">
-                                        <Button asChild variant="outline" className="rounded-2xl font-black uppercase tracking-widest h-14 text-[10px] border-2">
-                                            <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>{t("header.login")}</Link>
+                                        <Button asChild variant="outline" className="rounded-2xl font-black uppercase tracking-widest h-14 text-[10px] border-2 border-border">
+                                            <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>{t("header.buttons.login")}</Link>
                                         </Button>
-                                        <Button asChild className="rounded-2xl font-black uppercase tracking-widest h-14 text-[10px] shadow-lg shadow-primary/20">
-                                            <Link href="/auth/sign-up" onClick={() => setMobileMenuOpen(false)}>{t("header.signUp")}</Link>
+                                        <Button asChild className="rounded-2xl font-black uppercase tracking-widest h-14 text-[10px] shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90">
+                                            <Link href="/auth/sign-up" onClick={() => setMobileMenuOpen(false)}>{t("header.buttons.signUp")}</Link>
                                         </Button>
                                     </div>
                                 )}
