@@ -74,7 +74,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
         <DropdownMenuLabel className="font-normal p-3">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-black leading-none text-foreground tracking-tight">
-              {user?.fullName || "Anonymous User"}
+              {user?.fullName || t("header.userMenu.anonymousUser")}
             </p>
             <p className="text-[10px] font-medium leading-none text-muted-foreground uppercase tracking-wider">{user?.email}</p>
           </div>
@@ -83,22 +83,22 @@ export function UserDropdown({ user }: UserDropdownProps) {
         <DropdownMenuGroup className="p-1">
           <DropdownMenuItem className="rounded-xl font-bold text-[11px] uppercase tracking-wide focus:bg-muted/50 cursor-pointer py-2.5">
             <Settings className="mr-3 size-4 opacity-70" />
-            {t("userMenu.preferences")}
+            {t("header.userMenu.preferences")}
           </DropdownMenuItem>
           <DropdownMenuItem className="rounded-xl font-bold text-[11px] uppercase tracking-wide focus:bg-muted/50 cursor-pointer py-2.5">
             <Sparkles className="mr-3 size-4 text-amber-500 opacity-80" />
-            {t("userMenu.featurePreviews")}
+            {t("header.userMenu.featurePreviews")}
           </DropdownMenuItem>
           <DropdownMenuItem className="rounded-xl font-bold text[11px] uppercase tracking-wide focus:bg-muted/50 cursor-pointer py-2.5">
             <LifeBuoy className="mr-3 size-4 opacity-70" />
-            {t("userMenu.helpNexus")}
+            {t("header.userMenu.helpNexus")}
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator className="bg-white/5" />
 
         <DropdownMenuLabel className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-[0.2em] px-3 my-1">
-          {t("userMenu.interfaceMode")}
+          {t("header.userMenu.interfaceMode")}
         </DropdownMenuLabel>
         <DropdownMenuGroup className="flex items-center gap-1 p-1">
           <DropdownMenuItem

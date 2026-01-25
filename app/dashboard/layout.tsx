@@ -14,8 +14,11 @@ export default function AdminLayout({
   const router = useRouter()
 
   useEffect(() => {
-    if (!isLoading && !activeProfileId) {
-      // No active profile, redirect to profile selection
+    // If profiles are still loading or we don't know the count yet, wait
+    if (isLoading) return
+
+    if (!activeProfileId) {
+      // No active profile, user needs to select or create one
       router.replace('/overview')
     }
   }, [activeProfileId, isLoading, router])

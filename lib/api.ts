@@ -440,8 +440,17 @@ export const endpoints = {
   adAccounts: (socialAccountId: string) => `/social/accounts/${socialAccountId}/ad-accounts`,
 
   // Brands endpoints
-  brands: () => '/brands',
-  brandsByTeam: (teamId: string) => `/brands/team/${teamId}`,
+  brands: (params?: { page?: number; pageSize?: number; searchTerm?: string; sortBy?: string; sortDescending?: boolean; teamId?: string }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.append('page', params.page.toString());
+    if (params?.pageSize) searchParams.append('pageSize', params.pageSize.toString());
+    if (params?.searchTerm) searchParams.append('searchTerm', params.searchTerm);
+    if (params?.sortBy) searchParams.append('sortBy', params.sortBy);
+    if (params?.sortDescending !== undefined) searchParams.append('sortDescending', params.sortDescending.toString());
+    if (params?.teamId) searchParams.append('teamId', params.teamId);
+    const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return `/brands${queryString}`;
+  },
   brandById: (brandId: string) => `/brands/${brandId}`,
 
   // Products endpoints
@@ -500,9 +509,10 @@ export const endpoints = {
   restoreProfile: (profileId: string) => `/profiles/${profileId}/restore`,
 
   // Campaign endpoints
-  campaigns: (params?: { brandId?: string; page?: number; pageSize?: number }) => {
+  campaigns: (params?: { brandId?: string; teamId?: string; page?: number; pageSize?: number }) => {
     const searchParams = new URLSearchParams();
     if (params?.brandId) searchParams.append('brandId', params.brandId);
+    if (params?.teamId) searchParams.append('teamId', params.teamId);
     if (params?.page) searchParams.append('page', params.page.toString());
     if (params?.pageSize) searchParams.append('pageSize', params.pageSize.toString());
     const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
@@ -618,5 +628,5 @@ export const endpoints = {
   paymentHistory: () => '/payment/history',
 
   // Dashboard endpoints
-  dashboardStats: () => '/dashboard/stats',
+  dashboardStats: (teamId?: string) => `/dashboard/stats${teamId ? `?teamId=${teamId}` : ''}`,
 }

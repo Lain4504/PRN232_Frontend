@@ -48,9 +48,9 @@ export default function TeamsPage() {
   })
 
   const handleTeamSelect = (team: Team) => {
-    // Set team context and navigate to team dashboard
+    // Set team context and navigate to unified dashboard
     localStorage.setItem('activeTeamId', team.id)
-    window.location.href = `/team/${team.id}`
+    window.location.href = `/dashboard`
   }
 
   const getRoleStyle = (role: string) => {

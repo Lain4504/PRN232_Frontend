@@ -74,9 +74,9 @@ export function Header() {
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xl font-black text-foreground tracking-tighter leading-none mb-0.5 italic">
-                                AISAM
+                                {t("header.brand.name")}
                             </span>
-                            <span className="text-[9px] font-black text-primary uppercase tracking-[0.2em] leading-none">Intelligence Grid</span>
+                            <span className="text-[9px] font-black text-primary uppercase tracking-[0.2em] leading-none">{t("header.brand.slogan")}</span>
                         </div>
                     </Link>
 
@@ -183,6 +183,12 @@ export function Header() {
 
                     {user ? (
                         <div className="flex items-center gap-4 sm:gap-6">
+                            <Button asChild className="hidden lg:flex rounded-2xl font-black uppercase tracking-widest text-[10px] h-10 px-6 shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90 transition-all hover:scale-105 active:scale-95">
+                                <Link href="/overview">
+                                    <Layout className="size-4 mr-2" />
+                                    {t("header.buttons.enterConsole")}
+                                </Link>
+                            </Button>
                             <UserDropdown user={user} />
                         </div>
                     ) : (
@@ -215,8 +221,8 @@ export function Header() {
                                         <Zap className="size-6 text-primary-foreground fill-current" />
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-xl font-black text-foreground tracking-tighter italic leading-none">AISAM</span>
-                                        <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em] leading-none mt-1">Intelligence Grid</span>
+                                        <span className="text-xl font-black text-foreground tracking-tighter italic leading-none">{t("header.brand.name")}</span>
+                                        <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em] leading-none mt-1">{t("header.brand.slogan")}</span>
                                     </div>
                                 </div>
                             </div>

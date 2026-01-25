@@ -31,6 +31,9 @@ import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import { Brand } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useBrands, useDeleteBrand } from "@/hooks/use-brands";
+import { useTeamsByVendor } from "@/hooks/use-teams";
+import { useProfile } from "@/lib/contexts/profile-context";
+import { getActiveTeamId, setActiveTeamId, clearActiveTeamId } from "@/lib/utils/profile-utils";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { BrandModal } from "@/components/brands/brand-modal";
 import { CustomTable } from "@/components/ui/custom-table";
@@ -89,6 +92,23 @@ const createColumns = (
       ),
     },
     {
+      accessorKey: "productsCount",
+      header: "Assets",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col items-center">
+            <span className="text-lg font-black text-foreground leading-none">{row.original.productsCount || 0}</span>
+            <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mt-1">Products</span>
+          </div>
+          <div className="w-px h-6 bg-border/50" />
+          <div className="flex flex-col items-center">
+            <span className="text-lg font-black text-foreground leading-none">{row.original.contentsCount || 0}</span>
+            <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mt-1">Contents</span>
+          </div>
+        </div>
+      ),
+    },
+    {
       id: "actions",
       header: () => <div className="text-right uppercase tracking-[0.2em] text-[10px]">Operations</div>,
       cell: ({ row }) => {
@@ -118,7 +138,25 @@ const createColumns = (
         ];
 
         return (
-          <div className="flex justify-end pr-4">
+          <div className="flex justify-end pr-4 gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors"
+              onClick={() => window.open(`/dashboard/brands/${row.original.id}/products`, '_self')}
+              title="Product Matrix"
+            >
+              <Package className="size-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors"
+              onClick={() => window.open(`/dashboard/brands/${row.original.id}/contents`, '_self')}
+              title="Content Forge"
+            >
+              <FileText className="size-4" />
+            </Button>
             <ActionsDropdown actions={actions} disabled={isDeleting} />
           </div>
         );
@@ -132,9 +170,24 @@ export function BrandsManagement() {
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteBrandId, setDeleteBrandId] = useState<string | null>(null);
+  const { activeProfileId, activeProfile } = useProfile();
+  const [selectedTeamId, setSelectedTeamId] = useState<string>(() => getActiveTeamId() || "all");
+
+  // Sync selectedTeamId to localStorage
+  React.useEffect(() => {
+    if (selectedTeamId === "all") {
+      clearActiveTeamId();
+    } else {
+      setActiveTeamId(selectedTeamId);
+    }
+  }, [selectedTeamId]);
   const [pageSize, setPageSize] = useState(10);
 
-  const { data: brands = [], isLoading: loading, refetch: refetchBrands } = useBrands();
+  const { data: brands = [], isLoading: loading, refetch: refetchBrands } = useBrands({
+    teamId: selectedTeamId === "all" ? undefined : selectedTeamId
+  });
+
+  const { data: teams = [] } = useTeamsByVendor(activeProfileId || undefined);
   const deleteBrandMutation = useDeleteBrand();
 
   const safeBrands = Array.isArray(brands) ? brands : [];
@@ -200,18 +253,39 @@ export function BrandsManagement() {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-6 rounded-2xl border-2 bg-muted/10 backdrop-blur-md">
-        <div className="relative w-full sm:w-[500px] group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-          <Input
-            placeholder={t("brands.searchPlaceholder")}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-background"
-          />
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-6 p-6 rounded-2xl border-2 bg-muted/10 backdrop-blur-md">
+        <div className="flex flex-col sm:flex-row items-center gap-6 w-full lg:w-auto">
+          <div className="relative w-full sm:w-[400px] group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Input
+              placeholder={t("brands.searchPlaceholder")}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-background"
+            />
+          </div>
+
+          {teams.length > 0 && (
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">Team:</span>
+              <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
+                <SelectTrigger className="w-full sm:w-[200px] bg-background">
+                  <SelectValue placeholder="All Teams" />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-2">
+                  <SelectItem value="all" className="font-bold text-[10px] uppercase font-fira-sans italic">Full Workspace</SelectItem>
+                  {teams.map(team => (
+                    <SelectItem key={team.id} value={team.id} className="font-bold text-[10px] uppercase font-fira-sans">
+                      {team.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 w-full sm:w-auto justify-end">
           <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Visibility:</span>
           <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
             <SelectTrigger className="w-[140px] bg-background">

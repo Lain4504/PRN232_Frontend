@@ -11,20 +11,20 @@ export const brandKeys = {
 }
 
 // Get all brands
-export function useBrands(enabled: boolean = true) {
+export function useBrands(params?: { teamId?: string; searchTerm?: string }, enabled: boolean = true) {
   return useQuery({
-    queryKey: brandKeys.lists(),
+    queryKey: [...brandKeys.lists(), params],
     queryFn: async (): Promise<Brand[]> => {
       try {
-        const resp = await api.get<{ data: { data: Brand[] } }>(endpoints.brands())
-        
+        const resp = await api.get<{ data: { data: Brand[] } }>(endpoints.brands(params))
+
         // Handle the actual API response format: 
         // { success: true, data: { data: [brands] } }
-        
+
         if (resp.data && resp.data.data && Array.isArray(resp.data.data)) {
           return resp.data.data;
         }
-        
+
         return [];
       } catch (error) {
         console.error('Error fetching brands:', error);
@@ -43,11 +43,10 @@ export function useBrandsByTeam(teamId?: string) {
     queryFn: async (): Promise<Brand[]> => {
       if (!teamId) return [];
       try {
-        const resp = await api.get<Brand[]>(endpoints.brandsByTeam(teamId))
+        const resp = await api.get<{ data: { data: Brand[] } }>(endpoints.brands({ teamId }))
 
-        // Handle response format - direct array from API response
-        if (resp.data && Array.isArray(resp.data)) {
-          return resp.data;
+        if (resp.data && resp.data.data && Array.isArray(resp.data.data)) {
+          return resp.data.data;
         }
 
         return [];

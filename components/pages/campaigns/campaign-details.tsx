@@ -26,6 +26,7 @@ import Link from "next/link";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { CampaignModal } from "@/components/campaigns/campaign-modal";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 interface CampaignDetailsProps {
   basePath?: string;
@@ -34,6 +35,7 @@ interface CampaignDetailsProps {
 export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignDetailsProps = {}) {
   const params = useParams();
   const campaignId = params.id as string;
+  const { t } = useTranslation("common");
 
   const { data: campaign, isLoading, error } = useCampaign(campaignId);
   const { data: brands = [] } = useBrands();
@@ -55,10 +57,10 @@ export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignD
       <div className="size-20 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mb-6">
         <Megaphone className="size-10" />
       </div>
-      <h2 className="text-3xl font-extrabold text-foreground">Campaign Identity Lost</h2>
-      <p className="text-muted-foreground mt-2 max-w-md">We couldn&apos;t retrieve the details for this campaign. It may have been archived or moved.</p>
+      <h2 className="text-3xl font-extrabold text-foreground">{t("campaigns.details.identityLost")}</h2>
+      <p className="text-muted-foreground mt-2 max-w-md">{t("campaigns.details.notFoundDesc")}</p>
       <Button asChild className="mt-10 rounded-xl h-12 px-8 font-bold" variant="outline">
-        <Link href={basePath}><ArrowLeft className="mr-2 size-4" /> Back to Dashboard</Link>
+        <Link href={basePath}><ArrowLeft className="mr-2 size-4" /> {t("campaigns.details.backToDashboard")}</Link>
       </Button>
     </div>
   );
@@ -75,9 +77,9 @@ export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignD
         <div className="space-y-4">
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem><BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink></BreadcrumbItem>
+              <BreadcrumbItem><BreadcrumbLink href="/dashboard">{t("dashboard.title")}</BreadcrumbLink></BreadcrumbItem>
               <BreadcrumbSeparator />
-              <BreadcrumbItem><BreadcrumbLink href={basePath}>Campaigns</BreadcrumbLink></BreadcrumbItem>
+              <BreadcrumbItem><BreadcrumbLink href={basePath}>{t("campaigns.title")}</BreadcrumbLink></BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem><BreadcrumbPage>{campaign.name}</BreadcrumbPage></BreadcrumbItem>
             </BreadcrumbList>
@@ -106,12 +108,12 @@ export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignD
           <Button variant="outline" size="lg" className="rounded-xl font-bold h-12 px-6 border-2" asChild>
             <Link href={`${basePath}/${campaign.id}/ad-sets`}>
               <Target className="mr-2 size-5" />
-              Performance Sets
+              {t("campaigns.details.performanceSets")}
             </Link>
           </Button>
           <Button size="lg" className="rounded-xl font-bold h-12 px-6 shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]" onClick={() => setIsEditModalOpen(true)}>
             <Edit className="mr-2 size-5" />
-            Edit Profile
+            {t("campaigns.details.editProfile")}
           </Button>
         </div>
       </div>
@@ -119,17 +121,17 @@ export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignD
       {/* Primary Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: "Planned Budget", value: campaign.budget ? `₫${Number(campaign.budget).toLocaleString('vi-VN')}` : "None", desc: "Global investment target", icon: DollarSign, color: "text-emerald-500" },
-          { label: "Core Strategy", value: campaign.objective?.replace(/_/g, ' ') || "Dynamic", desc: "Primary conversion goal", icon: Target, color: "text-blue-500" },
-          { label: "Timeline", value: campaign.startDate ? format(new Date(campaign.startDate), 'MMM dd, yyyy') : "Pending", desc: "Deployment start date", icon: Calendar, color: "text-primary" },
-          { label: "Active Nodes", value: campaign.adSets?.length || 0, desc: "Connected ad sets", icon: BarChart3, color: "text-amber-500" },
+          { label: t("campaigns.details.plannedBudget"), value: campaign.budget ? `₫${Number(campaign.budget).toLocaleString('vi-VN')}` : "None", desc: t("campaigns.details.globalInvestment"), icon: DollarSign, color: "text-emerald-500" },
+          { label: t("campaigns.details.coreStrategy"), value: campaign.objective?.replace(/_/g, ' ') || "Dynamic", desc: t("campaigns.details.primaryGoal"), icon: Target, color: "text-blue-500" },
+          { label: t("campaigns.details.timeline"), value: campaign.startDate ? format(new Date(campaign.startDate), 'MMM dd, yyyy') : "Pending", desc: t("campaigns.details.deploymentDate"), icon: Calendar, color: "text-primary" },
+          { label: t("campaigns.details.activeNodes"), value: campaign.adSets?.length || 0, desc: t("campaigns.details.connectedSets"), icon: BarChart3, color: "text-amber-500" },
         ].map((stat, i) => (
           <Card key={i} className="rounded-2xl border bg-card/40 p-6 shadow-sm border-b-4 border-b-transparent hover:border-b-primary transition-all">
             <div className="flex items-center justify-between mb-4">
               <div className={cn("size-10 rounded-xl bg-muted/50 flex items-center justify-center", stat.color)}>
                 <stat.icon className="size-5" />
               </div>
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Metadata</span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t("campaigns.details.metadata")}</span>
             </div>
             <div className="space-y-1">
               <p className="text-2xl font-extrabold text-foreground truncate">{stat.value}</p>
@@ -144,15 +146,15 @@ export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignD
       {metrics && (
         <div className="space-y-6">
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-extrabold text-foreground tracking-tight">Live Analytics</h2>
+            <h2 className="text-2xl font-extrabold text-foreground tracking-tight">{t("campaigns.details.liveAnalytics")}</h2>
             <div className="h-px flex-1 bg-border" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { label: "Impressions", value: metrics.totalImpressions.toLocaleString(), sub: "Total visual reach", icon: Eye },
-              { label: "Click Interaction", value: metrics.totalClicks.toLocaleString(), sub: "User engagement count", icon: MousePointer },
-              { label: "Conversion Rate", value: `${metrics.ctr.toFixed(2)}%`, sub: "Performance index", icon: TrendingUp },
-              { label: "Actual Spend", value: `₫${Number(metrics.totalSpend).toLocaleString('vi-VN')}`, sub: "Resource consumption", icon: DollarSign },
+              { label: t("campaigns.details.impressions"), value: metrics.totalImpressions.toLocaleString(), sub: t("campaigns.details.totalVisualReach"), icon: Eye },
+              { label: t("campaigns.details.clickInteraction"), value: metrics.totalClicks.toLocaleString(), sub: t("campaigns.details.userEngagementCount"), icon: MousePointer },
+              { label: t("campaigns.details.conversionRate"), value: `${metrics.ctr.toFixed(2)}%`, sub: t("campaigns.details.performanceIndex"), icon: TrendingUp },
+              { label: t("campaigns.details.actualSpend"), value: `₫${Number(metrics.totalSpend).toLocaleString('vi-VN')}`, sub: t("campaigns.details.resourceConsumption"), icon: DollarSign },
             ].map((metric, i) => (
               <Card key={i} className="rounded-2xl border bg-card/10 backdrop-blur-md p-6 shadow-inner relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-5 translate-x-4 -translate-y-4 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform">
@@ -173,19 +175,19 @@ export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignD
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <Card className="lg:col-span-2 rounded-2xl border bg-card/40 overflow-hidden shadow-sm">
           <CardHeader className="bg-muted/30 border-b py-6 px-8">
-            <CardTitle className="text-xl font-extrabold tracking-tight">Registry Information</CardTitle>
-            <CardDescription className="text-sm font-medium">Digital footprint and update registry</CardDescription>
+            <CardTitle className="text-xl font-extrabold tracking-tight">{t("campaigns.details.registryInfo")}</CardTitle>
+            <CardDescription className="text-sm font-medium">{t("campaigns.details.registryDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="p-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
             <div className="space-y-2 p-4 rounded-xl bg-background/50 border shadow-inner">
-              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Initial Registry</label>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t("campaigns.details.initialRegistry")}</label>
               <div className="flex items-center gap-3 mt-1">
                 <Calendar className="size-4 text-primary" />
                 <p className="text-base font-bold text-foreground">{format(new Date(campaign.createdAt), 'PPP')}</p>
               </div>
             </div>
             <div className="space-y-2 p-4 rounded-xl bg-background/50 border shadow-inner">
-              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Last Synchronization</label>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t("campaigns.details.lastSync")}</label>
               <div className="flex items-center gap-3 mt-1">
                 <TrendingUp className="size-4 text-blue-500" />
                 <p className="text-base font-bold text-foreground">{format(new Date(campaign.updatedAt), 'PPP')}</p>
@@ -198,11 +200,11 @@ export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignD
           <div className="size-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-sm">
             <BarChart3 className="size-8" />
           </div>
-          <h4 className="text-lg font-extrabold text-foreground tracking-tight">Smart Optimization</h4>
+          <h4 className="text-lg font-extrabold text-foreground tracking-tight">{t("campaigns.details.smartOptimization")}</h4>
           <p className="text-sm font-medium text-muted-foreground/80 leading-relaxed mt-4 italic">
-            Our enterprise engine is currently monitoring this campaign. Every metadata point is synchronized in real-time.
+            {t("campaigns.details.optimizationDesc")}
           </p>
-          <Button variant="ghost" className="mt-8 font-bold text-primary hover:bg-primary/10">View Detailed Audit Log</Button>
+          <Button variant="ghost" className="mt-8 font-bold text-primary hover:bg-primary/10">{t("campaigns.details.viewAuditLog")}</Button>
         </Card>
       </div>
 

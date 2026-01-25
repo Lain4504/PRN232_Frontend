@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTranslation } from "react-i18next";
 
 interface CampaignModalProps {
   mode: "create" | "edit";
@@ -27,6 +28,7 @@ export function CampaignModal({
 }: CampaignModalProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const isMobile = useIsMobile();
+  const { t } = useTranslation("common");
 
   const handleOpenChange = (newOpen: boolean) => {
     if (onOpenChange) {
@@ -52,12 +54,12 @@ export function CampaignModal({
         <DrawerContent className="max-h-[90vh] flex flex-col">
           <DrawerHeader className="flex-shrink-0 text-left">
             <DrawerTitle>
-              {mode === "create" ? "Create New Campaign" : "Edit Campaign"}
+              {mode === "create" ? t("campaigns.modal.createTitle") : t("campaigns.modal.editTitle")}
             </DrawerTitle>
             <DrawerDescription>
               {mode === "create"
-                ? "Set up a new advertising campaign with your target audience and budget."
-                : "Update your campaign settings and configuration."}
+                ? t("campaigns.modal.createDescription")
+                : t("campaigns.modal.editDescription")}
             </DrawerDescription>
           </DrawerHeader>
           <div className="px-4 overflow-y-auto flex-1">
@@ -72,7 +74,7 @@ export function CampaignModal({
           </div>
           <DrawerFooter className="flex-shrink-0 pt-2">
             <DrawerClose asChild>
-              <Button variant="outline" className="w-full">Cancel</Button>
+              <Button variant="outline" className="w-full">{t("campaigns.modal.cancel")}</Button>
             </DrawerClose>
           </DrawerFooter>
         </DrawerContent>
@@ -88,12 +90,12 @@ export function CampaignModal({
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>
-            {mode === "create" ? "Create New Campaign" : "Edit Campaign"}
+            {mode === "create" ? t("campaigns.modal.createTitle") : t("campaigns.modal.editTitle")}
           </DialogTitle>
           <DialogDescription>
             {mode === "create"
-              ? "Set up a new advertising campaign with your target audience and budget."
-              : "Update your campaign settings and configuration."}
+              ? t("campaigns.modal.createDescription")
+              : t("campaigns.modal.editDescription")}
           </DialogDescription>
         </DialogHeader>
         <div className="overflow-y-auto flex-1">

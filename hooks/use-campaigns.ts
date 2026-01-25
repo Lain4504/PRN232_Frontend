@@ -21,6 +21,7 @@ export function useCampaigns(params: CampaignListParams = {}) {
       const response = await api.get<PaginatedResponse<AdCampaignResponse>>(
         endpoints.campaigns({
           brandId: params.brandId,
+          teamId: params.teamId,
           page: params.page || 1,
           pageSize: params.pageSize || 20,
         })
@@ -61,7 +62,7 @@ export function useCreateCampaign() {
     onSuccess: (newCampaign) => {
       // Invalidate and refetch campaigns list
       queryClient.invalidateQueries({ queryKey: campaignKeys.lists() });
-      
+
       // Add the new campaign to the cache
       queryClient.setQueryData(
         campaignKeys.detail(newCampaign.id),

@@ -22,13 +22,15 @@ export default function OverviewPage() {
   const { setActiveProfile } = useProfile()
   const [searchQuery, setSearchQuery] = useState('')
 
-  const handleProfileSelect = (profile: { id: string; name?: string; company_name?: string; profileType: string; avatarUrl?: string }) => {
+  const handleProfileSelect = (profile: any) => {
     setActiveProfile(profile.id, {
       id: profile.id,
       name: profile.name || profile.company_name || `${profile.profileType} Profile`,
       type: profile.profileType as unknown as ProfileTypeEnum,
       avatarUrl: profile.avatarUrl,
-      companyName: profile.company_name
+      companyName: profile.company_name,
+      isOwner: profile.isOwner ?? false,
+      memberRole: profile.memberRole
     })
 
     // Navigate to dashboard after selecting profile
@@ -42,6 +44,27 @@ export default function OverviewPage() {
     user: user?.id,
     profiles: profiles?.length,
     profilesError
+  })
+
+  // Handle redirection for new users or single profile users
+  useState(() => {
+    if (!userLoading && !profilesLoading && Array.isArray(profiles)) {
+      if (profiles.length === 0) {
+        router.replace('/onboarding')
+      } else if (profiles.length === 1) {
+        const profile = profiles[0]
+        setActiveProfile(profile.id, {
+          id: profile.id,
+          name: profile.name || profile.company_name || `${profile.profileType} Profile`,
+          type: profile.profileType as unknown as ProfileTypeEnum,
+          avatarUrl: profile.avatarUrl,
+          companyName: profile.company_name,
+          isOwner: profile.isOwner ?? false,
+          memberRole: profile.memberRole
+        })
+        router.push('/dashboard')
+      }
+    }
   })
 
   if (userLoading || profilesLoading) {
@@ -96,7 +119,7 @@ export default function OverviewPage() {
           />
         </div>
 
-        {/* Profiles Grid */}
+        {/* Profiles Sections */}
         {filteredProfiles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-6 text-center border border-dashed rounded-xl bg-muted/5">
             <div className="h-16 w-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-6 border border-white/5">
@@ -118,65 +141,101 @@ export default function OverviewPage() {
             )}
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredProfiles.map((profile) => (
-              <Card
-                key={profile.id}
-                className="group rounded-xl border border-border/50 shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer overflow-hidden bg-card"
-                onClick={() => handleProfileSelect(profile)}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/10 shrink-0">
-                      {profile.avatarUrl ? (
-                        <img
-                          src={profile.avatarUrl}
-                          alt=""
-                          className="h-12 w-12 rounded-lg object-cover"
-                        />
-                      ) : (
-                        <User className="h-6 w-6 text-primary" />
-                      )}
-                    </div>
+          <div className="space-y-12">
+            {/* My Workspaces */}
+            {filteredProfiles.some(p => p.isOwner) && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-2">
+                  <User className="h-5 w-5 text-primary" />
+                  <h2 className="text-xl font-bold">{t("overview.myWorkspaces", "Không gian làm việc của tôi")}</h2>
+                </div>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {filteredProfiles.filter(p => p.isOwner).map((profile) => (
+                    <ProfileCard key={profile.id} profile={profile} onSelect={handleProfileSelect} t={t} />
+                  ))}
+                </div>
+              </div>
+            )}
 
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
-                        {profile.name || profile.company_name || 'Hồ Sơ Chưa Đặt Tên'}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <Badge
-                          variant="secondary"
-                          className={`rounded-md text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 ${PROFILE_TYPE_COLORS[profile.profileType] || 'bg-muted text-muted-foreground'}`}
-                        >
-                          {PROFILE_TYPE_LABELS[profile.profileType]}
-                        </Badge>
-                        {profile.company_name && (
-                          <span className="text-xs text-muted-foreground truncate border-l pl-2 border-border">
-                            {profile.company_name}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {profile.bio && (
-                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-6 min-h-[3em]">
-                      {profile.bio}
-                    </p>
-                  )}
-
-                  <div className="pt-4 border-t border-border/50 flex items-center justify-between">
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
-                      Truy Cập Workspace
-                    </span>
-                    <ArrowRight className="h-4 w-4 text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {/* Shared Workspaces */}
+            {filteredProfiles.some(p => !p.isOwner) && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-5 w-5 text-primary" />
+                  <h2 className="text-xl font-bold">{t("overview.sharedWorkspaces", "Được chia sẻ với tôi")}</h2>
+                </div>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {filteredProfiles.filter(p => !p.isOwner).map((profile) => (
+                    <ProfileCard key={profile.id} profile={profile} onSelect={handleProfileSelect} t={t} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
     </div>
   );
+}
+
+function ProfileCard({ profile, onSelect, t }: { profile: any; onSelect: (p: any) => void; t: any }) {
+  return (
+    <Card
+      className="group rounded-xl border border-border/50 shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer overflow-hidden bg-card"
+      onClick={() => onSelect(profile)}
+    >
+      <CardContent className="p-6">
+        <div className="flex items-start gap-4 mb-4">
+          <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/10 shrink-0">
+            {profile.avatarUrl ? (
+              <img
+                src={profile.avatarUrl}
+                alt=""
+                className="h-12 w-12 rounded-lg object-cover"
+              />
+            ) : (
+              <User className="h-6 w-6 text-primary" />
+            )}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
+              {profile.name || profile.company_name || 'Hồ Sơ Chưa Đặt Tên'}
+            </h3>
+            <div className="flex items-center gap-2 mt-1.5">
+              <Badge
+                variant="secondary"
+                className={`rounded-md text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 ${PROFILE_TYPE_COLORS[profile.profileType as unknown as ProfileTypeEnum] || 'bg-muted text-muted-foreground'}`}
+              >
+                {PROFILE_TYPE_LABELS[profile.profileType as unknown as ProfileTypeEnum]}
+              </Badge>
+              {!profile.isOwner && (
+                <Badge variant="outline" className="rounded-md text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 border-primary/30 text-primary">
+                  {profile.memberRole || t("overview.member", "Member")}
+                </Badge>
+              )}
+              {profile.company_name && (
+                <span className="text-xs text-muted-foreground truncate border-l pl-2 border-border">
+                  {profile.company_name}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {profile.bio && (
+          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-6 min-h-[3em]">
+            {profile.bio}
+          </p>
+        )}
+
+        <div className="pt-4 border-t border-border/50 flex items-center justify-between">
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
+            {profile.isOwner ? t("overview.accessWorkspace", "Truy Cập Workspace") : t("overview.accessSharedWorkspace", "Truy Cập Workspace Chia Sẻ")}
+          </span>
+          <ArrowRight className="h-4 w-4 text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+        </div>
+      </CardContent>
+    </Card>
+  )
 }

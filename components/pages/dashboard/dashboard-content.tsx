@@ -23,6 +23,16 @@ import { api, endpoints } from "@/lib/api"
 import { QuickActionsPanel } from "./quick-actions-panel"
 import { cn } from "@/lib/utils"
 import { useTranslation } from "react-i18next"
+import { useProfile } from "@/lib/contexts/profile-context"
+import { useTeamsByVendor } from "@/hooks/use-teams"
+import { getActiveTeamId, setActiveTeamId, clearActiveTeamId } from "@/lib/utils/profile-utils"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 const getStatsData = (stats: DashboardStats, t: (key: string) => string) => [
   {
@@ -65,9 +75,22 @@ const getStatsData = (stats: DashboardStats, t: (key: string) => string) => [
 
 const DashboardContent = () => {
   const { t } = useTranslation("common")
+  const { activeProfileId } = useProfile()
+  const [selectedTeamId, setSelectedTeamId] = useState<string>(() => getActiveTeamId() || "all")
   const [user, setUser] = useState<User | null>(null)
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const { data: teams = [] } = useTeamsByVendor(activeProfileId || undefined)
+
+  // Sync selectedTeamId to localStorage
+  useEffect(() => {
+    if (selectedTeamId === "all") {
+      clearActiveTeamId();
+    } else {
+      setActiveTeamId(selectedTeamId);
+    }
+  }, [selectedTeamId]);
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -76,7 +99,8 @@ const DashboardContent = () => {
         const userResp = await api.get<User>(endpoints.userProfile)
         if (userResp.success) setUser(userResp.data)
 
-        const statsResp = await api.get<DashboardStats>(endpoints.dashboardStats())
+        const teamScope = selectedTeamId === "all" ? undefined : selectedTeamId
+        const statsResp = await api.get<DashboardStats>(endpoints.dashboardStats(teamScope))
         if (statsResp.success) {
           const raw = statsResp.data as unknown as Record<string, unknown>
           const n = (v: unknown) => typeof v === 'number' ? v : (isNaN(Number(v)) ? 0 : Number(v))
@@ -97,7 +121,7 @@ const DashboardContent = () => {
       }
     }
     loadDashboardData()
-  }, [])
+  }, [selectedTeamId])
 
   if (loading) return (
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-10 animate-pulse">
@@ -132,14 +156,28 @@ const DashboardContent = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              {teams.length > 0 && (
+                <div className="flex items-center gap-3 bg-background/50 backdrop-blur-sm p-2 rounded-2xl border border-primary/20 shadow-inner">
+                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest pl-2">Scope:</span>
+                  <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
+                    <SelectTrigger className="w-[180px] bg-transparent border-none focus:ring-0 font-bold text-xs uppercase tracking-tight">
+                      <SelectValue placeholder="Full Workspace" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-2">
+                      <SelectItem value="all" className="font-bold text-[10px] uppercase italic">Global Overview</SelectItem>
+                      {teams.map(team => (
+                        <SelectItem key={team.id} value={team.id} className="font-bold text-[10px] uppercase">
+                          {team.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <Button variant="outline" size="lg" className="rounded-2xl h-14 px-8 border-2 font-bold hover:bg-muted/50">
                 <Filter className="size-5 mr-3" />
                 {t("dashboard.analyticsButton")}
-              </Button>
-              <Button size="lg" className="rounded-2xl h-14 px-8 font-bold shadow-xl shadow-primary/25 hover:scale-[1.02] transition-all">
-                <Plus className="size-5 mr-3" />
-                {t("dashboard.newEngineButton")}
               </Button>
             </div>
           </div>

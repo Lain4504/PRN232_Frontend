@@ -22,6 +22,8 @@ export interface Profile {
   avatarUrl?: string;
   createdAt: string;
   updatedAt: string;
+  isOwner?: boolean;
+  memberRole?: string;
 }
 
 export interface Brand {
@@ -40,6 +42,8 @@ export interface Brand {
   updatedAt?: string; // API uses camelCase
   created_at?: string; // Keep for backward compatibility
   updated_at?: string; // Keep for backward compatibility
+  productsCount?: number;
+  contentsCount?: number;
 }
 
 export interface Product {

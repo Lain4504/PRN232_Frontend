@@ -55,6 +55,7 @@ export interface CampaignListParams {
   page?: number;
   pageSize?: number;
   brandId?: string;
+  teamId?: string;
   search?: string;
   status?: string;
   objective?: string;
@@ -81,12 +82,12 @@ export type CampaignObjective = typeof CAMPAIGN_OBJECTIVES[number];
 // Campaign status helper
 export const getCampaignStatus = (campaign: AdCampaignResponse): 'active' | 'paused' | 'completed' => {
   if (!campaign.isActive) return 'paused';
-  
+
   const now = new Date();
   const endDate = campaign.endDate ? new Date(campaign.endDate) : null;
-  
+
   if (endDate && endDate < now) return 'completed';
-  
+
   return 'active';
 };
 

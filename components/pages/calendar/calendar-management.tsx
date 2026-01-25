@@ -8,11 +8,13 @@ import { Plus, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useTranslation } from "react-i18next";
+import { getActiveTeamId } from "@/lib/utils/profile-utils";
 
 export function CalendarManagement() {
   const { t } = useTranslation("common");
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<ContentCalendar | null>(null);
+  const teamId = getActiveTeamId() || undefined;
 
   const handleScheduleClick = () => {
     setShowScheduleModal(true);
@@ -74,6 +76,7 @@ export function CalendarManagement() {
 
           <div className="relative z-10">
             <UnifiedContentCalendar
+              teamId={teamId}
               onEventClick={handleEventClick}
               onCreateSchedule={handleScheduleClick}
             />
@@ -84,6 +87,7 @@ export function CalendarManagement() {
         <ScheduleContentModal
           isOpen={showScheduleModal}
           onClose={() => setShowScheduleModal(false)}
+          teamId={teamId}
         />
       </div>
     </div>

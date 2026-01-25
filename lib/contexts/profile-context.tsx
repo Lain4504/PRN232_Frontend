@@ -12,6 +12,8 @@ interface Profile {
   type: ProfileTypeEnum
   avatarUrl?: string
   companyName?: string
+  isOwner: boolean
+  memberRole?: string
 }
 
 interface ProfileApiResponse {
@@ -21,6 +23,8 @@ interface ProfileApiResponse {
   profileType?: ProfileTypeEnum
   avatarUrl?: string
   companyName?: string
+  isOwner?: boolean
+  memberRole?: string
 }
 
 interface ApiResponse {
@@ -30,6 +34,7 @@ interface ApiResponse {
 interface ProfileContextType {
   activeProfileId: string | null
   activeProfile: Profile | null
+  allProfiles: Profile[]
   profileType: ProfileTypeEnum
   isLoading: boolean
   setActiveProfile: (profileId: string, profile: Profile) => void
@@ -48,6 +53,7 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
   const { session, isLoading: isAuthLoading } = useAuth()
   const [activeProfileId, setActiveProfileIdState] = useState<string | null>(null)
   const [activeProfile, setActiveProfileState] = useState<Profile | null>(null)
+  const [allProfiles, setAllProfiles] = useState<Profile[]>([])
   const [profileType, setProfileTypeState] = useState<ProfileTypeEnum>(ProfileTypeEnum.Free)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -64,6 +70,7 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
         if (!cancelled) {
           setActiveProfileIdState(null)
           setActiveProfileState(null)
+          setAllProfiles([])
           setProfileTypeState(ProfileTypeEnum.Free)
           setIsLoading(false)
         }
@@ -71,47 +78,42 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
       }
 
       try {
+        // Fetch all profiles for the user
+        const profilesResponse = await api.get<ProfileApiResponse[]>(endpoints.profilesByUser(session.user.id))
+        const profilesData = profilesResponse.data || []
+
+        const mappedProfiles: Profile[] = profilesData.map(p => ({
+          id: p.id,
+          name: p.name || p.company_name || 'Profile',
+          type: (typeof p.profileType !== 'undefined' ? p.profileType : ProfileTypeEnum.Free) as ProfileTypeEnum,
+          avatarUrl: p.avatarUrl,
+          companyName: p.company_name || p.companyName,
+          isOwner: p.isOwner ?? false,
+          memberRole: p.memberRole
+        }))
+
+        if (!cancelled) {
+          setAllProfiles(mappedProfiles)
+        }
+
         const savedProfileId = getActiveProfileId()
-        const savedProfileType = getProfileType()
+        let profileToSelect: Profile | null = null
 
         if (savedProfileId) {
-          if (!cancelled) {
-            setActiveProfileIdState(savedProfileId)
-            setProfileTypeState(savedProfileType)
+          profileToSelect = mappedProfiles.find(p => p.id === savedProfileId) || null
+        }
 
-            // Optimistic placeholder while fetching
-            setActiveProfileState({
-              id: savedProfileId,
-              name: 'Loading...',
-              type: savedProfileType,
-              companyName: 'Loading...'
-            })
-          }
+        // Auto-select if only one profile exists
+        if (!profileToSelect && mappedProfiles.length === 1) {
+          profileToSelect = mappedProfiles[0]
+        }
 
-          // Fetch full profile details
-          try {
-            const response = await api.get<ApiResponse | ProfileApiResponse>(endpoints.profileById(savedProfileId))
-            if (cancelled) return
-            const p = (response.data as ApiResponse)?.data ?? (response.data as ProfileApiResponse)
-            if (p) {
-              const hydrated: Profile = {
-                id: p.id ?? savedProfileId,
-                name: p.name || p.company_name || 'Profile',
-                type: (typeof p.profileType !== 'undefined' ? p.profileType : savedProfileType) as ProfileTypeEnum,
-                avatarUrl: p.avatarUrl,
-                companyName: p.company_name || p.companyName
-              }
-              setActiveProfileState(hydrated)
-              setProfileTypeState(hydrated.type)
-              setProfileType(hydrated.type)
-            }
-          } catch (err) {
-            console.error('Failed to hydrate profile from API:', err)
-            // If 401 happens here, api.ts might redirect, BUT since we checked session exists, 
-            // it's less likely to be a "missing token" issue. 
-            // If the token is invalid, api.ts handles refresh or redirect, which is correct BEHAVIOR for logged in user.
-            // But we prevented this call for NON-logged in users.
-          }
+        if (profileToSelect && !cancelled) {
+          setActiveProfileIdState(profileToSelect.id)
+          setActiveProfileState(profileToSelect)
+          setProfileTypeState(profileToSelect.type)
+          setActiveProfileId(profileToSelect.id)
+          setProfileType(profileToSelect.type)
         }
       } catch (error) {
         console.error('Error loading profile context:', error)
@@ -161,7 +163,9 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
           name: p.name || p.company_name || 'Profile',
           type: (typeof p.profileType !== 'undefined' ? p.profileType : profileType) as ProfileTypeEnum,
           avatarUrl: p.avatarUrl,
-          companyName: p.company_name || p.companyName
+          companyName: p.company_name || p.companyName,
+          isOwner: p.isOwner ?? (activeProfile?.isOwner ?? false),
+          memberRole: p.memberRole ?? activeProfile?.memberRole
         }
         setActiveProfileState(hydrated)
         setProfileTypeState(hydrated.type)
@@ -177,6 +181,7 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
   const value: ProfileContextType = {
     activeProfileId,
     activeProfile,
+    allProfiles,
     profileType,
     isLoading,
     setActiveProfile,

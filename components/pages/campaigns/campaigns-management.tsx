@@ -37,6 +37,9 @@ import { AdCampaignResponse } from "@/lib/types/campaigns";
 import { toast } from "sonner";
 import { useBrands } from "@/hooks/use-brands";
 import { useCampaigns, useDeleteCampaign } from "@/hooks/use-campaigns";
+import { useTeamsByVendor } from "@/hooks/use-teams";
+import { useProfile } from "@/lib/contexts/profile-context";
+import { getActiveTeamId, setActiveTeamId, clearActiveTeamId } from "@/lib/utils/profile-utils";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { CustomTable } from "@/components/ui/custom-table";
 import { ColumnDef } from "@tanstack/react-table";
@@ -49,8 +52,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TFunction } from "i18next";
 
 const createColumns = (
+  t: TFunction,
   handleEditCampaign: (campaign: AdCampaignResponse) => void,
   handleDeleteCampaign: (campaignId: string) => void,
   brands: { id: string; name: string }[] = [],
@@ -59,7 +64,7 @@ const createColumns = (
 ): ColumnDef<AdCampaignResponse>[] => [
     {
       accessorKey: "name",
-      header: "Campaign Directive",
+      header: t("campaigns.table.directive"),
       cell: ({ row }) => {
         const campaign = row.original;
         const status = getCampaignStatus(campaign);
@@ -84,7 +89,7 @@ const createColumns = (
     },
     {
       accessorKey: "objective",
-      header: "Neural Strategy",
+      header: t("campaigns.table.strategy"),
       cell: ({ row }) => {
         const objective = row.getValue("objective") as string;
         const brandId = row.original.brandId;
@@ -104,7 +109,7 @@ const createColumns = (
     },
     {
       accessorKey: "budget",
-      header: "Injected Capital",
+      header: t("campaigns.table.capital"),
       cell: ({ row }) => {
         const budget = row.getValue("budget") as number;
         return (
@@ -120,7 +125,7 @@ const createColumns = (
     },
     {
       accessorKey: "metrics",
-      header: "Velocity Report",
+      header: t("campaigns.table.velocity"),
       cell: ({ row }) => {
         const metrics = row.original.metrics;
         if (!metrics) return <span className="text-[10px] font-black text-muted-foreground/40 italic uppercase tracking-widest">Awaiting Sync</span>;
@@ -128,23 +133,23 @@ const createColumns = (
         return (
           <div className="space-y-3 min-w-[180px]">
             <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em]">
-              <span className="text-muted-foreground/60">Performance</span>
-              <span className="text-primary italic">{metrics.ctr.toFixed(2)}% CTR</span>
+              <span className="text-muted-foreground/60">{t("campaigns.metrics")}</span>
+              <span className="text-primary italic">{metrics.ctr?.toFixed(2) || 0}% CTR</span>
             </div>
             <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden shadow-inner border border-foreground/5">
               <div
                 className="bg-primary h-full rounded-full transition-all duration-1000 shadow-lg shadow-primary/30"
-                style={{ width: `${Math.min(metrics.ctr * 15, 100)}%` }}
+                style={{ width: `${Math.min((metrics.ctr || 0) * 15, 100)}%` }}
               />
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5 text-[10px] font-black italic">
                 <Eye className="size-3 text-muted-foreground" />
-                {metrics.totalImpressions.toLocaleString()}
+                {(metrics.totalImpressions || 0).toLocaleString()}
               </div>
               <div className="flex items-center gap-1.5 text-[10px] font-black italic text-primary">
                 <TrendingUp className="size-3" />
-                {metrics.totalClicks.toLocaleString()}
+                {(metrics.totalClicks || 0).toLocaleString()}
               </div>
             </div>
           </div>
@@ -153,21 +158,21 @@ const createColumns = (
     },
     {
       id: "actions",
-      header: () => <div className="text-right uppercase tracking-[0.2em] text-[10px]">Operations</div>,
+      header: () => <div className="text-right uppercase tracking-[0.2em] text-[10px]">{t("campaigns.table.operations")}</div>,
       cell: ({ row }) => {
         const actions: ActionItem[] = [
           {
-            label: "Performance Node",
+            label: t("campaigns.viewAnalytics"),
             icon: <Eye className="size-4" />,
             onClick: () => window.open(`${basePath}/${row.original.id}`, '_self'),
           },
           {
-            label: "Configure Strategy",
+            label: t("campaigns.edit"),
             icon: <Edit className="size-4" />,
             onClick: () => handleEditCampaign(row.original),
           },
           {
-            label: "Eject Campaign",
+            label: t("campaigns.delete"),
             icon: <Trash2 className="size-4" />,
             onClick: () => handleDeleteCampaign(row.original.id),
             variant: "destructive",
@@ -190,6 +195,25 @@ interface CampaignsManagementProps {
 
 export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: CampaignsManagementProps = {}) {
   const { t } = useTranslation("common");
+  const { activeProfileId } = useProfile();
+  const [selectedTeamId, setSelectedTeamId] = useState<string>(() => getActiveTeamId() || "all");
+
+  // Sync selectedTeamId to localStorage
+  React.useEffect(() => {
+    if (selectedTeamId === "all") {
+      clearActiveTeamId();
+    } else {
+      setActiveTeamId(selectedTeamId);
+    }
+  }, [selectedTeamId]);
+
+  const { data: teams = [] } = useTeamsByVendor(activeProfileId || undefined);
+  const { data: brands = [] } = useBrands({ teamId: selectedTeamId === "all" ? undefined : selectedTeamId });
+  const { data: campaignsData, isLoading: loading, refetch: refetchCampaigns } = useCampaigns({
+    teamId: selectedTeamId === "all" ? undefined : selectedTeamId
+  });
+  const deleteCampaignMutation = useDeleteCampaign();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [objectiveFilter, setObjectiveFilter] = useState("all");
@@ -197,10 +221,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
   const [editingCampaign, setEditingCampaign] = useState<AdCampaignResponse | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteCampaignId, setDeleteCampaignId] = useState<string | null>(null);
-
-  const { data: brands = [] } = useBrands();
-  const { data: campaignsData, isLoading: loading, refetch: refetchCampaigns } = useCampaigns();
-  const deleteCampaignMutation = useDeleteCampaign();
+  const [pageSize, setPageSize] = useState(10);
 
   const campaigns = campaignsData?.data || [];
   const safeBrands = Array.isArray(brands) ? brands : [];
@@ -219,10 +240,10 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
     if (!deleteCampaignId) return;
     try {
       await deleteCampaignMutation.mutateAsync(deleteCampaignId);
-      toast.success("Campaign ejected from matrix");
+      toast.success(t("notifications.campaignEjected"));
       setDeleteCampaignId(null);
     } catch (error) {
-      toast.error("Ejection sequence aborted");
+      toast.error(t("notifications.ejectionAborted"));
     }
   };
 
@@ -250,9 +271,9 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
         <div className="space-y-4">
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem><BreadcrumbLink href="/dashboard" className="text-[10px] font-black uppercase">Dashboard</BreadcrumbLink></BreadcrumbItem>
+              <BreadcrumbItem><BreadcrumbLink href="/dashboard" className="text-[10px] font-black uppercase">{t("dashboard.title")}</BreadcrumbLink></BreadcrumbItem>
               <BreadcrumbSeparator />
-              <BreadcrumbItem><BreadcrumbPage className="text-[10px] font-black uppercase text-primary">Strategic Hub</BreadcrumbPage></BreadcrumbItem>
+              <BreadcrumbItem><BreadcrumbPage className="text-[10px] font-black uppercase text-primary">{t("campaigns.title")}</BreadcrumbPage></BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <div className="space-y-1">
@@ -277,10 +298,10 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: "Active Deployments", value: activeCount, icon: TrendingUp, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-          { label: "Capital Injection", value: `₫${totalBudget.toLocaleString('vi-VN')}`, icon: DollarSign, color: "text-primary", bg: "bg-primary/10" },
-          { label: "Global Registry", value: campaigns.length, icon: Megaphone, color: "text-blue-500", bg: "bg-blue-500/10" },
-          { label: "Efficiency Index", value: "92/100", icon: Sparkles, color: "text-amber-500", bg: "bg-amber-500/10" },
+          { label: t("campaigns.stats.active"), value: activeCount, icon: TrendingUp, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+          { label: t("campaigns.stats.budget"), value: `₫${totalBudget.toLocaleString('vi-VN')}`, icon: DollarSign, color: "text-primary", bg: "bg-primary/10" },
+          { label: t("campaigns.stats.count"), value: campaigns.length, icon: Megaphone, color: "text-blue-500", bg: "bg-blue-500/10" },
+          { label: t("campaigns.stats.efficiency"), value: "92/100", icon: Sparkles, color: "text-amber-500", bg: "bg-amber-500/10" },
         ].map((stat, i) => (
           <Card key={i} className="rounded-2xl border-2 bg-card/40 p-8 shadow-sm group hover:border-primary/50 transition-all cursor-pointer">
             <div className="flex items-center justify-between mb-6">
@@ -301,7 +322,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
         <div className="relative w-full lg:w-[400px] group">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
-            placeholder="Search operational data..."
+            placeholder={t("campaigns.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-14 h-14 bg-background/50 border-none shadow-inner rounded-2xl font-black italic text-xs uppercase tracking-widest"
@@ -309,23 +330,37 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
         </div>
 
         <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="h-14 w-[160px] rounded-2xl border-none shadow-inner bg-background/50 font-black uppercase text-[10px] tracking-widest px-6">
-              <SelectValue placeholder="PHASE" />
+          <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
+            <SelectTrigger className="h-14 w-[180px] rounded-2xl border-none shadow-inner bg-background/50 font-black uppercase text-[10px] tracking-widest px-6">
+              <SelectValue placeholder="All Workspaces" />
             </SelectTrigger>
             <SelectContent className="rounded-2xl border-2">
-              <SelectItem value="all" className="font-bold text-[10px] uppercase font-fira-sans">All Phases</SelectItem>
-              <SelectItem value="active" className="font-bold text-[10px] uppercase font-fira-sans">Active Matrix</SelectItem>
-              <SelectItem value="paused" className="font-bold text-[10px] uppercase font-fira-sans">Suspended</SelectItem>
+              <SelectItem value="all" className="font-bold text-[10px] uppercase font-fira-sans">GLOBAL SCOPE</SelectItem>
+              {teams.map((team: any) => (
+                <SelectItem key={team.id} value={team.id} className="font-bold text-[10px] uppercase font-fira-sans">
+                  {team.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="h-14 w-[160px] rounded-2xl border-none shadow-inner bg-background/50 font-black uppercase text-[10px] tracking-widest px-6">
+              <SelectValue placeholder={t("campaigns.filterStatus")} />
+            </SelectTrigger>
+            <SelectContent className="rounded-2xl border-2">
+              <SelectItem value="all" className="font-bold text-[10px] uppercase font-fira-sans">{t("campaigns.allStatuses")}</SelectItem>
+              <SelectItem value="active" className="font-bold text-[10px] uppercase font-fira-sans">{t("campaigns.active")}</SelectItem>
+              <SelectItem value="paused" className="font-bold text-[10px] uppercase font-fira-sans">{t("campaigns.paused")}</SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={objectiveFilter} onValueChange={setObjectiveFilter}>
             <SelectTrigger className="h-14 w-[180px] rounded-2xl border-none shadow-inner bg-background/50 font-black uppercase text-[10px] tracking-widest px-6">
-              <SelectValue placeholder="STRATEGY" />
+              <SelectValue placeholder={t("campaigns.filterObjective")} />
             </SelectTrigger>
             <SelectContent className="rounded-2xl border-2 max-h-[400px]">
-              <SelectItem value="all" className="font-bold text-[10px] uppercase font-fira-sans">All Strategies</SelectItem>
+              <SelectItem value="all" className="font-bold text-[10px] uppercase font-fira-sans">{t("campaigns.allStrategies")}</SelectItem>
               {CAMPAIGN_OBJECTIVES.map(obj => (
                 <SelectItem key={obj} value={obj} className="font-bold text-[10px] uppercase font-fira-sans">{obj.replace(/_/g, ' ')}</SelectItem>
               ))}
@@ -338,7 +373,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
               setStatusFilter("all");
               setObjectiveFilter("all");
             }}>
-              <X className="mr-3 size-4" /> Reset Filters
+              <X className="mr-3 size-4" /> {t("campaigns.resetFilters")}
             </Button>
           )}
         </div>
@@ -350,7 +385,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
             <Zap className="size-40 text-primary" />
           </div>
           <CustomTable
-            columns={createColumns(handleEditCampaign, setDeleteCampaignId, safeBrands, deleteCampaignMutation.isPending, basePath)}
+            columns={createColumns(t, handleEditCampaign, setDeleteCampaignId, safeBrands, deleteCampaignMutation.isPending, basePath)}
             data={filteredCampaigns}
             pageSize={10}
             className="border-0 shadow-none bg-transparent"
@@ -364,12 +399,12 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
           </div>
           <div className="space-y-4 max-w-md">
             <h3 className="text-3xl font-black uppercase tracking-tight text-foreground italic underline decoration-primary decoration-4 underline-offset-8">
-              {searchTerm ? 'Signal Not Found' : 'Operation: NULL'}
+              {searchTerm ? t("campaigns.empty.title") : t("campaigns.empty.noDataTitle")}
             </h3>
             <p className="text-muted-foreground font-bold leading-relaxed italic opacity-80">
               {searchTerm
-                ? "The query descriptor returned no matches from the current operational grid."
-                : "The campaign matrix is currently inactive. Initialize a new deployment to start visual synthesis."
+                ? t("campaigns.empty.description")
+                : t("campaigns.empty.noDataDescription")
               }
             </p>
           </div>
@@ -402,19 +437,19 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
             <div className="size-20 rounded-3xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto border border-destructive/20 shadow-inner">
               <AlertTriangle className="size-10" />
             </div>
-            <AlertDialogTitle className="text-3xl font-black tracking-tight text-center uppercase italic">Archive <span className="text-destructive">Signal</span>?</AlertDialogTitle>
+            <AlertDialogTitle className="text-3xl font-black tracking-tight text-center uppercase italic">{t("campaigns.deleteDialog.title")}</AlertDialogTitle>
             <AlertDialogDescription className="text-base font-bold text-muted-foreground/80 leading-relaxed text-center italic mt-2">
-              This will move the selected deployment to the ARCHIVE sector. Historical data remains indexed but active sync will terminate.
+              {t("campaigns.deleteDialog.description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-12 grid grid-cols-2 gap-6">
-            <AlertDialogCancel className="rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] border-2">Abort</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] border-2">{t("campaigns.deleteDialog.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteCampaign}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] border-none shadow-2xl shadow-destructive/30"
               disabled={deleteCampaignMutation.isPending}
             >
-              {deleteCampaignMutation.isPending ? 'ARCHIVING...' : 'CONFIRM ARCHIVE'}
+              {deleteCampaignMutation.isPending ? '...' : t("campaigns.deleteDialog.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
