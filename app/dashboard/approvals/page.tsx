@@ -8,10 +8,8 @@ export const metadata: Metadata = {
 
 export default function ApprovalsPage() {
   return (
-    <SharedApprovalManagement 
+    <SharedApprovalManagement
       context="dashboard"
-      title="Content Approvals"
-      description="Review and approve content before publishing"
       showCreateButton={true}
     />
   );

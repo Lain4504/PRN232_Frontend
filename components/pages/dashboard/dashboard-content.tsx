@@ -162,10 +162,10 @@ const DashboardContent = () => {
                   <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest pl-2">Scope:</span>
                   <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
                     <SelectTrigger className="w-[180px] bg-transparent border-none focus:ring-0 font-bold text-xs uppercase tracking-tight">
-                      <SelectValue placeholder="Full Workspace" />
+                      <SelectValue placeholder={t("dashboard.fullWorkspace")} />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl border-2">
-                      <SelectItem value="all" className="font-bold text-[10px] uppercase italic">Global Overview</SelectItem>
+                      <SelectItem value="all" className="font-bold text-[10px] uppercase italic">{t("dashboard.globalOverview")}</SelectItem>
                       {teams.map(team => (
                         <SelectItem key={team.id} value={team.id} className="font-bold text-[10px] uppercase">
                           {team.name}
@@ -222,9 +222,9 @@ const DashboardContent = () => {
                   <div className="space-y-1">
                     <CardTitle className="text-2xl font-black flex items-center gap-3 italic">
                       <Activity className="size-6 text-primary animate-pulse" />
-                      Operations Output
+                      {t("dashboard.operationsOutput")}
                     </CardTitle>
-                    <CardDescription className="text-sm font-bold text-muted-foreground/60 uppercase tracking-widest">Global engagement index</CardDescription>
+                    <CardDescription className="text-sm font-bold text-muted-foreground/60 uppercase tracking-widest">{t("dashboard.globalEngagementIndex")}</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -237,8 +237,8 @@ const DashboardContent = () => {
                         <Clock className="size-7" />
                       </div>
                       <div className="space-y-0.5">
-                        <p className="text-sm font-black text-foreground italic uppercase tracking-tighter">Pending</p>
-                        <p className="text-xs font-bold text-muted-foreground">Auth Queue</p>
+                        <p className="text-sm font-black text-foreground italic uppercase tracking-tighter">{t("dashboard.pending")}</p>
+                        <p className="text-xs font-bold text-muted-foreground">{t("dashboard.authQueue")}</p>
                       </div>
                     </div>
                     <div className="text-4xl font-black text-foreground italic">{stats?.pending_approvals || 0}</div>
@@ -250,8 +250,8 @@ const DashboardContent = () => {
                         <Calendar className="size-7" />
                       </div>
                       <div className="space-y-0.5">
-                        <p className="text-sm font-black text-foreground italic uppercase tracking-tighter">Scheduled</p>
-                        <p className="text-xs font-bold text-muted-foreground">Sync Horizon</p>
+                        <p className="text-sm font-black text-foreground italic uppercase tracking-tighter">{t("dashboard.scheduled")}</p>
+                        <p className="text-xs font-bold text-muted-foreground">{t("dashboard.syncHorizon")}</p>
                       </div>
                     </div>
                     <div className="text-4xl font-black text-foreground italic">{stats?.scheduled_posts || 0}</div>
@@ -266,11 +266,11 @@ const DashboardContent = () => {
                     <TrendingUp className="size-6" />
                   </div>
                   <div className="space-y-3 relative z-10">
-                    <h4 className="text-lg font-black text-foreground tracking-tight italic">AI Strategic Insights</h4>
-                    <p className="text-sm text-muted-foreground leading-relaxed font-bold italic opacity-80">
-                      Sync patterns indicate a <span className="text-primary underline decoration-2 underline-offset-4">14.2% acceleration</span> in workspace utilization.
-                      Predictive modeling suggests deploying content during the 18:00 corridor will maximize peak visibility.
-                    </p>
+                    <h4 className="text-lg font-black text-foreground tracking-tight italic">{t("dashboard.aiStrategicInsights")}</h4>
+                    <p
+                      className="text-sm text-muted-foreground leading-relaxed font-bold italic opacity-80"
+                      dangerouslySetInnerHTML={{ __html: `${t("dashboard.accelerationNotice")} ${t("dashboard.peakVisibilityNotice")}` }}
+                    />
                   </div>
                 </div>
               </CardContent>

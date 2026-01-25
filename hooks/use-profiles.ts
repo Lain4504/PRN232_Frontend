@@ -14,13 +14,8 @@ export function useGetProfiles(userId: string, search?: string, isDeleted?: bool
   return useQuery({
     queryKey: profileKeys.list(userId, search, isDeleted),
     queryFn: async (): Promise<Profile[]> => {
-      try {
-        const res = await api.get<Profile[]>(endpoints.profilesByUser(userId, search, isDeleted))
-        return res.data || []
-      } catch (error) {
-        console.error('Error fetching profiles:', error)
-        return []
-      }
+      const res = await api.get<Profile[]>(endpoints.profilesByUser(userId, search, isDeleted))
+      return res.data || []
     },
     enabled: !!userId,
   })
@@ -30,13 +25,8 @@ export function useGetProfile(id: string) {
   return useQuery({
     queryKey: profileKeys.detail(id),
     queryFn: async (): Promise<Profile | null> => {
-      try {
-        const res = await api.get<Profile>(endpoints.profileById(id))
-        return res.data || null
-      } catch (error) {
-        console.error('Error fetching profile:', error)
-        return null
-      }
+      const res = await api.get<Profile>(endpoints.profileById(id))
+      return res.data || null
     },
     enabled: !!id,
   })

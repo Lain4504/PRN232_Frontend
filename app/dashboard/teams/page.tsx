@@ -21,11 +21,14 @@ import type { TeamResponse } from '@/lib/types/aisam-types'
 import { Input } from "@/components/ui/input"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useTranslation } from 'react-i18next'
+import { enUS, vi as viLocale } from 'date-fns/locale'
 
 function TeamsPageContent() {
   const { data: user, isLoading: userLoading } = useUser()
   const { activeProfileId, profileType } = useProfile()
   const { data, isLoading, isError } = useTeamsByVendor(activeProfileId || undefined)
+  const { t, i18n } = useTranslation("common")
   const [openCreate, setOpenCreate] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [editDialog, setEditDialog] = useState<{ open: boolean; team: TeamResponse | null }>({
@@ -55,7 +58,7 @@ function TeamsPageContent() {
   const columns: ColumnDef<TeamResponse>[] = useMemo(() => [
     {
       accessorKey: "name",
-      header: "Team Name",
+      header: t('teams.teamName'),
       cell: ({ row }) => (
         <div className="flex items-center gap-4 py-2">
           <div className="relative h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
@@ -70,7 +73,7 @@ function TeamsPageContent() {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t('teams.status'),
       cell: ({ row }) => {
         const status = getTeamStatus(row.original);
         return (
@@ -78,14 +81,14 @@ function TeamsPageContent() {
             ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
             : 'bg-muted/50 text-muted-foreground border-border/50'
             }`}>
-            {status}
+            {status === 'Active' ? t('teams.active') : t('teams.pending')}
           </Badge>
         );
       },
     },
     {
       accessorKey: "membersCount",
-      header: "Members",
+      header: t('teams.teamMembers'),
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <div className="flex -space-x-2">
@@ -101,17 +104,17 @@ function TeamsPageContent() {
             )}
           </div>
           <span className="text-xs font-mono font-medium text-muted-foreground">
-            {row.original.membersCount || 0} Total
+            {row.original.membersCount || 0} {t('teams.totalMembers')}
           </span>
         </div>
       ),
     },
     {
       accessorKey: "createdAt",
-      header: "Created Date",
+      header: t('teams.createdDate'),
       cell: ({ row }) => (
         <div className="font-mono text-xs text-muted-foreground">
-          {new Date(row.getValue("createdAt")).toLocaleDateString()}
+          {new Date(row.getValue("createdAt")).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US')}
         </div>
       ),
     },
@@ -121,17 +124,17 @@ function TeamsPageContent() {
       cell: ({ row }) => {
         const actions: ActionItem[] = [
           {
-            label: "View Team",
+            label: t('teams.viewTeam'),
             icon: <Eye className="h-4 w-4" />,
             onClick: () => window.open(`/dashboard/teams/${row.original.id}`, '_self'),
           },
           {
-            label: "Edit Team",
+            label: t('teams.editTeam'),
             icon: <Edit className="h-4 w-4" />,
             onClick: () => setEditDialog({ open: true, team: row.original }),
           },
           {
-            label: "Delete Team",
+            label: t('teams.deleteTeam'),
             icon: <Trash2 className="h-4 w-4" />,
             onClick: () => setDeleteDialog({ open: true, teamId: row.original.id, teamName: row.original.name }),
             variant: "destructive" as const,
@@ -179,11 +182,11 @@ function TeamsPageContent() {
         <Breadcrumb className="mb-4">
           <BreadcrumbList className="gap-2">
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard" className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/60 hover:text-primary transition-colors">Workspace</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard" className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/60 hover:text-primary transition-colors">{t('common.overview.title')}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="text-muted-foreground/30 scale-75" />
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground/80">Teams Management</BreadcrumbPage>
+              <BreadcrumbPage className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground/80">{t('teams.title')}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -193,13 +196,13 @@ function TeamsPageContent() {
           <div className="space-y-4 max-w-2xl">
             <div className="flex items-center gap-3">
               <div className="h-2 w-8 bg-primary rounded-full" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Collaboration</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">{t('teams.collaboration')}</span>
             </div>
             <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-foreground leading-[1.1]">
-              Team <span className="text-primary">Management</span>
+              Team <span className="text-primary">{t('common.actions.manage')}</span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed font-medium">
-              Create and manage teams, assign members, and oversee project collaboration.
+              {t('teams.description')}
             </p>
           </div>
 
@@ -207,7 +210,7 @@ function TeamsPageContent() {
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="group relative flex flex-col min-w-[140px] p-1">
                 <span className="text-4xl font-black text-foreground font-fira-mono tracking-tighter tabular-nums group-hover:text-primary transition-colors">{rows.length}</span>
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1 px-0.5">Active Teams</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1 px-0.5">{t('teams.activeTeamsCount')}</span>
                 <div className="absolute -bottom-2 left-0 w-8 h-0.5 bg-primary/20 group-hover:w-full transition-all duration-500" />
               </div>
             </div>
@@ -219,7 +222,7 @@ function TeamsPageContent() {
           <div className="relative w-full md:w-96 group">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
-              placeholder="SEARCH TEAM NAME..."
+              placeholder={t('teams.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-11 h-12 border-none bg-muted/30 focus-visible:ring-primary/20 rounded-2xl font-medium transition-all duration-300 placeholder:text-muted-foreground/40 text-[11px] font-bold uppercase tracking-wider"
@@ -233,7 +236,7 @@ function TeamsPageContent() {
               disabled={!checkFeatureAccess(profileType, 'teams')}
             >
               <Plus className="mr-2 h-4 w-4 stroke-[3]" />
-              Create New Team
+              {t('teams.createTeam')}
             </Button>
           )}
         </div>
@@ -245,15 +248,15 @@ function TeamsPageContent() {
           ) : isError ? (
             <div className="flex flex-col items-center justify-center h-96 text-center bg-destructive/5 rounded-3xl border border-destructive/20 p-10">
               <AlertCircle className="h-16 w-16 text-destructive mb-6 stroke-[1.5]" />
-              <h3 className="text-2xl font-black uppercase tracking-tight text-destructive mb-2">System Error</h3>
-              <p className="text-muted-foreground font-medium">Failed to retrieve team data. Please try again later.</p>
+              <h3 className="text-2xl font-black uppercase tracking-tight text-destructive mb-2">{t('teams.systemError')}</h3>
+              <p className="text-muted-foreground font-medium">{t('teams.failedToRetrieve')}</p>
             </div>
           ) : !checkFeatureAccess(profileType, 'teams') ? (
             <div className="flex flex-col items-center justify-center h-96 text-center bg-muted/10 rounded-3xl border border-border/40 p-10">
               <Shield className="h-16 w-16 text-muted-foreground mb-6 stroke-[1.5]" />
-              <h3 className="text-2xl font-black uppercase tracking-tight mb-2">Restricted Access</h3>
-              <p className="text-muted-foreground max-w-sm mx-auto mb-6">Advanced team management requires higher clearance level. Upgrade your subscription to access this feature.</p>
-              <Button variant="outline" className="rounded-xl border-primary/20 text-primary hover:bg-primary/5">View Plans</Button>
+              <h3 className="text-2xl font-black uppercase tracking-tight mb-2">{t('teams.restrictedAccess')}</h3>
+              <p className="text-muted-foreground max-w-sm mx-auto mb-6">{t('teams.restrictedDesc')}</p>
+              <Button variant="outline" className="rounded-xl border-primary/20 text-primary hover:bg-primary/5">{t('teams.viewPlans')}</Button>
             </div>
           ) : rows.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center border border-border/40 border-dashed rounded-3xl bg-muted/5 relative overflow-hidden group">
@@ -264,12 +267,12 @@ function TeamsPageContent() {
               </div>
 
               <h3 className="text-2xl font-black uppercase tracking-tight mb-3 text-foreground">
-                {searchTerm ? "No Matches Found" : "No Teams Yet"}
+                {searchTerm ? t('teams.noMatchesFound') : t('teams.noTeams')}
               </h3>
               <p className="text-muted-foreground font-medium max-w-sm mx-auto mb-8 leading-relaxed">
                 {searchTerm
-                  ? "Your search terms did not match any active teams."
-                  : "Start by creating your first team to collaborate."}
+                  ? t('teams.noMatchesDesc')
+                  : t('teams.noTeamsDescription')}
               </p>
 
               {!searchTerm && (
@@ -278,7 +281,7 @@ function TeamsPageContent() {
                   className="rounded-full px-10 h-14 bg-card hover:bg-muted text-foreground border border-border/40 font-bold uppercase tracking-widest shadow-lg hover:shadow-xl transition-all"
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  Create Team
+                  {t('teams.createTeam')}
                 </Button>
               )}
             </div>

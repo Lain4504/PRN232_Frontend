@@ -419,6 +419,7 @@ export const endpoints = {
   resetPassword: "/auth/change-password-with-token",
   resendVerification: "/auth/verify-email/resend",
   userSearch: "/users",
+  verifyEmail: (token: string) => `/auth/verify-email?token=${token}`,
 
   // Social Auth endpoints
   socialAuth: (provider: string) => `/social-auth/${provider}`,

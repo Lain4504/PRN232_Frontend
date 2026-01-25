@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useUser } from '@/hooks/use-user'
 import { useGetProfiles } from '@/hooks/use-profiles'
@@ -17,10 +17,18 @@ import { useTranslation } from 'react-i18next'
 export default function OverviewPage() {
   const { t } = useTranslation("common")
   const router = useRouter()
-  const { data: user, isLoading: userLoading } = useUser()
-  const { data: profiles = [], isLoading: profilesLoading, error: profilesError } = useGetProfiles(user?.id || '')
-  const { setActiveProfile } = useProfile()
+  const { data: user, status: userStatus } = useUser()
+  const {
+    data: profiles = [],
+    status: profilesStatus,
+    error: profilesError
+  } = useGetProfiles(user?.id || '')
+
+  const { setActiveProfile, activeProfileId, isLoading: isProfileLoading } = useProfile()
   const [searchQuery, setSearchQuery] = useState('')
+
+  const userLoading = userStatus === 'pending'
+  const profilesLoading = profilesStatus === 'pending'
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleProfileSelect = (profile: any) => {
@@ -38,22 +46,25 @@ export default function OverviewPage() {
     router.push('/dashboard')
   }
 
-  // Debug info
-  console.log('Profiles page debug:', {
-    userLoading,
-    profilesLoading,
-    user: user?.id,
-    profiles: profiles?.length,
-    profilesError
-  })
-
   // Handle redirection for new users or single profile users
-  useState(() => {
-    if (!userLoading && !profilesLoading && Array.isArray(profiles)) {
+  useEffect(() => {
+    // Wait for all data (User, Profiles, and Context) to be ready
+    if (userStatus === 'success' && profilesStatus === 'success' && !isProfileLoading) {
+
+      // 1. If 0 profiles, go to onboarding
       if (profiles.length === 0) {
-        router.replace('/onboarding')
-      } else if (profiles.length === 1) {
-        const profile = profiles[0]
+        console.log('Overview: No profiles found, redirecting to onboarding');
+        router.replace('/onboarding');
+        return;
+      }
+
+      // 2. If 1 profile AND NO active profile, auto-select it
+      // We only do this if there's no search query (intentional interaction)
+      // and NO active profile (meaning user just logged in or session expired)
+      if (profiles.length === 1 && !activeProfileId && !searchQuery) {
+        const profile = profiles[0];
+        console.log('Overview: Single profile found and none active, auto-selecting:', profile.id);
+
         setActiveProfile(profile.id, {
           id: profile.id,
           name: profile.name || profile.company_name || `${profile.profileType} Profile`,
@@ -62,11 +73,12 @@ export default function OverviewPage() {
           companyName: profile.company_name,
           isOwner: profile.isOwner ?? false,
           memberRole: profile.memberRole
-        })
-        router.push('/dashboard')
+        });
+
+        router.push('/dashboard');
       }
     }
-  })
+  }, [userStatus, profilesStatus, profiles, router, setActiveProfile, activeProfileId, isProfileLoading, searchQuery]);
 
   if (userLoading || profilesLoading) {
     return (
@@ -95,16 +107,16 @@ export default function OverviewPage() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-1">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              {t("overview.myProfiles", "Hồ Sơ Của Tôi")}
+              {t("overview.myProfiles")}
             </h1>
             <p className="text-muted-foreground font-medium text-lg">
-              {t("overview.description", "Quản lý và truy cập các không gian làm việc của bạn.")}
+              {t("overview.description")}
             </p>
           </div>
           <Link href="/overview/profile/new">
             <Button className="h-10 px-6 font-semibold shadow-sm hover:shadow-md transition-all">
               <Plus className="h-4 w-4 mr-2" />
-              {t("overview.createProfile", "Tạo Hồ Sơ Mới")}
+              {t("overview.createProfile")}
             </Button>
           </Link>
         </div>
@@ -113,7 +125,7 @@ export default function OverviewPage() {
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Tìm kiếm hồ sơ..."
+            placeholder={t("overview.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 h-10 bg-background border-input font-medium transition-colors focus-visible:ring-primary"
@@ -127,16 +139,16 @@ export default function OverviewPage() {
               <Building2 className="h-8 w-8 text-muted-foreground/60" />
             </div>
             <div className="space-y-2 mb-8">
-              <h3 className="text-lg font-bold">{t("overview.noProfiles", "Không tìm thấy hồ sơ")}</h3>
+              <h3 className="text-lg font-bold">{t("overview.noProfiles")}</h3>
               <p className="text-muted-foreground max-w-sm mx-auto">
-                {searchQuery ? 'Thử tìm kiếm với từ khóa khác.' : 'Bạn chưa có hồ sơ nào. Hãy tạo mới để bắt đầu.'}
+                {searchQuery ? t("overview.tryDifferentSearch") : t("overview.noProfilesYet")}
               </p>
             </div>
             {!searchQuery && (
               <Link href="/overview/profile/new">
                 <Button className="h-10 px-8 font-semibold shadow-sm">
                   <Plus className="h-4 w-4 mr-2" />
-                  {t("overview.createProfile", "Tạo Hồ Sơ Ngay")}
+                  {t("overview.createProfileNow")}
                 </Button>
               </Link>
             )}
@@ -148,7 +160,7 @@ export default function OverviewPage() {
               <div className="space-y-6">
                 <div className="flex items-center gap-2">
                   <User className="h-5 w-5 text-primary" />
-                  <h2 className="text-xl font-bold">{t("overview.myWorkspaces", "Không gian làm việc của tôi")}</h2>
+                  <h2 className="text-xl font-bold">{t("overview.myWorkspaces")}</h2>
                 </div>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {filteredProfiles.filter(p => p.isOwner).map((profile) => (
@@ -163,7 +175,7 @@ export default function OverviewPage() {
               <div className="space-y-6">
                 <div className="flex items-center gap-2">
                   <Building2 className="h-5 w-5 text-primary" />
-                  <h2 className="text-xl font-bold">{t("overview.sharedWorkspaces", "Được chia sẻ với tôi")}</h2>
+                  <h2 className="text-xl font-bold">{t("overview.sharedWorkspaces")}</h2>
                 </div>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {filteredProfiles.filter(p => !p.isOwner).map((profile) => (
@@ -205,18 +217,20 @@ function ProfileCard({ profile, onSelect, t }: { profile: any; onSelect: (p: any
 
           <div className="flex-1 min-w-0">
             <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
-              {profile.name || profile.company_name || 'Hồ Sơ Chưa Đặt Tên'}
+              {profile.name || profile.company_name || t("overview.unnamedProfile")}
             </h3>
             <div className="flex items-center gap-2 mt-1.5 align-middle flex-wrap">
               <Badge
                 variant="secondary"
                 className={`rounded-md text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 ${PROFILE_TYPE_COLORS[profile.profileType as unknown as ProfileTypeEnum] || 'bg-muted text-muted-foreground'}`}
               >
-                {PROFILE_TYPE_LABELS[profile.profileType as unknown as ProfileTypeEnum]}
+                {profile.profileType === ProfileTypeEnum.Pro ? t("overview.profileType.pro") :
+                  profile.profileType === ProfileTypeEnum.Basic ? t("overview.profileType.basic") :
+                    t("overview.profileType.free")}
               </Badge>
               {!isOwner && (
                 <Badge variant="outline" className="rounded-md text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 border-primary/30 text-primary">
-                  {profile.memberRole || t("overview.member", "Member")}
+                  {profile.memberRole || t("overview.member")}
                 </Badge>
               )}
             </div>
@@ -239,7 +253,7 @@ function ProfileCard({ profile, onSelect, t }: { profile: any; onSelect: (p: any
         <div className="pt-4 border-t border-border/50 mt-auto flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
-              {isOwner ? t("overview.accessWorkspace", "Truy Cập") : t("overview.accessSharedWorkspace", "Truy Cập")}
+              {isOwner ? t("overview.accessWorkspace") : t("overview.accessSharedWorkspace")}
             </span>
             <ArrowRight className="h-4 w-4 text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
           </div>
@@ -252,10 +266,10 @@ function ProfileCard({ profile, onSelect, t }: { profile: any; onSelect: (p: any
               onClick={(e) => {
                 e.stopPropagation()
                 // In real app, navigate to billing
-                alert("Navigate to Billing Settings")
+                alert(t("common.featureComingSoon", "Tính năng sắp ra mắt"))
               }}
             >
-              {t("overview.billing", "Billing")}
+              {t("overview.billing")}
             </Button>
           )}
         </div>

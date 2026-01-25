@@ -51,6 +51,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useProfile } from "@/lib/contexts/profile-context";
+import { useTranslation } from "react-i18next";
 import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 
 interface SharedApprovalManagementProps {
@@ -69,11 +70,13 @@ const createColumns = (
   handleDelete: (approval: ApprovalResponseDto) => void,
   handleChangeApprover: (approval: ApprovalResponseDto) => void,
   isProcessing: boolean,
-  canUseTeamFeatures: boolean
+  canUseTeamFeatures: boolean,
+  t: (key: string) => string,
+  i18n: any
 ): ColumnDef<ApprovalResponseDto>[] => [
     {
       accessorKey: "contentTitle",
-      header: "Content Title",
+      header: t('approvals.contentTitle'),
       cell: ({ row }) => {
 
         return (
@@ -94,7 +97,7 @@ const createColumns = (
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t('approvals.status'),
       cell: ({ row }) => {
         const status = row.getValue("status") as ContentStatusEnum;
         return (
@@ -105,7 +108,7 @@ const createColumns = (
                   status === ContentStatusEnum.Rejected ? "bg-red-100 text-red-800" :
                     "bg-gray-100 text-gray-800"
             }>
-              {status}
+              {status ? t(`contents.status.${status.charAt(0).toLowerCase() + status.slice(1)}`) : t('common.unknown')}
             </Badge>
           </div>
         );
@@ -113,7 +116,7 @@ const createColumns = (
     },
     {
       accessorKey: "brandName",
-      header: "Brand",
+      header: t('approvals.brand'),
       cell: ({ row }) => {
         const brandName = row.getValue("brandName") as string;
         return (
@@ -123,7 +126,7 @@ const createColumns = (
                 {brandName}
               </Badge>
             ) : (
-              <span className="text-muted-foreground">No brand</span>
+              <span className="text-muted-foreground">{t('approvals.noBrand')}</span>
             )}
           </div>
         );
@@ -131,7 +134,7 @@ const createColumns = (
     },
     {
       accessorKey: "approverEmail",
-      header: "Approver",
+      header: t('approvals.approver'),
       cell: ({ row }) => {
         const approverEmail = row.getValue("approverEmail") as string;
         return (
@@ -148,7 +151,7 @@ const createColumns = (
     },
     {
       accessorKey: "createdAt",
-      header: "Created",
+      header: t('approvals.created'),
       cell: ({ row }) => {
         const createdAt = row.getValue("createdAt") as string;
 
@@ -158,12 +161,12 @@ const createColumns = (
               <div className="flex items-center justify-center gap-1">
                 <Calendar className="h-3 w-3" />
                 <div>
-                  <div>{new Date(createdAt).toLocaleDateString()}</div>
-                  <div className="text-xs">{new Date(createdAt).toLocaleTimeString()}</div>
+                  <div>{new Date(createdAt).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US')}</div>
+                  <div className="text-xs">{new Date(createdAt).toLocaleTimeString(i18n.language === 'vi' ? 'vi-VN' : 'en-US')}</div>
                 </div>
               </div>
             ) : (
-              <span>No date</span>
+              <span>{t('common.noData')}</span>
             )}
           </div>
         );
@@ -179,7 +182,7 @@ const createColumns = (
 
         const actions: ActionItem[] = [
           {
-            label: "Review",
+            label: t('approvals.review'),
             icon: <Eye className="h-4 w-4" />,
             onClick: () => handleReview(approval),
           },
@@ -190,7 +193,7 @@ const createColumns = (
         // Add Change Approver action for pending approvals (only for Basic/Pro profiles)
         if (approval.status === ContentStatusEnum.PendingApproval && canUseTeamFeatures) {
           actions.push({
-            label: "Change Approver",
+            label: t('approvals.changeApprover'),
             icon: <User className="h-4 w-4" />,
             onClick: () => handleChangeApprover(approval),
             disabled: isProcessing,
@@ -198,7 +201,7 @@ const createColumns = (
         }
 
         actions.push({
-          label: "Delete",
+          label: t('approvals.delete'),
           icon: <Trash2 className="h-4 w-4" />,
           onClick: () => handleDelete(approval),
           variant: "destructive" as const,
@@ -218,12 +221,13 @@ export function SharedApprovalManagement({
   context,
   teamId,
   showCreateButton = true,
-  title = "Content Approvals",
-  description = "Review and approve content before publishing"
+  title,
+  description
 }: SharedApprovalManagementProps) {
+  const { t, i18n } = useTranslation("common");
   const { profileType } = useProfile();
   const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free;
-  
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ContentStatusEnum | "all">("all");
   const [selectedApproval, setSelectedApproval] = useState<ApprovalResponseDto | null>(null);
@@ -270,11 +274,11 @@ export function SharedApprovalManagement({
     try {
       await approveApprovalMutation.mutateAsync(notes);
       setApprovalNotes("");
-      toast.success('Content approved successfully');
+      toast.success(t('approvals.approveSuccess'));
       // Show publish dialog after approval (keep selectedApproval for publish dialog)
     } catch (error) {
       console.error('Failed to approve content:', error);
-      toast.error('Failed to approve content');
+      toast.error(t('common.error'));
       setSelectedApproval(null);
     }
   };
@@ -283,7 +287,7 @@ export function SharedApprovalManagement({
     if (!selectedApproval) return;
 
     if (!notes.trim()) {
-      toast.error('Please provide a reason for rejection');
+      toast.error(t('approvals.rejectionReason'));
       return;
     }
 
@@ -291,10 +295,10 @@ export function SharedApprovalManagement({
       await rejectApprovalMutation.mutateAsync(notes);
       setSelectedApproval(null);
       setApprovalNotes("");
-      toast.success('Content rejected');
+      toast.success(t('approvals.rejectSuccess'));
     } catch (error) {
       console.error('Failed to reject content:', error);
-      toast.error('Failed to reject content');
+      toast.error(t('common.error'));
     }
   };
 
@@ -305,7 +309,7 @@ export function SharedApprovalManagement({
 
       setSelectedApproval(approval);
       await approveApprovalMutation.mutateAsync("");
-      toast.success('Content approved successfully');
+      toast.success(t('approvals.approveSuccess'));
       // Show publish dialog after approval (keep selectedApproval for publish dialog)
     } catch (error) {
       console.error('Failed to approve content:', error);
@@ -337,12 +341,12 @@ export function SharedApprovalManagement({
 
     try {
       await deleteApprovalMutation.mutateAsync(approvalToDelete.id);
-      toast.success('Approval deleted successfully');
+      toast.success(t('approvals.deleteSuccess'));
       setShowDeleteDialog(false);
       setApprovalToDelete(null);
     } catch (error) {
       console.error('Failed to delete approval:', error);
-      toast.error('Failed to delete approval');
+      toast.error(t('common.error'));
     }
   };
 
@@ -385,11 +389,11 @@ export function SharedApprovalManagement({
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard">{t('common.overview.title')}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{title}</BreadcrumbPage>
+              <BreadcrumbPage>{title || t('approvals.title')}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -397,10 +401,10 @@ export function SharedApprovalManagement({
         {/* Header */}
         <div>
           <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
-            {title}
+            {title || t('approvals.title')}
           </h1>
           <p className="text-sm lg:text-base xl:text-lg text-muted-foreground mt-2 max-w-2xl">
-            {description}
+            {description || t('approvals.description')}
           </p>
         </div>
 
@@ -411,24 +415,24 @@ export function SharedApprovalManagement({
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
               <CheckCircle className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground flex-shrink-0" />
               <span className="font-medium">{filteredApprovals.length}</span>
-              <span className="text-muted-foreground">Approval{filteredApprovals.length !== 1 ? 's' : ''}</span>
+              <span className="text-muted-foreground">{t('approvals.count')}{filteredApprovals.length !== 1 ? 's' : ''}</span>
             </div>
             <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border text-xs lg:text-sm">
               <span className="font-medium">{approvals.filter(a => a.status === ContentStatusEnum.PendingApproval).length}</span>
-              <span className="text-muted-foreground">Pending</span>
+              <span className="text-muted-foreground">{t('approvals.pending')}</span>
             </div>
           </div>
 
           {/* Status Filter */}
           <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ContentStatusEnum | "all")}>
             <SelectTrigger className="w-full sm:w-[140px] md:w-40">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder={t('approvals.status')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value={ContentStatusEnum.PendingApproval}>Pending</SelectItem>
-              <SelectItem value={ContentStatusEnum.Approved}>Approved</SelectItem>
-              <SelectItem value={ContentStatusEnum.Rejected}>Rejected</SelectItem>
+              <SelectItem value="all">{t('common.allStatuses')}</SelectItem>
+              <SelectItem value={ContentStatusEnum.PendingApproval}>{t('approvals.pending')}</SelectItem>
+              <SelectItem value={ContentStatusEnum.Approved}>{t('approvals.approved')}</SelectItem>
+              <SelectItem value={ContentStatusEnum.Rejected}>{t('approvals.rejected')}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -436,7 +440,7 @@ export function SharedApprovalManagement({
           <div className="relative w-full sm:w-64 md:w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search approvals..."
+              placeholder={t('approvals.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 h-9"
@@ -463,7 +467,7 @@ export function SharedApprovalManagement({
                 className="flex items-center gap-2 w-full sm:w-auto"
               >
                 <Plus className="h-4 w-4" />
-                Create Approval
+                {t('approvals.createApproval')}
               </Button>
             </div>
           )}
@@ -479,7 +483,9 @@ export function SharedApprovalManagement({
               handleDelete,
               handleChangeApprover,
               approveApprovalMutation.isPending || rejectApprovalMutation.isPending,
-              canUseTeamFeatures
+              canUseTeamFeatures,
+              t,
+              i18n
             )}
             data={filteredApprovals}
             pageSize={10}
@@ -492,12 +498,12 @@ export function SharedApprovalManagement({
                   <CheckCircle className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">
-                  {searchTerm || statusFilter !== "all" ? 'No approvals found' : 'All caught up!'}
+                  {searchTerm || statusFilter !== "all" ? t('common.noMatchesFound') : t('approvals.allCaughtUp')}
                 </h3>
                 <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
                   {searchTerm || statusFilter !== "all"
-                    ? 'Try adjusting your search terms or filters to find your approvals.'
-                    : 'There are no pending approvals at the moment.'
+                    ? t('common.noMatchesDesc')
+                    : t('approvals.noPendingApprovals')
                   }
                 </p>
               </div>
@@ -513,7 +519,7 @@ export function SharedApprovalManagement({
           onReject={handleReject}
           onPublishComplete={() => {
             setSelectedApproval(null);
-            toast.success('Content published successfully!');
+            toast.success(t('approvals.publishSuccess'));
           }}
           isProcessing={approveApprovalMutation.isPending || rejectApprovalMutation.isPending}
         />
@@ -523,9 +529,9 @@ export function SharedApprovalManagement({
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Delete Approval</DialogTitle>
+              <DialogTitle>{t('approvals.confirmDeleteTitle')}</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete this approval? This action cannot be undone.
+                {t('approvals.confirmDeleteDesc')}
                 {approvalToDelete && (
                   <div className="mt-2 p-3 bg-muted rounded-md">
                     <p className="font-medium">{approvalToDelete.contentTitle}</p>
@@ -542,14 +548,14 @@ export function SharedApprovalManagement({
                 onClick={() => setShowDeleteDialog(false)}
                 disabled={deleteApprovalMutation.isPending}
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button
                 variant="destructive"
                 onClick={handleConfirmDelete}
                 disabled={deleteApprovalMutation.isPending}
               >
-                {deleteApprovalMutation.isPending ? 'Deleting...' : 'Delete Approval'}
+                {deleteApprovalMutation.isPending ? t('common.saving') : t('approvals.deleteApproval')}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -150,8 +150,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (response.success) {
                 saveSession(response.data);
                 toast.success("Account created successfully.");
-                // New users likely have no profiles, but good to check or force onboarding
-                await handleAuthRedirect(response.data.user.id);
+                // Redirect to verify email instead of onboarding
+                router.push("/auth/verify-email");
             } else {
                 throw new Error(response.message || "Registration failed");
             }

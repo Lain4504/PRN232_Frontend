@@ -109,16 +109,16 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
         <DropdownMenuGroup className="p-1">
           <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 px-2 py-1.5">Operative Controls</DropdownMenuLabel>
           <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-primary/10 focus:text-primary transition-colors mb-1">
-            <Link href="/account/me" className="flex items-center gap-3 p-2 font-bold text-xs uppercase tracking-wide">
+            <Link href="/overview/account" className="flex items-center gap-3 p-2 font-bold text-xs uppercase tracking-wide">
               <div className="size-6 rounded-md bg-muted/50 flex items-center justify-center border border-white/5">
                 <Shield className="size-3" />
               </div>
-              <span>Credentials</span>
+              <span>Account Control</span>
               <ChevronRight className="size-3 ml-auto opacity-50" />
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-primary/10 focus:text-primary transition-colors">
-            <Link href="/account/payment" className="flex items-center gap-3 p-2 font-bold text-xs uppercase tracking-wide">
+            <Link href="/overview/payment" className="flex items-center gap-3 p-2 font-bold text-xs uppercase tracking-wide">
               <div className="size-6 rounded-md bg-muted/50 flex items-center justify-center border border-white/5">
                 <History className="size-3" />
               </div>

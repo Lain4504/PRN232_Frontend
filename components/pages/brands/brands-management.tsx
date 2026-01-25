@@ -50,10 +50,10 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { vi } from "date-fns/locale";
+import { enUS, vi as viLocale } from "date-fns/locale";
 
 export function BrandsManagement() {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
   const [searchTerm, setSearchTerm] = useState("");
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -147,10 +147,10 @@ export function BrandsManagement() {
         {teams.length > 0 && (
           <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
             <SelectTrigger className="w-full sm:w-[200px] h-9">
-              <SelectValue placeholder="All Teams" />
+              <SelectValue placeholder={t("brands.allTeams")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tất cả đội nhóm</SelectItem>
+              <SelectItem value="all">{t("brands.allTeams")}</SelectItem>
               {teams.map(team => (
                 <SelectItem key={team.id} value={team.id}>
                   {team.name}
@@ -217,7 +217,7 @@ export function BrandsManagement() {
                   {brand.description || t("brands.noDescription", "Không có mô tả")}
                 </p>
                 <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t">
-                  <span>{t("brands.created")}: {format(new Date(brand.createdAt || new Date()), 'dd/MM/yyyy')}</span>
+                  <span>{t("brands.created")}: {format(new Date(brand.createdAt || new Date()), 'dd/MM/yyyy', { locale: i18n.language.startsWith('vi') ? viLocale : enUS })}</span>
                 </div>
               </CardContent>
             </Card>

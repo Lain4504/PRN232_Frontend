@@ -12,13 +12,14 @@ interface UserTypeSelectionProps {
 }
 
 export function UserTypeSelection({ onSelect, isLoading }: UserTypeSelectionProps) {
-    const [selected, setSelected] = React.useState<'individual' | 'agency' | null>(null)
+    const [selected, setSelected] = React.useState<'individual' | 'agency' | null>('individual')
 
     const types = [
         {
             id: 'individual',
             title: 'Individual Store / Creator',
-            description: 'Perfect for local shops, individuals, or single brand owners.',
+            description: 'The easiest way to start. Perfect for local shops, individuals, or single brand owners.',
+            recommended: true,
             icon: User,
             color: 'text-blue-500',
             bg: 'bg-blue-500/10',
@@ -70,6 +71,12 @@ export function UserTypeSelection({ onSelect, isLoading }: UserTypeSelectionProp
                         )}
                         onClick={() => setSelected(type.id as 'individual' | 'agency')}
                     >
+                        {type.recommended && (
+                            <div className="absolute top-0 left-0 px-4 py-1.5 bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-[0.2em] rounded-br-2xl shadow-lg z-20">
+                                Recommended
+                            </div>
+                        )}
+
                         {selected === type.id && (
                             <div className="absolute top-6 right-6 size-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground animate-in zoom-in duration-300">
                                 <Check className="size-4 stroke-[3]" />

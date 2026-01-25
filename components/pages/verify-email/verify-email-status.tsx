@@ -4,8 +4,9 @@ import { cn } from "@/lib/utils";
 import { api, endpoints } from "@/lib/api";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { CheckCircle, AlertCircle, Loader2, Mail, RefreshCw, ArrowLeft, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -22,16 +23,51 @@ export function VerifyEmailStatus({
   ...props
 }: VerifyEmailStatusProps & React.ComponentPropsWithoutRef<"div">) {
   const { t } = useTranslation("auth");
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
   const [status, setStatus] = useState<VerificationStatus>('loading');
   const [error, setError] = useState<string | null>(null);
   const [isResending, setIsResending] = useState(false);
   const { user, refreshSession } = useAuth();
+  const hasVerifiedRef = useRef(false);
+
+  const handleVerifyWithToken = useCallback(async (tokenValue: string) => {
+    if (hasVerifiedRef.current) return;
+    hasVerifiedRef.current = true;
+
+    setStatus('loading');
+    try {
+      const response = await api.get(endpoints.verifyEmail(tokenValue), { requireAuth: false });
+      if (response.success) {
+        setStatus('verified');
+        toast.success(t("emailVerified"));
+        // Force refresh session to update verified status
+        await refreshSession();
+      } else {
+        setStatus('error');
+        setError(response.message || t("authErrorMessage"));
+        // Reset ref on failure so user can retry if it was a temporary issue
+        hasVerifiedRef.current = false;
+      }
+    } catch (err: any) {
+      setStatus('error');
+      setError(err.message || t("authErrorMessage"));
+      hasVerifiedRef.current = false;
+    }
+  }, [refreshSession, t]);
 
   const checkVerificationStatus = useCallback(async () => {
+    if (token) {
+      if (status !== 'verified' && status !== 'loading') {
+        await handleVerifyWithToken(token);
+      }
+      return;
+    }
+
     if (!user) {
       // Allow some time for initial load
       const timer = setTimeout(() => {
-        if (!user) {
+        if (!user && !token) {
           setStatus('error');
           setError(t("authErrorMessage"));
         }
@@ -46,7 +82,7 @@ export function VerifyEmailStatus({
       // Try to refresh session once to check if verified recently
       await refreshSession();
     }
-  }, [user, refreshSession, t]);
+  }, [user, refreshSession, t, token, handleVerifyWithToken, status]);
 
   useEffect(() => {
     checkVerificationStatus();

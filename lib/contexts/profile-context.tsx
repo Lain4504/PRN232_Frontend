@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react'
 import { ProfileTypeEnum, getActiveProfileId, setActiveProfileId, clearActiveProfileId, getProfileType, setProfileType, clearProfileType, checkFeatureAccess, clearProfileContext } from '@/lib/utils/profile-utils'
 import { useAuth } from '@/lib/contexts/auth-context'
 
@@ -127,7 +127,7 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
     return () => { cancelled = true }
   }, [session, isAuthLoading])
 
-  const setActiveProfile = (profileId: string, profile: Profile) => {
+  const setActiveProfile = useCallback((profileId: string, profile: Profile) => {
     setActiveProfileIdState(profileId)
     setActiveProfileState(profile)
     setProfileTypeState(profile.type)
@@ -135,9 +135,9 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
     // Persist to localStorage
     setActiveProfileId(profileId)
     setProfileType(profile.type)
-  }
+  }, [])
 
-  const clearActiveProfile = () => {
+  const clearActiveProfile = useCallback(() => {
     setActiveProfileIdState(null)
     setActiveProfileState(null)
     setProfileTypeState(ProfileTypeEnum.Free)
@@ -145,13 +145,13 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
     // Clear localStorage
     clearActiveProfileId()
     clearProfileType()
-  }
+  }, [])
 
-  const hasFeatureAccess = (feature: string): boolean => {
+  const hasFeatureAccess = useCallback((feature: string): boolean => {
     return checkFeatureAccess(profileType, feature)
-  }
+  }, [profileType])
 
-  const refreshProfile = async (): Promise<void> => {
+  const refreshProfile = useCallback(async (): Promise<void> => {
     if (!activeProfileId) return
     try {
       setIsLoading(true)
@@ -176,9 +176,9 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [activeProfileId, profileType, activeProfile])
 
-  const value: ProfileContextType = {
+  const value: ProfileContextType = useMemo(() => ({
     activeProfileId,
     activeProfile,
     allProfiles,
@@ -188,7 +188,17 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
     clearActiveProfile,
     hasFeatureAccess,
     refreshProfile
-  }
+  }), [
+    activeProfileId,
+    activeProfile,
+    allProfiles,
+    profileType,
+    isLoading,
+    setActiveProfile,
+    clearActiveProfile,
+    hasFeatureAccess,
+    refreshProfile
+  ])
 
   return (
     <ProfileContext.Provider value={value}>

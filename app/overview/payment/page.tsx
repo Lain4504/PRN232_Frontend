@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -18,12 +18,12 @@ import { toast } from 'sonner'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import type { PaymentResponseDto } from '@/lib/types/subscription'
-import { 
-  CreditCard, 
-  History, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
+import {
+  CreditCard,
+  History,
+  CheckCircle,
+  XCircle,
+  Clock,
   Download,
   ArrowLeft,
   RefreshCw,
@@ -61,8 +61,9 @@ export default function PaymentHistoryPage() {
     }
   }
 
-  const getStatusIcon = (status: string) => {
-    switch (status.toLowerCase()) {
+  const getStatusIcon = (status: string | number | null | undefined) => {
+    const s = String(status || '').toLowerCase()
+    switch (s) {
       case 'succeeded':
       case 'success':
       case 'paid':
@@ -79,8 +80,9 @@ export default function PaymentHistoryPage() {
     }
   }
 
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
+  const getStatusBadge = (status: string | number | null | undefined) => {
+    const s = String(status || '').toLowerCase()
+    switch (s) {
       case 'succeeded':
       case 'success':
       case 'paid':
@@ -193,7 +195,7 @@ export default function PaymentHistoryPage() {
                     <div className="text-sm text-muted-foreground">Successful Payments</div>
                     <div className="text-2xl font-bold mt-1">
                       {payments.filter(p => {
-                        const status = p.status.toLowerCase();
+                        const status = String(p.status || '').toLowerCase();
                         return status === 'succeeded' || status === 'success' || status === 'paid';
                       }).length}
                     </div>
@@ -297,9 +299,9 @@ export default function PaymentHistoryPage() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuItem asChild>
-                                  <a 
-                                    href={payment.invoiceUrl} 
-                                    target="_blank" 
+                                  <a
+                                    href={payment.invoiceUrl}
+                                    target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center"
                                   >

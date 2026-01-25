@@ -17,6 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useTranslation } from 'react-i18next'
+import { enUS, vi as viLocale } from 'date-fns/locale'
 import { Mail, Edit, Eye, Calendar, Search, Activity, Share2, Globe, ExternalLink } from 'lucide-react'
 import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
 import type { Post } from '@/lib/types/aisam-types'
@@ -32,6 +34,7 @@ export default function PostsPage() {
     status: undefined as string | undefined,
     brandId: undefined as string | undefined,
   })
+  const { t, i18n } = useTranslation("common")
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedPost, setSelectedPost] = useState<Post | null>(null)
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
@@ -89,22 +92,22 @@ export default function PostsPage() {
   const columns: ColumnDef<Post>[] = [
     {
       accessorKey: 'brandName',
-      header: 'Brand',
+      header: t('posts.brand'),
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <div className="h-8 w-1 bg-primary/40 rounded-full" />
           <div className="font-bold uppercase tracking-tight text-sm">
-            {row.original.brandName || 'Unknown Brand'}
+            {row.original.brandName || t('common.unknown')}
           </div>
         </div>
       ),
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: t('posts.status'),
       cell: ({ row }) => (
         <Badge variant="outline" className={`rounded-md px-2.5 py-0.5 font-bold uppercase tracking-wider text-[10px] border ${getStatusStyle(row.getValue('status'))}`}>
-          {String(row.getValue('status') || 'Unknown')}
+          {String(row.getValue('status') ? t(`posts.${row.getValue('status') as string}`) : t('common.unknown'))}
         </Badge>
       ),
     },
@@ -123,7 +126,7 @@ export default function PostsPage() {
     },
     {
       accessorKey: 'integrationPlatform',
-      header: 'Platform',
+      header: t('posts.platform'),
       cell: ({ row }) => {
         const platform = row.original.integrationPlatform
         const account = row.original.integrationAccountName
@@ -140,13 +143,13 @@ export default function PostsPage() {
     },
     {
       accessorKey: 'publishedAt',
-      header: 'Date',
+      header: t('posts.date'),
       cell: ({ row }) => {
         const date = row.getValue('publishedAt') as string
         return (
           <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
             <Calendar className="h-3 w-3" />
-            <span>{date ? new Date(date).toLocaleDateString() : 'N/A'}</span>
+            <span>{date ? new Date(date).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US') : 'N/A'}</span>
           </div>
         )
       },
@@ -159,7 +162,7 @@ export default function PostsPage() {
       cell: ({ row }) => {
         const actions: ActionItem[] = [
           {
-            label: "View Details",
+            label: t('posts.viewDetails'),
             icon: <Eye className="h-4 w-4" />,
             onClick: () => handleViewPost(row.original),
           },
@@ -194,8 +197,8 @@ export default function PostsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center font-fira-sans">
         <Activity className="h-16 w-16 text-muted-foreground mb-4 animate-pulse" />
-        <h1 className="text-2xl font-bold uppercase tracking-tight text-foreground">No Active Profile</h1>
-        <p className="text-muted-foreground mt-2 max-w-md">Please select an active profile to access the social posts.</p>
+        <h1 className="text-2xl font-bold uppercase tracking-tight text-foreground">{t('posts.noActiveProfile')}</h1>
+        <p className="text-muted-foreground mt-2 max-w-md">{t('posts.selectActiveProfileToAccess')}</p>
       </div>
     )
   }
@@ -209,11 +212,11 @@ export default function PostsPage() {
         <Breadcrumb className="mb-4">
           <BreadcrumbList className="gap-2">
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard" className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/60 hover:text-primary transition-colors">Workspace</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard" className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/60 hover:text-primary transition-colors">{t('common.overview.title')}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="text-muted-foreground/30 scale-75" />
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground/80">Social Media Posts</BreadcrumbPage>
+              <BreadcrumbPage className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground/80">{t('posts.title')}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -223,13 +226,13 @@ export default function PostsPage() {
           <div className="space-y-4 max-w-2xl">
             <div className="flex items-center gap-3">
               <div className="h-2 w-8 bg-primary rounded-full" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Activity Monitor</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">{t('posts.activityMonitor')}</span>
             </div>
             <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-foreground leading-[1.1]">
-              Post <span className="text-primary italic">History</span>
+              {t('posts.title')} <span className="text-primary italic">{t('posts.history')}</span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed font-medium">
-              Monitor transmission status and content delivery metrics across all connected networks.
+              {t('posts.allConnectedNetworks')}
             </p>
           </div>
 
@@ -237,7 +240,7 @@ export default function PostsPage() {
             {/* Stats Badge */}
             <div className="px-8 py-5 bg-card/40 backdrop-blur-xl rounded-2xl border border-border/40 shadow-xl flex items-center gap-10">
               <div className="space-y-1">
-                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">Total Posts</div>
+                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{t('posts.totalPosts')}</div>
                 <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-foreground">
                   {(postsData && typeof postsData === 'object' && 'total' in postsData) ? (postsData as { total?: number }).total :
                     (postsData && typeof postsData === 'object' && 'totalCount' in postsData) ? (postsData as { totalCount?: number }).totalCount :
@@ -246,8 +249,8 @@ export default function PostsPage() {
               </div>
               <div className="h-10 w-px bg-border/20" />
               <div className="space-y-1">
-                <div className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">System Status</div>
-                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-primary uppercase leading-none italic">ACTIVE</div>
+                <div className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">{t('posts.systemStatus')}</div>
+                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-primary uppercase leading-none italic">{t('posts.active')}</div>
               </div>
             </div>
           </div>
@@ -258,7 +261,7 @@ export default function PostsPage() {
           <div className="relative w-full xl:w-96 group">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
-              placeholder="Search posts..."
+              placeholder={t('posts.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -277,13 +280,13 @@ export default function PostsPage() {
               onValueChange={handleStatusFilter}
             >
               <SelectTrigger className="w-full sm:w-[160px] h-12 rounded-2xl border-border/40 bg-muted/30 font-bold text-[10px] uppercase tracking-widest">
-                <SelectValue placeholder="STATUS" />
+                <SelectValue placeholder={t('posts.status')} />
               </SelectTrigger>
               <SelectContent className="rounded-xl font-bold uppercase tracking-wider text-xs">
-                <SelectItem value="all">ALL STATUS</SelectItem>
-                <SelectItem value="published">PUBLISHED</SelectItem>
-                <SelectItem value="failed">FAILED</SelectItem>
-                <SelectItem value="deleted">DELETED</SelectItem>
+                <SelectItem value="all">{t('posts.allStatusSub')}</SelectItem>
+                <SelectItem value="published">{t('posts.publishedSub')}</SelectItem>
+                <SelectItem value="failed">{t('posts.failedSub')}</SelectItem>
+                <SelectItem value="deleted">{t('posts.deletedSub')}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -291,7 +294,7 @@ export default function PostsPage() {
               <ProfileBrandSelector
                 selectedBrandId={filters.brandId}
                 onBrandChange={handleBrandChange}
-                placeholder="Select Brand"
+                placeholder={t('posts.brand')}
                 showAllOption={true}
               />
             </div>
@@ -301,12 +304,12 @@ export default function PostsPage() {
               onValueChange={(value) => setPageSize(Number(value))}
             >
               <SelectTrigger className="w-full sm:w-[120px] h-12 rounded-2xl border-border/40 bg-muted/30 font-bold text-[10px] uppercase tracking-widest">
-                <SelectValue placeholder="ROWS" />
+                <SelectValue placeholder={t('posts.rows')} />
               </SelectTrigger>
               <SelectContent className="rounded-xl font-bold uppercase tracking-wider text-xs">
                 {[5, 10, 20, 30, 40, 50].map((size) => (
                   <SelectItem key={size} value={String(size)}>
-                    {size} / PAGE
+                    {size} {t('posts.perPage')}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -322,8 +325,8 @@ export default function PostsPage() {
               columns={columns}
               data={postsData?.data || []}
               isLoading={isLoading}
-              emptyMessage="NO POSTS FOUND"
-              emptyDescription="No social media posts have been published yet."
+              emptyMessage={t('posts.noPosts')}
+              emptyDescription={t('posts.noPostsDescription')}
               pageSize={pageSize}
               className="border-0 shadow-none bg-transparent"
               headerClassName="bg-muted/20 hover:bg-muted/20 border-b border-border/40 py-6"
@@ -337,10 +340,10 @@ export default function PostsPage() {
             <DialogHeader className="px-8 py-6 border-b border-border/40 bg-muted/20">
               <DialogTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-tight">
                 <Mail className="h-5 w-5 text-primary" />
-                Post Details
+                {t('posts.viewDetails')}
               </DialogTitle>
               <DialogDescription className="font-medium text-muted-foreground">
-                View detailed information about this post
+                {t('posts.description')}
               </DialogDescription>
             </DialogHeader>
 
@@ -349,52 +352,52 @@ export default function PostsPage() {
                 {/* Header: IDs and Status */}
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-6 border-b border-border/40">
                   <div className="space-y-2">
-                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">External ID</div>
-                    <div className="text-lg font-mono font-bold break-all bg-muted/30 p-2 rounded-lg border border-border/40">{selectedPost.externalPostId || 'PENDING'}</div>
-                    <div className="text-[10px] font-mono text-muted-foreground/60">Internal ID: {selectedPost.id}</div>
+                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('posts.externalId')}</div>
+                    <div className="text-lg font-mono font-bold break-all bg-muted/30 p-2 rounded-lg border border-border/40">{selectedPost.externalPostId || t('common.pending')}</div>
+                    <div className="text-[10px] font-mono text-muted-foreground/60">{t('posts.internalId')}: {selectedPost.id}</div>
                   </div>
                   <Badge variant="outline" className={`rounded-lg px-4 py-2 self-start font-bold uppercase tracking-widest text-xs border ${getStatusStyle(selectedPost.status)}`}>
-                    {String(selectedPost.status || 'Unknown')}
+                    {String(selectedPost.status ? t(`posts.${selectedPost.status as string}`) : t('common.unknown'))}
                   </Badge>
                 </div>
 
                 {/* Main details */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-2">
-                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Brand</div>
+                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('posts.brand')}</div>
                     <div className="font-bold text-base flex items-center gap-2">
                       <div className="h-2 w-2 rounded-full bg-primary" />
                       {selectedPost.brandName || 'N/A'}
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Content</div>
+                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('posts.content')}</div>
                     <div className="font-medium text-sm text-foreground/80 leading-relaxed bg-muted/10 p-3 rounded-xl border border-border/30">
-                      {selectedPost.contentTitle || selectedPost.contentId || 'No content available'}
+                      {selectedPost.contentTitle || selectedPost.contentId || t('posts.linkNotAvailable')}
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Platform</div>
+                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('posts.platform')}</div>
                     <div className="font-bold flex items-center gap-2">
                       <Globe className="h-4 w-4 text-primary" />
                       {selectedPost.integrationPlatform || 'N/A'}{selectedPost.integrationAccountName ? ` • ${selectedPost.integrationAccountName}` : ''}
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Timestamp</div>
+                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('posts.timestamp')}</div>
                     <div className="font-mono text-sm">
-                      {selectedPost.publishedAt ? new Date(selectedPost.publishedAt).toLocaleString() : 'Pending'}
+                      {selectedPost.publishedAt ? new Date(selectedPost.publishedAt).toLocaleString(i18n.language === 'vi' ? 'vi-VN' : 'en-US') : t('common.pending')}
                     </div>
                   </div>
                   <div className="md:col-span-2 space-y-2">
-                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Post Link</div>
+                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('posts.postLink')}</div>
                     {selectedPost.link ? (
                       <a href={selectedPost.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors break-all bg-primary/5 p-3 rounded-xl border border-primary/10 hover:border-primary/30 group">
                         <ExternalLink className="h-4 w-4 shrink-0" />
                         {selectedPost.link}
                       </a>
                     ) : (
-                      <div className="text-sm text-muted-foreground italic">Link not available</div>
+                      <div className="text-sm text-muted-foreground italic">{t('posts.linkNotAvailable')}</div>
                     )}
                   </div>
                 </div>
@@ -402,7 +405,7 @@ export default function PostsPage() {
                 {/* Actions */}
                 <div className="flex justify-end gap-3 pt-4">
                   <Button variant="outline" onClick={() => setIsViewModalOpen(false)} className="rounded-xl border-border/40 font-bold hover:bg-muted/50">
-                    Close
+                    {t('common.close')}
                   </Button>
                 </div>
               </div>
