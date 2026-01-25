@@ -28,7 +28,7 @@ export default function TermsPage() {
                         </p>
                     </section>
 
-                    <section className="bg-card/40 border border-border/40 rounded-[3rem] p-12 lg:p-20 backdrop-blur-3xl space-y-16">
+                    <section className="bg-card/40 border border-border/40 rounded-3xl p-12 lg:p-20 backdrop-blur-3xl space-y-16">
                         <div className="prose prose-invert max-w-none space-y-12">
                             <div>
                                 <div className="flex items-center gap-3 text-primary mb-4">

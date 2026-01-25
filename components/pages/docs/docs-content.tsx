@@ -64,14 +64,14 @@ export default function DocsContent() {
                             </div>
 
                             <div className="grid sm:grid-cols-2 gap-6">
-                                <Link href="#" className="p-8 rounded-[2rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group border-l-4 border-l-primary">
+                                <Link href="#" className="p-8 rounded-2xl bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group border-l-4 border-l-primary">
                                     <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
                                         <Book className="w-5 h-5 stroke-[2.5]" />
                                     </div>
                                     <h3 className="text-xl font-black uppercase tracking-tight mb-2">{cards[0].title}</h3>
                                     <p className="text-muted-foreground font-medium text-xs">{cards[0].description}</p>
                                 </Link>
-                                <Link href="/api" className="p-8 rounded-[2rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group border-l-4 border-l-blue-500">
+                                <Link href="/api" className="p-8 rounded-2xl bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group border-l-4 border-l-blue-500">
                                     <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 mb-4 group-hover:scale-110 transition-transform">
                                         <Code className="w-5 h-5 stroke-[2.5]" />
                                     </div>
@@ -82,7 +82,7 @@ export default function DocsContent() {
                         </section>
 
                         <section className="prose prose-invert max-w-none space-y-12">
-                            <div className="p-8 rounded-[2rem] bg-muted/20 border border-border/10 space-y-4">
+                            <div className="p-8 rounded-2xl bg-muted/20 border border-border/10 space-y-4">
                                 <h2 className="text-2xl font-black uppercase tracking-tight text-foreground m-0">{t("docs.overviewTitle")}</h2>
                                 <p className="text-muted-foreground font-medium text-base leading-relaxed">
                                     {t("docs.overviewBody")}

@@ -41,7 +41,7 @@ export default function AnalyticsPage() {
                             { icon: Search, title: "Granular Reports", desc: "Drill down into specific posts or campaigns to see detailed engagement metrics.", color: "text-indigo-500" },
                             { icon: PieChart, title: "Market Share", desc: "Visualize how your brand's presence compares to competitors in your industry.", color: "text-orange-500" },
                         ].map((mod) => (
-                            <div key={mod.title} className="p-8 rounded-[2rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group">
+                            <div key={mod.title} className="p-8 rounded-2xl bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group">
                                 <div className={`h-12 w-12 rounded-xl bg-muted/50 flex items-center justify-center mb-6 ${mod.color} group-hover:scale-110 transition-transform`}>
                                     <mod.icon className="h-6 w-6 stroke-[2.5]" />
                                 </div>
@@ -51,7 +51,7 @@ export default function AnalyticsPage() {
                         ))}
                     </section>
 
-                    <section className="relative py-24 px-10 rounded-[3rem] bg-emerald-600 overflow-hidden group text-center space-y-10 shadow-2xl shadow-emerald-500/20">
+                    <section className="relative py-24 px-10 rounded-3xl bg-emerald-600 overflow-hidden group text-center space-y-10 shadow-2xl shadow-emerald-500/20">
                         <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-700 to-emerald-900 opacity-90" />
                         <div className="space-y-6 relative z-10">
                             <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none">Unlock the <br /><span className="text-white/40 italic">Insights</span></h2>

@@ -41,7 +41,7 @@ export default function EnterprisePage() {
                         ].map((feature) => (
                             <div key={feature.title} className="p-16 bg-card/40 backdrop-blur-3xl hover:bg-card/60 transition-all group border-b border-border/20 last:border-b-0">
                                 <div className="flex flex-col lg:flex-row lg:items-center gap-10">
-                                    <div className="h-20 w-20 rounded-[2rem] bg-muted/50 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                    <div className="h-20 w-20 rounded-2xl bg-muted/50 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                                         <feature.icon className="h-10 w-10 stroke-[2.5]" />
                                     </div>
                                     <div className="space-y-4 flex-1">
@@ -68,7 +68,7 @@ export default function EnterprisePage() {
                             </p>
                         </div>
                         <div className="flex justify-center gap-6 relative z-10">
-                            <Button asChild size="lg" className="h-20 px-16 bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] rounded-[2.5rem] shadow-2xl shadow-primary/30 hover:scale-110 transition-all">
+                            <Button asChild size="lg" className="h-20 px-16 bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] rounded-3xl shadow-2xl shadow-primary/30 hover:scale-110 transition-all">
                                 <Link href="/contact">TALK TO SALES</Link>
                             </Button>
                         </div>

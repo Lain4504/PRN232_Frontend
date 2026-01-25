@@ -236,7 +236,7 @@ export function ProfileManagement() {
 
           {/* Left Sidebar - Quick Actions & Stats */}
           <div className="lg:col-span-4 space-y-6">
-            <Card className="bg-card/40 backdrop-blur-xl border-border/40 rounded-[2rem] overflow-hidden group">
+            <Card className="bg-card/40 backdrop-blur-xl border-border/40 rounded-2xl overflow-hidden group">
               <CardContent className="p-8 space-y-6">
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500">
@@ -265,7 +265,7 @@ export function ProfileManagement() {
               </div>
             </div>
 
-            <Card className="bg-primary/5 border-primary/20 rounded-[2rem] p-8 space-y-4">
+            <Card className="bg-primary/5 border-primary/20 rounded-2xl p-8 space-y-4">
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-primary stroke-[2.5]" />
                 <h4 className="font-black uppercase tracking-tight text-primary">Identity Protocol</h4>
@@ -305,10 +305,10 @@ export function ProfileManagement() {
                 {profiles.map((profile) => {
                   const profileType = profile.profileType === 'Free' ? 'personal' : 'business';
                   return (
-                    <Card key={profile.id} className="group relative bg-card/40 backdrop-blur-xl border-border/40 hover:border-primary/50 rounded-[2rem] transition-all duration-300 shadow-xl shadow-black/5 overflow-hidden">
+                    <Card key={profile.id} className="group relative bg-card/40 backdrop-blur-xl border-border/40 hover:border-primary/50 rounded-2xl transition-all duration-300 shadow-xl shadow-black/5 overflow-hidden">
                       <CardContent className="p-8">
                         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
-                          <div className="relative h-24 w-24 rounded-[2rem] overflow-hidden border border-border/40 shadow-inner group-hover:scale-105 transition-transform duration-500 shrink-0">
+                          <div className="relative h-24 w-24 rounded-2xl overflow-hidden border border-border/40 shadow-inner group-hover:scale-105 transition-transform duration-500 shrink-0">
                             {profile.avatarUrl ? (
                               <AvatarImage src={profile.avatarUrl} alt="" className="object-cover h-full w-full" />
                             ) : (
@@ -374,8 +374,8 @@ export function ProfileManagement() {
                 })}
               </div>
             ) : (
-              <Card className="border-4 border-dashed border-border/40 bg-card/20 backdrop-blur-sm rounded-[2rem] p-24 text-center space-y-8">
-                <div className="mx-auto h-24 w-24 rounded-[2rem] bg-muted/20 flex items-center justify-center">
+              <Card className="border-4 border-dashed border-border/40 bg-card/20 backdrop-blur-sm rounded-2xl p-24 text-center space-y-8">
+                <div className="mx-auto h-24 w-24 rounded-2xl bg-muted/20 flex items-center justify-center">
                   <Building2 className="h-12 w-12 text-muted-foreground stroke-[1.5]" />
                 </div>
                 <div className="space-y-2">
@@ -424,7 +424,7 @@ export function ProfileManagement() {
             </Drawer>
           ) : (
             <Dialog open={!!(viewingProfileId || editingProfileId || creatingProfile)} onOpenChange={handleCloseModal}>
-              <DialogContent className="max-w-2xl font-fira-sans rounded-[2rem] border-border/40 bg-background/95 backdrop-blur-3xl p-12 shadow-[0_0_100px_rgba(0,0,0,0.3)]">
+              <DialogContent className="max-w-2xl font-fira-sans rounded-2xl border-border/40 bg-background/95 backdrop-blur-3xl p-12 shadow-[0_0_100px_rgba(0,0,0,0.3)]">
                 <DialogHeader className="pb-10 space-y-2 text-left">
                   <DialogTitle className="text-3xl font-black uppercase tracking-tight">
                     {creatingProfile ? 'Node Initiation' : editingProfileId ? 'Structural Modification' : 'Node Diagnostics'}
@@ -454,7 +454,7 @@ export function ProfileManagement() {
 
         {/* Global Termination Portal */}
         <AlertDialog open={!!deleteProfileId} onOpenChange={() => setDeleteProfileId(null)}>
-          <AlertDialogContent className="max-w-md font-fira-sans rounded-[2rem] border-border/40 bg-background/95 backdrop-blur-3xl p-10 shadow-2xl">
+          <AlertDialogContent className="max-w-md font-fira-sans rounded-2xl border-border/40 bg-background/95 backdrop-blur-3xl p-10 shadow-2xl">
             <AlertDialogHeader className="space-y-4">
               <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight">Authorize Termination?</AlertDialogTitle>
               <AlertDialogDescription className="text-base font-medium text-muted-foreground leading-relaxed">
@@ -504,7 +504,7 @@ function ViewProfileContent({ profileId }: { profileId: string }) {
   return (
     <div className="space-y-10">
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-10">
-        <div className="relative h-32 w-32 rounded-[2rem] overflow-hidden border-2 border-primary/20 shadow-2xl shrink-0">
+        <div className="relative h-32 w-32 rounded-2xl overflow-hidden border-2 border-primary/20 shadow-2xl shrink-0">
           {profileData.avatarUrl ? (
             <AvatarImage src={profileData.avatarUrl} alt="Avatar" className="object-cover h-full w-full" />
           ) : (
@@ -566,7 +566,7 @@ function AvatarPreview({
   }, [avatar, avatarUrl])
 
   return (
-    <div className="relative h-20 w-20 rounded-[2rem] overflow-hidden border border-border/40 shadow-inner shrink-0 cursor-pointer group hover:scale-105 transition-transform duration-500">
+    <div className="relative h-20 w-20 rounded-2xl overflow-hidden border border-border/40 shadow-inner shrink-0 cursor-pointer group hover:scale-105 transition-transform duration-500">
       <Avatar className="h-full w-full rounded-none">
         <AvatarImage src={avatarSrc} alt="" className="object-cover h-full w-full" />
         <AvatarFallback className="bg-muted/50 rounded-none">
@@ -600,7 +600,7 @@ function EditProfileForm({
       <FormField label="Identity Sector Type" required>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
           <div
-            className={`p-6 border-2 rounded-[2rem] cursor-pointer transition-all duration-300 group ${formData.profile_type === 'personal'
+            className={`p-6 border-2 rounded-2xl cursor-pointer transition-all duration-300 group ${formData.profile_type === 'personal'
               ? 'border-primary bg-primary/5 shadow-xl shadow-primary/5'
               : 'border-border/40 hover:border-primary/40 hover:bg-muted/30'
               }`}
@@ -624,7 +624,7 @@ function EditProfileForm({
           </div>
 
           <div
-            className={`p-6 border-2 rounded-[2rem] cursor-pointer transition-all duration-300 group ${formData.profile_type === 'business'
+            className={`p-6 border-2 rounded-2xl cursor-pointer transition-all duration-300 group ${formData.profile_type === 'business'
               ? 'border-primary bg-primary/5 shadow-xl shadow-primary/5'
               : 'border-border/40 hover:border-primary/40 hover:bg-muted/30'
               }`}
@@ -709,7 +709,7 @@ function EditProfileForm({
               ? "ARTICULATE MISSION PARAMETERS, BRAND VOICE, AND CORE VALUES..."
               : "DESCRIBE CREATIVE FOCUS, INDIVIDUAL STRENGTHS, AND AMBITIONS..."
           }
-          className="bg-muted/20 border-border/40 hover:border-primary/40 transition-all rounded-[2rem] min-h-[120px] font-medium text-sm p-6 leading-relaxed tracking-tight"
+          className="bg-muted/20 border-border/40 hover:border-primary/40 transition-all rounded-2xl min-h-[120px] font-medium text-sm p-6 leading-relaxed tracking-tight"
         />
         <div className="flex justify-between items-center pt-2">
           <span className="text-[9px] font-black uppercase tracking-widest text-primary/70">AI Optimizer calibrated</span>

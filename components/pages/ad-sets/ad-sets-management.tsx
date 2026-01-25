@@ -240,7 +240,7 @@ export function AdSetsManagement({ campaignId, basePath = '/dashboard/campaigns'
       </div>
 
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-6 rounded-[32px] border-2 border-dashed bg-card/40 backdrop-blur-md">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-6 rounded-2xl border-2 border-dashed bg-card/40 backdrop-blur-md">
           <div className="relative w-full sm:w-96 group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
@@ -264,7 +264,7 @@ export function AdSetsManagement({ campaignId, basePath = '/dashboard/campaigns'
           </Select>
         </div>
 
-        <Card className="rounded-[40px] border-2 bg-card/40 overflow-hidden shadow-2xl shadow-foreground/5">
+        <Card className="rounded-3xl border-2 bg-card/40 overflow-hidden shadow-2xl shadow-foreground/5">
           <CustomTable
             columns={columns}
             data={adSets}

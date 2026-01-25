@@ -41,7 +41,7 @@ export default function BrandManagementPage() {
                             { icon: Lock, title: "User Permissions", desc: "Advanced controls to ensure only authorized team members can edit brand settings.", color: "text-indigo-500" },
                             { icon: Target, title: "AI Voice Tuning", desc: "Train the AI to write in your unique brand voice, from professional to playful.", color: "text-orange-500" },
                         ].map((mod) => (
-                            <div key={mod.title} className="p-8 rounded-[2rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group">
+                            <div key={mod.title} className="p-8 rounded-2xl bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group">
                                 <div className={`h-12 w-12 rounded-xl bg-muted/50 flex items-center justify-center mb-6 ${mod.color} group-hover:scale-110 transition-transform`}>
                                     <mod.icon className="h-6 w-6 stroke-[2.5]" />
                                 </div>
@@ -51,7 +51,7 @@ export default function BrandManagementPage() {
                         ))}
                     </section>
 
-                    <section className="relative py-24 px-10 rounded-[3rem] bg-rose-600 overflow-hidden group text-center space-y-10 shadow-2xl shadow-rose-500/20">
+                    <section className="relative py-24 px-10 rounded-3xl bg-rose-600 overflow-hidden group text-center space-y-10 shadow-2xl shadow-rose-500/20">
                         <div className="absolute inset-0 bg-gradient-to-br from-rose-600 via-pink-700 to-rose-900 opacity-90" />
                         <div className="space-y-6 relative z-10">
                             <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none">Sync Your <br /><span className="text-white/40 italic">Identity</span></h2>

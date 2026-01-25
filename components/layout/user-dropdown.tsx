@@ -2,7 +2,6 @@
 
 import { AuthUser } from "@/lib/types/auth"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useTheme } from "next-themes"
 import {
@@ -16,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LogoutButton } from "@/components/auth/logout-button"
 import React from "react"
-import { Sparkles, Settings, LifeBuoy, Monitor, Moon, Sun, Laptop, Layout } from "lucide-react"
+import { Sparkles, Settings, LifeBuoy, Monitor, Moon, Sun, Laptop } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 type ThemeOption = "light" | "dark" | "system"
@@ -72,21 +71,10 @@ export function UserDropdown({ user }: UserDropdownProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-72 rounded-[24px] border border-white/10 bg-background/90 backdrop-blur-2xl p-2 font-fira-sans shadow-2xl" align="end" forceMount>
-        <div className="p-2 space-y-1">
-          <DropdownMenuItem asChild className="rounded-2xl bg-primary text-primary-foreground font-black uppercase tracking-[0.1em] text-[11px] h-12 flex items-center justify-center gap-2 focus:bg-primary/90 cursor-pointer shadow-lg shadow-primary/20">
-            <Link href="/overview" className="flex items-center">
-              <Layout className="size-3.5" />
-              {t("header.buttons.launchConsole")}
-            </Link>
-          </DropdownMenuItem>
-        </div>
-
-        <DropdownMenuSeparator className="bg-white/5" />
-
         <DropdownMenuLabel className="font-normal p-3">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-black leading-none text-foreground tracking-tight">
-              {user?.fullName || t("header.userMenu.anonymousUser")}
+              {user?.fullName || "Anonymous User"}
             </p>
             <p className="text-[10px] font-medium leading-none text-muted-foreground uppercase tracking-wider">{user?.email}</p>
           </div>
@@ -95,22 +83,22 @@ export function UserDropdown({ user }: UserDropdownProps) {
         <DropdownMenuGroup className="p-1">
           <DropdownMenuItem className="rounded-xl font-bold text-[11px] uppercase tracking-wide focus:bg-muted/50 cursor-pointer py-2.5">
             <Settings className="mr-3 size-4 opacity-70" />
-            {t("header.userMenu.preferences")}
+            {t("userMenu.preferences")}
           </DropdownMenuItem>
           <DropdownMenuItem className="rounded-xl font-bold text-[11px] uppercase tracking-wide focus:bg-muted/50 cursor-pointer py-2.5">
             <Sparkles className="mr-3 size-4 text-amber-500 opacity-80" />
-            {t("header.userMenu.featurePreviews")}
+            {t("userMenu.featurePreviews")}
           </DropdownMenuItem>
           <DropdownMenuItem className="rounded-xl font-bold text[11px] uppercase tracking-wide focus:bg-muted/50 cursor-pointer py-2.5">
             <LifeBuoy className="mr-3 size-4 opacity-70" />
-            {t("header.userMenu.helpNexus")}
+            {t("userMenu.helpNexus")}
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator className="bg-white/5" />
 
         <DropdownMenuLabel className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-[0.2em] px-3 my-1">
-          {t("header.userMenu.interfaceMode")}
+          {t("userMenu.interfaceMode")}
         </DropdownMenuLabel>
         <DropdownMenuGroup className="flex items-center gap-1 p-1">
           <DropdownMenuItem

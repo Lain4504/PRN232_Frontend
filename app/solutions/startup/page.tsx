@@ -68,7 +68,7 @@ export default function StartupPage() {
                                     ))}
                                 </div>
                             </div>
-                            <Button asChild className="h-20 px-16 bg-white text-primary font-black uppercase tracking-widest rounded-[2rem] hover:scale-110 transition-all text-sm">
+                            <Button asChild className="h-20 px-16 bg-white text-primary font-black uppercase tracking-widest rounded-2xl hover:scale-110 transition-all text-sm">
                                 <Link href="/auth/sign-up">GET STARTED NOW</Link>
                             </Button>
                         </div>

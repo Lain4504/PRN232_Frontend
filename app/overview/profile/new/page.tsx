@@ -26,6 +26,7 @@ export default function CreateProfilePage() {
     companyName: "",
     bio: ""
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleNext = () => {
     if (step === 1 && form.name.trim()) {
@@ -40,12 +41,15 @@ export default function CreateProfilePage() {
   }
 
   const handlePlanSelect = async (plan: { id: number; name: string; price: number }) => {
+    if (isSubmitting) return
+
     try {
       if (!user?.id) {
-        toast.error('Please login to create a profile')
+        toast.error('Vui lòng đăng nhập để tạo hồ sơ')
         return
       }
 
+      setIsSubmitting(true)
       const profileData: CreateProfileForm = {
         name: form.name,
         profile_type: plan.name as 'Free' | 'Basic' | 'Pro',
@@ -68,39 +72,44 @@ export default function CreateProfilePage() {
       router.push(`/subscription/checkout?${params.toString()}`)
     } catch (error) {
       console.error('Error creating profile:', error)
-      toast.error('Failed to create profile. Please try again.')
+      toast.error('Không thể tạo hồ sơ. Vui lòng thử lại.')
+      setIsSubmitting(false)
     }
   }
 
-
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto px-6 py-10 space-y-10">
+    <div className="min-h-screen bg-background font-fira-sans">
+      <div className="max-w-4xl mx-auto px-6 py-12 space-y-10">
         {/* Header */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">Create Profile</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Tạo Hồ Sơ Mới</h1>
             {step === 1 ? (
               <Link href="/overview">
-                <Button variant="ghost" className="h-10 px-4 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground">
+                <Button variant="ghost" className="h-10 px-4 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground">
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Cancel
+                  Hủy Bỏ
                 </Button>
               </Link>
             ) : (
-              <Button variant="ghost" onClick={handleBack} className="h-10 px-4 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground">
+              <Button
+                variant="ghost"
+                onClick={handleBack}
+                disabled={isSubmitting}
+                className="h-10 px-4 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground"
+              >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
+                Quay Lại
               </Button>
             )}
           </div>
 
           {/* Stepper */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {[1, 2].map((i) => (
               <div
                 key={i}
-                className={`h-1.5 rounded-full flex-1 transition-all duration-300 ${step >= i ? 'bg-primary' : 'bg-muted'}`}
+                className={`h-1.5 rounded-full flex-1 transition-all duration-500 ease-in-out ${step >= i ? 'bg-primary' : 'bg-muted'}`}
               />
             ))}
           </div>
@@ -108,81 +117,87 @@ export default function CreateProfilePage() {
 
         {/* Step Content */}
         {step === 1 ? (
-          <Card className="rounded-xl border shadow-sm">
-            <CardHeader className="p-8">
+          <Card className="rounded-xl border border-border/50 shadow-sm overflow-hidden">
+            <CardHeader className="p-8 border-b border-border/50 bg-muted/5">
               <div className="flex items-start gap-4">
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 border border-primary/10">
                   <User className="h-6 w-6" />
                 </div>
                 <div className="space-y-1">
-                  <CardTitle className="text-xl font-bold">Profile Identity</CardTitle>
-                  <CardDescription className="text-sm font-medium">Define your brand identity to get started.</CardDescription>
+                  <CardTitle className="text-xl font-bold">Thông Tin Định Danh</CardTitle>
+                  <CardDescription className="text-sm font-medium text-muted-foreground">Thiết lập thông tin cơ bản cho hồ sơ thương hiệu của bạn.</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-8 pt-0 space-y-6">
+            <CardContent className="p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-semibold">Profile Name</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="name" className="text-sm font-bold">Tên Hồ Sơ</Label>
                   <Input
                     id="name"
-                    placeholder="e.g. Acme Brand"
+                    placeholder="VD: Thương Hiệu ABC"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="h-11 rounded-lg bg-background border-border/60"
+                    className="h-10 rounded-md bg-background border-input"
                   />
+                  <p className="text-[11px] text-muted-foreground">Tên hiển thị chính cho hồ sơ này.</p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="company" className="text-sm font-semibold">Company Name (Optional)</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="company" className="text-sm font-bold">Tên Doanh Nghiệp (Tùy chọn)</Label>
                   <Input
                     id="company"
-                    placeholder="e.g. Acme Inc."
+                    placeholder="VD: Công ty TNHH ABC"
                     value={form.companyName}
                     onChange={(e) => setForm({ ...form, companyName: e.target.value })}
-                    className="h-11 rounded-lg bg-background border-border/60"
+                    className="h-10 rounded-md bg-background border-input"
                   />
+                  <p className="text-[11px] text-muted-foreground">Pháp nhân quản lý hồ sơ này.</p>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="bio" className="text-sm font-semibold">Description</Label>
+              <div className="space-y-2.5">
+                <Label htmlFor="bio" className="text-sm font-bold">Mô Tả</Label>
                 <Textarea
                   id="bio"
-                  placeholder="Tell us a bit about this brand..."
+                  placeholder="Giới thiệu ngắn gọn về hồ sơ này..."
                   value={form.bio}
                   onChange={(e) => setForm({ ...form, bio: e.target.value })}
                   rows={4}
-                  className="rounded-lg bg-background border-border/60 resize-none p-3"
+                  className="rounded-md bg-background border-input resize-none p-3"
                 />
               </div>
 
-              <div className="flex justify-end pt-4">
+              <div className="flex justify-end pt-6">
                 <Button
                   onClick={handleNext}
                   disabled={!form.name.trim()}
-                  className="rounded-lg h-10 px-8 font-semibold"
+                  className="h-10 px-8 font-semibold shadow-md transition-all hover:scale-105 active:scale-95"
                 >
-                  Choose a Plan
+                  Chọn Gói Dịch Vụ
                   <ArrowLeft className="h-4 w-4 ml-2 rotate-180" />
                 </Button>
               </div>
             </CardContent>
           </Card>
         ) : (
-          <Card className="rounded-xl border shadow-sm">
-            <CardHeader className="p-8">
+          <Card className="rounded-xl border border-border/50 shadow-sm overflow-hidden">
+            <CardHeader className="p-8 border-b border-border/50 bg-muted/5">
               <div className="flex items-start gap-4">
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                <div className="h-12 w-12 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 shrink-0 border border-emerald-500/10">
                   <CreditCard className="h-6 w-6" />
                 </div>
                 <div className="space-y-1">
-                  <CardTitle className="text-xl font-bold">Select Subscription</CardTitle>
-                  <CardDescription className="text-sm font-medium">Choose a plan that fits your needs.</CardDescription>
+                  <CardTitle className="text-xl font-bold">Đăng Ký Gói Dịch Vụ</CardTitle>
+                  <CardDescription className="text-sm font-medium text-muted-foreground">Chọn gói dịch vụ phù hợp để kích hoạt hồ sơ.</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-8 pt-0">
-              <SubscriptionPlansPage onPlanSelect={handlePlanSelect} showCurrentPlan={false} />
+            <CardContent className="p-8">
+              <SubscriptionPlansPage
+                onPlanSelect={handlePlanSelect}
+                showCurrentPlan={false}
+                isLoading={isSubmitting}
+              />
             </CardContent>
           </Card>
         )}

@@ -72,7 +72,7 @@ export function ProfileSwitcher() {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-80 rounded-[20px] bg-background/95 backdrop-blur-xl border border-white/10 p-2 shadow-2xl" align="start" sideOffset={8}>
+      <DropdownMenuContent className="w-80 rounded-xl bg-background/95 backdrop-blur-xl border border-white/10 p-2 shadow-2xl" align="start" sideOffset={8}>
         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-2 py-2">Identity Selector</DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-white/5" />
 

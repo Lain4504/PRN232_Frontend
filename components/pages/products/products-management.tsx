@@ -448,7 +448,7 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
         {/* Product Details Modal - Redesigned as a Premium Dossier */}
         {viewingProduct && (
           <AlertDialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-            <AlertDialogContent className="rounded-[32px] max-w-2xl p-0 overflow-hidden bg-background/95 backdrop-blur-2xl border border-white/10 font-fira-sans shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)]">
+            <AlertDialogContent className="rounded-2xl max-w-2xl p-0 overflow-hidden bg-background/95 backdrop-blur-2xl border border-white/10 font-fira-sans shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)]">
 
               {/* Header Image Area */}
               <div className="relative h-64 w-full bg-muted/30">

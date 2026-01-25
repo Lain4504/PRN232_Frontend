@@ -75,7 +75,7 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-80 rounded-[20px] bg-background/95 backdrop-blur-xl border border-white/10 p-2 shadow-2xl font-fira-sans" align="end" forceMount>
+      <DropdownMenuContent className="w-80 rounded-xl bg-background/95 backdrop-blur-xl border border-white/10 p-2 shadow-2xl font-fira-sans" align="end" forceMount>
         {/* User Info Header */}
         <DropdownMenuLabel className="font-normal p-2">
           <div className="flex items-center gap-3 p-2 rounded-xl bg-muted/30 border border-white/5">

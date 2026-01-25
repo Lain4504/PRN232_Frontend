@@ -41,7 +41,7 @@ export default function BlogContent() {
 
                     {/* Featured Post Section */}
                     <section className="group cursor-pointer">
-                        <div className="grid lg:grid-cols-2 bg-card/40 border border-border/40 rounded-[2rem] overflow-hidden backdrop-blur-3xl hover:bg-card/60 transition-all shadow-2xl">
+                        <div className="grid lg:grid-cols-2 bg-card/40 border border-border/40 rounded-2xl overflow-hidden backdrop-blur-3xl hover:bg-card/60 transition-all shadow-2xl">
                             <div className="h-[400px] lg:h-full relative overflow-hidden">
                                 <img src={featured.image} alt="Featured" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -72,7 +72,7 @@ export default function BlogContent() {
                     {/* Grid Section */}
                     <section className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                         {posts.map((post) => (
-                            <div key={post.title} className="p-8 rounded-[2rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group flex flex-col justify-between h-[500px]">
+                            <div key={post.title} className="p-8 rounded-2xl bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group flex flex-col justify-between h-[500px]">
                                 <div className="space-y-6">
                                     <div className="h-48 relative rounded-[1.5rem] overflow-hidden mb-6">
                                         <img src={post.image} alt={post.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />

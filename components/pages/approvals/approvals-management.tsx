@@ -245,8 +245,8 @@ export function ApprovalsManagement() {
   if (isLoading) return (
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-12 animate-pulse">
       <div className="h-8 w-64 bg-muted rounded-xl" />
-      <div className="h-40 bg-muted rounded-[40px]" />
-      <div className="h-[600px] bg-muted rounded-[40px]" />
+      <div className="h-40 bg-muted rounded-3xl" />
+      <div className="h-[600px] bg-muted rounded-3xl" />
     </div>
   );
 
@@ -274,7 +274,7 @@ export function ApprovalsManagement() {
           </p>
         </div>
 
-        <div className="flex items-center gap-6 px-8 py-6 bg-card/40 backdrop-blur-xl rounded-[32px] border-2 border-dashed shadow-2xl shadow-foreground/5">
+        <div className="flex items-center gap-6 px-8 py-6 bg-card/40 backdrop-blur-xl rounded-2xl border-2 border-dashed shadow-2xl shadow-foreground/5">
           <div className="space-y-1 pr-6 border-r-2 border-dashed">
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Registry Size</p>
             <p className="text-3xl font-black italic">{filteredApprovals.length}</p>
@@ -286,7 +286,7 @@ export function ApprovalsManagement() {
         </div>
       </div>
 
-      <div className="flex flex-col xl:flex-row items-stretch xl:items-center gap-6 p-6 rounded-[32px] border-2 bg-muted/10 backdrop-blur-md">
+      <div className="flex flex-col xl:flex-row items-stretch xl:items-center gap-6 p-6 rounded-2xl border-2 bg-muted/10 backdrop-blur-md">
         <div className="relative flex-1 group">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
@@ -329,7 +329,7 @@ export function ApprovalsManagement() {
         </div>
       </div>
 
-      <Card className="rounded-[40px] border-2 bg-card/40 overflow-hidden shadow-2xl shadow-foreground/5 relative group">
+      <Card className="rounded-3xl border-2 bg-card/40 overflow-hidden shadow-2xl shadow-foreground/5 relative group">
         <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 group-hover:rotate-0 transition-transform duration-1000">
           <Activity className="size-40 text-primary" />
         </div>
@@ -352,7 +352,7 @@ export function ApprovalsManagement() {
       />
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="rounded-[40px] border-2 bg-background/95 backdrop-blur-2xl p-10 max-w-md font-fira-sans border-destructive/20 shadow-2xl shadow-destructive/10">
+        <DialogContent className="rounded-3xl border-2 bg-background/95 backdrop-blur-2xl p-10 max-w-md font-fira-sans border-destructive/20 shadow-2xl shadow-destructive/10">
           <DialogHeader className="space-y-6 text-center">
             <div className="size-20 rounded-3xl bg-destructive/10 flex items-center justify-center text-destructive mx-auto border border-destructive/20 shadow-inner">
               <Trash2 className="size-10" />

@@ -555,7 +555,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
 
           {conversations.length === 0 && (
             <div className="text-center py-16 px-6">
-              <div className="w-16 h-16 bg-muted/50 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-muted/50 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <MessageSquare className="h-8 w-8 text-muted-foreground/40" />
               </div>
               <h3 className="text-sm font-bold text-foreground mb-2">History is empty</h3>
@@ -619,7 +619,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                   Context
                 </Button>
               </DialogTrigger>
-              <DialogContent className="rounded-[2.5rem] border-border/40 bg-background/95 backdrop-blur-xl">
+              <DialogContent className="rounded-3xl border-border/40 bg-background/95 backdrop-blur-xl">
                 <DialogHeader className="pt-4">
                   <DialogTitle className="text-2xl font-bold">Model Context</DialogTitle>
                   <DialogDescription>Optimize outputs by specifying brand and product data.</DialogDescription>
@@ -665,7 +665,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
             <div className="h-full flex items-center justify-center px-6">
               <div className="text-center max-w-2xl space-y-12">
                 <div className="space-y-4">
-                  <div className="w-24 h-24 mx-auto bg-primary rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-primary/30 animate-bounce-subtle">
+                  <div className="w-24 h-24 mx-auto bg-primary rounded-3xl flex items-center justify-center shadow-2xl shadow-primary/30 animate-bounce-subtle">
                     <Sparkles className="h-12 w-12 text-primary-foreground fill-current" />
                   </div>
                   <h2 className="text-4xl md:text-5xl font-black tracking-tight text-foreground leading-[1.1]">
@@ -712,7 +712,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                   </div>
 
                   <div className={`flex flex-col gap-3 min-w-0 max-w-[85%] md:max-w-[75%] ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
-                    <div className={`p-5 md:p-6 rounded-[2rem] shadow-sm backdrop-blur-sm border transition-all duration-300 ${message.role === 'user'
+                    <div className={`p-5 md:p-6 rounded-2xl shadow-sm backdrop-blur-sm border transition-all duration-300 ${message.role === 'user'
                       ? 'bg-primary/95 text-primary-foreground border-primary/20 rounded-tr-none font-medium text-lg lg:text-xl selection:bg-background/20'
                       : 'bg-card border-border/60 text-foreground rounded-tl-none leading-relaxed text-base md:text-lg'
                       }`}>
@@ -720,7 +720,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                     </div>
 
                     {message.generation && (
-                      <Card className="w-full border-border/40 bg-card/30 backdrop-blur-md rounded-[2.5rem] overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-500">
+                      <Card className="w-full border-border/40 bg-card/30 backdrop-blur-md rounded-3xl overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-500">
                         <CardContent className="p-8 space-y-6">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -732,7 +732,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                             <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 uppercase font-bold text-[9px] px-2">Ready</Badge>
                           </div>
 
-                          <div className="p-8 rounded-[2rem] bg-muted/30 border border-border/30 font-serif italic text-lg lg:text-2xl leading-relaxed text-foreground/90 selection:bg-primary/10">
+                          <div className="p-8 rounded-2xl bg-muted/30 border border-border/30 font-serif italic text-lg lg:text-2xl leading-relaxed text-foreground/90 selection:bg-primary/10">
                             &ldquo;{message.generation.generated_content}&rdquo;
                           </div>
 
@@ -777,7 +777,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                   <div className="h-12 w-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center animate-pulse">
                     <Bot className="h-6 w-6" />
                   </div>
-                  <div className="bg-card border border-border/60 rounded-[2rem] rounded-tl-none px-6 py-4 flex items-center gap-2">
+                  <div className="bg-card border border-border/60 rounded-2xl rounded-tl-none px-6 py-4 flex items-center gap-2">
                     <div className="flex gap-1.5">
                       <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
                       <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
@@ -797,8 +797,8 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
           <div className="max-w-3xl mx-auto w-full pointer-events-auto">
             {currentSession && (
               <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-chart-2/10 to-primary/20 rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition duration-1000 group-focus-within:opacity-100" />
-                <div className="relative bg-card/80 backdrop-blur-2xl border border-border/60 rounded-[2.5rem] shadow-2xl p-2 flex items-center gap-2 transition-all duration-500 group-focus-within:border-primary/30 group-focus-within:shadow-primary/5">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-chart-2/10 to-primary/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition duration-1000 group-focus-within:opacity-100" />
+                <div className="relative bg-card/80 backdrop-blur-2xl border border-border/60 rounded-3xl shadow-2xl p-2 flex items-center gap-2 transition-all duration-500 group-focus-within:border-primary/30 group-focus-within:shadow-primary/5">
                   <div className="pl-4 pr-1 hidden sm:block">
                     <Sparkles className="h-5 w-5 text-primary/40 group-focus-within:text-primary transition-colors" />
                   </div>
@@ -814,7 +814,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                     onClick={sendChatMessage}
                     disabled={!chatInput.trim() || isTyping}
                     size="icon"
-                    className="h-14 w-14 rounded-[2rem] bg-primary text-primary-foreground shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 shrink-0"
+                    className="h-14 w-14 rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 shrink-0"
                   >
                     {isTyping ? (
                       <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/20 border-t-white" />

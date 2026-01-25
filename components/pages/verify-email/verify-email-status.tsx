@@ -204,7 +204,7 @@ export function VerifyEmailStatus({
 
   return (
     <div className={cn("space-y-6 font-fira-sans", className)} {...props}>
-      <div className="bg-card/40 border border-border/40 rounded-[2rem] p-8 sm:p-12 shadow-2xl relative group overflow-hidden">
+      <div className="bg-card/40 border border-border/40 rounded-2xl p-8 sm:p-12 shadow-2xl relative group overflow-hidden">
         <div className="absolute top-0 right-0 p-10 opacity-3 group-hover:rotate-12 transition-transform duration-1000">
           <Shield className="h-32 w-32" />
         </div>

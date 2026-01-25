@@ -164,8 +164,8 @@ export function BrandsManagement() {
   if (loading) return (
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-12 animate-pulse">
       <div className="h-8 w-64 bg-muted rounded-xl" />
-      <div className="h-40 bg-muted rounded-[40px]" />
-      <div className="h-[600px] bg-muted rounded-[40px]" />
+      <div className="h-40 bg-muted rounded-3xl" />
+      <div className="h-[600px] bg-muted rounded-3xl" />
     </div>
   );
 
@@ -192,7 +192,7 @@ export function BrandsManagement() {
 
         <div className="flex items-center gap-4">
           <BrandModal mode="create" onSuccess={refetchBrands}>
-            <Button size="lg" className="rounded-[20px] h-16 px-10 font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary">
+            <Button size="lg" className="rounded-xl h-16 px-10 font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary">
               <Plus className="mr-3 size-6" />
               {t("brands.createBrand")}
             </Button>
@@ -200,7 +200,7 @@ export function BrandsManagement() {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-6 rounded-[32px] border-2 bg-muted/10 backdrop-blur-md">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-6 rounded-2xl border-2 bg-muted/10 backdrop-blur-md">
         <div className="relative w-full sm:w-[500px] group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
@@ -225,7 +225,7 @@ export function BrandsManagement() {
       </div>
 
       {filteredBrands.length > 0 ? (
-        <Card className="rounded-[40px] border-2 bg-card/40 overflow-hidden shadow-2xl shadow-foreground/5 relative">
+        <Card className="rounded-3xl border-2 bg-card/40 overflow-hidden shadow-2xl shadow-foreground/5 relative">
           <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 transition-transform duration-1000">
             <Zap className="size-40 text-primary" />
           </div>
@@ -238,8 +238,8 @@ export function BrandsManagement() {
           />
         </Card>
       ) : (
-        <div className="flex flex-col items-center justify-center py-40 px-6 text-center border-2 border-dashed rounded-[40px] bg-muted/5 font-fira-sans">
-          <div className="size-24 rounded-[32px] bg-primary/5 flex items-center justify-center mb-10 text-primary border-2 border-primary/10 shadow-inner">
+        <div className="flex flex-col items-center justify-center py-40 px-6 text-center border-2 border-dashed rounded-3xl bg-muted/5 font-fira-sans">
+          <div className="size-24 rounded-2xl bg-primary/5 flex items-center justify-center mb-10 text-primary border-2 border-primary/10 shadow-inner">
             <Target className="size-12" />
           </div>
           <div className="space-y-4 max-w-md">
@@ -269,7 +269,7 @@ export function BrandsManagement() {
       <BrandModal mode="edit" brand={editingBrand || undefined} open={isEditModalOpen} onOpenChange={setIsEditModalOpen} onSuccess={refetchBrands} />
 
       <AlertDialog open={!!deleteBrandId} onOpenChange={() => setDeleteBrandId(null)}>
-        <AlertDialogContent className="rounded-[40px] border-2 bg-background/95 backdrop-blur-2xl p-10 max-w-md font-fira-sans border-destructive/20 shadow-2xl">
+        <AlertDialogContent className="rounded-3xl border-2 bg-background/95 backdrop-blur-2xl p-10 max-w-md font-fira-sans border-destructive/20 shadow-2xl">
           <AlertDialogHeader className="space-y-6">
             <div className="size-20 rounded-3xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto border border-destructive/20 shadow-inner">
               <AlertTriangle className="size-10" />

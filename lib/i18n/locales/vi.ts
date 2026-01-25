@@ -326,339 +326,367 @@ export const vi = {
             }
         },
 
-        solutions: {
-            startup: {
-                badge: "Cho khởi nghiệp",
-                title: "Khởi động",
-                accent: "nhanh.",
-                description: "Mọi thứ bạn cần để bắt đầu hiện diện trên mạng xã hội.",
-                benefits: [
-                    { title: "Thiết lập nhanh", desc: "Bắt đầu trong vài phút, không phải vài ngày." },
-                    { title: "Giá cả phải chăng", desc: "Giá linh hoạt theo sự tăng trưởng của bạn." },
-                    { title: "Mẫu có sẵn", desc: "Mẫu được xây dựng sẵn để tăng tốc độ tạo." }
-                ]
+        api: {
+            badge: "Công cụ dành cho nhà phát triển",
+            title: "API",
+            accent: "Tham chiếu.",
+            baseUrl: "V1.0.4 - Base URL: https://api.aisam.app",
+            authentication: {
+                title: "Xác thực",
+                description: "Tất cả các yêu cầu API phải bao gồm một token Bearer trong header `Authorization`.",
+                example: "Authorization: Bearer YOUR_API_TOKEN"
             },
-            enterprise: {
-                badge: "Cho doanh nghiệp",
-                title: "Mở rộng",
-                accent: "toàn cầu.",
-                description: "Tính năng cấp doanh nghiệp cho tổ chức lớn.",
-                benefits: [
-                    { title: "Mở rộng không giới hạn", desc: "Không giới hạn người dùng, thương hiệu hoặc nội dung." },
-                    { title: "Tích hợp tùy chỉnh", desc: "Tích hợp với các công cụ hiện có của bạn." },
-                    { title: "Hỗ trợ chuyên dụng", desc: "Hỗ trợ ưu tiên và quản lý tài khoản." }
-                ]
-            }
+            endpointsTitle: "Các endpoint phổ biến",
+            endpoints: [
+                { desc: "Bắt đầu một yêu cầu tạo nội dung mới." },
+                { desc: "Truy xuất dữ liệu hiệu suất chiến dịch." },
+                { desc: "Lập lịch một bài đăng cho một kênh xã hội cụ thể." },
+                { desc: "Liệt kê tất cả hồ sơ danh tính thương hiệu đang hoạt động." }
+            ],
+            viewDetails: "XEM CHI TIẾT",
+            footer: "© 2026 AISAM Intelligence Core. Tính toàn vẹn API đã được xác minh."
+        }
+    },
+
+    solutions: {
+        startup: {
+            badge: "Cho khởi nghiệp",
+            title: "Khởi động",
+            accent: "nhanh.",
+            description: "Mọi thứ bạn cần để bắt đầu hiện diện trên mạng xã hội.",
+            benefits: [
+                { title: "Thiết lập nhanh", desc: "Bắt đầu trong vài phút, không phải vài ngày." },
+                { title: "Giá cả phải chăng", desc: "Giá linh hoạt theo sự tăng trưởng của bạn." },
+                { title: "Mẫu có sẵn", desc: "Mẫu được xây dựng sẵn để tăng tốc độ tạo." }
+            ]
+        },
+        enterprise: {
+            badge: "Cho doanh nghiệp",
+            title: "Mở rộng",
+            accent: "toàn cầu.",
+            description: "Tính năng cấp doanh nghiệp cho tổ chức lớn.",
+            benefits: [
+                { title: "Mở rộng không giới hạn", desc: "Không giới hạn người dùng, thương hiệu hoặc nội dung." },
+                { title: "Tích hợp tùy chỉnh", desc: "Tích hợp với các công cụ hiện có của bạn." },
+                { title: "Hỗ trợ chuyên dụng", desc: "Hỗ trợ ưu tiên và quản lý tài khoản." }
+            ]
+        }
+    },
+
+    dashboard: {
+        title: "Trung tâm",
+        accent: "Điều khiển",
+        subtitle: "Không gian làm việc AI của bạn đã được tối ưu hóa và sẵn sàng triển khai.",
+        welcome: "Chào mừng trở lại",
+        systemOnline: "Hệ thống trực tuyến",
+        lastUpdate: "Cập nhật lần cuối: Vừa xong",
+        analyticsButton: "Phân tích",
+        newEngineButton: "Động cơ mới",
+
+        stats: {
+            globalTeams: "Đội nhóm toàn cầu",
+            connectedWorkspaces: "Không gian làm việc đã kết nối",
+            activeIdentities: "Danh tính hoạt động",
+            brandProfilesManaged: "Hồ sơ thương hiệu được quản lý",
+            forgeVault: "Kho rèn",
+            aiAssetsGenerated: "Tài sản AI đã tạo",
+            distribution: "Phân phối",
+            synchronizedPosts: "Bài đăng đã đồng bộ"
         },
 
-        dashboard: {
-            title: "Trung tâm",
-            accent: "Điều khiển",
-            subtitle: "Không gian làm việc AI của bạn đã được tối ưu hóa và sẵn sàng triển khai.",
-            welcome: "Chào mừng trở lại",
-            systemOnline: "Hệ thống trực tuyến",
-            lastUpdate: "Cập nhật lần cuối: Vừa xong",
-            analyticsButton: "Phân tích",
-            newEngineButton: "Động cơ mới",
-
-            stats: {
-                globalTeams: "Đội nhóm toàn cầu",
-                connectedWorkspaces: "Không gian làm việc đã kết nối",
-                activeIdentities: "Danh tính hoạt động",
-                brandProfilesManaged: "Hồ sơ thương hiệu được quản lý",
-                forgeVault: "Kho rèn",
-                aiAssetsGenerated: "Tài sản AI đã tạo",
-                distribution: "Phân phối",
-                synchronizedPosts: "Bài đăng đã đồng bộ"
-            },
-
-            recentActivity: {
-                title: "Hoạt động gần đây",
-                noActivity: "Không có hoạt động gần đây",
-                viewAll: "Xem tất cả hoạt động"
-            },
-
-            quickActions: {
-                title: "Hành động nhanh",
-                createBrand: "Tạo thương hiệu",
-                createContent: "Tạo nội dung",
-                schedulePost: "Lập lịch bài đăng",
-                viewReports: "Xem báo cáo"
-            },
-
-            upcomingSchedules: {
-                title: "Lịch sắp tới",
-                noSchedules: "Không có lịch sắp tới",
-                scheduled: "Đã lập lịch",
-                viewCalendar: "Xem lịch"
-            },
-
-            pendingApprovals: {
-                title: "Đang chờ phê duyệt",
-                noApprovals: "Không có mục chờ phê duyệt",
-                approve: "Phê duyệt",
-                reject: "Từ chối",
-                viewAll: "Xem tất cả phê duyệt"
-            }
+        recentActivity: {
+            title: "Hoạt động gần đây",
+            noActivity: "Không có hoạt động gần đây",
+            viewAll: "Xem tất cả hoạt động"
         },
 
-        overview: {
-            title: "Tổng quan",
-            description: "Quản lý không gian làm việc và cài đặt",
-            myProfiles: "Hồ sơ của tôi",
-            myTeams: "Đội nhóm của tôi",
-            createProfile: "Tạo hồ sơ",
-            createTeam: "Tạo đội nhóm",
-            viewAll: "Xem tất cả",
-            noProfiles: "Chưa có hồ sơ",
-            noTeams: "Chưa có đội nhóm"
-        },
-
-        brands: {
-            title: "Quản lý thương hiệu",
-            description: "Tạo và quản lý danh tính thương hiệu của bạn",
+        quickActions: {
+            title: "Hành động nhanh",
             createBrand: "Tạo thương hiệu",
-            noBrands: "Chưa có thương hiệu",
-            noBrandsDescription: "Bắt đầu bằng cách tạo thương hiệu đầu tiên của bạn",
-            searchPlaceholder: "Tìm kiếm thương hiệu...",
-            edit: "Chỉnh sửa",
-            delete: "Xóa",
-            brandName: "Tên thương hiệu",
-            brandDescription: "Mô tả thương hiệu",
-            brandWebsite: "Website",
-            brandColor: "Màu thương hiệu",
-            save: "Lưu",
-            cancel: "Hủy",
-            deleteConfirm: "Bạn có chắc muốn xóa thương hiệu này?",
-            created: "Đã tạo",
-            updated: "Đã cập nhật"
-        },
-
-        contents: {
-            title: "Quản lý nội dung",
-            description: "Tạo và quản lý nội dung AI của bạn",
             createContent: "Tạo nội dung",
-            noContents: "Chưa có nội dung",
-            noContentsDescription: "Bắt đầu bằng cách tạo nội dung đầu tiên với AI",
-            searchPlaceholder: "Tìm kiếm nội dung...",
-            filterByBrand: "Lọc theo thương hiệu",
-            filterByStatus: "Lọc theo trạng thái",
-            allBrands: "Tất cả thương hiệu",
-            allStatuses: "Tất cả trạng thái",
-            draft: "Nháp",
-            published: "Đã xuất bản",
+            schedulePost: "Lập lịch bài đăng",
+            viewReports: "Xem báo cáo"
+        },
+
+        upcomingSchedules: {
+            title: "Lịch sắp tới",
+            noSchedules: "Không có lịch sắp tới",
             scheduled: "Đã lập lịch",
-            archived: "Đã lưu trữ",
-            edit: "Chỉnh sửa",
-            delete: "Xóa",
-            publish: "Xuất bản",
-            schedule: "Lập lịch",
-            duplicate: "Nhân bản",
-            preview: "Xem trước",
-            aiGenerate: "Tạo bằng AI",
-            contentTitle: "Tiêu đề nội dung",
-            contentBody: "Nội dung",
-            selectBrand: "Chọn thương hiệu",
-            save: "Lưu",
-            cancel: "Hủy"
+            viewCalendar: "Xem lịch"
         },
 
-        posts: {
-            title: "Quản lý bài đăng",
-            description: "Quản lý và lập lịch bài đăng trên mạng xã hội",
-            createPost: "Tạo bài đăng",
-            noPosts: "Chưa có bài đăng",
-            noPostsDescription: "Bắt đầu bằng cách tạo bài đăng đầu tiên",
-            searchPlaceholder: "Tìm kiếm bài đăng...",
-            filterByPlatform: "Lọc theo nền tảng",
-            filterByStatus: "Lọc theo trạng thái",
-            allPlatforms: "Tất cả nền tảng",
-            allStatuses: "Tất cả trạng thái",
-            pending: "Đang chờ",
-            published: "Đã xuất bản",
-            scheduled: "Đã lập lịch",
-            failed: "Thất bại",
-            edit: "Chỉnh sửa",
-            delete: "Xóa",
-            viewAnalytics: "Xem phân tích",
-            postContent: "Nội dung bài đăng",
-            scheduledTime: "Thời gian lập lịch",
-            platform: "Nền tảng",
-            status: "Trạng thái"
-        },
-
-        campaigns: {
-            title: "Chiến dịch",
-            description: "Quản lý các chiến dịch marketing của bạn",
-            createCampaign: "Tạo chiến dịch",
-            noCampaigns: "Chưa có chiến dịch",
-            noCampaignsDescription: "Bắt đầu bằng cách tạo chiến dịch đầu tiên",
-            campaignName: "Tên chiến dịch",
-            campaignBudget: "Ngân sách",
-            campaignStatus: "Trạng thái",
-            active: "Đang hoạt động",
-            paused: "Đã tạm dừng",
-            completed: "Đã hoàn thành",
-            startDate: "Ngày bắt đầu",
-            endDate: "Ngày kết thúc"
-        },
-
-        calendar: {
-            title: "Lịch nội dung",
-            description: "Xem và quản lý lịch trình nội dung của bạn",
-            today: "Hôm nay",
-            week: "Tuần",
-            month: "Tháng",
-            agenda: "Lịch trình",
-            noEvents: "Không có sự kiện",
-            addEvent: "Thêm sự kiện",
-            viewDetails: "Xem chi tiết"
-        },
-
-        analytics: {
-            title: "Phân tích",
-            description: "Theo dõi hiệu suất và số liệu",
-            overview: "Tổng quan",
-            engagement: "Tương tác",
-            reach: "Tiếp cận",
-            impressions: "Lượt hiển thị",
-            clicks: "Lượt nhấp",
-            conversions: "Chuyển đổi",
-            followers: "Người theo dõi",
-            growth: "Tăng trưởng",
-            topContent: "Nội dung hàng đầu",
-            topPlatforms: "Nền tảng hàng đầu",
-            dateRange: "Khoảng thời gian",
-            last7Days: "7 ngày qua",
-            last30Days: "30 ngày qua",
-            last90Days: "90 ngày qua",
-            custom: "Tùy chỉnh",
-            exportReport: "Xuất báo cáo"
-        },
-
-        teams: {
-            title: "Đội nhóm",
-            description: "Quản lý đội nhóm và thành viên",
-            createTeam: "Tạo đội nhóm",
-            noTeams: "Chưa có đội nhóm",
-            noTeamsDescription: "Bắt đầu bằng cách tạo đội nhóm đầu tiên",
-            teamName: "Tên đội nhóm",
-            teamMembers: "Thành viên",
-            inviteMember: "Mời thành viên",
-            role: "Vai trò",
-            owner: "Chủ sở hữu",
-            admin: "Quản trị viên",
-            member: "Thành viên",
-            viewer: "Người xem",
-            pending: "Đang chờ",
-            active: "Đang hoạt động",
-            email: "Email",
-            name: "Tên",
-            joinedDate: "Ngày tham gia",
-            actions: "Hành động",
-            remove: "Xóa",
-            changeRole: "Đổi vai trò"
-        },
-
-        approvals: {
-            title: "Phê duyệt",
-            description: "Xem xét và phê duyệt nội dung",
-            pending: "Đang chờ",
-            approved: "Đã phê duyệt",
-            rejected: "Đã từ chối",
+        pendingApprovals: {
+            title: "Đang chờ phê duyệt",
             noApprovals: "Không có mục chờ phê duyệt",
             approve: "Phê duyệt",
             reject: "Từ chối",
-            comment: "Bình luận",
-            requestedBy: "Yêu cầu bởi",
-            requestedAt: "Yêu cầu lúc",
-            reviewedBy: "Xem xét bởi",
-            reviewedAt: "Xem xét lúc"
-        },
-
-        settings: {
-            title: "Cài đặt",
-            description: "Quản lý cài đặt tài khoản và ứng dụng",
-            profile: "Hồ sơ",
-            account: "Tài khoản",
-            security: "Bảo mật",
-            notifications: "Thông báo",
-            billing: "Thanh toán",
-            integrations: "Tích hợp",
-            preferences: "Tùy chọn",
-            language: "Ngôn ngữ",
-            theme: "Giao diện",
-            timezone: "Múi giờ",
-            save: "Lưu thay đổi",
-            cancel: "Hủy",
-            changePassword: "Đổi mật khẩu",
-            currentPassword: "Mật khẩu hiện tại",
-            newPassword: "Mật khẩu mới",
-            confirmPassword: "Xác nhận mật khẩu",
-            twoFactor: "Xác thực hai yếu tố",
-            enable: "Bật",
-            disable: "Tắt",
-            apiKeys: "Khóa API",
-            generateKey: "Tạo khóa mới",
-            revokeKey: "Thu hồi khóa"
-        },
-
-        common: {
-            search: "Tìm kiếm",
-            filter: "Lọc",
-            sort: "Sắp xếp",
-            export: "Xuất",
-            import: "Nhập",
-            refresh: "Làm mới",
-            loading: "Đang tải...",
-            saving: "Đang lưu...",
-            saved: "Đã lưu",
-            error: "Lỗi",
-            success: "Thành công",
-            warning: "Cảnh báo",
-            info: "Thông tin",
-            confirm: "Xác nhận",
-            yes: "Có",
-            no: "Không",
-            ok: "OK",
-            close: "Đóng",
-            back: "Quay lại",
-            next: "Tiếp theo",
-            previous: "Trước",
-            finish: "Hoàn thành",
-            skip: "Bỏ qua",
-            required: "Bắt buộc",
-            optional: "Tùy chọn",
-            selectAll: "Chọn tất cả",
-            deselectAll: "Bỏ chọn tất cả",
-            actions: "Hành động",
-            viewMore: "Xem thêm",
-            viewLess: "Thu gọn",
-            showMore: "Hiển thị thêm",
-            showLess: "Hiển thị ít hơn",
-            viewAll: "Xem tất cả",
-            quickAccess: "Truy cập nhanh vào các quy trình AI cốt lõi",
-            coreOperations: "Hoạt động cốt lõi",
-            suggested: "Đề xuất",
-            recommended: "Được đề xuất",
-            setup: "Thiết lập nhanh"
-        },
-
-        sidebar: {
-            commandCenter: "Trung tâm điều khiển",
-            identityMatrix: "Ma trận danh tính",
-            activeSignals: "Tín hiệu hoạt động",
-            neuralForge: "Rèn thần kinh",
-            connectors: "Kết nối",
-            temporalGrid: "Lưới thời gian",
-            broadcasts: "Phát sóng",
-            governance: "Quản trị",
-            operatives: "Nhà điều hành",
-            coreSystems: "Hệ thống cốt lõi",
-            workflow: "Quy trình làm việc",
-            console: "Bảng điều khiển"
+            viewAll: "Xem tất cả phê duyệt"
         }
     },
+
+    overview: {
+        title: "Tổng quan",
+        description: "Quản lý không gian làm việc và cài đặt",
+        myProfiles: "Hồ sơ của tôi",
+        myTeams: "Đội nhóm của tôi",
+        createProfile: "Tạo hồ sơ",
+        createTeam: "Tạo đội nhóm",
+        viewAll: "Xem tất cả",
+        noProfiles: "Chưa có hồ sơ",
+        noTeams: "Chưa có đội nhóm"
+    },
+
+    brands: {
+        title: "Quản lý thương hiệu",
+        description: "Tạo và quản lý danh tính thương hiệu của bạn",
+        createBrand: "Tạo thương hiệu",
+        noBrands: "Chưa có thương hiệu",
+        noBrandsDescription: "Bắt đầu bằng cách tạo thương hiệu đầu tiên của bạn",
+        searchPlaceholder: "Tìm kiếm thương hiệu...",
+        edit: "Chỉnh sửa",
+        delete: "Xóa",
+        brandName: "Tên thương hiệu",
+        brandDescription: "Mô tả thương hiệu",
+        brandWebsite: "Website",
+        brandColor: "Màu thương hiệu",
+        save: "Lưu",
+        cancel: "Hủy",
+        deleteConfirm: "Bạn có chắc muốn xóa thương hiệu này?",
+        created: "Đã tạo",
+        updated: "Đã cập nhật"
+    },
+
+    contents: {
+        title: "Quản lý nội dung",
+        description: "Tạo và quản lý nội dung AI của bạn",
+        createContent: "Tạo nội dung",
+        noContents: "Chưa có nội dung",
+        noContentsDescription: "Bắt đầu bằng cách tạo nội dung đầu tiên với AI",
+        searchPlaceholder: "Tìm kiếm nội dung...",
+        filterByBrand: "Lọc theo thương hiệu",
+        filterByStatus: "Lọc theo trạng thái",
+        allBrands: "Tất cả thương hiệu",
+        allStatuses: "Tất cả trạng thái",
+        draft: "Nháp",
+        published: "Đã xuất bản",
+        scheduled: "Đã lập lịch",
+        archived: "Đã lưu trữ",
+        edit: "Chỉnh sửa",
+        delete: "Xóa",
+        publish: "Xuất bản",
+        schedule: "Lập lịch",
+        duplicate: "Nhân bản",
+        preview: "Xem trước",
+        aiGenerate: "Tạo bằng AI",
+        contentTitle: "Tiêu đề nội dung",
+        contentBody: "Nội dung",
+        selectBrand: "Chọn thương hiệu",
+        save: "Lưu",
+        cancel: "Hủy"
+    },
+
+    posts: {
+        title: "Quản lý bài đăng",
+        description: "Quản lý và lập lịch bài đăng trên mạng xã hội",
+        createPost: "Tạo bài đăng",
+        noPosts: "Chưa có bài đăng",
+        noPostsDescription: "Bắt đầu bằng cách tạo bài đăng đầu tiên",
+        searchPlaceholder: "Tìm kiếm bài đăng...",
+        filterByPlatform: "Lọc theo nền tảng",
+        filterByStatus: "Lọc theo trạng thái",
+        allPlatforms: "Tất cả nền tảng",
+        allStatuses: "Tất cả trạng thái",
+        pending: "Đang chờ",
+        published: "Đã xuất bản",
+        scheduled: "Đã lập lịch",
+        failed: "Thất bại",
+        edit: "Chỉnh sửa",
+        delete: "Xóa",
+        viewAnalytics: "Xem phân tích",
+        postContent: "Nội dung bài đăng",
+        scheduledTime: "Thời gian lập lịch",
+        platform: "Nền tảng",
+        status: "Trạng thái"
+    },
+
+    campaigns: {
+        title: "Chiến dịch",
+        description: "Quản lý các chiến dịch marketing của bạn",
+        createCampaign: "Tạo chiến dịch",
+        noCampaigns: "Chưa có chiến dịch",
+        noCampaignsDescription: "Bắt đầu bằng cách tạo chiến dịch đầu tiên",
+        campaignName: "Tên chiến dịch",
+        campaignBudget: "Ngân sách",
+        campaignStatus: "Trạng thái",
+        active: "Đang hoạt động",
+        paused: "Đã tạm dừng",
+        completed: "Đã hoàn thành",
+        startDate: "Ngày bắt đầu",
+        endDate: "Ngày kết thúc"
+    },
+
+    calendar: {
+        title: "Lịch nội dung",
+        description: "Xem và quản lý lịch trình nội dung của bạn",
+        today: "Hôm nay",
+        week: "Tuần",
+        month: "Tháng",
+        agenda: "Lịch trình",
+        noEvents: "Không có sự kiện",
+        addEvent: "Thêm sự kiện",
+        viewDetails: "Xem chi tiết"
+    },
+
+    analytics: {
+        title: "Phân tích",
+        description: "Theo dõi hiệu suất và số liệu",
+        overview: "Tổng quan",
+        engagement: "Tương tác",
+        reach: "Tiếp cận",
+        impressions: "Lượt hiển thị",
+        clicks: "Lượt nhấp",
+        conversions: "Chuyển đổi",
+        followers: "Người theo dõi",
+        growth: "Tăng trưởng",
+        topContent: "Nội dung hàng đầu",
+        topPlatforms: "Nền tảng hàng đầu",
+        dateRange: "Khoảng thời gian",
+        last7Days: "7 ngày qua",
+        last30Days: "30 ngày qua",
+        last90Days: "90 ngày qua",
+        custom: "Tùy chỉnh",
+        exportReport: "Xuất báo cáo"
+    },
+
+    teams: {
+        title: "Đội nhóm",
+        description: "Quản lý đội nhóm và thành viên",
+        createTeam: "Tạo đội nhóm",
+        noTeams: "Chưa có đội nhóm",
+        noTeamsDescription: "Bắt đầu bằng cách tạo đội nhóm đầu tiên",
+        teamName: "Tên đội nhóm",
+        teamMembers: "Thành viên",
+        inviteMember: "Mời thành viên",
+        role: "Vai trò",
+        owner: "Chủ sở hữu",
+        admin: "Quản trị viên",
+        member: "Thành viên",
+        viewer: "Người xem",
+        pending: "Đang chờ",
+        active: "Đang hoạt động",
+        email: "Email",
+        name: "Tên",
+        joinedDate: "Ngày tham gia",
+        actions: "Hành động",
+        remove: "Xóa",
+        changeRole: "Đổi vai trò"
+    },
+
+    approvals: {
+        title: "Phê duyệt",
+        description: "Xem xét và phê duyệt nội dung",
+        pending: "Đang chờ",
+        approved: "Đã phê duyệt",
+        rejected: "Đã từ chối",
+        noApprovals: "Không có mục chờ phê duyệt",
+        approve: "Phê duyệt",
+        reject: "Từ chối",
+        comment: "Bình luận",
+        requestedBy: "Yêu cầu bởi",
+        requestedAt: "Yêu cầu lúc",
+        reviewedBy: "Xem xét bởi",
+        reviewedAt: "Xem xét lúc"
+    },
+
+    settings: {
+        title: "Cài đặt",
+        description: "Quản lý cài đặt tài khoản và ứng dụng",
+        profile: "Hồ sơ",
+        account: "Tài khoản",
+        security: "Bảo mật",
+        notifications: "Thông báo",
+        billing: "Thanh toán",
+        integrations: "Tích hợp",
+        preferences: "Tùy chọn",
+        language: "Ngôn ngữ",
+        theme: "Giao diện",
+        timezone: "Múi giờ",
+        save: "Lưu thay đổi",
+        cancel: "Hủy",
+        changePassword: "Đổi mật khẩu",
+        currentPassword: "Mật khẩu hiện tại",
+        newPassword: "Mật khẩu mới",
+        confirmPassword: "Xác nhận mật khẩu",
+        twoFactor: "Xác thực hai yếu tố",
+        enable: "Bật",
+        disable: "Tắt",
+        apiKeys: "Khóa API",
+        generateKey: "Tạo khóa mới",
+        revokeKey: "Thu hồi khóa"
+    },
+
+    userMenu: {
+        preferences: "Tùy chỉnh",
+        featurePreviews: "Xem trước tính năng",
+        helpNexus: "Trung tâm trợ giúp",
+        interfaceMode: "Chế độ giao diện",
+        logout: "NGẮT KẾT NỐI"
+    },
+
+    search: "Tìm kiếm",
+    filter: "Lọc",
+    sort: "Sắp xếp",
+    export: "Xuất",
+    import: "Nhập",
+    refresh: "Làm mới",
+    loading: "Đang tải...",
+    saving: "Đang lưu...",
+    saved: "Đã lưu",
+    error: "Lỗi",
+    success: "Thành công",
+    warning: "Cảnh báo",
+    info: "Thông tin",
+    confirm: "Xác nhận",
+    yes: "Có",
+    no: "Không",
+    ok: "OK",
+    close: "Đóng",
+    back: "Quay lại",
+    next: "Tiếp theo",
+    previous: "Trước đó",
+    finish: "Hoàn thành",
+    skip: "Bỏ qua",
+    required: "Bắt buộc",
+    optional: "Tùy chọn",
+    selectAll: "Chọn tất cả",
+    deselectAll: "Bỏ chọn tất cả",
+    actions: "Hành động",
+    viewMore: "Xem thêm",
+    viewLess: "Ẩn bớt",
+    showMore: "Hiện thêm",
+    showLess: "Hiện ít hơn",
+    viewAll: "Xem tất cả",
+    quickAccess: "Truy cập nhanh vào các quy trình AI cốt lõi",
+    coreOperations: "Hoạt động cốt lõi",
+    suggested: "Đề xuất",
+    recommended: "Khuyến nghị",
+    setup: "Thiết lập nhanh",
+
+    sidebar: {
+        commandCenter: "Trung tâm điều khiển",
+        identityMatrix: "Ma trận danh tính",
+        activeSignals: "Tín hiệu hoạt động",
+        neuralForge: "Rèn thần kinh",
+        connectors: "Kết nối",
+        temporalGrid: "Lưới thời gian",
+        broadcasts: "Phát sóng",
+        governance: "Quản trị",
+        operatives: "Nhà điều hành",
+        coreSystems: "Hệ thống cốt lõi",
+        workflow: "Quy trình làm việc",
+        console: "Bảng điều khiển"
+    }
+},
     auth: {
         welcomeBack: "Chào mừng trở lại",
         signInSubtitle: "Đăng nhập để quản lý các chiến dịch tiếp thị AI của bạn",

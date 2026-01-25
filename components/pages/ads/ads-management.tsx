@@ -180,7 +180,7 @@ export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/camp
               Launch Preview
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-[1200px] w-[95vw] h-[90vh] p-0 overflow-hidden border-2 rounded-[32px]">
+          <DialogContent className="max-w-[1200px] w-[95vw] h-[90vh] p-0 overflow-hidden border-2 rounded-2xl">
             <DialogHeader className="p-8 border-b bg-muted/20">
               <DialogTitle className="text-2xl font-black italic uppercase italic">Aethereal <span className="text-primary italic">Preview</span></DialogTitle>
               <DialogDescription className="font-bold text-muted-foreground uppercase tracking-widest">Live rendering of ad creative across platforms</DialogDescription>
@@ -228,7 +228,7 @@ export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/camp
                 Initialize Ad
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] flex flex-col p-0 border-2 rounded-[32px] overflow-hidden">
+            <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] flex flex-col p-0 border-2 rounded-2xl overflow-hidden">
               <DialogHeader className="p-8 border-b bg-muted/20">
                 <DialogTitle className="text-2xl font-black italic uppercase underline decoration-primary decoration-4 underline-offset-8">Configure New Signal</DialogTitle>
               </DialogHeader>
@@ -242,7 +242,7 @@ export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/camp
 
       {/* Control Station */}
       <div className="space-y-6">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 p-6 rounded-[32px] border-2 border-dashed bg-card/40 backdrop-blur-md">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 p-6 rounded-2xl border-2 border-dashed bg-card/40 backdrop-blur-md">
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
             <div className="relative w-full sm:w-80 group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
@@ -281,7 +281,7 @@ export function AdsManagement({ campaignId, adSetId, basePath = '/dashboard/camp
           </div>
         </div>
 
-        <Card className="rounded-[40px] border-2 bg-card/40 overflow-hidden shadow-2xl shadow-foreground/5">
+        <Card className="rounded-3xl border-2 bg-card/40 overflow-hidden shadow-2xl shadow-foreground/5">
           <CustomTable
             columns={columns}
             data={data}
@@ -329,7 +329,7 @@ function AdPreviewBody({ adId }: { adId: string }) {
           </Button>
         </div>
       </div>
-      <div className="flex-1 min-h-[400px] border-2 border-dashed rounded-[32px] bg-background/50 backdrop-blur-sm overflow-hidden flex flex-col items-center justify-start p-10 relative">
+      <div className="flex-1 min-h-[400px] border-2 border-dashed rounded-2xl bg-background/50 backdrop-blur-sm overflow-hidden flex flex-col items-center justify-start p-10 relative">
         {isLoading ? (
           <div className="my-auto flex flex-col items-center gap-4">
             <div className="size-16 rounded-full border-4 border-primary border-t-transparent animate-spin" />

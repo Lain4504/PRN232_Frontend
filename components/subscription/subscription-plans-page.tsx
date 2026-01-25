@@ -15,12 +15,14 @@ interface SubscriptionPlansPageProps {
   onPlanSelect?: (plan: { id: number; name: string; price: number }) => void
   showCurrentPlan?: boolean
   profileId?: string
+  isLoading?: boolean
 }
 
 export function SubscriptionPlansPage({
   onPlanSelect,
   showCurrentPlan = true,
-  profileId
+  profileId,
+  isLoading = false
 }: SubscriptionPlansPageProps) {
   const router = useRouter()
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null)
@@ -52,6 +54,8 @@ export function SubscriptionPlansPage({
   ]
 
   const handlePlanSelect = (plan: typeof plans[0]) => {
+    if (isLoading) return
+
     if (onPlanSelect) {
       onPlanSelect({
         id: plan.id,
@@ -196,13 +200,14 @@ export function SubscriptionPlansPage({
 
               <CardFooter className="p-8 pt-0">
                 <Button
+                  disabled={isLoading}
                   className={`w-full h-11 rounded-lg font-bold transition-all ${plan.isPopular
                     ? 'bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20'
                     : 'bg-muted/50 hover:bg-muted font-semibold text-foreground border-none shadow-none'
                     }`}
                   onClick={() => handlePlanSelect(plan)}
                 >
-                  {plan.price === 0 ? 'Start Free' : 'Choose Plan'}
+                  {isLoading ? 'Processing...' : (plan.price === 0 ? 'Start Free' : 'Choose Plan')}
                 </Button>
               </CardFooter>
             </Card>

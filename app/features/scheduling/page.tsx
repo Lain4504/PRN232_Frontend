@@ -41,7 +41,7 @@ export default function SchedulingPage() {
                             { icon: Repeat, title: "Automated Loops", desc: "Easily set up recurring posts and evergreen content sequences.", color: "text-indigo-500" },
                             { icon: Zap, title: "Pause All Posts", desc: "Instantly halt all upcoming posts across your entire account in one click.", color: "text-orange-500" },
                         ].map((mod) => (
-                            <div key={mod.title} className="p-8 rounded-[2rem] bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group">
+                            <div key={mod.title} className="p-8 rounded-2xl bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group">
                                 <div className={`h-12 w-12 rounded-xl bg-muted/50 flex items-center justify-center mb-6 ${mod.color} group-hover:scale-110 transition-transform`}>
                                     <mod.icon className="h-6 w-6 stroke-[2.5]" />
                                 </div>
@@ -51,7 +51,7 @@ export default function SchedulingPage() {
                         ))}
                     </section>
 
-                    <section className="relative py-24 px-10 rounded-[3rem] bg-amber-600 overflow-hidden group text-center space-y-10 shadow-2xl shadow-amber-500/20">
+                    <section className="relative py-24 px-10 rounded-3xl bg-amber-600 overflow-hidden group text-center space-y-10 shadow-2xl shadow-amber-500/20">
                         <div className="absolute inset-0 bg-gradient-to-br from-amber-600 via-orange-700 to-amber-900 opacity-90" />
                         <div className="space-y-6 relative z-10">
                             <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none">Control the <br /><span className="text-white/40 italic">Timeline</span></h2>

@@ -173,12 +173,12 @@ const DashboardContent = () => {
         <div className="grid gap-10 lg:grid-cols-12">
           {/* Quick Hub */}
           <div className="lg:col-span-5">
-            <QuickActionsPanel className="h-full border-2 border-dashed bg-muted/5 rounded-[40px] hover:bg-muted/10 transition-colors" />
+            <QuickActionsPanel className="h-full border-2 border-dashed bg-muted/5 rounded-3xl hover:bg-muted/10 transition-colors" />
           </div>
 
           {/* Performance Node */}
           <div className="lg:col-span-7 space-y-6">
-            <Card className="rounded-[40px] border-2 bg-gradient-to-br from-card to-card/50 shadow-2xl shadow-foreground/5 overflow-hidden">
+            <Card className="rounded-3xl border-2 bg-gradient-to-br from-card to-card/50 shadow-2xl shadow-foreground/5 overflow-hidden">
               <CardHeader className="py-8 px-10 border-b bg-muted/20">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
@@ -220,7 +220,7 @@ const DashboardContent = () => {
                   </div>
                 </div>
 
-                <div className="p-8 rounded-[32px] bg-primary/5 border-2 border-primary/10 flex items-start gap-6 relative overflow-hidden group hover:border-primary/30 transition-all">
+                <div className="p-8 rounded-2xl bg-primary/5 border-2 border-primary/10 flex items-start gap-6 relative overflow-hidden group hover:border-primary/30 transition-all">
                   <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform group-hover:opacity-10">
                     <Sparkles className="size-20 text-primary" />
                   </div>

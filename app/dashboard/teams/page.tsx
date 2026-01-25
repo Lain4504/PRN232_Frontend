@@ -148,7 +148,7 @@ function TeamsPageContent() {
   ], []);
 
   const TeamsTableSkeleton = () => (
-    <div className="rounded-[2.5rem] bg-card/60 border border-border/40 overflow-hidden">
+    <div className="rounded-3xl bg-card/60 border border-border/40 overflow-hidden">
       <Skeleton className="h-16 w-full rounded-none opacity-20" />
       <div className="p-6 space-y-4">
         {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-xl opacity-10" />)}
@@ -215,7 +215,7 @@ function TeamsPageContent() {
         </div>
 
         {/* Toolbar */}
-        <div className="sticky top-20 z-40 flex flex-col md:flex-row items-center justify-between gap-6 p-5 bg-background/60 backdrop-blur-xl border border-border/40 rounded-[2rem] shadow-xl shadow-foreground/[0.02]">
+        <div className="sticky top-20 z-40 flex flex-col md:flex-row items-center justify-between gap-6 p-5 bg-background/60 backdrop-blur-xl border border-border/40 rounded-2xl shadow-xl shadow-foreground/[0.02]">
           <div className="relative w-full md:w-96 group">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
@@ -243,23 +243,23 @@ function TeamsPageContent() {
           {userLoading || isLoading ? (
             <TeamsTableSkeleton />
           ) : isError ? (
-            <div className="flex flex-col items-center justify-center h-96 text-center bg-destructive/5 rounded-[3rem] border border-destructive/20 p-10">
+            <div className="flex flex-col items-center justify-center h-96 text-center bg-destructive/5 rounded-3xl border border-destructive/20 p-10">
               <AlertCircle className="h-16 w-16 text-destructive mb-6 stroke-[1.5]" />
               <h3 className="text-2xl font-black uppercase tracking-tight text-destructive mb-2">System Error</h3>
               <p className="text-muted-foreground font-medium">Failed to retrieve team data. Please try again later.</p>
             </div>
           ) : !checkFeatureAccess(profileType, 'teams') ? (
-            <div className="flex flex-col items-center justify-center h-96 text-center bg-muted/10 rounded-[3rem] border border-border/40 p-10">
+            <div className="flex flex-col items-center justify-center h-96 text-center bg-muted/10 rounded-3xl border border-border/40 p-10">
               <Shield className="h-16 w-16 text-muted-foreground mb-6 stroke-[1.5]" />
               <h3 className="text-2xl font-black uppercase tracking-tight mb-2">Restricted Access</h3>
               <p className="text-muted-foreground max-w-sm mx-auto mb-6">Advanced team management requires higher clearance level. Upgrade your subscription to access this feature.</p>
               <Button variant="outline" className="rounded-xl border-primary/20 text-primary hover:bg-primary/5">View Plans</Button>
             </div>
           ) : rows.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center border border-border/40 border-dashed rounded-[3rem] bg-muted/5 relative overflow-hidden group">
+            <div className="flex flex-col items-center justify-center py-24 text-center border border-border/40 border-dashed rounded-3xl bg-muted/5 relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,var(--color-primary)_0%,transparent_50%)] opacity-[0.02]" />
 
-              <div className="h-24 w-24 rounded-[2rem] bg-card flex items-center justify-center shadow-xl border border-border/40 mb-8 group-hover:scale-110 transition-transform duration-500">
+              <div className="h-24 w-24 rounded-2xl bg-card flex items-center justify-center shadow-xl border border-border/40 mb-8 group-hover:scale-110 transition-transform duration-500">
                 <Plus className="h-10 w-10 text-primary/40 stroke-[1.5]" />
               </div>
 
@@ -284,8 +284,8 @@ function TeamsPageContent() {
             </div>
           ) : (
             <div className="group relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition duration-1000" />
-              <Card className="relative border-border/40 bg-card/60 backdrop-blur-md rounded-[2.5rem] overflow-hidden shadow-2xl">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition duration-1000" />
+              <Card className="relative border-border/40 bg-card/60 backdrop-blur-md rounded-3xl overflow-hidden shadow-2xl">
                 <CustomTable
                   columns={columns}
                   data={rows}
@@ -340,8 +340,8 @@ const PageSkeleton = () => (
           <Skeleton className="h-12 w-64 rounded-xl" />
           <Skeleton className="h-12 w-32 rounded-xl" />
         </div>
-        <Skeleton className="h-16 w-full rounded-[2rem] mb-10" />
-        <div className="rounded-[2.5rem] bg-card border border-border/40 overflow-hidden h-[500px]" />
+        <Skeleton className="h-16 w-full rounded-2xl mb-10" />
+        <div className="rounded-3xl bg-card border border-border/40 overflow-hidden h-[500px]" />
       </div>
     </div>
   </div>

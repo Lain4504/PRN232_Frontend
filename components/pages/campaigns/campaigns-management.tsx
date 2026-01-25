@@ -235,9 +235,9 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-12 animate-pulse">
       <div className="h-8 w-64 bg-muted rounded-xl" />
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {[1, 2, 3, 4].map(i => <div key={i} className="h-40 bg-muted rounded-[32px]" />)}
+        {[1, 2, 3, 4].map(i => <div key={i} className="h-40 bg-muted rounded-2xl" />)}
       </div>
-      <div className="h-[600px] bg-muted rounded-[40px]" />
+      <div className="h-[600px] bg-muted rounded-3xl" />
     </div>
   );
 
@@ -267,7 +267,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
 
         <div className="flex items-center gap-4">
           <CampaignModal mode="create" onSuccess={refetchCampaigns}>
-            <Button size="lg" className="rounded-[20px] h-16 px-10 font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary">
+            <Button size="lg" className="rounded-xl h-16 px-10 font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary">
               <Plus className="mr-3 size-6" />
               {t("campaigns.createCampaign")}
             </Button>
@@ -282,7 +282,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
           { label: "Global Registry", value: campaigns.length, icon: Megaphone, color: "text-blue-500", bg: "bg-blue-500/10" },
           { label: "Efficiency Index", value: "92/100", icon: Sparkles, color: "text-amber-500", bg: "bg-amber-500/10" },
         ].map((stat, i) => (
-          <Card key={i} className="rounded-[32px] border-2 bg-card/40 p-8 shadow-sm group hover:border-primary/50 transition-all cursor-pointer">
+          <Card key={i} className="rounded-2xl border-2 bg-card/40 p-8 shadow-sm group hover:border-primary/50 transition-all cursor-pointer">
             <div className="flex items-center justify-between mb-6">
               <div className={cn("size-12 rounded-2xl flex items-center justify-center shadow-inner", stat.bg, stat.color)}>
                 <stat.icon className="size-6 transition-transform group-hover:rotate-12" />
@@ -297,7 +297,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
         ))}
       </div>
 
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-6 p-6 rounded-[32px] border-2 bg-muted/10 backdrop-blur-md">
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-6 p-6 rounded-2xl border-2 bg-muted/10 backdrop-blur-md">
         <div className="relative w-full lg:w-[400px] group">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
@@ -345,7 +345,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
       </div>
 
       {filteredCampaigns.length > 0 ? (
-        <Card className="rounded-[40px] border-2 bg-card/40 overflow-hidden shadow-2xl shadow-foreground/5 relative group">
+        <Card className="rounded-3xl border-2 bg-card/40 overflow-hidden shadow-2xl shadow-foreground/5 relative group">
           <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 transition-transform duration-1000">
             <Zap className="size-40 text-primary" />
           </div>
@@ -358,8 +358,8 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
           />
         </Card>
       ) : (
-        <div className="flex flex-col items-center justify-center py-40 px-6 text-center border-2 border-dashed rounded-[40px] bg-muted/5 font-fira-sans">
-          <div className="size-24 rounded-[32px] bg-primary/5 flex items-center justify-center mb-10 text-primary border-2 border-primary/10 shadow-inner">
+        <div className="flex flex-col items-center justify-center py-40 px-6 text-center border-2 border-dashed rounded-3xl bg-muted/5 font-fira-sans">
+          <div className="size-24 rounded-2xl bg-primary/5 flex items-center justify-center mb-10 text-primary border-2 border-primary/10 shadow-inner">
             <Megaphone className="size-12" />
           </div>
           <div className="space-y-4 max-w-md">
@@ -381,7 +381,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
           { title: "Smart Synthetic Monitoring", desc: "Neural engines are monitoring all clusters. CTR above 2.8% detected in Sector Alpha warrants a budget scaling maneuver.", icon: Sparkles, color: "text-amber-500", bg: "bg-amber-500/10" },
           { title: "Velocity Optimization", desc: "Current throughput indicates peak engagement during the 19:00 corridor. Align scheduled posts for maximum saturation.", icon: Target, color: "text-blue-500", bg: "bg-blue-500/10" },
         ].map((insight, i) => (
-          <Card key={i} className="p-10 rounded-[40px] border-2 bg-card/40 flex items-start gap-8 shadow-xl shadow-foreground/5 relative overflow-hidden group">
+          <Card key={i} className="p-10 rounded-3xl border-2 bg-card/40 flex items-start gap-8 shadow-xl shadow-foreground/5 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:scale-125 transition-transform duration-1000">
               <insight.icon className="size-32" />
             </div>
@@ -397,7 +397,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
       </div>
 
       <AlertDialog open={!!deleteCampaignId} onOpenChange={() => setDeleteCampaignId(null)}>
-        <AlertDialogContent className="rounded-[40px] border-2 bg-background/95 backdrop-blur-2xl p-10 max-w-md font-fira-sans border-destructive/20 shadow-2xl shadow-destructive/10">
+        <AlertDialogContent className="rounded-3xl border-2 bg-background/95 backdrop-blur-2xl p-10 max-w-md font-fira-sans border-destructive/20 shadow-2xl shadow-destructive/10">
           <AlertDialogHeader className="space-y-6">
             <div className="size-20 rounded-3xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto border border-destructive/20 shadow-inner">
               <AlertTriangle className="size-10" />

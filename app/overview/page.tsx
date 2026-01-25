@@ -35,7 +35,6 @@ export default function OverviewPage() {
     router.push('/dashboard')
   }
 
-
   // Debug info
   console.log('Profiles page debug:', {
     userLoading,
@@ -47,17 +46,13 @@ export default function OverviewPage() {
 
   if (userLoading || profilesLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="max-w-7xl mx-auto p-6 lg:p-10 space-y-8">
-          <div className="space-y-4">
-            <div className="h-10 w-48 bg-muted animate-pulse rounded-lg" />
-            <div className="h-5 w-80 bg-muted animate-pulse rounded-lg" />
-          </div>
-          <div className="h-12 w-full max-w-md bg-muted animate-pulse rounded-xl" />
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="rounded-xl border shadow-none bg-muted/5 animate-pulse h-48" />
-            ))}
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
+        <div className="flex flex-col space-y-3 w-full max-w-sm">
+          <div className="h-4 w-1/3 bg-muted animate-pulse rounded" />
+          <div className="h-10 w-full bg-muted animate-pulse rounded-md" />
+          <div className="space-y-2 pt-4">
+            <div className="h-24 w-full bg-muted animate-pulse rounded-lg" />
+            <div className="h-24 w-full bg-muted animate-pulse rounded-lg" />
           </div>
         </div>
       </div>
@@ -70,58 +65,56 @@ export default function OverviewPage() {
   }) : []
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background font-fira-sans">
       <div className="max-w-7xl mx-auto p-6 lg:p-10 space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-2">
+          <div className="space-y-1">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              {t("overview.myProfiles")}
+              {t("overview.myProfiles", "Hồ Sơ Của Tôi")}
             </h1>
-            <p className="text-muted-foreground font-medium">
-              {t("overview.description")}
+            <p className="text-muted-foreground font-medium text-lg">
+              {t("overview.description", "Quản lý và truy cập các không gian làm việc của bạn.")}
             </p>
           </div>
           <Link href="/overview/profile/new">
-            <Button className="rounded-lg h-10 px-6 font-semibold">
+            <Button className="h-10 px-6 font-semibold shadow-sm hover:shadow-md transition-all">
               <Plus className="h-4 w-4 mr-2" />
-              {t("overview.createProfile")}
+              {t("overview.createProfile", "Tạo Hồ Sơ Mới")}
             </Button>
           </Link>
         </div>
 
         {/* Search */}
-        <div className="relative max-w-md">
+        <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search profiles..."
+            placeholder="Tìm kiếm hồ sơ..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 h-11 rounded-lg bg-background border-border/60 font-medium"
+            className="pl-9 h-10 bg-background border-input font-medium transition-colors focus-visible:ring-primary"
           />
         </div>
 
         {/* Profiles Grid */}
         {filteredProfiles.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 px-6 text-center border border-dashed rounded-xl bg-muted/5">
-            <div className="h-16 w-16 rounded-lg bg-muted flex items-center justify-center mb-6">
-              <Building2 className="h-8 w-8 text-muted-foreground/40" />
+          <div className="flex flex-col items-center justify-center py-20 px-6 text-center border border-dashed rounded-xl bg-muted/5">
+            <div className="h-16 w-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-6 border border-white/5">
+              <Building2 className="h-8 w-8 text-muted-foreground/60" />
             </div>
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold">{t("overview.noProfiles")}</h3>
+            <div className="space-y-2 mb-8">
+              <h3 className="text-lg font-bold">{t("overview.noProfiles", "Không tìm thấy hồ sơ")}</h3>
               <p className="text-muted-foreground max-w-sm mx-auto">
-                {searchQuery ? 'Try searching with a different term.' : t("overview.description")}
+                {searchQuery ? 'Thử tìm kiếm với từ khóa khác.' : 'Bạn chưa có hồ sơ nào. Hãy tạo mới để bắt đầu.'}
               </p>
             </div>
             {!searchQuery && (
-              <div className="mt-8">
-                <Link href="/overview/profile/new">
-                  <Button className="rounded-lg h-10 px-8 font-semibold">
-                    <Plus className="h-4 w-4 mr-2" />
-                    {t("overview.createProfile")}
-                  </Button>
-                </Link>
-              </div>
+              <Link href="/overview/profile/new">
+                <Button className="h-10 px-8 font-semibold shadow-sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  {t("overview.createProfile", "Tạo Hồ Sơ Ngay")}
+                </Button>
+              </Link>
             )}
           </div>
         ) : (
@@ -129,12 +122,12 @@ export default function OverviewPage() {
             {filteredProfiles.map((profile) => (
               <Card
                 key={profile.id}
-                className="group rounded-xl border shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden bg-card"
+                className="group rounded-xl border border-border/50 shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer overflow-hidden bg-card"
                 onClick={() => handleProfileSelect(profile)}
               >
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center border shrink-0">
+                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/10 shrink-0">
                       {profile.avatarUrl ? (
                         <img
                           src={profile.avatarUrl}
@@ -148,17 +141,17 @@ export default function OverviewPage() {
 
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
-                        {profile.name || profile.company_name || 'Unnamed Profile'}
+                        {profile.name || profile.company_name || 'Hồ Sơ Chưa Đặt Tên'}
                       </h3>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-2 mt-1.5">
                         <Badge
                           variant="secondary"
-                          className={`rounded-md text-[10px] font-semibold uppercase tracking-wider ${PROFILE_TYPE_COLORS[profile.profileType] || 'bg-muted text-muted-foreground'}`}
+                          className={`rounded-md text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 ${PROFILE_TYPE_COLORS[profile.profileType] || 'bg-muted text-muted-foreground'}`}
                         >
                           {PROFILE_TYPE_LABELS[profile.profileType]}
                         </Badge>
                         {profile.company_name && (
-                          <span className="text-xs text-muted-foreground truncate border-l pl-2">
+                          <span className="text-xs text-muted-foreground truncate border-l pl-2 border-border">
                             {profile.company_name}
                           </span>
                         )}
@@ -172,11 +165,11 @@ export default function OverviewPage() {
                     </p>
                   )}
 
-                  <div className="pt-4 border-t flex items-center justify-between">
-                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
-                      Enter Workspace
+                  <div className="pt-4 border-t border-border/50 flex items-center justify-between">
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
+                      Truy Cập Workspace
                     </span>
-                    <ArrowRight className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                    <ArrowRight className="h-4 w-4 text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                   </div>
                 </CardContent>
               </Card>

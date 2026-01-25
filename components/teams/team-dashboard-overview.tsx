@@ -170,8 +170,8 @@ export function TeamDashboardOverview() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {statsCards.map((stat) => (
             <div key={stat.title} className="group relative">
-              <div className="absolute -inset-1 bg-gradient-to-br from-primary/20 to-transparent rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <Card className="relative h-full bg-card/40 backdrop-blur-3xl border-border/40 hover:border-primary/50 rounded-[2rem] overflow-hidden transition-all duration-300 shadow-2xl shadow-black/5">
+              <div className="absolute -inset-1 bg-gradient-to-br from-primary/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <Card className="relative h-full bg-card/40 backdrop-blur-3xl border-border/40 hover:border-primary/50 rounded-2xl overflow-hidden transition-all duration-300 shadow-2xl shadow-black/5">
                 <CardContent className="p-8 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className={`h-12 w-12 rounded-2xl bg-muted/50 flex items-center justify-center ${stat.color} transition-transform group-hover:scale-110 duration-500`}>
@@ -207,7 +207,7 @@ export function TeamDashboardOverview() {
                 <Button
                   key={action.title}
                   variant="ghost"
-                  className={`h-auto p-8 flex flex-col items-start gap-4 rounded-[2.5rem] border border-border/40 transition-all duration-500 group relative overflow-hidden text-left
+                  className={`h-auto p-8 flex flex-col items-start gap-4 rounded-3xl border border-border/40 transition-all duration-500 group relative overflow-hidden text-left
                           ${action.variant === 'primary'
                       ? 'bg-primary text-primary-foreground shadow-2xl shadow-primary/20 ring-1 ring-primary/50'
                       : 'bg-card/40 backdrop-blur-xl hover:bg-muted/50 hover:border-primary/50'}`}
@@ -270,8 +270,8 @@ export function TeamDashboardOverview() {
                   </div>
                 ))
               ) : (
-                <div className="col-span-full py-20 bg-card/20 backdrop-blur-sm border-2 border-dashed border-border/40 rounded-[3rem] flex flex-col items-center justify-center text-center space-y-6">
-                  <div className="h-20 w-20 rounded-[2rem] bg-muted/20 flex items-center justify-center">
+                <div className="col-span-full py-20 bg-card/20 backdrop-blur-sm border-2 border-dashed border-border/40 rounded-3xl flex flex-col items-center justify-center text-center space-y-6">
+                  <div className="h-20 w-20 rounded-2xl bg-muted/20 flex items-center justify-center">
                     <Building2 className="h-10 w-10 text-muted-foreground stroke-[1.5]" />
                   </div>
                   <div className="space-y-2">

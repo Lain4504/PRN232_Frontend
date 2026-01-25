@@ -183,8 +183,8 @@ export default function PostsPage() {
             <Skeleton className="h-12 w-64 rounded-xl" />
             <Skeleton className="h-12 w-32 rounded-xl" />
           </div>
-          <Skeleton className="h-16 w-full rounded-[2rem] mb-10" />
-          <div className="rounded-[2.5rem] bg-card border border-border/40 overflow-hidden h-[500px]" />
+          <Skeleton className="h-16 w-full rounded-2xl mb-10" />
+          <div className="rounded-3xl bg-card border border-border/40 overflow-hidden h-[500px]" />
         </div>
       </div>
     </div>
@@ -235,7 +235,7 @@ export default function PostsPage() {
 
           <div className="flex items-center gap-4">
             {/* Stats Badge */}
-            <div className="px-8 py-5 bg-card/40 backdrop-blur-xl rounded-[2rem] border border-border/40 shadow-xl flex items-center gap-10">
+            <div className="px-8 py-5 bg-card/40 backdrop-blur-xl rounded-2xl border border-border/40 shadow-xl flex items-center gap-10">
               <div className="space-y-1">
                 <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">Total Posts</div>
                 <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-foreground">
@@ -254,7 +254,7 @@ export default function PostsPage() {
         </div>
 
         {/* Toolbar */}
-        <div className="sticky top-20 z-40 flex flex-col xl:flex-row items-center justify-between gap-6 p-5 bg-background/60 backdrop-blur-xl border border-border/40 rounded-[2rem] shadow-xl shadow-foreground/[0.02]">
+        <div className="sticky top-20 z-40 flex flex-col xl:flex-row items-center justify-between gap-6 p-5 bg-background/60 backdrop-blur-xl border border-border/40 rounded-2xl shadow-xl shadow-foreground/[0.02]">
           <div className="relative w-full xl:w-96 group">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
@@ -316,8 +316,8 @@ export default function PostsPage() {
 
         {/* Posts Table */}
         <div className="group relative min-h-[500px]">
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition duration-1000" />
-          <Card className="relative border-border/40 bg-card/60 backdrop-blur-md rounded-[2.5rem] overflow-hidden shadow-2xl h-full">
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition duration-1000" />
+          <Card className="relative border-border/40 bg-card/60 backdrop-blur-md rounded-3xl overflow-hidden shadow-2xl h-full">
             <CustomTable
               columns={columns}
               data={postsData?.data || []}
@@ -333,7 +333,7 @@ export default function PostsPage() {
 
         {/* Post Details Modal */}
         <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-          <DialogContent className="max-w-2xl rounded-[2.5rem] border-border/40 bg-background/95 backdrop-blur-xl p-0 overflow-hidden">
+          <DialogContent className="max-w-2xl rounded-3xl border-border/40 bg-background/95 backdrop-blur-xl p-0 overflow-hidden">
             <DialogHeader className="px-8 py-6 border-b border-border/40 bg-muted/20">
               <DialogTitle className="flex items-center gap-3 text-xl font-black uppercase tracking-tight">
                 <Mail className="h-5 w-5 text-primary" />

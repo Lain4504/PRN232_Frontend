@@ -1,20 +1,19 @@
-import { Metadata } from "next";
+"use client"
+
 import { Header } from "@/components/layout/header";
 import { Badge } from "@/components/ui/badge";
 import { Code, Terminal, Zap, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-export const metadata: Metadata = {
-    title: "AISAM | API Reference",
-    description: "REST API documentation for programmatically interacting with AISAM.",
-};
+import { useTranslation } from "react-i18next";
 
 export default function ApiPage() {
+    const { t } = useTranslation("common");
+
     const endpoints = [
-        { method: "POST", path: "/v1/content/generate", desc: "Start a new content generation request." },
-        { method: "GET", path: "/v1/analytics/stats", desc: "Retrieve campaign performance data." },
-        { method: "POST", path: "/v1/schedule/post", desc: "Schedule a post for a specific social channel." },
-        { method: "GET", path: "/v1/brand/profiles", desc: "List all active brand identity profiles." }
+        { method: "POST", path: "/v1/content/generate", desc: t("api.endpoints.0.desc") },
+        { method: "GET", path: "/v1/analytics/stats", desc: t("api.endpoints.1.desc") },
+        { method: "POST", path: "/v1/schedule/post", desc: t("api.endpoints.2.desc") },
+        { method: "GET", path: "/v1/brand/profiles", desc: t("api.endpoints.3.desc") }
     ];
 
     return (
@@ -26,13 +25,13 @@ export default function ApiPage() {
 
                     <section className="text-center space-y-6 max-w-3xl mx-auto">
                         <Badge variant="outline" className="px-6 py-2 rounded-full border-primary/20 bg-primary/5 text-primary font-black uppercase tracking-[0.3em] text-[10px]">
-                            Developer Tools
+                            {t("api.badge")}
                         </Badge>
                         <h1 className="text-6xl md:text-8xl font-black tracking-tight uppercase leading-none">
-                            API <span className="text-primary italic">Reference</span>.
+                            {t("api.title")} <span className="text-primary italic">{t("api.accent")}</span>
                         </h1>
                         <p className="text-xl text-muted-foreground font-medium">
-                            V1.0.4 - Base URL: https://api.aisam.app
+                            {t("api.baseUrl")}
                         </p>
                     </section>
 
@@ -42,14 +41,14 @@ export default function ApiPage() {
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                                 <Zap className="w-5 h-5 stroke-[2.5]" />
                             </div>
-                            <h2 className="text-2xl font-black uppercase tracking-tight">Authentication</h2>
+                            <h2 className="text-2xl font-black uppercase tracking-tight">{t("api.authentication.title")}</h2>
                         </div>
-                        <div className="bg-card/40 border border-border/40 rounded-[3rem] p-10 backdrop-blur-3xl space-y-6">
+                        <div className="bg-card/40 border border-border/40 rounded-3xl p-10 backdrop-blur-3xl space-y-6">
                             <p className="text-muted-foreground font-medium leading-relaxed">
-                                All API requests must include a Bearer token in the `Authorization` header.
+                                {t("api.authentication.description")}
                             </p>
                             <div className="bg-muted/30 rounded-2xl p-6 font-fira-mono text-sm relative group">
-                                <code className="text-primary tracking-tighter">Authorization: Bearer YOUR_API_TOKEN</code>
+                                <code className="text-primary tracking-tighter">{t("api.authentication.example")}</code>
                                 <Button variant="ghost" size="icon" className="absolute right-4 top-1/2 -translate-y-1/2 opacity-40 hover:opacity-100 transition-opacity">
                                     <Copy className="w-4 h-4" />
                                 </Button>
@@ -63,7 +62,7 @@ export default function ApiPage() {
                             <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">
                                 <Terminal className="w-5 h-5 stroke-[2.5]" />
                             </div>
-                            <h2 className="text-2xl font-black uppercase tracking-tight">Common Endpoints</h2>
+                            <h2 className="text-2xl font-black uppercase tracking-tight">{t("api.endpointsTitle")}</h2>
                         </div>
                         <div className="grid gap-6">
                             {endpoints.map((ep) => (
@@ -78,7 +77,7 @@ export default function ApiPage() {
                                         </div>
                                     </div>
                                     <Button variant="ghost" className="hidden md:flex text-[10px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-all pr-0">
-                                        VIEW DETAILS
+                                        {t("api.viewDetails")}
                                     </Button>
                                 </div>
                             ))}
@@ -89,7 +88,7 @@ export default function ApiPage() {
 
             <footer className="py-20 px-6 border-t border-border/40 text-center">
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/40">
-                    © 2026 AISAM Intelligence Core. API Integrity Verified.
+                    {t("api.footer")}
                 </p>
             </footer>
         </div>

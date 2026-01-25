@@ -158,7 +158,7 @@ export function TeamHeader({ user, team }: TeamHeaderProps) {
 
       {/* Leave Team Confirmation Dialog */}
       <AlertDialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
-        <AlertDialogContent className="rounded-[32px] bg-background/95 backdrop-blur-2xl border border-white/10 p-8 font-fira-sans">
+        <AlertDialogContent className="rounded-2xl bg-background/95 backdrop-blur-2xl border border-white/10 p-8 font-fira-sans">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight italic">Abort Mission?</AlertDialogTitle>
             <AlertDialogDescription className="text-base font-medium text-muted-foreground/80">

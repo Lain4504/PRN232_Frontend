@@ -100,7 +100,7 @@ export function Header() {
                                 "fixed top-[70px] left-1/2 -translate-x-1/2 w-full max-w-5xl px-6 pt-4 transition-all duration-300 pointer-events-none perspective-[2000px]",
                                 activeMenu === 'features' ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-4"
                             )}>
-                                <div className="bg-background/95 backdrop-blur-2xl border border-white/10 rounded-[32px] shadow-2xl p-2 grid grid-cols-2 gap-2 transform-style-3d origin-top">
+                                <div className="bg-background/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl p-2 grid grid-cols-2 gap-2 transform-style-3d origin-top">
                                     {features.map((item) => (
                                         <Link
                                             key={item.title}
@@ -146,7 +146,7 @@ export function Header() {
                                 "fixed top-[70px] left-1/2 -translate-x-1/2 w-full max-w-[1000px] flex justify-center pt-4 transition-all duration-300 pointer-events-none",
                                 activeMenu === 'resources' ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-4"
                             )}>
-                                <div className="w-[800px] bg-background/95 backdrop-blur-2xl border border-white/10 rounded-[32px] shadow-2xl p-2 flex gap-2">
+                                <div className="w-[800px] bg-background/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl p-2 flex gap-2">
                                     {resources.map((item) => (
                                         <Link
                                             key={item.title}

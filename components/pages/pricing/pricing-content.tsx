@@ -55,7 +55,7 @@ export default function PricingContent() {
                             const isFeatured = tier.featured;
 
                             return (
-                                <div key={tier.name} className={`relative p-8 rounded-[2rem] bg-card/40 border ${isFeatured ? 'border-primary/50 border-2 shadow-2xl shadow-primary/20 scale-105 z-10' : 'border-border/40'} backdrop-blur-3xl space-y-8 group`}>
+                                <div key={tier.name} className={`relative p-8 rounded-2xl bg-card/40 border ${isFeatured ? 'border-primary/50 border-2 shadow-2xl shadow-primary/20 scale-105 z-10' : 'border-border/40'} backdrop-blur-3xl space-y-8 group`}>
                                     {isFeatured && (
                                         <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-6 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.3em]">
                                             {t("pricing.featuredTag")}
