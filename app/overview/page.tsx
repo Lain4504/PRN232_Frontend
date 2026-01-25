@@ -7,21 +7,19 @@ import { useGetProfiles } from '@/hooks/use-profiles'
 import { useProfile } from '@/lib/contexts/profile-context'
 import { PROFILE_TYPE_LABELS, PROFILE_TYPE_COLORS, ProfileTypeEnum } from '@/lib/utils/profile-utils'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Building2, Search, ChevronRight, User, ArrowRight } from 'lucide-react'
+import { Plus, Building2, Search, User, ArrowRight, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
-import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
 
 export default function OverviewPage() {
-  const { t } = useTranslation("common")
   const router = useRouter()
   const { data: user, status: userStatus } = useUser()
   const {
     data: profiles = [],
-    status: profilesStatus,
-    error: profilesError
+    status: profilesStatus
   } = useGetProfiles(user?.id || '')
 
   const { setActiveProfile, activeProfileId, isLoading: isProfileLoading } = useProfile()
@@ -30,7 +28,6 @@ export default function OverviewPage() {
   const userLoading = userStatus === 'pending'
   const profilesLoading = profilesStatus === 'pending'
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleProfileSelect = (profile: any) => {
     setActiveProfile(profile.id, {
       id: profile.id,
@@ -41,30 +38,17 @@ export default function OverviewPage() {
       isOwner: profile.isOwner ?? false,
       memberRole: profile.memberRole
     })
-
-    // Navigate to dashboard after selecting profile
     router.push('/dashboard')
   }
 
-  // Handle redirection for new users or single profile users
   useEffect(() => {
-    // Wait for all data (User, Profiles, and Context) to be ready
     if (userStatus === 'success' && profilesStatus === 'success' && !isProfileLoading) {
-
-      // 1. If 0 profiles, go to onboarding
       if (profiles.length === 0) {
-        console.log('Overview: No profiles found, redirecting to onboarding');
         router.replace('/onboarding');
         return;
       }
-
-      // 2. If 1 profile AND NO active profile, auto-select it
-      // We only do this if there's no search query (intentional interaction)
-      // and NO active profile (meaning user just logged in or session expired)
       if (profiles.length === 1 && !activeProfileId && !searchQuery) {
         const profile = profiles[0];
-        console.log('Overview: Single profile found and none active, auto-selecting:', profile.id);
-
         setActiveProfile(profile.id, {
           id: profile.id,
           name: profile.name || profile.company_name || `${profile.profileType} Profile`,
@@ -74,7 +58,6 @@ export default function OverviewPage() {
           isOwner: profile.isOwner ?? false,
           memberRole: profile.memberRole
         });
-
         router.push('/dashboard');
       }
     }
@@ -82,13 +65,13 @@ export default function OverviewPage() {
 
   if (userLoading || profilesLoading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
-        <div className="flex flex-col space-y-3 w-full max-w-sm">
-          <div className="h-4 w-1/3 bg-muted animate-pulse rounded" />
-          <div className="h-10 w-full bg-muted animate-pulse rounded-md" />
-          <div className="space-y-2 pt-4">
-            <div className="h-24 w-full bg-muted animate-pulse rounded-lg" />
-            <div className="h-24 w-full bg-muted animate-pulse rounded-lg" />
+      <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-6">
+        <div className="flex flex-col space-y-4 w-full max-w-md px-6">
+          <div className="h-8 w-1/3 bg-slate-100 animate-pulse rounded-lg" />
+          <div className="h-12 w-full bg-slate-100 animate-pulse rounded-xl" />
+          <div className="grid gap-4 pt-8">
+            <div className="h-32 w-full bg-slate-50 animate-pulse rounded-2xl border border-slate-100/50" />
+            <div className="h-32 w-full bg-slate-50 animate-pulse rounded-2xl border border-slate-100/50" />
           </div>
         </div>
       </div>
@@ -101,70 +84,72 @@ export default function OverviewPage() {
   }) : []
 
   return (
-    <div className="min-h-screen bg-background font-fira-sans">
-      <div className="max-w-7xl mx-auto p-6 lg:p-10 space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              {t("overview.myProfiles")}
-            </h1>
-            <p className="text-muted-foreground font-medium text-lg">
-              {t("overview.description")}
-            </p>
+    <div className="max-w-6xl mx-auto py-12 px-6 lg:px-8 space-y-12">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-slate-100 pb-12">
+        <div className="space-y-4">
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+            Hồ sơ làm việc
+          </h1>
+          <p className="text-lg text-slate-500 font-medium max-w-xl">
+            Chọn một hồ sơ để bắt đầu quản lý các chiến dịch quảng cáo và nội dung AI của bạn.
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="relative group hidden sm:block">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
+            <Input
+              placeholder="Tìm kiếm hồ sơ..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 h-11 w-64 bg-slate-50 border-transparent focus:bg-white focus:border-slate-200 rounded-xl font-medium transition-all"
+            />
           </div>
           <Link href="/overview/profile/new">
-            <Button className="h-10 px-6 font-semibold shadow-sm hover:shadow-md transition-all">
+            <Button className="h-11 px-6 rounded-xl font-bold bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-200 transition-all hover:-translate-y-0.5">
               <Plus className="h-4 w-4 mr-2" />
-              {t("overview.createProfile")}
+              Tạo hồ sơ mới
             </Button>
           </Link>
         </div>
+      </div>
 
-        {/* Search */}
-        <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={t("overview.searchPlaceholder")}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-10 bg-background border-input font-medium transition-colors focus-visible:ring-primary"
-          />
-        </div>
-
-        {/* Profiles Sections */}
+      {/* Profiles List */}
+      <div className="space-y-16">
         {filteredProfiles.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 px-6 text-center border border-dashed rounded-xl bg-muted/5">
-            <div className="h-16 w-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-6 border border-white/5">
-              <Building2 className="h-8 w-8 text-muted-foreground/60" />
+          <div className="flex flex-col items-center justify-center py-24 px-8 text-center rounded-[2rem] bg-slate-50/50 border border-slate-100 border-dashed">
+            <div className="size-16 rounded-2xl bg-white flex items-center justify-center mb-6 shadow-sm border border-slate-100">
+              <Building2 className="h-8 w-8 text-slate-300" />
             </div>
             <div className="space-y-2 mb-8">
-              <h3 className="text-lg font-bold">{t("overview.noProfiles")}</h3>
-              <p className="text-muted-foreground max-w-sm mx-auto">
-                {searchQuery ? t("overview.tryDifferentSearch") : t("overview.noProfilesYet")}
+              <h3 className="text-xl font-bold text-slate-900">Không tìm thấy hồ sơ nào</h3>
+              <p className="text-slate-500 font-medium max-w-sm mx-auto">
+                {searchQuery ? "Thử tìm kiếm với từ khóa khác xem sao." : "Bắt đầu bằng cách tạo hồ sơ làm việc đầu tiên của bạn."}
               </p>
             </div>
             {!searchQuery && (
               <Link href="/overview/profile/new">
-                <Button className="h-10 px-8 font-semibold shadow-sm">
+                <Button variant="outline" className="h-11 px-8 rounded-xl font-bold border-slate-200 hover:bg-white hover:border-slate-300">
                   <Plus className="h-4 w-4 mr-2" />
-                  {t("overview.createProfileNow")}
+                  Bắt đầu ngay
                 </Button>
               </Link>
             )}
           </div>
         ) : (
-          <div className="space-y-12">
+          <div className="grid gap-8">
             {/* My Workspaces */}
             {filteredProfiles.some(p => p.isOwner) && (
               <div className="space-y-6">
-                <div className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-primary" />
-                  <h2 className="text-xl font-bold">{t("overview.myWorkspaces")}</h2>
+                <div className="flex items-center gap-3">
+                  <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                    <User className="h-4 w-4" />
+                  </div>
+                  <h2 className="text-lg font-bold text-slate-900 uppercase tracking-widest">Hồ sơ của tôi</h2>
                 </div>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {filteredProfiles.filter(p => p.isOwner).map((profile) => (
-                    <ProfileCard key={profile.id} profile={profile} onSelect={handleProfileSelect} t={t} />
+                    <ProfileCard key={profile.id} profile={profile} onSelect={handleProfileSelect} />
                   ))}
                 </div>
               </div>
@@ -173,13 +158,15 @@ export default function OverviewPage() {
             {/* Shared Workspaces */}
             {filteredProfiles.some(p => !p.isOwner) && (
               <div className="space-y-6">
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5 text-primary" />
-                  <h2 className="text-xl font-bold">{t("overview.sharedWorkspaces")}</h2>
+                <div className="flex items-center gap-3 pt-8">
+                  <div className="size-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
+                    <Users className="h-4 w-4" />
+                  </div>
+                  <h2 className="text-lg font-bold text-slate-900 uppercase tracking-widest">Đội nhóm chia sẻ</h2>
                 </div>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {filteredProfiles.filter(p => !p.isOwner).map((profile) => (
-                    <ProfileCard key={profile.id} profile={profile} onSelect={handleProfileSelect} t={t} />
+                    <ProfileCard key={profile.id} profile={profile} onSelect={handleProfileSelect} />
                   ))}
                 </div>
               </div>
@@ -191,89 +178,90 @@ export default function OverviewPage() {
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function ProfileCard({ profile, onSelect, t }: { profile: any; onSelect: (p: any) => void; t: any }) {
-  const isAgency = profile.profileType >= 1 // Basic or Pro
+function ProfileCard({ profile, onSelect }: { profile: any; onSelect: (p: any) => void }) {
+  const isAgency = profile.profileType >= 1
   const isOwner = profile.isOwner
 
   return (
     <Card
-      className="group rounded-xl border border-border/50 shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer overflow-hidden bg-card flex flex-col"
+      className="group relative rounded-[2rem] border border-slate-100 bg-white hover:bg-slate-50/50 transition-all duration-300 cursor-pointer overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-slate-200/50 hover:-translate-y-1"
       onClick={() => onSelect(profile)}
     >
-      <CardContent className="p-6 flex-1 flex flex-col">
-        <div className="flex items-start gap-4 mb-4">
-          <div className={`h-12 w-12 rounded-lg flex items-center justify-center border shrink-0 ${isAgency ? 'bg-purple-500/10 border-purple-500/20 text-purple-600' : 'bg-blue-500/10 border-blue-500/20 text-blue-600'}`}>
+      <CardContent className="p-8">
+        <div className="flex items-start justify-between mb-8">
+          <div className={cn(
+            "size-14 rounded-2xl flex items-center justify-center border transition-colors",
+            isAgency ? 'bg-purple-50 border-purple-100 text-purple-600' : 'bg-blue-50 border-blue-100 text-blue-600'
+          )}>
             {profile.avatarUrl ? (
               <img
                 src={profile.avatarUrl}
                 alt=""
-                className="h-12 w-12 rounded-lg object-cover"
+                className="size-full rounded-2xl object-cover"
               />
             ) : (
-              isAgency ? <Building2 className="h-6 w-6" /> : <User className="h-6 w-6" />
+              isAgency ? <Building2 className="h-7 w-7" /> : <User className="h-7 w-7" />
             )}
           </div>
+          <Badge
+            variant="secondary"
+            className={cn(
+              "rounded-full text-[10px] font-black uppercase tracking-widest px-3 py-1",
+              profile.profileType === ProfileTypeEnum.Pro ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500"
+            )}
+          >
+            {profile.profileType === ProfileTypeEnum.Pro ? "PRO" :
+              profile.profileType === ProfileTypeEnum.Basic ? "BASIC" : "FREE"}
+          </Badge>
+        </div>
 
-          <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
-              {profile.name || profile.company_name || t("overview.unnamedProfile")}
-            </h3>
-            <div className="flex items-center gap-2 mt-1.5 align-middle flex-wrap">
-              <Badge
-                variant="secondary"
-                className={`rounded-md text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 ${PROFILE_TYPE_COLORS[profile.profileType as unknown as ProfileTypeEnum] || 'bg-muted text-muted-foreground'}`}
-              >
-                {profile.profileType === ProfileTypeEnum.Pro ? t("overview.profileType.pro") :
-                  profile.profileType === ProfileTypeEnum.Basic ? t("overview.profileType.basic") :
-                    t("overview.profileType.free")}
-              </Badge>
-              {!isOwner && (
-                <Badge variant="outline" className="rounded-md text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 border-primary/30 text-primary">
-                  {profile.memberRole || t("overview.member")}
-                </Badge>
-              )}
-            </div>
+        <div className="space-y-2 mb-8">
+          <h3 className="text-xl font-bold text-slate-900 group-hover:text-slate-900 transition-colors truncate">
+            {profile.name || profile.company_name || "Hồ sơ chưa đặt tên"}
+          </h3>
+          <div className="flex items-center gap-3 text-sm font-medium text-slate-400">
+            {profile.company_name && (
+              <span className="flex items-center gap-1.5 border-r border-slate-200 pr-3">
+                <Building2 className="size-3.5" />
+                {profile.company_name}
+              </span>
+            )}
+            <span className="flex items-center gap-1.5 uppercase text-[10px] tracking-widest font-bold">
+              {isOwner ? "Chủ sở hữu" : (profile.memberRole || "Thành viên")}
+            </span>
           </div>
         </div>
 
-        {profile.company_name && (
-          <div className="mb-4 text-xs font-medium text-muted-foreground flex items-center gap-2">
-            <Building2 className="h-3 w-3" />
-            {profile.company_name}
+        <div className="flex items-center justify-between pt-6 border-t border-slate-50">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-400 group-hover:text-slate-900 transition-colors uppercase tracking-widest">
+            Truy cập hồ sơ
+            <ArrowRight className="size-4 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all" />
           </div>
-        )}
-
-        {profile.bio && (
-          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-6 min-h-[3em] flex-1">
-            {profile.bio}
-          </p>
-        )}
-
-        <div className="pt-4 border-t border-border/50 mt-auto flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
-              {isOwner ? t("overview.accessWorkspace") : t("overview.accessSharedWorkspace")}
-            </span>
-            <ArrowRight className="h-4 w-4 text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-          </div>
-
-          {isOwner && isAgency && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-xs hover:bg-muted text-muted-foreground hover:text-foreground z-10"
-              onClick={(e) => {
-                e.stopPropagation()
-                // In real app, navigate to billing
-                alert(t("common.featureComingSoon", "Tính năng sắp ra mắt"))
-              }}
-            >
-              {t("overview.billing")}
-            </Button>
-          )}
+          <ExternalLink className="size-4 text-slate-200 group-hover:text-slate-400 transition-colors" />
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+function Users(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
   )
 }

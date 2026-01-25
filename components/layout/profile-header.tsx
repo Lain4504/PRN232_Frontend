@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-import Link from "next/link"
 import { SearchCommand } from "@/components/search/search-command"
 import { MobileSearchCommand } from "@/components/search/mobile-search-command"
 import { EnhancedUserMenu } from "@/components/layout/enhanced-user-menu"
@@ -13,11 +12,14 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
-
   return (
-    <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-white/5 bg-background/60 backdrop-blur-2xl px-4 shadow-sm font-fira-sans transition-all duration-300">
+    <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-slate-100 bg-white/80 backdrop-blur-md px-6 shadow-sm transition-all duration-300">
       <div className="flex items-center gap-4">
         <SidebarTrigger className="-ml-1" />
+        <div className="h-4 w-px bg-slate-100 mx-2 hidden md:block" />
+        <div className="hidden lg:block text-xs font-bold text-slate-400 uppercase tracking-widest">
+          Tổng quan hồ sơ
+        </div>
       </div>
 
       <div className="flex items-center gap-5">
@@ -29,11 +31,8 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
           <MobileSearchCommand />
         </div>
 
-        <div className="h-6 w-px bg-white/10 mx-1 hidden lg:block" />
-
         <EnhancedUserMenu user={user} />
       </div>
     </header>
   )
 }
-
