@@ -95,67 +95,59 @@ export default function TeamsPage() {
 
   return (
     <div className="max-w-[1440px] mx-auto font-fira-sans">
-      <div className="space-y-12 p-6 lg:p-10 bg-background min-h-screen">
+      <div className="space-y-8 p-6 lg:p-10 bg-background min-h-screen">
 
-        {/* Tactical Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
-          <div className="space-y-4">
-            <Link href="/overview" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-2">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <Link href="/overview" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               <ArrowLeft className="h-4 w-4" />
               Back to Overview
             </Link>
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-8 bg-primary rounded-full" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Collaboration</span>
-            </div>
-            <h1 className="text-4xl lg:text-5xl font-black tracking-tighter text-foreground leading-none">
-              My <span className="text-primary italic">Teams</span>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              My Teams
             </h1>
-            <p className="text-lg text-muted-foreground font-medium max-w-2xl tracking-tight leading-relaxed">
-              Access the teams you are part of. Collaborate with members and manage your projects efficiently.
+            <p className="text-muted-foreground max-w-2xl">
+              Access and manage your team collaborations.
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Stats Badge */}
-            <div className="px-8 py-5 bg-card/40 backdrop-blur-xl rounded-[2rem] border border-border/40 shadow-xl flex items-center gap-10">
-              <div className="space-y-1">
-                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">Total Teams</div>
-                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-foreground">{teams.length}</div>
-              </div>
-              <div className="h-10 w-px bg-border/20" />
-              <div className="space-y-1">
-                <div className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">Status</div>
-                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-primary uppercase leading-none italic">ACTIVE</div>
-              </div>
+          <div className="flex items-center gap-6">
+            <div className="text-right">
+              <p className="text-sm font-medium text-muted-foreground">Total Teams</p>
+              <p className="text-2xl font-bold">{teams.length}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-medium text-muted-foreground">Status</p>
+              <p className="text-2xl font-bold text-primary">Active</p>
             </div>
           </div>
         </div>
 
-        {/* Command Bar */}
-        <div className="flex flex-col md:flex-row gap-4 items-center bg-card/20 backdrop-blur-md p-4 rounded-[2rem] border border-border/40 shadow-sm">
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground stroke-[2.5]" />
+        {/* Toolbar */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-xl border bg-card shadow-sm">
+          <div className="relative flex-1 w-full max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="SEARCH YOUR TEAMS..."
+              placeholder="Search your teams..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-14 h-14 bg-background/50 border-transparent focus:bg-background focus:border-primary/20 rounded-2xl font-bold text-[11px] uppercase tracking-widest transition-all shadow-none"
+              className="pl-10 h-10 bg-background rounded-lg border-border/60"
             />
           </div>
-          <div className="flex gap-4 w-full md:w-auto">
+          <div className="w-full md:w-auto">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-[200px] h-14 rounded-2xl border-border/40 bg-background/50 font-bold text-[10px] uppercase tracking-widest focus:ring-primary/20">
+              <SelectTrigger className="w-full md:w-[180px] h-10 rounded-lg">
                 <div className="flex items-center">
-                  <Filter className="h-4 w-4 mr-2 stroke-[2.5]" />
-                  <SelectValue placeholder="FILTER STATUS" />
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Status" />
                 </div>
               </SelectTrigger>
-              <SelectContent className="rounded-xl font-bold uppercase tracking-wider text-xs">
-                <SelectItem value="all">ALL TEAMS</SelectItem>
-                <SelectItem value="Active">ACTIVE</SelectItem>
-                <SelectItem value="Inactive">INACTIVE</SelectItem>
-                <SelectItem value="Archived">ARCHIVED</SelectItem>
+              <SelectContent className="rounded-lg">
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="Active">Active</SelectItem>
+                <SelectItem value="Inactive">Inactive</SelectItem>
+                <SelectItem value="Archived">Archived</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -164,29 +156,29 @@ export default function TeamsPage() {
         {/* Teams Grid */}
         <div className="space-y-6">
           {teamsError ? (
-            <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-6 bg-destructive/5 rounded-[3rem] border border-destructive/20 p-10">
-              <div className="h-24 w-24 rounded-full bg-destructive/10 flex items-center justify-center">
-                <AlertCircle className="h-12 w-12 text-destructive stroke-[2]" />
+            <div className="flex flex-col items-center justify-center py-20 px-6 text-center border rounded-xl bg-destructive/5 border-destructive/10">
+              <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center mb-6">
+                <AlertCircle className="h-6 w-6 text-destructive" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-2xl font-black uppercase tracking-tight text-destructive">Connection Error</h3>
-                <p className="text-muted-foreground font-medium max-w-md mx-auto">
-                  Unable to load your teams. Please check your internet connection and try again.
+                <h3 className="text-lg font-semibold text-destructive">Connection Error</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Unable to load your teams. Please check your connection.
                 </p>
               </div>
-              <Button onClick={() => window.location.reload()} variant="outline" className="h-12 px-8 rounded-xl font-bold uppercase tracking-widest border-destructive/30 hover:bg-destructive/10 text-destructive">
+              <Button onClick={() => window.location.reload()} variant="outline" className="mt-8 rounded-lg h-10 px-6">
                 Try Again
               </Button>
             </div>
           ) : filteredTeams.length === 0 ? (
-            <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-8 bg-card/20 backdrop-blur-sm rounded-[3rem] border-4 border-dashed border-border/40 p-10 group">
-              <div className="h-32 w-32 rounded-[2.5rem] bg-muted/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                <Shield className="h-16 w-16 text-muted-foreground/40 stroke-[1.5]" />
+            <div className="flex flex-col items-center justify-center py-20 px-6 text-center border border-dashed rounded-xl bg-muted/5">
+              <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-6">
+                <Shield className="h-8 w-8 text-muted-foreground/50" />
               </div>
-              <div className="space-y-3">
-                <h3 className="text-3xl font-black uppercase tracking-tight">No Teams Found</h3>
-                <p className="text-muted-foreground font-medium max-w-md mx-auto leading-relaxed">
-                  {searchQuery || statusFilter !== 'all' ? 'No teams match your search filters.' : 'You are not a member of any teams yet.'}
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">No teams found</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  {searchQuery || statusFilter !== 'all' ? 'No teams match your filters.' : 'You are not a member of any teams.'}
                 </p>
               </div>
               {(searchQuery || statusFilter !== 'all') && (
@@ -196,7 +188,7 @@ export default function TeamsPage() {
                     setStatusFilter('all')
                   }}
                   variant="ghost"
-                  className="h-12 px-8 rounded-xl font-bold uppercase tracking-widest hover:bg-primary/10 text-primary"
+                  className="mt-8 h-10 px-6 rounded-lg text-primary"
                 >
                   Clear Filters
                 </Button>
@@ -208,58 +200,55 @@ export default function TeamsPage() {
                 <Card
                   key={team.id}
                   onClick={() => handleTeamSelect(team)}
-                  className="group relative bg-card/40 backdrop-blur-xl border-border/40 hover:border-primary/50 rounded-[2.5rem] transition-all duration-300 shadow-xl shadow-black/5 overflow-hidden cursor-pointer hover:-translate-y-1"
+                  className="group rounded-xl border shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden bg-card"
                 >
-                  {/* Hover Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-                  <CardContent className="p-8 space-y-8">
-                    <div className="flex justify-between items-start">
-                      <div className="relative h-20 w-20 rounded-[1.5rem] bg-muted/20 flex items-center justify-center overflow-hidden border border-border/50 shadow-inner group-hover:scale-105 transition-transform duration-500">
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center border shrink-0">
                         {team.avatarUrl ? (
                           <Image
                             src={team.avatarUrl}
                             alt={team.name}
-                            fill
-                            className="object-cover"
+                            width={48}
+                            height={48}
+                            className="object-cover rounded-lg"
                           />
                         ) : (
-                          <Building2 className="h-8 w-8 text-muted-foreground/50 stroke-[2]" />
+                          <Building2 className="h-6 w-6 text-muted-foreground/60" />
                         )}
                       </div>
                       <Badge
-                        variant="outline"
-                        className={`px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest ${(team.status === 'Active' || !team.status)
-                          ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
-                          : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
+                        variant="secondary"
+                        className={`rounded-md text-[10px] font-semibold uppercase tracking-wider ${(team.status === 'Active' || !team.status)
+                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400'
+                          : 'bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'
                           }`}
                       >
                         {team.status || 'Active'}
                       </Badge>
                     </div>
 
-                    <div className="space-y-3">
-                      <h3 className="text-2xl font-black uppercase tracking-tight text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+                    <div className="space-y-1 mb-6">
+                      <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
                         {team.name}
                       </h3>
-                      <div className="flex items-center gap-3">
-                        <Badge variant="outline" className={`px-2.5 py-1 rounded-md border text-[9px] font-bold uppercase tracking-wider ${getRoleStyle(team.userRole)}`}>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className={`rounded-sm text-[10px] font-semibold ${getRoleStyle(team.userRole)}`}>
                           {team.userRole}
                         </Badge>
-                        <div className="h-1 w-1 rounded-full bg-muted-foreground/30" />
-                        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                        <span className="text-xs text-muted-foreground">
                           Since {new Date(team.createdAt).getFullYear()}
                         </span>
                       </div>
                     </div>
 
-                    <div className="pt-6 border-t border-border/30 flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-muted-foreground group-hover:text-foreground transition-colors">
-                        <Users className="h-4 w-4 stroke-[2.5]" />
-                        <span className="font-fira-mono font-bold text-sm tracking-tight">{team.membersCount} Members</span>
+                    <div className="pt-4 border-t flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Users className="h-4 w-4" />
+                        <span className="text-sm font-medium">{team.membersCount} Members</span>
                       </div>
-                      <div className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
-                        <ArrowLeft className="h-4 w-4 rotate-180 stroke-[3]" />
+                      <div className="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ArrowLeft className="h-4 w-4 rotate-180" />
                       </div>
                     </div>
                   </CardContent>

@@ -61,103 +61,91 @@ export function SocialAccountsManagement() {
 
   return (
     <div className="max-w-[1440px] mx-auto font-fira-sans">
-      <div className="space-y-12 p-6 lg:p-10 bg-background">
+      <div className="space-y-8 p-6 lg:p-10 bg-background min-h-screen">
 
-        {/* Tactical Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-8 bg-primary rounded-full" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">External Link Protocols</span>
-            </div>
-            <h1 className="text-4xl lg:text-5xl font-black tracking-tighter text-foreground uppercase leading-none">
-              Social <span className="text-primary italic">Sync</span>
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              Social Accounts
             </h1>
-            <p className="text-lg text-muted-foreground font-medium max-w-2xl tracking-tight leading-relaxed">
-              Authenticate and coordinate your external communications. Bridge your creative output directly to the global social matrix.
+            <p className="text-muted-foreground max-w-2xl">
+              Manage your connected social media accounts and integrations.
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="px-8 py-5 bg-card/40 backdrop-blur-xl rounded-[2rem] border border-border/40 shadow-xl flex items-center gap-10">
-              <div className="space-y-1">
-                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">Active Flows</div>
-                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-foreground">{socialAccounts.length}</div>
-              </div>
-              <div className="h-10 w-px bg-border/20" />
-              <div className="space-y-1">
-                <div className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">Status</div>
-                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-primary uppercase leading-none italic">SECURED</div>
-              </div>
+          <div className="flex items-center gap-6">
+            <div className="text-right">
+              <p className="text-sm font-medium text-muted-foreground">Connected</p>
+              <p className="text-2xl font-bold">{socialAccounts.length}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-medium text-muted-foreground">Security</p>
+              <p className="text-2xl font-bold text-primary">Secured</p>
             </div>
           </div>
         </div>
 
-        {/* Command Matrix Grid */}
-        <div className="grid lg:grid-cols-12 gap-10">
+        {/* Main Content */}
+        <div className="space-y-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <h2 className="text-xl font-bold">Active Integrations</h2>
+            <ConnectModal>
+              <Button className="rounded-lg h-10 px-6 font-semibold">
+                <Plus className="mr-2 h-4 w-4" />
+                Connect Account
+              </Button>
+            </ConnectModal>
+          </div>
 
-          {/* Main Account Interface */}
-          <div className="lg:col-span-12 space-y-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 px-4">
-              <div className="flex items-center gap-4">
-                <div className="h-5 w-1 bg-primary rounded-full" />
-                <h2 className="text-xl font-black uppercase tracking-tight">Active Integrations</h2>
-              </div>
-              <ConnectModal>
-                <Button className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary/40 group overflow-hidden relative transition-all hover:scale-[1.05]">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                  <Plus className="mr-3 h-5 w-5 stroke-[3]" />
-                  Integrate New Node
-                </Button>
-              </ConnectModal>
-            </div>
-
-            {socialAccounts.length > 0 ? (
-              <div className="bg-card/20 backdrop-blur-3xl rounded-[2rem] border border-border/40 p-2 shadow-2xl">
+          {socialAccounts.length > 0 ? (
+            <Card className="rounded-xl border shadow-sm overflow-hidden">
+              <div className="p-1">
                 <SocialAccountList
                   accounts={socialAccounts}
                   userId={user?.id || ""}
                   onRefresh={handleRefresh}
                 />
               </div>
-            ) : (
-              <div className="py-32 bg-card/20 backdrop-blur-sm border-4 border-dashed border-border/40 rounded-[2rem] text-center space-y-10 group">
-                <div className="mx-auto h-32 w-32 rounded-[2rem] bg-muted/20 flex items-center justify-center border-2 border-transparent group-hover:border-primary/20 transition-all duration-700">
-                  <Users className="h-16 w-16 text-muted-foreground stroke-[1]" />
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-4xl font-black uppercase tracking-tight">Connection Void</h3>
-                  <p className="text-muted-foreground font-medium max-w-sm mx-auto tracking-tight leading-relaxed text-lg">
-                    No biometric or social links detected in the current sector. Secure a new connection to enable automated deployment.
-                  </p>
-                </div>
+            </Card>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-24 px-6 text-center border border-dashed rounded-xl bg-muted/5">
+              <div className="h-16 w-16 rounded-lg bg-muted flex items-center justify-center mb-6 text-muted-foreground">
+                <Users className="h-8 w-8" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">No accounts connected</h3>
+                <p className="text-muted-foreground max-w-sm mx-auto">
+                  Connect your first social media account to start managing your presence.
+                </p>
+              </div>
+              <div className="mt-8">
                 <ConnectModal>
-                  <Button className="h-16 px-12 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-[0.2em] text-sm shadow-2xl shadow-primary/40 transition-all hover:scale-110">
-                    <Plus className="mr-4 h-6 w-6 stroke-[3]" />
-                    Initialize Sync
+                  <Button className="rounded-lg h-10 px-8 font-semibold">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Connect First Account
                   </Button>
                 </ConnectModal>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* Infrastructure Insight Section */}
-          <div className="lg:col-span-12">
-            <Card className="bg-primary/5 border-primary/20 rounded-[2rem] overflow-hidden group">
-              <CardContent className="p-10 flex flex-col md:flex-row items-center gap-10">
-                <div className="h-20 w-20 rounded-[2rem] bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-2xl shadow-primary/30">
-                  <AlertCircle className="h-10 w-10 stroke-[2.5]" />
-                </div>
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-black uppercase tracking-tight">Security & Encryption Protocol</h3>
-                  <p className="text-muted-foreground font-medium text-lg leading-relaxed tracking-tight max-w-4xl">
-                    AISAM bridges your social output using multi-layered <span className="text-primary font-black uppercase">OAuth Core</span> authentication.
-                    Communication credentials remain decentralized and encrypted. Your local control allows for immediate node termination at any timestamp.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Security Info */}
+          <Card className="border p-6 rounded-xl shadow-sm bg-primary/5 border-primary/10">
+            <div className="flex items-start gap-4">
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                <AlertCircle className="h-5 w-5" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-primary">Security Protocol</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-4xl font-medium">
+                  We use industry-standard OAuth authentication to bridge your accounts.
+                  Your credentials are never stored directly and remain decentralized.
+                  You can terminate any integration instantly from this dashboard.
+                </p>
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
     </div>

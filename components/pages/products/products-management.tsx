@@ -57,18 +57,16 @@ const createColumns = (
       accessorKey: "name",
       header: "Product",
       cell: ({ row }) => (
-        <div className="flex items-center gap-4">
-          <div className="relative h-12 w-12 rounded-2xl overflow-hidden border border-border/40 shadow-inner group">
-            <Avatar className="h-full w-full rounded-none">
-              <AvatarImage src={row.original.images?.[0] || "/placeholder.svg"} className="object-cover group-hover:scale-110 transition-transform duration-500" />
-              <AvatarFallback className="bg-muted">
-                <Package className="h-5 w-5 text-muted-foreground" />
-              </AvatarFallback>
-            </Avatar>
-          </div>
+        <div className="flex items-center gap-3 py-1">
+          <Avatar className="h-10 w-10 rounded-lg border bg-muted">
+            <AvatarImage src={row.original.images?.[0] || "/placeholder.svg"} className="object-cover" />
+            <AvatarFallback>
+              <Package className="h-5 w-5 text-muted-foreground" />
+            </AvatarFallback>
+          </Avatar>
           <div>
-            <div className="font-bold text-foreground tracking-tight text-sm">{row.getValue("name")}</div>
-            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mt-1">ID: {row.original.id.slice(0, 8)}...</div>
+            <div className="font-semibold text-foreground text-sm">{row.getValue("name")}</div>
+            <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">#{row.original.id.slice(0, 8)}</div>
           </div>
         </div>
       ),
@@ -77,8 +75,8 @@ const createColumns = (
       accessorKey: "description",
       header: "Description",
       cell: ({ row }) => (
-        <div className="text-muted-foreground font-medium text-xs line-clamp-1 max-w-[200px] tracking-tight">
-          {row.getValue("description") || "No description provided."}
+        <div className="text-muted-foreground text-xs line-clamp-1 max-w-[200px]">
+          {row.getValue("description") || "No description."}
         </div>
       ),
     },
@@ -93,7 +91,7 @@ const createColumns = (
           minimumFractionDigits: 0,
         }).format(price);
         return (
-          <span className="font-fira-mono font-bold text-primary text-sm tracking-tighter tabular-nums">{formattedPrice}</span>
+          <span className="font-semibold text-primary text-sm">{formattedPrice}</span>
         );
       },
     },
@@ -104,9 +102,8 @@ const createColumns = (
         const brandId = row.getValue("brandId") as string;
         const brand = brands.find(b => b.id === brandId);
         return (
-          <Badge variant="outline" className="h-7 border-border/40 bg-muted/20 font-bold text-[10px] uppercase tracking-widest text-muted-foreground px-3 rounded-lg overflow-hidden max-w-[120px] justify-start gap-2">
-            <div className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
-            <span className="truncate">{brand?.name || 'Unknown'}</span>
+          <Badge variant="outline" className="h-6 border-border/60 bg-muted/30 font-semibold text-[10px] uppercase tracking-wider text-muted-foreground px-2 rounded-md">
+            {brand?.name || 'Unknown'}
           </Badge>
         );
       },
@@ -119,15 +116,14 @@ const createColumns = (
         const count = images?.length || 0;
         return (
           <div className="flex items-center gap-2">
-            <div className="flex -space-x-3 overflow-hidden">
+            <div className="flex -space-x-2 overflow-hidden">
               {images?.slice(0, 3).map((img, i) => (
-                <div key={i} className="inline-block h-6 w-6 rounded-full ring-2 ring-background overflow-hidden bg-muted">
-                  <Image src={img} alt="" width={24} height={24} className="object-cover h-full w-full" />
+                <div key={i} className="inline-block h-6 w-6 rounded-full border border-background bg-muted">
+                  <Image src={img} alt="" width={24} height={24} className="object-cover h-full w-full rounded-full" />
                 </div>
               ))}
             </div>
-            {count > 3 && <span className="text-[10px] font-bold text-muted-foreground">+{count - 3}</span>}
-            {count === 0 && <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">NONE</span>}
+            {count > 3 && <span className="text-[10px] font-medium text-muted-foreground">+{count - 3}</span>}
           </div>
         );
       },
@@ -139,12 +135,12 @@ const createColumns = (
         const actions: ActionItem[] = [
           {
             label: "View Details",
-            icon: <Eye className="h-4 w-4 stroke-[2.5]" />,
+            icon: <Eye className="h-4 w-4" />,
             onClick: () => handleViewProduct(row.original),
           },
           {
             label: "Edit Product",
-            icon: <Pencil className="h-4 w-4 stroke-[2.5]" />,
+            icon: <Pencil className="h-4 w-4" />,
             onClick: () => handleEditProduct(row.original),
           },
         ];
@@ -265,93 +261,42 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
 
   return (
     <div className="max-w-[1440px] mx-auto font-fira-sans">
-      <div className="space-y-10 p-6 lg:p-10 bg-background">
+      <div className="space-y-8 p-6 lg:p-10 bg-background">
         {/* Breadcrumb */}
         {!teamId && (
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard" className="text-[10px] font-bold uppercase tracking-[0.2em]">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/dashboard" className="text-sm font-medium">Dashboard</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard/brands" className="text-[10px] font-bold uppercase tracking-[0.2em]">Brands</BreadcrumbLink>
+                <BreadcrumbLink href="/dashboard/brands" className="text-sm font-medium">Brands</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">{currentBrand?.name || 'Inventory'}</BreadcrumbPage>
+                <BreadcrumbPage className="text-sm font-medium text-primary">{currentBrand?.name || 'Inventory'}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         )}
 
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-8 bg-primary rounded-full" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary/70">Product Inventory</span>
-            </div>
-            <h1 className="text-4xl lg:text-5xl font-black tracking-tighter text-foreground uppercase leading-none">
-              {teamId ? 'Team' : (currentBrand?.name || 'Local')} <span className="text-primary italic">Products</span>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              {teamId ? 'Team' : (currentBrand?.name || 'Brand')} Products
             </h1>
-            <p className="text-lg text-muted-foreground font-medium max-w-2xl tracking-tight leading-relaxed">
-              Manage your product catalog for {currentBrand?.name || 'this brand'}. Add products for use in your campaigns.
+            <p className="text-muted-foreground max-w-2xl">
+              Manage product catalog for {currentBrand?.name || 'this brand'}.
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="px-6 py-4 bg-card/40 backdrop-blur-xl rounded-2xl border border-border/40 shadow-xl flex items-center gap-6">
-              <div className="space-y-1 border-r border-border/20 pr-6">
-                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">Total Costs</div>
-                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-foreground">{filteredProducts.length}</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-[10px] font-bold text-primary uppercase tracking-widest leading-none">Status</div>
-                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-primary">Active</div>
-              </div>
+          <div className="flex items-center gap-6">
+            <div className="text-right">
+              <p className="text-sm font-medium text-muted-foreground">Total Products</p>
+              <p className="text-2xl font-bold">{filteredProducts.length}</p>
             </div>
-          </div>
-        </div>
-
-        {/* Action Toolbar */}
-        <div className="flex flex-col xl:flex-row items-stretch xl:items-center gap-4 bg-muted/20 p-4 rounded-[2.5rem] border border-border/40">
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground stroke-[2.5]" />
-            <Input
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 h-12 bg-background/50 border-border/40 rounded-xl font-bold text-[10px] uppercase tracking-widest focus:ring-primary/20"
-            />
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            {teamId && (
-              <Select value={scopeBrandId} onValueChange={(value) => setScopeBrandId(value as string | "team-all")}>
-                <SelectTrigger className="h-12 w-full sm:w-[200px] bg-background/50 border-border/40 rounded-xl font-bold text-[10px] uppercase tracking-widest">
-                  <SelectValue placeholder="BRAND" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-border/40 font-fira-sans">
-                  <SelectItem value="team-all" className="font-bold uppercase text-[10px] tracking-widest">All Brands</SelectItem>
-                  {teamBrands.map((b: Brand) => (
-                    <SelectItem key={b.id} value={b.id} className="font-bold uppercase text-[10px] tracking-widest">{b.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-
-            <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
-              <SelectTrigger className="h-12 w-full sm:w-[130px] bg-background/50 border-border/40 rounded-xl font-bold text-[10px] uppercase tracking-widest">
-                <SelectValue placeholder="ROWS" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl border-border/40 font-fira-sans">
-                {[5, 10, 20, 50].map((size) => (
-                  <SelectItem key={size} value={String(size)} className="font-bold uppercase text-[10px] tracking-widest">{size} Products</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
             <ProductModal
               mode="create"
               defaultBrandId={scopeBrandId !== "team-all" ? scopeBrandId : (brandId || initialBrandId)}
@@ -359,70 +304,105 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
               teamId={teamId}
               onSuccess={handleRefresh}
             >
-              <Button className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-bold uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02]">
-                <Plus className="mr-2 h-4 w-4 stroke-[3]" />
+              <Button className="rounded-lg h-10 px-6 font-semibold">
+                <Plus className="mr-2 h-4 w-4" />
                 Add Product
               </Button>
             </ProductModal>
           </div>
         </div>
 
-        {/* Product List */}
-        <div className="relative">
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-[2.5rem] blur-2xl opacity-50" />
-          <div className="relative">
-            {filteredProducts.length > 0 ? (
-              <div className="bg-card/40 backdrop-blur-xl rounded-[2.8rem] border border-border/40 shadow-2xl overflow-hidden p-2">
-                <CustomTable
-                  columns={createColumns(handleViewProduct, handleEditProduct, safeBrands)}
-                  data={filteredProducts}
-                  pageSize={pageSize}
-                />
-              </div>
-            ) : (
-              <Card className="border-border/40 bg-card/40 backdrop-blur-xl rounded-[2.8rem] p-24 shadow-2xl border-dashed">
-                <CardContent className="flex flex-col items-center justify-center text-center space-y-8">
-                  <div className="h-24 w-24 rounded-3xl bg-primary/5 flex items-center justify-center border border-primary/10">
-                    <Package className="h-12 w-12 text-primary stroke-[1.5]" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-3xl font-black uppercase tracking-tight">No Products Found</h3>
-                    <p className="text-muted-foreground font-medium max-w-sm mx-auto tracking-tight leading-relaxed">
-                      No products found in {currentBrand?.name || 'this brand'}. Add your first product to get started.
-                    </p>
-                  </div>
-                  <ProductModal
-                    mode="create"
-                    defaultBrandId={scopeBrandId !== "team-all" ? scopeBrandId : (brandId || initialBrandId)}
-                    brands={teamId ? teamBrands : (brandId && !initialBrandId ? safeBrands.filter(b => b.id === brandId) : safeBrands)}
-                    teamId={teamId}
-                    onSuccess={handleRefresh}
-                  >
-                    <Button className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-bold uppercase tracking-[0.2em] text-xs shadow-2xl shadow-primary/40 transition-all hover:scale-110">
-                      <Plus className="mr-3 h-5 w-5 stroke-[3]" />
-                      Add First Product
-                    </Button>
-                  </ProductModal>
-                </CardContent>
-              </Card>
+        {/* Action Toolbar */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl border bg-card shadow-sm">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 h-10 bg-background rounded-lg border-border/60"
+            />
+          </div>
+
+          <div className="flex items-center gap-3">
+            {teamId && (
+              <Select value={scopeBrandId} onValueChange={(value) => setScopeBrandId(value as string | "team-all")}>
+                <SelectTrigger className="h-10 w-[180px] rounded-lg">
+                  <SelectValue placeholder="Brand" />
+                </SelectTrigger>
+                <SelectContent className="rounded-lg">
+                  <SelectItem value="team-all">All Brands</SelectItem>
+                  {teamBrands.map((b: Brand) => (
+                    <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
+
+            <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
+              <SelectTrigger className="h-10 w-[140px] rounded-lg">
+                <SelectValue placeholder="Per page" />
+              </SelectTrigger>
+              <SelectContent className="rounded-lg">
+                {[5, 10, 20, 50].map((size) => (
+                  <SelectItem key={size} value={String(size)}>{size} per page</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        {/* Insights */}
-        <Card className="border-border/40 bg-primary/5 backdrop-blur-md rounded-[2.5rem] p-10 overflow-hidden group relative">
-          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-125 transition-transform duration-1000">
-            <Package className="h-32 w-32" />
-          </div>
-          <div className="relative flex items-start gap-8">
-            <div className="h-16 w-16 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-2xl shadow-primary/30 shrink-0">
-              <Package className="h-8 w-8 stroke-[2.5]" />
+        {/* Product List */}
+        {filteredProducts.length > 0 ? (
+          <Card className="rounded-xl border shadow-sm overflow-hidden">
+            <CustomTable
+              columns={createColumns(handleViewProduct, handleEditProduct, safeBrands)}
+              data={filteredProducts}
+              pageSize={pageSize}
+              className="border-0 shadow-none bg-transparent"
+              headerClassName="bg-muted/30 border-b py-3"
+            />
+          </Card>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-20 px-6 text-center border border-dashed rounded-xl bg-muted/5">
+            <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-6 text-muted-foreground">
+              <Package className="h-8 w-8" />
             </div>
-            <div className="space-y-3">
-              <h4 className="text-2xl font-bold uppercase tracking-tight">Inventory Insights</h4>
-              <p className="text-muted-foreground font-medium max-w-3xl text-lg leading-relaxed tracking-tight">
-                Product catalog for <span className="text-primary font-bold uppercase tracking-widest">{currentBrand?.name || 'Global'}</span> is
-                up to date. AI categorization accuracy is <span className="text-primary font-bold">99.2%</span>.
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold">{searchTerm ? 'No matches found' : 'No products yet'}</h3>
+              <p className="text-muted-foreground max-w-sm mx-auto">
+                {searchTerm ? 'Try searching for something else.' : 'Start by adding your first product to this brand catalog.'}
+              </p>
+            </div>
+            {!searchTerm && (
+              <div className="mt-8">
+                <ProductModal
+                  mode="create"
+                  defaultBrandId={scopeBrandId !== "team-all" ? scopeBrandId : (brandId || initialBrandId)}
+                  brands={teamId ? teamBrands : (brandId && !initialBrandId ? safeBrands.filter(b => b.id === brandId) : safeBrands)}
+                  teamId={teamId}
+                  onSuccess={handleRefresh}
+                >
+                  <Button className="rounded-lg h-10 px-6">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Product
+                  </Button>
+                </ProductModal>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Insights */}
+        <Card className="border p-6 rounded-xl shadow-sm bg-primary/5">
+          <div className="flex items-start gap-4">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+              <Package className="h-5 w-5" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-sm font-semibold">Inventory Tip</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Keeping your product catalog up to date helps AI generate more accurate content for your campaigns.
               </p>
             </div>
           </div>
@@ -431,54 +411,53 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
         {/* Product Details Modal */}
         {viewingProduct && (
           <AlertDialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-            <AlertDialogContent className="rounded-[3rem] border-border/40 bg-background/95 backdrop-blur-3xl p-10 max-w-2xl font-fira-sans shadow-[0_0_100px_rgba(0,0,0,0.4)]">
-              <AlertDialogHeader className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <AlertDialogTitle className="flex items-center gap-3 text-3xl font-black uppercase tracking-tight">
-                    <Package className="h-7 w-7 text-primary" />
+            <AlertDialogContent className="rounded-xl max-w-lg p-6">
+              <AlertDialogHeader>
+                <div className="flex items-center justify-between mb-4">
+                  <AlertDialogTitle className="text-xl font-bold flex items-center gap-2">
+                    <Package className="h-5 w-5 text-primary" />
                     Product Details
                   </AlertDialogTitle>
-                  <Badge className="bg-primary/20 text-primary border-none font-bold text-[10px] px-3 py-1 rounded-lg">Active</Badge>
+                  <Badge variant="secondary" className="rounded-md">Active</Badge>
                 </div>
-                <AlertDialogDescription className="text-base font-bold text-primary italic uppercase tracking-[0.2em] opacity-80 border-l-4 border-primary pl-4">
-                  Product: {viewingProduct.name}
-                </AlertDialogDescription>
               </AlertDialogHeader>
 
-              <div className="space-y-10 py-10">
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-10">
-                  <div className="relative h-48 w-48 rounded-[2.5rem] overflow-hidden border border-border/40 shadow-2xl group shrink-0">
-                    <Image src={viewingProduct.images?.[0] || '/placeholder.svg'} alt="" fill className="object-cover group-hover:scale-110 transition-transform duration-1000" />
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row gap-6">
+                  <div className="relative h-40 w-40 rounded-lg overflow-hidden border bg-muted shrink-0">
+                    <Image src={viewingProduct.images?.[0] || '/placeholder.svg'} alt="" fill className="object-cover" />
                   </div>
-                  <div className="flex-1 space-y-8 w-full">
-                    <div className="grid grid-cols-1 xs:grid-cols-2 gap-8">
-                      <div className="space-y-2">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Brand</p>
-                        <div className="flex items-center gap-2">
-                          <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                          <p className="font-bold uppercase tracking-tight text-sm text-foreground">{safeBrands.find(b => b.id === viewingProduct.brandId)?.name || 'Unknown'}</p>
-                        </div>
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <h4 className="text-lg font-bold">{viewingProduct.name}</h4>
+                      <p className="text-sm text-muted-foreground font-medium">#{viewingProduct.id.slice(0, 8)}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase">Brand</p>
+                        <p className="text-sm font-medium">{safeBrands.find(b => b.id === viewingProduct.brandId)?.name || 'Unknown'}</p>
                       </div>
-                      <div className="space-y-2">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Price</p>
-                        <p className="font-fira-mono font-black text-2xl text-primary leading-none tracking-tighter">
+                      <div>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase">Price</p>
+                        <p className="text-sm font-bold text-primary">
                           {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", minimumFractionDigits: 0 }).format(Number(viewingProduct.price || 0))}
                         </p>
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Description</p>
-                      <p className="text-sm font-medium leading-relaxed tracking-tight text-muted-foreground">{viewingProduct.description || 'No description available.'}</p>
-                    </div>
                   </div>
                 </div>
 
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">Description</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{viewingProduct.description || 'No description available.'}</p>
+                </div>
+
                 {Array.isArray(viewingProduct.images) && viewingProduct.images.length > 1 && (
-                  <div className="space-y-4">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Product Images</p>
-                    <div className="flex gap-4 flex-wrap">
-                      {viewingProduct.images.map((img, idx) => (
-                        <div key={idx} className="relative h-20 w-20 rounded-2xl overflow-hidden border border-border/40 hover:border-primary/50 transition-all cursor-pointer shadow-lg">
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">More Images</p>
+                    <div className="flex gap-2 flex-wrap">
+                      {viewingProduct.images.slice(1).map((img, idx) => (
+                        <div key={idx} className="relative h-14 w-14 rounded-md overflow-hidden border">
                           <Image src={img} alt="" fill className="object-cover" />
                         </div>
                       ))}
@@ -487,8 +466,10 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
                 )}
               </div>
 
-              <AlertDialogFooter className="sm:justify-center">
-                <AlertDialogAction className="h-14 px-12 rounded-2xl font-bold uppercase tracking-widest text-[11px] bg-primary shadow-2xl shadow-primary/30" onClick={() => setIsViewOpen(false)}>Close</AlertDialogAction>
+              <AlertDialogFooter className="mt-8">
+                <AlertDialogAction className="rounded-lg h-10 px-6 w-full sm:w-auto" onClick={() => setIsViewOpen(false)}>
+                  Close
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
