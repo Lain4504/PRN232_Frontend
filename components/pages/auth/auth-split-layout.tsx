@@ -3,6 +3,8 @@
 import React from "react";
 import { Zap, Shield, Star } from "lucide-react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
+
 
 export function AuthSplitLayout({
   children,
@@ -17,6 +19,12 @@ export function AuthSplitLayout({
   quote?: string;
   author?: string;
 }) {
+  const { t } = useTranslation("auth");
+  const actualTitle = title === "Welcome Back" ? t('welcomeBack') : (title === "Create a new account" ? t('createAccountTitle') : title);
+  const actualSubtitle = subtitle === "Sign in to manage your AI marketing campaigns" ? t('signInSubtitle') : (subtitle === "Get started for free today" ? t('getStartedFreeToday') : subtitle);
+  const actualQuote = quote === "AISAM has completely transformed how we handle our social media creative. We've seen a 4x increase in engagement while spending 70% less time on production." ? t('quote') : quote;
+  const actualAuthor = author === "Sarah Chen, Marketing Director" ? "Sarah Chen, " + t('authorRole') : author;
+
   return (
     <div className="min-h-screen bg-background font-fira-sans overflow-hidden relative">
       <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
@@ -40,8 +48,8 @@ export function AuthSplitLayout({
             </Link>
 
             <div className="space-y-4">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">{title}</h1>
-              <p className="text-muted-foreground font-medium text-lg">{subtitle}</p>
+              <h1 className="text-3xl font-bold tracking-tight text-foreground">{actualTitle}</h1>
+              <p className="text-muted-foreground font-medium text-lg">{actualSubtitle}</p>
             </div>
 
             <div className="space-y-10">
@@ -51,10 +59,10 @@ export function AuthSplitLayout({
             </div>
 
             <div className="flex items-center justify-between pt-10 border-t opacity-60">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Secure Connection</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{t('secureConnection')}</span>
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 rounded-full bg-emerald-500 ml-1" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Systems Active</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{t('systemsActive')}</span>
               </div>
             </div>
           </div>
@@ -72,14 +80,14 @@ export function AuthSplitLayout({
 
                 <div className="space-y-8">
                   <p className="text-2xl font-bold text-foreground leading-relaxed">
-                    &ldquo;{quote}&rdquo;
+                    &ldquo;{actualQuote}&rdquo;
                   </p>
                   <div className="flex items-center gap-4">
                     <div className="size-12 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-lg">
                       SC
                     </div>
                     <div>
-                      <p className="text-lg font-bold text-foreground">{author}</p>
+                      <p className="text-lg font-bold text-foreground">{actualAuthor}</p>
                       <p className="text-xs font-semibold text-primary uppercase tracking-wider">AISAM Core User</p>
                     </div>
                   </div>
@@ -87,11 +95,10 @@ export function AuthSplitLayout({
               </div>
             </div>
 
-            {/* Platform Stats */}
             <div className="grid grid-cols-2 gap-12 px-4">
               {[
-                { label: "Generation Speed", value: "0.4s", icon: Zap },
-                { label: "Stability Rate", value: "99.9%", icon: Shield },
+                { label: t('generationSpeed'), value: "0.4s", icon: Zap },
+                { label: t('stabilityRate'), value: "99.9%", icon: Shield },
               ].map((stat) => (
                 <div key={stat.label} className="space-y-2">
                   <div className="flex items-center gap-2 text-primary">

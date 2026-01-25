@@ -16,6 +16,8 @@ import { registrationSchema, type RegistrationFormData, type AuthError } from "@
 import { useAuth } from "@/lib/contexts/auth-context";
 import { User } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+
 
 export function SignUpForm({
   className,
@@ -26,6 +28,8 @@ export function SignUpForm({
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
   const { register } = useAuth();
+  const { t } = useTranslation("auth");
+
 
   const form = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
@@ -81,15 +85,15 @@ export function SignUpForm({
               <div className="h-20 w-20 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100">
                 <CheckCircle className="h-10 w-10 text-emerald-500" />
               </div>
-              <DialogTitle className="text-2xl font-bold text-center">Registration Successful</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-center">{t('registrationSuccessful')}</DialogTitle>
             </div>
             <DialogDescription className="text-center font-medium text-muted-foreground leading-relaxed">
-              We have sent a verification link to your email address. Please confirm your email to activate your account.
+              {t('registrationSuccessMessage')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-4">
             <Button onClick={() => setSuccessOpen(false)} className="w-full h-11 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg transition-all shadow-sm">
-              Dismiss
+              {t('dismiss')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -113,7 +117,7 @@ export function SignUpForm({
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
           )}
-          Continue with Google
+          {t('continueWithGoogle')}
         </Button>
 
         <div className="relative">
@@ -121,7 +125,7 @@ export function SignUpForm({
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs">
-            <span className="bg-background px-4 text-muted-foreground font-medium">or continue with email</span>
+            <span className="bg-background px-4 text-muted-foreground font-medium">{t('orContinueWithEmail')}</span>
           </div>
         </div>
       </div>
@@ -136,7 +140,7 @@ export function SignUpForm({
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-semibold">Full Name</FormLabel>
+                  <FormLabel className="text-sm font-semibold">{t('fullName')}</FormLabel>
                   <FormControl>
                     <div className="relative group">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -159,7 +163,7 @@ export function SignUpForm({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-semibold">Email</FormLabel>
+                  <FormLabel className="text-sm font-semibold">{t('email')}</FormLabel>
                   <FormControl>
                     <div className="relative group">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -182,7 +186,7 @@ export function SignUpForm({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-semibold">Password</FormLabel>
+                  <FormLabel className="text-sm font-semibold">{t('password')}</FormLabel>
                   <FormControl>
                     <div className="relative group">
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -195,7 +199,7 @@ export function SignUpForm({
                   </FormControl>
                   <FormMessage className="text-xs" />
                   <p className="text-[10px] text-muted-foreground font-medium px-1">
-                    At least 8 characters with a mix of letters and numbers.
+                    {t('passwordHint')}
                   </p>
                 </FormItem>
               )}
@@ -207,7 +211,7 @@ export function SignUpForm({
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-semibold">Confirm Password</FormLabel>
+                  <FormLabel className="text-sm font-semibold">{t('confirmPassword')}</FormLabel>
                   <FormControl>
                     <div className="relative group">
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -243,10 +247,10 @@ export function SignUpForm({
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Creating account...
+                {t('creatingAccount')}
               </>
             ) : (
-              "Create Account"
+              t('createAccount')
             )}
           </Button>
         </form>
@@ -255,12 +259,12 @@ export function SignUpForm({
       {/* Footer Navigation */}
       <div className="text-center">
         <p className="text-sm text-muted-foreground">
-          Already have an account?{" "}
+          {t('alreadyHaveAccount')}{" "}
           <Link
             href="/auth/login"
             className="text-primary font-semibold hover:underline"
           >
-            Log in
+            {t('logIn')}
           </Link>
         </p>
       </div>

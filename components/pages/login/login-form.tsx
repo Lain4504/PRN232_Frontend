@@ -15,6 +15,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginFormData, type AuthError } from "@/lib/types/auth";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+
 
 export function LoginForm({
   className,
@@ -25,6 +27,8 @@ export function LoginForm({
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
+  const { t } = useTranslation("auth");
+
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -88,15 +92,16 @@ export function LoginForm({
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
           )}
-          Continue with Google
+          {t('continueWithGoogle')}
         </Button>
+
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs">
-            <span className="bg-background px-4 text-muted-foreground font-medium">or continue with email</span>
+            <span className="bg-background px-4 text-muted-foreground font-medium">{t('orContinueWithEmail')}</span>
           </div>
         </div>
       </div>
@@ -111,7 +116,7 @@ export function LoginForm({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-semibold">Email</FormLabel>
+                  <FormLabel className="text-sm font-semibold">{t('email')}</FormLabel>
                   <FormControl>
                     <div className="relative group">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -135,12 +140,12 @@ export function LoginForm({
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center justify-between">
-                    <FormLabel className="text-sm font-semibold">Password</FormLabel>
+                    <FormLabel className="text-sm font-semibold">{t('password')}</FormLabel>
                     <Link
                       href="/auth/forgot-password"
                       className="text-xs font-semibold text-primary hover:underline transition-all"
                     >
-                      Forgot password?
+                      {t('forgotPassword')}
                     </Link>
                   </div>
                   <FormControl>
@@ -178,10 +183,10 @@ export function LoginForm({
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Signing in...
+                {t('signingIn')}
               </>
             ) : (
-              "Sign In"
+              t('signIn')
             )}
           </Button>
         </form>
@@ -190,12 +195,12 @@ export function LoginForm({
       {/* Footer Navigation */}
       <div className="text-center">
         <p className="text-sm text-muted-foreground">
-          New to AISAM?{" "}
+          {t('newToAisam')}{" "}
           <Link
             href="/auth/sign-up"
             className="text-primary font-semibold hover:underline"
           >
-            Create an account
+            {t('createAccount')}
           </Link>
         </p>
       </div>

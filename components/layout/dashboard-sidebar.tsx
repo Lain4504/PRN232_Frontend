@@ -90,7 +90,7 @@ export function DashboardSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="px-2 py-4">
+      <SidebarContent className="py-4 px-2 group-data-[collapsible=icon]:!px-0">
         {/* Core Systems Group */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 px-2 mb-2 group-data-[collapsible=icon]:hidden">
@@ -107,7 +107,7 @@ export function DashboardSidebar() {
                       isActive={isActive}
                       tooltip={item.title}
                       className={cn(
-                        "h-10 rounded-xl transition-all duration-300 group relative overflow-hidden",
+                        "h-10 rounded-xl transition-all duration-300 group relative overflow-hidden group-data-[collapsible=icon]:mx-auto",
                         isActive ? "bg-primary/10 text-primary shadow-inner hover:bg-primary/15 hover:text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
                       )}
                     >
@@ -146,7 +146,7 @@ export function DashboardSidebar() {
                         isActive={isActive}
                         tooltip={item.title}
                         className={cn(
-                          "h-10 rounded-xl transition-all duration-300 group relative overflow-hidden",
+                          "h-10 rounded-xl transition-all duration-300 group relative overflow-hidden group-data-[collapsible=icon]:mx-auto",
                           isActive ? "bg-primary/10 text-primary shadow-inner hover:bg-primary/15 hover:text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
                         )}
                       >

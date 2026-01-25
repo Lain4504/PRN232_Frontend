@@ -22,6 +22,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { UserDropdown } from "@/components/layout/user-dropdown"
 import { cn } from "@/lib/utils"
+import { LanguageSwitcher } from "@/components/shared/language-switcher"
 
 export function Header() {
     const { user } = useAuth()
@@ -168,6 +169,7 @@ export function Header() {
 
                 {/* Authentication */}
                 <div className="flex items-center gap-6">
+                    <LanguageSwitcher />
                     {user ? (
                         <div className="flex items-center gap-6">
                             <Button asChild className="hidden sm:flex rounded-2xl font-black uppercase tracking-widest text-[10px] h-10 px-6 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-[0.98]">

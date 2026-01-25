@@ -20,8 +20,12 @@ import {
   Globe,
   Rocket
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
 
 export function HomeContent() {
+  const { t } = useTranslation("common");
+
   return (
     <div className="min-h-screen bg-background selection:bg-primary/10 selection:text-primary">
       {/* Hero Section */}
@@ -39,32 +43,31 @@ export function HomeContent() {
             <div className="flex justify-center">
               <Badge variant="secondary" className="px-4 py-1.5 rounded-full border-primary/10 bg-primary/5 text-primary font-bold">
                 <Sparkles className="size-3.5 mr-2" />
-                AI-Powered Marketing Suite
+                {t('aiPoweredMarketingSuite')}
               </Badge>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground leading-[1.1]">
-              Social Media Strategy, <br />
-              <span className="text-primary">Perfected by AI.</span>
+              {t('socialMediaStrategy')} <br />
+              <span className="text-primary">{t('perfectedByAI')}</span>
             </h1>
 
             <p className="max-w-2xl mx-auto text-lg md:text-xl text-muted-foreground font-medium leading-relaxed">
-              Scale your creative output across TikTok, Meta, and Instagram.
-              Our enterprise-grade AI engine handles the complexity so you can focus on growth.
+              {t('heroDescription')}
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button asChild size="lg" className="h-12 px-8 rounded-lg font-bold shadow-lg shadow-primary/20">
               <Link href="/auth/sign-up" className="flex items-center gap-2">
-                Start Free Trial
+                {t('startFreeTrial')}
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="h-12 px-8 rounded-lg font-semibold border-border/60">
               <Link href="/solutions/startup" className="flex items-center gap-2">
                 <Play className="size-4 fill-current" />
-                See Solutions
+                {t('seeSolutions')}
               </Link>
             </Button>
           </div>
@@ -72,7 +75,7 @@ export function HomeContent() {
           {/* Social Proof */}
           <div className="pt-12 flex flex-wrap items-center justify-center gap-8 md:gap-16 opacity-50 grayscale">
             {/* Simple placeholders or icons for brands could go here */}
-            <div className="flex items-center gap-2 font-bold text-xl tracking-tighter">TRUSTED BY 12,000+ MARKETERS</div>
+            <div className="flex items-center gap-2 font-bold text-xl tracking-tighter">{t('trustedBy')}</div>
           </div>
         </div>
       </section>
@@ -82,10 +85,10 @@ export function HomeContent() {
         <div className="max-w-7xl mx-auto">
           <div className="max-w-3xl mb-16 space-y-4">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
-              Everything you need to <span className="text-primary">win</span> in social commerce.
+              {t('everythingYouNeed')} <span className="text-primary">{t('winInSocialCommerce')}</span> {t('winInSocialCommerceSuffix')}
             </h2>
             <p className="text-lg text-muted-foreground font-medium">
-              We've built the most comprehensive toolkit for modern marketing teams.
+              {t('toolkitDescription')}
             </p>
           </div>
 
@@ -95,13 +98,13 @@ export function HomeContent() {
               <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
                 <Brain className="size-6" />
               </div>
-              <h3 className="text-xl font-bold mb-3">AI Content Engine</h3>
+              <h3 className="text-xl font-bold mb-3">{t('aiContentEngine')}</h3>
               <p className="text-muted-foreground font-medium leading-relaxed mb-6">
-                Generate high-converting assets optimized for every platform's unique algorithm and audience.
+                {t('aiContentEngineDesc')}
               </p>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="rounded-md px-2 py-0 font-bold text-[10px] uppercase">Image AI</Badge>
-                <Badge variant="outline" className="rounded-md px-2 py-0 font-bold text-[10px] uppercase">Video Gen</Badge>
+                <Badge variant="outline" className="rounded-md px-2 py-0 font-bold text-[10px] uppercase">{t('imageAI')}</Badge>
+                <Badge variant="outline" className="rounded-md px-2 py-0 font-bold text-[10px] uppercase">{t('videoGen')}</Badge>
               </div>
             </Card>
 
@@ -110,13 +113,13 @@ export function HomeContent() {
               <div className="size-12 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 transition-transform">
                 <Target className="size-6" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Brand Integrity</h3>
+              <h3 className="text-xl font-bold mb-3">{t('brandIntegrity')}</h3>
               <p className="text-muted-foreground font-medium leading-relaxed mb-6">
-                Maintain absolute consistency across all channels with AI-enforced visual and tone guidelines.
+                {t('brandIntegrityDesc')}
               </p>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="rounded-md px-2 py-0 font-bold text-[10px] uppercase">Brand Hub</Badge>
-                <Badge variant="outline" className="rounded-md px-2 py-0 font-bold text-[10px] uppercase">Audit AI</Badge>
+                <Badge variant="outline" className="rounded-md px-2 py-0 font-bold text-[10px] uppercase">{t('brandHub')}</Badge>
+                <Badge variant="outline" className="rounded-md px-2 py-0 font-bold text-[10px] uppercase">{t('auditAI')}</Badge>
               </div>
             </Card>
 
@@ -125,13 +128,13 @@ export function HomeContent() {
               <div className="size-12 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500 mb-6 group-hover:scale-110 transition-transform">
                 <Zap className="size-6" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Smart Automation</h3>
+              <h3 className="text-xl font-bold mb-3">{t('smartAutomation')}</h3>
               <p className="text-muted-foreground font-medium leading-relaxed mb-6">
-                Automate your posting schedule and approval workflows to save hundreds of hours every month.
+                {t('smartAutomationDesc')}
               </p>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="rounded-md px-2 py-0 font-bold text-[10px] uppercase">Scheduler</Badge>
-                <Badge variant="outline" className="rounded-md px-2 py-0 font-bold text-[10px] uppercase">Auto-Post</Badge>
+                <Badge variant="outline" className="rounded-md px-2 py-0 font-bold text-[10px] uppercase">{t('scheduler')}</Badge>
+                <Badge variant="outline" className="rounded-md px-2 py-0 font-bold text-[10px] uppercase">{t('autoPost')}</Badge>
               </div>
             </Card>
           </div>
@@ -142,7 +145,7 @@ export function HomeContent() {
       <section className="py-24 px-6">
         <div className="max-w-7xl mx-auto space-y-16">
           <div className="text-center space-y-4">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Loved by high-growth brands.</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">{t('lovedByBrands')}</h2>
             <div className="flex items-center justify-center gap-1 text-primary">
               {[...Array(5)].map((_, i) => <Star key={i} className="size-5 fill-current" />)}
             </div>
@@ -150,9 +153,9 @@ export function HomeContent() {
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {[
-              { name: "Lan Nguyen", role: "Marketing Director", initial: "LN", quote: "AISAM has completely transformed how we manage advertising. We save 70% of creative production time." },
-              { name: "Minh Tran", role: "Brand Lead", initial: "MT", quote: "The AI content engine is truly impressive. It maintains our quality standards while scaling output." },
-              { name: "Hoang Le", role: "Growth Manager", initial: "HL", quote: "Professional, intuitive, and the integration was seamless. Our engagement is up 25% since joining." }
+              { name: "Lan Nguyen", role: t('roles.marketingDirector'), initial: "LN", quote: "AISAM has completely transformed how we manage advertising. We save 70% of creative production time." },
+              { name: "Minh Tran", role: t('roles.brandLead'), initial: "MT", quote: "The AI content engine is truly impressive. It maintains our quality standards while scaling output." },
+              { name: "Hoang Le", role: t('roles.growthManager'), initial: "HL", quote: "Professional, intuitive, and the integration was seamless. Our engagement is up 25% since joining." }
             ].map((t, idx) => (
               <Card key={idx} className="p-8 rounded-xl border bg-card flex flex-col justify-between shadow-sm">
                 <p className="text-lg font-medium text-foreground italic mb-8">
@@ -181,19 +184,18 @@ export function HomeContent() {
           </div>
 
           <div className="relative space-y-6">
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">Ready to scale your brand?</h2>
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">{t('readyToScale')}</h2>
             <p className="text-xl opacity-80 font-medium max-w-2xl mx-auto">
-              Join 12,000+ marketers leveraging AI to dominate social media.
-              Start your 14-day free trial now.
+              {t('ctaDescription')}
             </p>
           </div>
 
           <div className="relative flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button asChild size="lg" className="h-14 px-10 rounded-lg bg-white text-primary hover:bg-white/90 font-bold shadow-xl">
-              <Link href="/auth/sign-up">Get Started for Free</Link>
+              <Link href="/auth/sign-up">{t('getStartedFree')}</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="h-14 px-10 rounded-lg bg-transparent border-white/30 text-white hover:bg-white/10 font-bold">
-              <Link href="/contact">Schedule a Demo</Link>
+              <Link href="/contact">{t('scheduleDemo')}</Link>
             </Button>
           </div>
         </div>
@@ -211,46 +213,45 @@ export function HomeContent() {
                 <span className="text-xl font-bold text-foreground">AISAM</span>
               </Link>
               <p className="text-muted-foreground font-medium text-sm leading-relaxed max-w-xs">
-                The leading AI platform for modern marketing teams.
-                Built for the next generation of social commerce.
+                {t('footer.desc')}
               </p>
             </div>
 
             <div>
-              <h4 className="font-bold text-xs uppercase tracking-wider text-foreground mb-6">Product</h4>
+              <h4 className="font-bold text-xs uppercase tracking-wider text-foreground mb-6">{t('footer.product')}</h4>
               <ul className="space-y-4">
-                <li><Link href="/features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Features</Link></li>
-                <li><Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Pricing</Link></li>
-                <li><Link href="/solutions" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Solutions</Link></li>
+                <li><Link href="/features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t('footer.features')}</Link></li>
+                <li><Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t('footer.pricing')}</Link></li>
+                <li><Link href="/solutions" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t('footer.solutions')}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-bold text-xs uppercase tracking-wider text-foreground mb-6">Resources</h4>
+              <h4 className="font-bold text-xs uppercase tracking-wider text-foreground mb-6">{t('footer.resources')}</h4>
               <ul className="space-y-4">
-                <li><Link href="/docs" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Documentation</Link></li>
-                <li><Link href="/blog" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Insights</Link></li>
-                <li><Link href="/api" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">API</Link></li>
+                <li><Link href="/docs" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t('footer.documentation')}</Link></li>
+                <li><Link href="/blog" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t('footer.insights')}</Link></li>
+                <li><Link href="/api" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t('footer.api')}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-bold text-xs uppercase tracking-wider text-foreground mb-6">Company</h4>
+              <h4 className="font-bold text-xs uppercase tracking-wider text-foreground mb-6">{t('footer.company')}</h4>
               <ul className="space-y-4">
-                <li><Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Our Story</Link></li>
-                <li><Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Contact</Link></li>
-                <li><Link href="/privacy" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Privacy</Link></li>
+                <li><Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t('footer.ourStory')}</Link></li>
+                <li><Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t('footer.contact')}</Link></li>
+                <li><Link href="/privacy" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t('footer.privacy')}</Link></li>
               </ul>
             </div>
           </div>
 
           <div className="pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-xs font-medium text-muted-foreground opacity-60">
-              © 2026 AISAM Platform. All rights reserved.
+              {t('footer.rightsReserved')}
             </p>
             <div className="flex items-center gap-6 text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">
-              <Link href="/terms" className="hover:text-primary">Terms</Link>
-              <Link href="/security" className="hover:text-primary">Security</Link>
+              <Link href="/terms" className="hover:text-primary">{t('footer.terms')}</Link>
+              <Link href="/security" className="hover:text-primary">{t('footer.security')}</Link>
             </div>
           </div>
         </div>
