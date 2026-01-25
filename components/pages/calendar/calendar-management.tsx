@@ -4,8 +4,9 @@ import React, { useState } from "react";
 import { UnifiedContentCalendar } from "@/components/content-calendar/unified-content-calendar";
 import { ScheduleContentModal } from "@/components/content-calendar/schedule-content-modal";
 import type { ContentCalendar } from "@/lib/types/aisam-types";
-import { Calendar, Clock, Plus } from 'lucide-react';
+import { Plus, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 export function CalendarManagement() {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -20,35 +21,61 @@ export function CalendarManagement() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto font-fira-sans">
-      <div className="space-y-8 p-6 lg:p-10 bg-background min-h-screen">
+    <div className="max-w-[1600px] mx-auto font-fira-sans">
+      <div className="space-y-8 p-6 lg:p-10 min-h-screen bg-background text-foreground">
+
+        {/* Breadcrumb */}
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard" className="text-[10px] uppercase font-bold tracking-widest opacity-60 hover:opacity-100 transition-opacity">Command</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="opacity-40" />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="text-[10px] uppercase font-bold tracking-widest text-primary">Content Calendar</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              Calendar
-            </h1>
-            <p className="text-muted-foreground max-w-2xl">
-              Plan and organize your content schedule across all platforms.
+            <div className="flex items-center gap-3">
+              <div className="size-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-[0_0_20px_-5px_rgba(var(--primary),0.3)]">
+                <Clock className="size-6 text-primary animate-pulse-slow" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-black tracking-tighter text-foreground italic uppercase">
+                  Content <span className="text-muted-foreground/30">Calendar</span>
+                </h1>
+              </div>
+            </div>
+            <p className="text-muted-foreground font-medium text-lg max-w-2xl pl-1">
+              Manage and track your content schedule across all platforms.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <Button
               onClick={() => setShowScheduleModal(true)}
-              className="rounded-lg h-10 px-6 font-semibold"
+              className="rounded-xl h-12 px-8 font-black uppercase tracking-widest text-[10px] bg-primary hover:bg-primary/90 shadow-[0_0_25px_-5px_rgba(var(--primary),0.4)] hover:scale-105 transition-all border border-white/10"
             >
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 size-4" />
               New Schedule
             </Button>
           </div>
         </div>
 
-        <div className="bg-card rounded-xl border shadow-sm overflow-hidden">
-          <UnifiedContentCalendar
-            onEventClick={handleEventClick}
-            onCreateSchedule={handleScheduleClick}
-          />
+        {/* Main Content Area with faint background glow */}
+        <div className="relative">
+          <div className="absolute -top-20 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+
+          <div className="relative z-10">
+            <UnifiedContentCalendar
+              onEventClick={handleEventClick}
+              onCreateSchedule={handleScheduleClick}
+            />
+          </div>
         </div>
 
         {/* Schedule Modal */}

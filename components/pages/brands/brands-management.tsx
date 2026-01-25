@@ -199,19 +199,19 @@ export function BrandsManagement() {
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-6 rounded-[32px] border-2 bg-muted/10 backdrop-blur-md">
         <div className="relative w-full sm:w-[500px] group">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             placeholder="Search identity registry..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-14 h-14 bg-background/50 border-none shadow-inner rounded-2xl font-black italic text-xs uppercase tracking-widest"
+            className="pl-10 bg-background"
           />
         </div>
 
         <div className="flex items-center gap-4">
           <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Visibility:</span>
           <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
-            <SelectTrigger className="w-[140px] h-14 rounded-2xl border-none shadow-inner bg-background/50 font-black uppercase text-[10px] tracking-widest">
+            <SelectTrigger className="w-[140px] bg-background">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="rounded-2xl border-2">

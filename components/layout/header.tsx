@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useAuth } from "@/lib/contexts/auth-context"
-import { useEffect, useState, useRef } from "react"
+import { useState, useRef } from "react"
 import {
     Zap,
     Brain,
@@ -23,9 +23,11 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { UserDropdown } from "@/components/layout/user-dropdown"
 import { cn } from "@/lib/utils"
 import { LanguageSwitcher } from "@/components/shared/language-switcher"
+import { useTranslation } from "react-i18next"
 
 export function Header() {
     const { user } = useAuth()
+    const { t } = useTranslation("common")
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [activeMenu, setActiveMenu] = useState<string | null>(null)
     const menuTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -42,16 +44,22 @@ export function Header() {
     }
 
     const features = [
-        { href: "/features/ai-content", icon: Brain, title: "Neural Synthesis", desc: "Generate high-fidelity creative content.", color: "text-blue-500", bg: "bg-blue-500/10" },
-        { href: "/features/brand-management", icon: Target, title: "Identity Matrix", desc: "Maintain absolute brand coherence.", color: "text-rose-500", bg: "bg-rose-500/10" },
-        { href: "/features/scheduling", icon: Calendar, title: "Temporal Sync", desc: "Automated deployment sequencing.", color: "text-amber-500", bg: "bg-amber-500/10" },
-        { href: "/features/analytics", icon: BarChart3, title: "Data Velocity", desc: "Real-time growth performance metrics.", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+        { href: "/features/ai-content", icon: Brain, title: t("header.featureItems.aiContent.title"), desc: t("header.featureItems.aiContent.desc"), color: "text-blue-500", bg: "bg-blue-500/10" },
+        { href: "/features/brand-management", icon: Target, title: t("header.featureItems.brandManagement.title"), desc: t("header.featureItems.brandManagement.desc"), color: "text-rose-500", bg: "bg-rose-500/10" },
+        { href: "/features/scheduling", icon: Calendar, title: t("header.featureItems.scheduling.title"), desc: t("header.featureItems.scheduling.desc"), color: "text-amber-500", bg: "bg-amber-500/10" },
+        { href: "/features/analytics", icon: BarChart3, title: t("header.featureItems.analytics.title"), desc: t("header.featureItems.analytics.desc"), color: "text-emerald-500", bg: "bg-emerald-500/10" },
     ]
 
     const resources = [
-        { href: "/docs", icon: Book, title: "Archives", desc: "Technical Manuals" },
-        { href: "/api", icon: Code, title: "API Nexus", desc: "Developer Tools" },
-        { href: "/blog", icon: FileText, title: "Signals", desc: "Market Insights" },
+        { href: "/docs", icon: Book, title: t("header.knowledgeItems.docs.title"), desc: t("header.knowledgeItems.docs.desc") },
+        { href: "/api", icon: Code, title: t("header.knowledgeItems.api.title"), desc: t("header.knowledgeItems.api.desc") },
+        { href: "/blog", icon: FileText, title: t("header.knowledgeItems.blog.title"), desc: t("header.knowledgeItems.blog.desc") },
+    ]
+
+    const navMenuItems = [
+        ...features,
+        { href: "/pricing", icon: Target, title: t("header.menu.accessPlans") },
+        ...resources,
     ]
 
     return (
@@ -83,7 +91,7 @@ export function Header() {
                                 "flex items-center gap-1.5 text-[13px] font-bold uppercase tracking-wide transition-all py-8",
                                 activeMenu === 'features' ? "text-primary" : "text-muted-foreground/80 hover:text-foreground"
                             )}>
-                                Capabilities
+                                {t("header.menu.capabilities")}
                                 <ChevronDown className={cn("size-3 transition-transform duration-300", activeMenu === 'features' && "rotate-180 text-primary")} />
                             </button>
 
@@ -129,8 +137,8 @@ export function Header() {
                                 "flex items-center gap-1.5 text-[13px] font-bold uppercase tracking-wide transition-all py-8",
                                 activeMenu === 'resources' ? "text-primary" : "text-muted-foreground/80 hover:text-foreground"
                             )}>
-                                Knowledge
-                                <ChevronDown className={cn("size-3 transition-transform duration-300", activeMenu === 'resources' && "rotate-180 text-primary")} />
+                                {t("header.menu.knowledge")}
+                                <ChevronDown className={cn("size-3 transition-transform duration-300", activeMenu === 'resources' && "rotate-180 text-primary" )} />
                             </button>
 
                             {/* Resources Dropdown */}
@@ -162,7 +170,7 @@ export function Header() {
                             href="/pricing"
                             className="px-4 text-[13px] font-bold text-muted-foreground/80 hover:text-foreground transition-all py-8 uppercase tracking-wide hover:tracking-widest duration-300"
                         >
-                            Access Plans
+                            {t("header.menu.accessPlans")}
                         </Link>
                     </nav>
                 </div>
@@ -175,7 +183,7 @@ export function Header() {
                             <Button asChild className="hidden sm:flex rounded-2xl font-black uppercase tracking-widest text-[10px] h-10 px-6 shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-[0.98]">
                                 <Link href="/overview">
                                     <Layout className="size-3 mr-2" />
-                                    Launch Console
+                                    {t("header.launchConsole")}
                                 </Link>
                             </Button>
                             <div className="h-4 w-px bg-border/50" />
@@ -184,11 +192,11 @@ export function Header() {
                     ) : (
                         <div className="flex items-center gap-3">
                             <Button asChild variant="ghost" className="hidden sm:flex text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-transparent hover:text-primary transition-colors">
-                                <Link href="/auth/login">Initialize Session</Link>
+                                <Link href="/auth/login">{t("header.initializeSession")}</Link>
                             </Button>
                             <Button asChild className="rounded-2xl font-black uppercase tracking-widest text-[10px] h-11 px-8 shadow-xl shadow-primary/25 bg-primary hover:bg-primary/90 transition-all hover:scale-105 active:scale-95">
                                 <Link href="/auth/sign-up">
-                                    Deploy Matrix
+                                    {t("header.deployMatrix")}
                                 </Link>
                             </Button>
                         </div>
@@ -213,7 +221,7 @@ export function Header() {
                             </div>
 
                             <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
-                                {[...features, { href: "/pricing", title: "Access Plans", icon: Target }, ...resources].map((item: any) => (
+                                {navMenuItems.map((item: { href: string; icon: any; title: string }) => (
                                     <Link
                                         key={item.title}
                                         href={item.href}
@@ -232,16 +240,16 @@ export function Header() {
                                 {user ? (
                                     <Button asChild className="w-full rounded-2xl font-black uppercase tracking-widest h-14 text-xs shadow-xl shadow-primary/20">
                                         <Link href="/overview" onClick={() => setMobileMenuOpen(false)}>
-                                            Enter Console
+                                            {t("header.enterConsole")}
                                         </Link>
                                     </Button>
                                 ) : (
                                     <div className="grid grid-cols-2 gap-4">
                                         <Button asChild variant="outline" className="rounded-2xl font-black uppercase tracking-widest h-14 text-[10px] border-2">
-                                            <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>Login</Link>
+                                            <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>{t("header.login")}</Link>
                                         </Button>
                                         <Button asChild className="rounded-2xl font-black uppercase tracking-widest h-14 text-[10px] shadow-lg shadow-primary/20">
-                                            <Link href="/auth/sign-up" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
+                                            <Link href="/auth/sign-up" onClick={() => setMobileMenuOpen(false)}>{t("header.signUp")}</Link>
                                         </Button>
                                     </div>
                                 )}

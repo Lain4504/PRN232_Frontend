@@ -156,18 +156,18 @@ export function HomeContent() {
               { name: "Lan Nguyen", role: t('roles.marketingDirector'), initial: "LN", quote: "AISAM has completely transformed how we manage advertising. We save 70% of creative production time." },
               { name: "Minh Tran", role: t('roles.brandLead'), initial: "MT", quote: "The AI content engine is truly impressive. It maintains our quality standards while scaling output." },
               { name: "Hoang Le", role: t('roles.growthManager'), initial: "HL", quote: "Professional, intuitive, and the integration was seamless. Our engagement is up 25% since joining." }
-            ].map((t, idx) => (
+            ].map((testimonial, idx) => (
               <Card key={idx} className="p-8 rounded-xl border bg-card flex flex-col justify-between shadow-sm">
                 <p className="text-lg font-medium text-foreground italic mb-8">
-                  &ldquo;{t.quote}&rdquo;
+                  &ldquo;{testimonial.quote}&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
                   <Avatar className="size-10 rounded-lg">
-                    <AvatarFallback className="bg-primary text-primary-foreground font-bold text-xs">{t.initial}</AvatarFallback>
+                    <AvatarFallback className="bg-primary text-primary-foreground font-bold text-xs">{testimonial.initial}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-bold text-sm">{t.name}</p>
-                    <p className="text-xs text-muted-foreground font-medium">{t.role}</p>
+                    <p className="font-bold text-sm">{testimonial.name}</p>
+                    <p className="text-xs text-muted-foreground font-medium">{testimonial.role}</p>
                   </div>
                 </div>
               </Card>

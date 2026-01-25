@@ -14,6 +14,7 @@ import {
 } from "@tanstack/react-table";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { Loader2, PackageOpen } from "lucide-react";
 
 interface CustomTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -36,13 +37,13 @@ export function CustomTable<TData, TValue>({
   data,
   isLoading = false,
   showIndex = true,
-  indexLabel = "STT",
+  indexLabel = "#",
   currentPage = 0,
   pageSize = 10,
   className,
-  headerClassName = "bg-muted/50 hover:bg-muted/50 border-b border-border",
-  emptyMessage = "No data found",
-  emptyDescription,
+  headerClassName,
+  emptyMessage = "No Data",
+  emptyDescription = "No records found in the database.",
   loadingRows = 5,
   onRowClick,
 }: CustomTableProps<TData, TValue>) {
@@ -56,19 +57,17 @@ export function CustomTable<TData, TValue>({
       header: indexLabel,
       cell: ({ row }) => {
         // Calculate the correct item number based on current page and page size
-        // If we have totalItems and filtering, use the actual row index
-        // Otherwise, calculate based on pagination
         const baseIndex = currentPage * pageSize;
         const displayIndex = baseIndex + row.index + 1;
         return (
-          <div className="text-center font-medium text-foreground">
+          <div className="text-center font-medium text-muted-foreground/70">
             {displayIndex}
           </div>
         );
       },
       enableSorting: false,
-      size: 60,
-      maxSize: 60,
+      size: 50,
+      maxSize: 50,
     } as ColumnDef<TData, TValue>;
 
     return showIndex ? [indexColumn, ...originalColumns] : originalColumns;
@@ -94,86 +93,52 @@ export function CustomTable<TData, TValue>({
   // Generate skeleton rows for loading state
   const renderSkeletonRows = () => {
     return Array.from({ length: loadingRows }).map((_, index) => (
-      <TableRow key={`skeleton-${index}`}>
+      <TableRow key={`skeleton-${index}`} className="hover:bg-transparent">
         {columns.map((column, colIndex) => (
-          <TableCell 
+          <TableCell
             key={`skeleton-cell-${colIndex}`}
-            className={cn(
-              "py-3 px-4",
-              column.id === "index" && "text-center",
-              column.id === "actions" && "w-16 px-4 text-center"
-            )}
+            className="py-4 px-4"
           >
-            {column.id === "index" ? (
-              <div className="h-4 w-6 bg-muted animate-pulse rounded mx-auto" />
-            ) : column.id === "actions" ? (
-              <div className="h-8 w-8 bg-muted animate-pulse rounded mx-auto" />
-            ) : colIndex === 1 && showIndex ? (
-              // First data column - usually has avatar + text
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
-                <div className="h-4 w-32 bg-muted animate-pulse rounded" />
-              </div>
-            ) : (
-              <div className="h-4 w-24 bg-muted animate-pulse rounded" />
-            )}
+            <div className="h-4 w-full bg-primary/5 animate-pulse rounded" />
           </TableCell>
         ))}
       </TableRow>
     ));
   };
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className={cn("rounded-lg border border-border overflow-hidden bg-card backdrop-blur-sm shadow-sm", className)}>
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className={headerClassName}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead 
-                    key={header.id} 
-                    className={cn(
-                      "text-muted-foreground font-medium text-xs uppercase tracking-wide py-3 px-4 h-12 text-center",
-                      header.id === "index" && "w-16",
-                      header.id === "actions" && "w-16"
-                    )}
-                  >
-                    {header.isPlaceholder ? null : (
-                      flexRender(header.column.columnDef.header, header.getContext())
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {renderSkeletonRows()}
-          </TableBody>
-        </Table>
-      </div>
-    );
-  }
-
   return (
-    <div className={cn("rounded-lg border border-border overflow-hidden bg-card backdrop-blur-sm shadow-sm", className)}>
+    <div className={cn(
+      "rounded-2xl border border-white/10 overflow-hidden bg-background/40 backdrop-blur-xl shadow-2xl custom-scrollbar",
+      className
+    )}>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className={headerClassName}>
+            <TableRow
+              key={headerGroup.id}
+              className={cn(
+                "hover:bg-transparent border-b border-white/10 bg-white/5",
+                headerClassName
+              )}
+            >
               {headerGroup.headers.map((header) => (
-                <TableHead 
-                  key={header.id} 
+                <TableHead
+                  key={header.id}
                   className={cn(
-                    "text-gray-500 font-medium text-xs uppercase tracking-wide py-3 px-4 h-12 text-center",
-                    header.id === "index" && "w-16",
-                    header.id === "actions" && "w-16"
+                    "h-12 text-muted-foreground font-semibold text-xs uppercase tracking-wider py-3 px-4",
+                    header.id === "index" && "w-[50px] text-center",
+                    header.id === "actions" && "w-[50px] text-center"
                   )}
+                  style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
                 >
                   {header.isPlaceholder ? null : (
                     <div
-                      className={header.column.getCanSort() ? "flex items-center justify-center gap-1 cursor-pointer select-none" : ""}
+                      className={cn(
+                        "flex items-center gap-2 select-none",
+                        header.column.getCanSort() && "cursor-pointer hover:text-primary transition-colors",
+                        header.id === "actions" && "justify-center",
+                        header.id === "index" && "justify-center"
+                      )}
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       {flexRender(header.column.columnDef.header, header.getContext())}
@@ -185,39 +150,42 @@ export function CustomTable<TData, TValue>({
           ))}
         </TableHeader>
         <TableBody>
-          {data.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-32 text-center py-12">
-                <div className="flex flex-col items-center justify-center">
-                  <p className="text-sm font-medium text-muted-foreground mb-1">
+          {isLoading ? (
+            renderSkeletonRows()
+          ) : data.length === 0 ? (
+            <TableRow className="hover:bg-transparent">
+              <TableCell colSpan={columns.length} className="h-64 text-center">
+                <div className="flex flex-col items-center justify-center p-8">
+                  <div className="size-16 rounded-full bg-muted/10 flex items-center justify-center mb-4">
+                    <PackageOpen className="size-8 text-muted-foreground/50" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-muted-foreground mb-1">
                     {emptyMessage}
+                  </h3>
+                  <p className="text-sm text-muted-foreground/60 max-w-sm">
+                    {emptyDescription}
                   </p>
-                  {emptyDescription && (
-                    <p className="text-xs text-muted-foreground">
-                      {emptyDescription}
-                    </p>
-                  )}
                 </div>
               </TableCell>
             </TableRow>
           ) : (
-            table.getRowModel().rows.map((row, index) => (
-              <TableRow 
+            table.getRowModel().rows.map((row) => (
+              <TableRow
                 key={row.id}
                 className={cn(
-                  "hover:bg-muted/50 transition-all duration-200 border-b border-border last:border-b-0",
-                  index % 2 === 0 ? "bg-card" : "bg-muted/30",
+                  "border-b border-white/5 transition-all duration-200 group",
+                  "hover:bg-primary/5 hover:border-primary/10",
                   onRowClick && "cursor-pointer"
                 )}
                 onClick={() => onRowClick?.(row.original)}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell 
-                    key={cell.id} 
+                  <TableCell
+                    key={cell.id}
                     className={cn(
-                      "py-3 px-4 text-foreground text-sm font-medium",
-                      cell.column.id === "index" && "w-16 text-center font-semibold text-foreground",
-                      cell.column.id === "actions" && "w-16 px-4 text-center"
+                      "py-4 px-4 text-sm font-medium text-foreground/80 group-hover:text-foreground transition-colors",
+                      cell.column.id === "index" && "text-center text-muted-foreground",
+                      cell.column.id === "actions" && "text-center"
                     )}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

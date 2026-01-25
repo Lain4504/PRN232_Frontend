@@ -20,8 +20,19 @@ export function AuthSplitLayout({
   author?: string;
 }) {
   const { t } = useTranslation("auth");
-  const actualTitle = title === "Welcome Back" ? t('welcomeBack') : (title === "Create a new account" ? t('createAccountTitle') : title);
-  const actualSubtitle = subtitle === "Sign in to manage your AI marketing campaigns" ? t('signInSubtitle') : (subtitle === "Get started for free today" ? t('getStartedFreeToday') : subtitle);
+  const actualTitle = title === "Welcome Back" ? t('welcomeBack') :
+                     (title === "Create a new account" ? t('createAccountTitle') :
+                     (title === "Recover Access" ? t('recoverAccess') :
+                     (title === "Update Password" ? t('updatePassword') :
+                     (title === "Verify Email" ? t('verifyEmail') : title))));
+
+  const actualSubtitle = subtitle === "Sign in to manage your AI marketing campaigns" ? t('signInSubtitle') :
+                        (subtitle === "Get started for free today" ? t('getStartedFreeToday') :
+                        (subtitle === "Start your 14-day free trial" ? t('createAccountSubtitle') :
+                        (subtitle === "Enter your identity to receive recovery instructions" ? t('recoverAccessSubtitle') :
+                        (subtitle === "Enter a new password to secure your account" ? t('updatePasswordSubtitle') :
+                        (subtitle === "Confirm your email address to activate your account" ? t('verifyEmailSubtitle') : subtitle)))));
+
   const actualQuote = quote === "AISAM has completely transformed how we handle our social media creative. We've seen a 4x increase in engagement while spending 70% less time on production." ? t('quote') : quote;
   const actualAuthor = author === "Sarah Chen, Marketing Director" ? "Sarah Chen, " + t('authorRole') : author;
 
@@ -88,7 +99,7 @@ export function AuthSplitLayout({
                     </div>
                     <div>
                       <p className="text-lg font-bold text-foreground">{actualAuthor}</p>
-                      <p className="text-xs font-semibold text-primary uppercase tracking-wider">AISAM Core User</p>
+                      <p className="text-xs font-semibold text-primary uppercase tracking-wider">{t('coreUser')}</p>
                     </div>
                   </div>
                 </div>

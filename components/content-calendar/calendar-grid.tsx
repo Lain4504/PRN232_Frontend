@@ -3,13 +3,14 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  Loader2
 } from "lucide-react";
 import type { ContentCalendar } from "@/lib/types/aisam-types";
+import { cn } from "@/lib/utils";
 
 interface CalendarGridProps {
   currentDate: Date;
@@ -61,36 +62,16 @@ export function CalendarGrid({
     });
   };
 
-  const getEventBadgeColor = (status: string) => {
-    switch (status) {
-      case 'scheduled':
-        return 'bg-chart-1/15 text-chart-1 border-chart-1/20';
-      case 'published':
-        return 'bg-chart-2/15 text-chart-2 border-chart-2/20';
-      case 'failed':
-        return 'bg-destructive/15 text-destructive border-destructive/20';
-      case 'cancelled':
-        return 'bg-muted text-muted-foreground border-border';
-      default:
-        return 'bg-muted text-muted-foreground border-border';
-    }
-  };
-
   if (isLoading) {
     return (
-      <Card className="shadow-lg overflow-hidden">
-        <CardHeader className="border-b bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
-          <CardTitle className="flex items-center gap-2 text-xl">
-            <Calendar className="h-5 w-5 text-primary" />
-            Content Calendar
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto mb-4"></div>
-              <p className="text-sm text-muted-foreground">Loading calendar...</p>
+      <Card className="rounded-2xl border border-white/5 bg-background/40 backdrop-blur-xl shadow-2xl relative overflow-hidden group">
+        <CardContent className="flex items-center justify-center py-32">
+          <div className="text-center relative z-10">
+            <div className="relative mb-4">
+              <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full" />
+              <Loader2 className="size-12 animate-spin text-primary relative z-10 mx-auto" />
             </div>
+            <p className="text-sm font-medium uppercase tracking-widest text-primary/80">Syncing Matrix...</p>
           </div>
         </CardContent>
       </Card>
@@ -105,42 +86,51 @@ export function CalendarGrid({
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
-    <Card className="shadow-lg overflow-hidden">
-      <CardHeader className="border-b bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <CardTitle className="flex items-center gap-2 text-xl">
-            <Calendar className="h-5 w-5 text-primary" />
-            <span className="font-semibold">
-              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-            </span>
-          </CardTitle>
-          <div className="flex items-center gap-2 flex-wrap">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onMonthChange('prev')}
-              className="hover:bg-primary/10 hover:border-primary/30 transition-colors"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onMonthChange('next')}
-              className="hover:bg-primary/10 hover:border-primary/30 transition-colors"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+    <Card className="rounded-2xl border border-white/5 bg-background/40 backdrop-blur-xl shadow-2xl relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+
+      <CardHeader className="border-b border-white/5 p-6 relative z-10 flex flex-row items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="p-2 rounded-lg bg-primary/10 border border-primary/20 text-primary shadow-[0_0_15px_rgba(var(--primary),0.3)]">
+            <Calendar className="size-5" />
           </div>
+          <CardTitle className="text-xl font-bold font-fira-sans tracking-tight">
+            <span className="text-primary">{monthNames[currentDate.getMonth()]}</span>
+            <span className="text-muted-foreground ml-2 font-light">{currentDate.getFullYear()}</span>
+          </CardTitle>
+        </div>
+
+        <div className="flex items-center gap-1 bg-white/5 p-1 rounded-lg border border-white/10">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onMonthChange('prev')}
+            className="h-8 w-8 hover:bg-white/10 hover:text-primary transition-colors rounded-md"
+          >
+            <ChevronLeft className="size-4" />
+          </Button>
+          <div className="w-px h-4 bg-white/10 mx-1" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onMonthChange('next')}
+            className="h-8 w-8 hover:bg-white/10 hover:text-primary transition-colors rounded-md"
+          >
+            <ChevronRight className="size-4" />
+          </Button>
         </div>
       </CardHeader>
-      <CardContent className="p-4 sm:p-6">
+
+      <CardContent className="p-6 relative z-10">
         {/* Day Names */}
-        <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
-          {dayNames.map(day => (
+        <div className="grid grid-cols-7 gap-2 mb-4">
+          {dayNames.map((day, i) => (
             <div
               key={day}
-              className="p-2 text-center text-xs sm:text-sm font-semibold text-muted-foreground"
+              className={cn(
+                "text-center text-xs font-bold uppercase tracking-widest py-2 rounded-md",
+                i === 0 || i === 6 ? "text-primary/70 bg-primary/5" : "text-muted-foreground/70"
+              )}
             >
               <span className="hidden sm:inline">{day}</span>
               <span className="sm:hidden">{day.charAt(0)}</span>
@@ -149,10 +139,10 @@ export function CalendarGrid({
         </div>
 
         {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-1 sm:gap-2">
+        <div className="grid grid-cols-7 gap-2">
           {days.map((day, index) => {
             if (!day) {
-              return <div key={index} className="p-1 sm:p-2 h-16 sm:h-24"></div>;
+              return <div key={`empty-${index}`} className="aspect-[4/5] sm:aspect-square rounded-xl bg-white/[0.02] border border-transparent" />;
             }
 
             const dayEvents = getEventsForDate(day);
@@ -163,36 +153,56 @@ export function CalendarGrid({
             return (
               <div
                 key={day.toISOString().split('T')[0]}
-                className={`
-                  p-1 sm:p-2 h-16 sm:h-24 border-2 rounded-xl cursor-pointer 
-                  transition-all duration-200 hover:shadow-md hover:scale-[1.02]
-                  ${isToday
-                    ? 'bg-gradient-to-br from-primary/10 to-primary/5 border-primary shadow-sm'
-                    : hasEvents
-                      ? 'bg-primary/5 border-primary/30'
-                      : 'hover:bg-muted/50 border-border'
-                  }
-                  ${isSelected
-                    ? 'bg-accent/50 border-accent-foreground ring-2 ring-primary/20'
-                    : ''
-                  }
-                `}
+                className={cn(
+                  "relative aspect-[4/5] sm:aspect-square p-2 rounded-xl cursor-pointer transition-all duration-300 group/day flex flex-col justify-between overflow-hidden",
+                  "border border-white/5 hover:border-primary/30 hover:shadow-[0_0_15px_rgba(var(--primary),0.15)]",
+                  isToday ? "bg-primary/10 border-primary/40 shadow-[0_0_20px_rgba(var(--primary),0.2)]" : "bg-white/[0.02]",
+                  isSelected ? "ring-2 ring-primary ring-offset-2 ring-offset-background bg-primary/5" : "",
+                  hasEvents && !isToday && "bg-gradient-to-br from-white/[0.07] to-white/[0.02]"
+                )}
                 onClick={() => onDateSelect?.(day)}
               >
-                <div className={`
-                  text-xs sm:text-sm font-semibold mb-1 
-                  ${isToday ? 'text-primary' : 'text-foreground'}
-                `}>
-                  {day.getDate()}
+                <div className="flex justify-between items-start">
+                  <span className={cn(
+                    "text-sm font-bold font-fira-sans transition-colors",
+                    isToday ? "text-primary" : "text-muted-foreground group-hover/day:text-foreground",
+                    isSelected && "text-primary"
+                  )}>
+                    {day.getDate()}
+                  </span>
+
+                  {isToday && (
+                    <span className="block w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_5px_var(--primary)]" />
+                  )}
                 </div>
-                {/* Compact count badge instead of listing items */}
-                {hasEvents && (
-                  <div className="mt-auto">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium bg-primary/10 text-primary border border-primary/20">
-                      {dayEvents.length} schedule{dayEvents.length > 1 ? 's' : ''}
-                    </span>
-                  </div>
-                )}
+
+                {/* Event Indicators */}
+                <div className="mt-auto space-y-1">
+                  {hasEvents && (
+                    <div className="flex flex-col gap-1">
+                      {/* Show dots for small view / many events */}
+                      <div className="flex gap-0.5 justify-end flex-wrap">
+                        {dayEvents.slice(0, 4).map((_, i) => (
+                          <div key={i} className={cn(
+                            "w-1.5 h-1.5 rounded-full",
+                            isToday ? "bg-primary" : "bg-sky-400"
+                          )} />
+                        ))}
+                        {dayEvents.length > 4 && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+                        )}
+                      </div>
+
+                      {/* Label for larger screens/emphasis */}
+                      <div className="hidden sm:block text-[10px] font-medium text-right text-muted-foreground group-hover/day:text-primary transition-colors">
+                        {dayEvents.length} Item{dayEvents.length !== 1 ? 's' : ''}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Active glow effect on hover */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-transparent opacity-0 group-hover/day:opacity-100 transition-opacity pointer-events-none" />
               </div>
             );
           })}

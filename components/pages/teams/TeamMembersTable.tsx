@@ -110,7 +110,7 @@ const createColumns = (
     },
     {
       id: "actions",
-      header: "",
+      header: "Action",
       size: 50,
       maxSize: 50,
       cell: ({ row }) => {
