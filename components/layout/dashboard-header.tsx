@@ -18,35 +18,32 @@ export function DashboardHeader() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-border/40 bg-background/80 backdrop-blur-3xl px-4 lg:px-6 transition-all duration-300 font-fira-sans shadow-sm">
+      <header className="fixed top-0 left-0 right-0 z-50 flex h-16 shrink-0 items-center justify-between gap-4 border-b bg-background px-4 lg:px-6 font-fira-sans">
         <div className="flex items-center gap-4 lg:gap-6">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden rounded-xl hover:bg-muted/50 transition-colors">
-                <Menu className="h-5 w-5 stroke-[2.5]" />
+              <Button variant="ghost" size="icon" className="lg:hidden rounded-lg">
+                <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] p-0 border-r border-border/40 bg-background/95 backdrop-blur-3xl">
-              <SheetTitle className="sr-only">Platform Navigation</SheetTitle>
+            <SheetContent side="left" className="w-[280px] p-0 border-r bg-background">
+              <SheetTitle className="sr-only">Menu</SheetTitle>
               <div className="h-full py-4">
                 <DashboardSidebar />
               </div>
             </SheetContent>
           </Sheet>
 
-          <Link href="/dashboard" className="flex items-center gap-3 group transition-all duration-300 hover:opacity-80">
-            <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.2)] transition-transform group-hover:scale-105">
-              <Zap className="h-5 w-5 text-primary stroke-[3]" />
+          <Link href="/dashboard" className="flex items-center gap-2 group transition-opacity hover:opacity-80">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 transition-colors group-hover:bg-primary/20">
+              <Zap className="h-4 w-4 text-primary" />
             </div>
-            <div className="flex flex-col">
-              <span className="font-black text-lg tracking-tight leading-none text-foreground">AISAM</span>
-              <span className="font-bold text-[9px] uppercase tracking-[0.2em] leading-none text-muted-foreground">Intelligence</span>
-            </div>
+            <span className="font-bold text-lg tracking-tight text-foreground">AISAM</span>
           </Link>
 
-          <div className="h-8 w-px bg-border/40 mx-2 hidden lg:block" />
+          <div className="h-6 w-px bg-border mx-2 hidden lg:block" />
 
-          {/* Profile Switcher - Styled as high-end toggle */}
+          {/* Profile Switcher */}
           <div className="hidden lg:block">
             <ProfileSwitcher />
           </div>
@@ -61,10 +58,10 @@ export function DashboardHeader() {
             <MobileSearchCommand />
           </div>
 
-          <div className="h-8 w-px bg-border/40 mx-1 hidden lg:block" />
+          <div className="h-6 w-px bg-border mx-1 hidden lg:block" />
 
           {user && (
-            <div className="pl-1 transition-all duration-300 hover:scale-110 active:scale-95">
+            <div className="pl-1">
               <EnhancedUserMenu user={user} />
             </div>
           )}
