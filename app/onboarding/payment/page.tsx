@@ -108,37 +108,43 @@ function PaymentForm() {
         setIsProcessing(true)
 
         try {
-            // 1. Create Profile (initially pending/free or handle activation backend-side)
-            const fd = new FormData()
-            fd.append('Name', profileData.name)
-            // We create as Generic Profile initially, Subscription will upgrade it/set limits
-            // Using Basic/Pro enum here for initial metadata if needed, usually just 'Agency' type
-            // But let's stick to what we had: 1=Basic, 2=Pro. 
-            // WAIT: ProfileTypeEnum is 0=Free, 1=Basic, 2=Pro. 
-            // So we can set it based on plan.
-            const selectedPlanObj = plans.find(p => p.id === selectedPlan)!
-            fd.append('ProfileType', selectedPlanObj.planEnum.toString())
-            fd.append('CompanyName', profileData.companyName)
-            fd.append('Bio', `Agency Workspace (${selectedPlan.toUpperCase()} Plan)`)
+            let profileId = pendingProfileId
 
-            const profileResponse = await api.postForm<any>(endpoints.createProfile(session.user.id), fd)
+            // 1. Create Profile (if not already created)
+            if (!profileId) {
+                const fd = new FormData()
+                fd.append('Name', profileData.name)
+                const selectedPlanObj = plans.find(p => p.id === selectedPlan)!
+                fd.append('ProfileType', selectedPlanObj.planEnum.toString())
+                fd.append('CompanyName', profileData.companyName)
+                fd.append('Bio', `Agency Workspace (${selectedPlan.toUpperCase()} Plan)`)
 
-            if (!profileResponse.success || !profileResponse.data) {
-                throw new Error(profileResponse.message || "Failed to initialize profile")
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const profileResponse = await api.postForm<any>(endpoints.createProfile(session.user.id), fd)
+
+                if (!profileResponse.success || !profileResponse.data) {
+                    throw new Error(profileResponse.message || "Failed to initialize profile")
+                }
+
+                profileId = profileResponse.data.id
+                setPendingProfileId(profileId) // Store for retry
             }
-
-            const newProfile = profileResponse.data
-            const profileId = newProfile.id
 
             // 2. Create Payment Method via Stripe
             const cardElement = elements.getElement(CardElement)
             if (!cardElement) throw new Error("Card element not found")
 
+            // Re-fetch selected plan object for usage below
+            const selectedPlanObj = plans.find(p => p.id === selectedPlan)!
+
+            // Ensure we have a valid billing name, fallback to empty string if missing
+            const billingName = session.user.fullName || profileData.companyName || ''
+
             const { error: stripeError, paymentMethod } = await stripe.createPaymentMethod({
                 type: 'card',
                 card: cardElement,
                 billing_details: {
-                    name: session.user.name || profileData.companyName,
+                    name: billingName,
                     email: session.user.email
                 }
             })
@@ -149,21 +155,23 @@ function PaymentForm() {
                 return
             }
 
+            if (!profileId) throw new Error("Profile ID is missing")
+
             // 3. Create Subscription on Backend
             await createSubscription({
-                profileId: profileId, // Attach subscription to the new profile
+                profileId: profileId,
                 plan: selectedPlanObj.planEnum,
                 paymentMethodId: paymentMethod.id,
-                isRecurring: true // Monthly default
+                isRecurring: true
             })
 
             // 4. Success -> Update Context & Redirect
-            setActiveProfile(newProfile.id, {
-                id: newProfile.id,
-                name: newProfile.name || newProfile.companyName || 'Profile',
-                type: (newProfile.profileType as ProfileTypeEnum) || selectedPlanObj.planEnum,
-                avatarUrl: newProfile.avatarUrl,
-                companyName: newProfile.companyName,
+            setActiveProfile(profileId, {
+                id: profileId,
+                name: profileData.name,
+                type: (selectedPlanObj.planEnum as unknown as ProfileTypeEnum),
+                avatarUrl: undefined, // New profile has no avatar
+                companyName: profileData.companyName,
                 isOwner: true
             })
 
@@ -173,9 +181,9 @@ function PaymentForm() {
                 router.push("/dashboard")
             }, 1000)
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Checkout error:", error)
-            toast.error(error.message || "An error occurred during checkout.")
+            toast.error((error as Error).message || "An error occurred during checkout.")
             setIsProcessing(false)
         }
     }

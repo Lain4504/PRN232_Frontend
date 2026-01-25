@@ -41,32 +41,32 @@ export function ProductForm({ mode, product, defaultBrandId, brands: providedBra
 
   // Hooks - conditionally fetch brands based on context
   // Priority: providedBrands (if provided) > teamBrands (if teamId) > allBrands (only if neither provided)
-  
+
   // Check if brands are explicitly provided (not undefined)
   const hasProvidedBrands = providedBrands !== undefined;
-  
+
   // Only fetch team brands if teamId is provided and brands are NOT provided
   const shouldFetchTeamBrands = !!teamId && !hasProvidedBrands;
   const { data: teamBrands = [], isLoading: teamBrandsLoading } = useTeamBrands(shouldFetchTeamBrands ? teamId : undefined);
-  
+
   // Only fetch all brands if no brands are provided and no teamId
   const shouldFetchAllBrands = !hasProvidedBrands && !teamId;
-  const { data: allBrands = [], isLoading: allBrandsLoading } = useBrands(shouldFetchAllBrands);
-  
+  const { data: allBrands = [], isLoading: allBrandsLoading } = useBrands(undefined, shouldFetchAllBrands);
+
   // Determine which brands to use
   // Priority: providedBrands (even if empty array) > teamBrands > allBrands
-  const brands = hasProvidedBrands 
+  const brands = hasProvidedBrands
     ? (providedBrands || []) // Use provided brands (even if empty array)
     : (teamId ? teamBrands : allBrands);
-  
+
   // Determine loading state
-  const brandsLoading = hasProvidedBrands 
+  const brandsLoading = hasProvidedBrands
     ? false // If brands are provided, no loading needed
     : (teamId ? teamBrandsLoading : allBrandsLoading);
-  
+
   const createProductMutation = useCreateProduct();
   const updateProductMutation = useUpdateProduct(product?.id || '');
-  
+
   const brandsLoaded = !brandsLoading;
 
   useEffect(() => {
@@ -79,7 +79,7 @@ export function ProductForm({ mode, product, defaultBrandId, brands: providedBra
           description: product.description || '',
           price: product.price || 0,
         });
-        
+
         if (product.images && product.images.length > 0) {
           setImagePreview(product.images[0]);
         }
@@ -90,7 +90,7 @@ export function ProductForm({ mode, product, defaultBrandId, brands: providedBra
           setBrandContextProcessed(true);
         } else {
           const brandContext = localStorage.getItem('createProductBrandContext');
-          
+
           if (brandContext && brands.find(b => b.id === brandContext)) {
             setFormData(prev => ({ ...prev, brand_id: brandContext }));
             localStorage.removeItem('createProductBrandContext');
@@ -148,7 +148,7 @@ export function ProductForm({ mode, product, defaultBrandId, brands: providedBra
 
     try {
       setIsLoading(true);
-      
+
       if (mode === 'create') {
         await createProductMutation.mutateAsync(formData);
       } else {
@@ -196,9 +196,9 @@ export function ProductForm({ mode, product, defaultBrandId, brands: providedBra
                 className="bg-muted"
               />
             ) : (
-              <Select 
-                key={`brand-select-${formData.brand_id}`} 
-                value={formData.brand_id} 
+              <Select
+                key={`brand-select-${formData.brand_id}`}
+                value={formData.brand_id}
                 onValueChange={(value) => handleInputChange('brand_id', value)}
               >
                 <SelectTrigger id="brand">

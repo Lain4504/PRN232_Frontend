@@ -22,6 +22,7 @@ export default function OverviewPage() {
   const { setActiveProfile } = useProfile()
   const [searchQuery, setSearchQuery] = useState('')
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleProfileSelect = (profile: any) => {
     setActiveProfile(profile.id, {
       id: profile.id,
@@ -178,6 +179,7 @@ export default function OverviewPage() {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProfileCard({ profile, onSelect, t }: { profile: any; onSelect: (p: any) => void; t: any }) {
   const isAgency = profile.profileType >= 1 // Basic or Pro
   const isOwner = profile.isOwner

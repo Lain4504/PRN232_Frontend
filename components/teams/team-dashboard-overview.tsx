@@ -46,7 +46,7 @@ export function TeamDashboardOverview() {
     queryKey: ['team-brands', activeTeamId],
     queryFn: async () => {
       if (!activeTeamId) return { data: [] }
-      return api.get(endpoints.brandsByTeam(activeTeamId))
+      return api.get(endpoints.brands({ teamId: activeTeamId }))
     },
     enabled: !!activeTeamId,
     staleTime: 5 * 60 * 1000,

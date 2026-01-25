@@ -10,11 +10,13 @@ import { Lock, AlertCircle, Loader2, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export function UpdatePasswordForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const { t } = useTranslation("auth");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +27,7 @@ export function UpdatePasswordForm({
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) {
-      setError("Missing or invalid reset token.");
+      setError(t("authError"));
       return;
     }
 
@@ -42,10 +44,10 @@ export function UpdatePasswordForm({
         throw new Error(response.message || "Failed to update password");
       }
 
-      toast.success("Password updated successfully");
+      toast.success(t("passwordUpdated"));
       router.push("/auth/login");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An unexpected error occurred during security update");
+      setError(error instanceof Error ? error.message : t("authError"));
     } finally {
       setIsLoading(false);
     }
@@ -53,23 +55,11 @@ export function UpdatePasswordForm({
 
   return (
     <div className={cn("space-y-10 font-fira-sans animate-fade-in", className)} {...props}>
-      <div className="text-center space-y-4">
-        <Badge variant="outline" className="px-6 py-2 rounded-full border-primary/20 bg-primary/5 text-primary font-black uppercase tracking-[0.3em] text-[10px]">
-          Security Protocol
-        </Badge>
-        <h2 className="text-3xl font-black uppercase tracking-tighter leading-none">
-          Finalize <br /><span className="text-primary italic">Security</span>.
-        </h2>
-        <p className="text-muted-foreground font-medium text-sm">
-          Please define a new high-entropy password for your AISAM profile.
-        </p>
-      </div>
-
       <form onSubmit={handleUpdatePassword} className="space-y-8">
         <div className="space-y-6">
           <div className="space-y-3">
             <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 italic">
-              NEW SECURE PASSWORD
+              {t('newPassword')}
             </Label>
             <div className="relative group">
               <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 h-4 w-4 group-focus-within:text-primary transition-colors" />
@@ -83,7 +73,7 @@ export function UpdatePasswordForm({
               />
             </div>
             <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 leading-none px-1">
-              Min: 8 Chars / Recommended: Mix of symbols & case
+              {t('passwordHint')}
             </div>
           </div>
         </div>
@@ -105,12 +95,12 @@ export function UpdatePasswordForm({
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 mr-3 animate-spin" />
-              UPDATING SECURITY...
+              {t('updatingPassword')}
             </>
           ) : (
             <>
               <ShieldCheck className="w-4 h-4 mr-3 stroke-[2.5]" />
-              SAVE NEW PASSWORD
+              {t('updatePasswordButton')}
             </>
           )}
         </Button>

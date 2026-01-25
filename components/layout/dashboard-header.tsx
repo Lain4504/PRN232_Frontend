@@ -14,7 +14,7 @@ export function DashboardHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-white/5 bg-background/60 backdrop-blur-2xl px-4 shadow-sm font-fira-sans transition-all duration-300">
+      <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-white/5 bg-background/40 backdrop-blur-xl px-4 shadow-sm font-fira-sans transition-all duration-300">
         <div className="flex items-center gap-4">
           <SidebarTrigger className="-ml-1" />
 

@@ -39,6 +39,7 @@ export default function OnboardingPage() {
                 fd.append('Bio', 'My personal creative workspace')
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const response = await api.postForm<any>(endpoints.createProfile(session.user.id), fd)
 
             if (response.success && response.data) {
@@ -63,9 +64,9 @@ export default function OnboardingPage() {
             } else {
                 throw new Error(response.message || "Failed to create profile")
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Onboarding error:", error)
-            toast.error(error.message || "An error occurred during configuration.")
+            toast.error((error as Error).message || "An error occurred during configuration.")
         } finally {
             setIsLoading(false)
         }

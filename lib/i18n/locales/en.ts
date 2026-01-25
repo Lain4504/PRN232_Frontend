@@ -239,7 +239,7 @@ export const en = {
             title: "The Modern AI",
             accent: "Marketing",
             subtitle: "Hub.",
-            description: "We build the infrastructure for the next generation of social advertisers. AISAM is designed to simplify creative work and unify global brand management.",
+            description: "We build the infrastructure for the next generation of social advertising. AISAM is designed to simplify creative work and unify global brand management.",
             values: [
                 { title: "Control", desc: "Maintain absolute control over your brand identity and digital assets." },
                 { title: "Precision", desc: "Surgical accuracy in content generation and deployment timing." },
@@ -792,77 +792,78 @@ export const en = {
             coreSystems: "Core Systems",
             workflow: "Workflow",
             console: "Console"
-        },
-        auth: {
-            welcomeBack: "Welcome Back",
-            signInSubtitle: "Sign in to manage your AI marketing campaigns",
-            quote: "AISAM has completely transformed how we handle our social media creative. We've seen a 4x increase in engagement while spending 70% less time on production.",
-            authorRole: "Marketing Director",
-            secureConnection: "Secure Connection",
-            systemsActive: "Systems Active",
-            generationSpeed: "Generation Speed",
-            stabilityRate: "Stability Rate",
-
-            continueWithGoogle: "Continue with Google",
-            orContinueWithEmail: "or continue with email",
-            email: "Email",
-            password: "Password",
-            forgotPassword: "Forgot password?",
-            signIn: "Sign In",
-            signingIn: "Signing in...",
-            newToAisam: "New to AISAM?",
-            createAccount: "Create an account",
-
-            createAccountTitle: "Create an Account",
-            createAccountSubtitle: "Start your 14-day free trial",
-            fullName: "Full Name",
-            signUp: "Sign Up",
-            signingUp: "Signing up...",
-            alreadyHaveAccount: "Already have an account?",
-
-            registrationSuccessful: "Registration Successful",
-            registrationSuccessMessage: "We have sent a verification link to your email address. Please confirm your email to activate your account.",
-            dismiss: "Dismiss",
-            confirmPassword: "Confirm Password",
-            passwordHint: "At least 8 characters with a mix of letters and numbers.",
-            creatingAccount: "Creating account...",
-            logIn: "Log in",
-            getStartedFreeToday: "Get started for free today",
-
-            // Forgot password
-            recoverAccess: "Recover Access",
-            recoverAccessSubtitle: "Enter your identity to receive recovery instructions",
-            sendRecoveryEmail: "Send Recovery Email",
-            sendingEmail: "Sending email...",
-            backToLogin: "Back to login",
-            recoveryEmailSent: "Recovery Email Sent",
-            recoveryEmailMessage: "We have sent recovery instructions to your email. Please check your inbox and spam folder.",
-
-            // Update password
-            updatePassword: "Update Password",
-            updatePasswordSubtitle: "Enter a new password to secure your account",
-            newPassword: "New Password",
-            confirmNewPassword: "Confirm New Password",
-            updatePasswordButton: "Update Password",
-            updatingPassword: "Updating password...",
-            passwordUpdated: "Password Updated",
-            passwordUpdatedMessage: "Your password has been successfully updated. You can now log in with your new password.",
-
-            // Verify email
-            verifyEmail: "Verify Email",
-            verifyEmailSubtitle: "Confirm your email address to activate your account",
-            verifyingEmail: "Verifying email...",
-            emailVerified: "Email Verified",
-            emailVerifiedMessage: "Your email has been successfully verified. Your account is now active.",
-            proceedToLogin: "Proceed to Login",
-
-            // Error page
-            authError: "Authentication Error",
-            authErrorMessage: "An error occurred during authentication. Please try again.",
-            tryAgain: "Try Again",
-
-            // Core user label
-            coreUser: "AISAM Core User"
         }
+    },
+
+    auth: {
+        welcomeBack: "Welcome Back",
+        signInSubtitle: "Sign in to manage your AI marketing campaigns",
+        quote: "AISAM has completely transformed how we handle our social media creative. We've seen a 4x increase in engagement while spending 70% less time on production.",
+        authorRole: "Marketing Director",
+        secureConnection: "Secure Connection",
+        systemsActive: "Systems Active",
+        generationSpeed: "Generation Speed",
+        stabilityRate: "Stability Rate",
+
+        continueWithGoogle: "Continue with Google",
+        orContinueWithEmail: "or continue with email",
+        email: "Email",
+        password: "Password",
+        forgotPassword: "Forgot password?",
+        signIn: "Sign In",
+        signingIn: "Signing in...",
+        newToAisam: "New to AISAM?",
+        createAccount: "Create an account",
+
+        createAccountTitle: "Create an Account",
+        createAccountSubtitle: "Start your 14-day free trial",
+        fullName: "Full Name",
+        signUp: "Sign Up",
+        signingUp: "Signing up...",
+        alreadyHaveAccount: "Already have an account?",
+
+        registrationSuccessful: "Registration Successful",
+        registrationSuccessMessage: "We have sent a verification link to your email address. Please confirm your email to activate your account.",
+        dismiss: "Dismiss",
+        confirmPassword: "Confirm Password",
+        passwordHint: "At least 8 characters with a mix of letters and numbers.",
+        creatingAccount: "Creating account...",
+        logIn: "Log in",
+        getStartedFreeToday: "Get started for free today",
+
+        // Forgot password
+        recoverAccess: "Recover Access",
+        recoverAccessSubtitle: "Enter your identity to receive recovery instructions",
+        sendRecoveryEmail: "Send Recovery Email",
+        sendingEmail: "Sending email...",
+        backToLogin: "Back to login",
+        recoveryEmailSent: "Recovery Email Sent",
+        recoveryEmailMessage: "We have sent recovery instructions to your email. Please check your inbox and spam folder.",
+
+        // Update password
+        updatePassword: "Update Password",
+        updatePasswordSubtitle: "Enter a new password to secure your account",
+        newPassword: "New Password",
+        confirmNewPassword: "Confirm New Password",
+        updatePasswordButton: "Update Password",
+        updatingPassword: "Updating password...",
+        passwordUpdated: "Password Updated",
+        passwordUpdatedMessage: "Your password has been successfully updated. You can now log in with your new password.",
+
+        // Verify email
+        verifyEmail: "Verify Email",
+        verifyEmailSubtitle: "Confirm your email address to activate your account",
+        verifyingEmail: "Verifying email...",
+        emailVerified: "Email Verified",
+        emailVerifiedMessage: "Your email has been successfully verified. Your account is now active.",
+        proceedToLogin: "Proceed to Login",
+
+        // Error page
+        authError: "Authentication Error",
+        authErrorMessage: "An error occurred during authentication. Please try again.",
+        tryAgain: "Try Again",
+
+        // Core user label
+        coreUser: "AISAM Core User"
     }
 };

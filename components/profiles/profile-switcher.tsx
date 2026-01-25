@@ -22,13 +22,24 @@ export function ProfileSwitcher() {
   const { activeProfile, setActiveProfile } = useProfile()
   const { data: profiles = [] } = useGetProfiles(user?.id || '')
 
-  const handleProfileSelect = (profile: { id: string; name?: string; company_name?: string; profileType: string; avatarUrl?: string }) => {
+  const handleProfileSelect = (profile: {
+    id: string;
+    name?: string;
+    company_name?: string;
+    companyName?: string;
+    profileType: string;
+    avatarUrl?: string;
+    isOwner?: boolean;
+    memberRole?: string;
+  }) => {
     setActiveProfile(profile.id, {
       id: profile.id,
-      name: profile.name || profile.company_name || `${profile.profileType} Profile`,
+      name: profile.name || profile.company_name || profile.companyName || `${profile.profileType} Profile`,
       type: profile.profileType as unknown as ProfileTypeEnum,
       avatarUrl: profile.avatarUrl,
-      companyName: profile.company_name
+      companyName: profile.company_name || profile.companyName,
+      isOwner: profile.isOwner ?? false,
+      memberRole: profile.memberRole
     })
   }
 

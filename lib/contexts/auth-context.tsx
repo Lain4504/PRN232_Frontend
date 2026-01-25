@@ -105,13 +105,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loadSession();
     }, [router, saveSession]);
 
+    // Helper to check profile status and redirect
+    const handleAuthRedirect = async (userId: string) => {
+        try {
+            // Check if user has any profiles
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const response = await api.get<any[]>(`/profiles/user/${userId}`);
+
+            if (response.success && response.data && response.data.length > 0) {
+                // Has profiles -> Go to dashboard/overview
+                router.push("/overview");
+            } else {
+                // No profiles -> Go to onboarding
+                router.push("/onboarding");
+            }
+        } catch (error) {
+            console.error("Failed to check profiles", error);
+            // Default to onboarding on error to be safe, or overview? 
+            // If error, maybe overview is safer if API is down, but onboarding is safer for logic.
+            // Let's default to onboarding if we can't find profiles.
+            router.push("/onboarding");
+        }
+    };
+
     const login = async (data: LoginFormData) => {
         try {
             const response = await api.post<AuthSession>("/auth/login", data, { requireAuth: false });
             if (response.success) {
                 saveSession(response.data);
                 toast.success("Identity verified. Access granted.");
-                router.push("/overview");
+                await handleAuthRedirect(response.data.user.id);
             } else {
                 throw new Error(response.message || "Login failed");
             }
@@ -127,7 +150,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (response.success) {
                 saveSession(response.data);
                 toast.success("Account created successfully.");
-                router.push("/overview");
+                // New users likely have no profiles, but good to check or force onboarding
+                await handleAuthRedirect(response.data.user.id);
             } else {
                 throw new Error(response.message || "Registration failed");
             }

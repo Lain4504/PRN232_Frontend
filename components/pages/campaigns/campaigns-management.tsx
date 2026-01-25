@@ -336,6 +336,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
             </SelectTrigger>
             <SelectContent className="rounded-2xl border-2">
               <SelectItem value="all" className="font-bold text-[10px] uppercase font-fira-sans">GLOBAL SCOPE</SelectItem>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {teams.map((team: any) => (
                 <SelectItem key={team.id} value={team.id} className="font-bold text-[10px] uppercase font-fira-sans">
                   {team.name}

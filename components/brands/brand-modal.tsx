@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { BrandForm } from '@/components/brands/brand-form'
 import { Brand } from '@/lib/types/aisam-types'
+import { useTranslation } from 'react-i18next'
 
 interface BrandModalProps {
   children?: React.ReactNode
@@ -18,10 +18,10 @@ interface BrandModalProps {
 }
 
 export function BrandModal({ children, mode, brand, onSuccess, open: controlledOpen, onOpenChange }: BrandModalProps) {
+  const { t } = useTranslation("common");
   const [internalOpen, setInternalOpen] = useState(false)
   const isMobile = useIsMobile()
-  
-  // Use controlled open if provided, otherwise use internal state
+
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
   const setOpen = onOpenChange || setInternalOpen
 
@@ -29,6 +29,9 @@ export function BrandModal({ children, mode, brand, onSuccess, open: controlledO
     setOpen(false)
     onSuccess?.()
   }
+
+  const title = mode === 'create' ? t("brands.form.titleCreate") : t("brands.form.titleEdit");
+  const description = mode === 'create' ? t("brands.form.descCreate") : t("brands.form.descEdit");
 
   if (isMobile) {
     return (
@@ -38,22 +41,15 @@ export function BrandModal({ children, mode, brand, onSuccess, open: controlledO
             {children}
           </DrawerTrigger>
         )}
-        <DrawerContent className="max-h-[90vh] flex flex-col">
-          <DrawerHeader className="flex-shrink-0 text-left">
-            <DrawerTitle>
-              {mode === 'create' ? 'Create Brand' : 'Edit Brand'}
-            </DrawerTitle>
-            <DrawerDescription>
-              {mode === 'create' 
-                ? 'Set up a new brand for your business.'
-                : 'Update your brand information.'
-              }
-            </DrawerDescription>
+        <DrawerContent className="max-h-[95vh] flex flex-col font-fira-sans">
+          <DrawerHeader className="flex-shrink-0 text-left border-b pb-4">
+            <DrawerTitle>{title}</DrawerTitle>
+            <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
-          <div className="px-4 overflow-y-auto flex-1">
-            <BrandForm 
-              mode={mode} 
-              brand={brand} 
+          <div className="px-4 py-4 overflow-y-auto flex-1">
+            <BrandForm
+              mode={mode}
+              brand={brand}
               onSuccess={handleSuccess}
               onCancel={() => setOpen(false)}
             />
@@ -70,22 +66,15 @@ export function BrandModal({ children, mode, brand, onSuccess, open: controlledO
           {children}
         </DialogTrigger>
       )}
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader className="flex-shrink-0">
-          <DialogTitle>
-            {mode === 'create' ? 'Create Brand' : 'Edit Brand'}
-          </DialogTitle>
-          <DialogDescription>
-            {mode === 'create' 
-              ? 'Set up a new brand for your business.'
-              : 'Update your brand information.'
-            }
-          </DialogDescription>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col font-fira-sans">
+        <DialogHeader className="flex-shrink-0 border-b pb-4">
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="overflow-y-auto flex-1">
-          <BrandForm 
-            mode={mode} 
-            brand={brand} 
+        <div className="overflow-y-auto flex-1 py-4">
+          <BrandForm
+            mode={mode}
+            brand={brand}
             onSuccess={handleSuccess}
             onCancel={() => setOpen(false)}
           />

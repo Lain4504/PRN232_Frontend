@@ -7,20 +7,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FormField } from "@/components/ui/form-field";
 import {
-  Target,
   Upload,
-  Save,
-  Lightbulb,
   Plus,
   Loader2,
-  Zap,
-  Fingerprint,
-  MessageSquareQuote
+  Trash2,
 } from "lucide-react";
 import { Brand, CreateBrandForm as CreateBrandFormType } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useCreateBrand, useUpdateBrand } from "@/hooks/use-brands";
-import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface BrandFormProps {
   mode: 'create' | 'edit';
@@ -30,6 +25,7 @@ interface BrandFormProps {
 }
 
 export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) {
+  const { t } = useTranslation("common");
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<CreateBrandFormType>({
     name: '',
@@ -53,7 +49,8 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
         target_audience: brand.target_audience || '',
       });
 
-      const existingLogo = (brand as unknown as Record<string, unknown>).logo_url || (brand as unknown as Record<string, unknown>).logoUrl || null;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const existingLogo = (brand as any).logo_url || (brand as any).logoUrl || null;
       if (existingLogo) setLogoPreview(existingLogo as string);
     }
   }, [mode, brand]);
@@ -74,51 +71,39 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim()) return toast.error('Brand Identity is required');
+    if (!formData.name.trim()) return toast.error(t("brands.form.required"));
 
     try {
       setSubmitting(true);
       if (mode === 'create') await createBrandMutation.mutateAsync(formData);
       else await updateBrandMutation.mutateAsync(formData);
-      toast.success(`Identity ${mode === 'create' ? 'initialized' : 'updated'} successfully`);
+      toast.success(t("success"));
       onSuccess?.();
     } catch (error) {
-      toast.error(`Protocol failed: Create ${mode} brand`);
+      toast.error(t("error"));
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-8 space-y-10 font-fira-sans relative">
-      {/* Visual Background Elements */}
-      <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none -z-10">
-        <Fingerprint className="size-60 text-primary rotate-12" />
-      </div>
-
-      <div className="grid gap-10">
+    <form onSubmit={handleSubmit} className="p-1 space-y-8 font-fira-sans">
+      <div className="grid gap-8">
         {/* Core Identity Section */}
         <section className="space-y-6">
-          <div className="flex items-center gap-4 border-b border-border/40 pb-4">
-            <div className="size-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-inner">
-              <Fingerprint className="size-5" />
-            </div>
-            <div>
-              <h3 className="font-black text-xl text-foreground uppercase tracking-tight italic">Identity Core</h3>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Visual & Nominal Descriptors</p>
-            </div>
+          <div className="flex items-center gap-4 border-b pb-3">
+            <h3 className="font-bold text-lg text-foreground">{t("brands.form.identityCore")}</h3>
           </div>
 
-          <div className="flex flex-col md:flex-row items-center gap-8 bg-muted/5 p-6 rounded-3xl border border-dashed border-border/50">
-            <div className="relative group shrink-0">
-              <div className="absolute -inset-2 bg-gradient-to-tr from-primary/20 to-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition duration-500" />
-              <Avatar className="size-32 rounded-3xl border-4 border-background shadow-2xl overflow-hidden relative cursor-pointer group-hover:scale-105 transition-transform" onClick={() => document.getElementById('logo-upload')?.click()}>
+          <div className="flex flex-col md:flex-row items-start gap-8">
+            <div className="relative shrink-0">
+              <Avatar className="size-28 rounded-xl border bg-muted shadow-sm overflow-hidden cursor-pointer" onClick={() => document.getElementById('logo-upload')?.click()}>
                 {logoPreview ? (
                   <AvatarImage src={logoPreview} className="object-cover" />
                 ) : (
-                  <AvatarFallback className="bg-muted/50 flex flex-col items-center justify-center gap-2 group-hover:bg-muted/80 transition-colors">
-                    <Upload className="size-8 text-muted-foreground/60" />
-                    <span className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest">Upload</span>
+                  <AvatarFallback className="flex flex-col items-center justify-center gap-2">
+                    <Upload className="size-6 text-muted-foreground/60" />
+                    <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">{t("brands.form.uploadLogo")}</span>
                   </AvatarFallback>
                 )}
               </Avatar>
@@ -126,28 +111,29 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
               <Button
                 type="button"
                 size="icon"
-                className="absolute -bottom-3 -right-3 size-10 rounded-xl shadow-xl bg-primary hover:bg-primary/90 z-20"
+                variant="secondary"
+                className="absolute -bottom-2 -right-2 size-8 rounded-lg shadow-md border"
                 onClick={() => document.getElementById('logo-upload')?.click()}
               >
-                <Plus className="size-5" />
+                <Plus className="size-4" />
               </Button>
             </div>
 
-            <div className="flex-1 space-y-5 w-full">
-              <FormField label="Brand Designation (Name)" required>
+            <div className="flex-1 space-y-4 w-full">
+              <FormField label={t("brands.form.brandNameLabel")} required>
                 <Input
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="E.G. ACME CORP"
-                  className="rounded-2xl h-14 font-black text-lg shadow-inner bg-background/50 border-input/60 focus-visible:ring-primary/20 placeholder:text-muted-foreground/30 uppercase italic"
+                  placeholder={t("brands.form.namePlaceholder")}
+                  className="h-10 font-semibold"
                 />
               </FormField>
-              <FormField label="Primary Directive (Slogan)">
+              <FormField label={t("brands.form.sloganLabel")}>
                 <Input
                   value={formData.slogan}
                   onChange={(e) => handleInputChange('slogan', e.target.value)}
-                  placeholder="YOUR CORE MISSION STATEMENT"
-                  className="rounded-2xl h-12 font-bold shadow-inner bg-background/50 border-input/60 focus-visible:ring-primary/20 placeholder:text-muted-foreground/30 uppercase text-xs tracking-wide"
+                  placeholder={t("brands.form.sloganPlaceholder")}
+                  className="h-10 text-sm"
                 />
               </FormField>
             </div>
@@ -156,42 +142,36 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
 
         {/* Messaging Section */}
         <section className="space-y-6">
-          <div className="flex items-center gap-4 border-b border-border/40 pb-4">
-            <div className="size-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 shadow-inner">
-              <MessageSquareQuote className="size-5" />
-            </div>
-            <div>
-              <h3 className="font-black text-xl text-foreground uppercase tracking-tight italic">Strategic Narrative</h3>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Communication Protocols</p>
-            </div>
+          <div className="flex items-center gap-4 border-b pb-3">
+            <h3 className="font-bold text-lg text-foreground">{t("brands.form.strategicNarrative")}</h3>
           </div>
 
           <div className="grid gap-6">
-            <FormField label="Identity Parameters (About)">
+            <FormField label={t("brands.form.descriptionLabel")}>
               <Textarea
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="Define the operational scope and personality matrix..."
-                className="rounded-2xl min-h-[100px] font-medium resize-none shadow-inner bg-background/50 border-input/60 focus-visible:ring-primary/20 italic p-4 text-sm leading-relaxed"
+                placeholder={t("brands.form.descPlaceholder")}
+                className="min-h-[100px] text-sm resize-none"
               />
             </FormField>
 
             <div className="grid md:grid-cols-2 gap-6">
-              <FormField label="Unique Value (USP)">
+              <FormField label={t("brands.form.uspLabel")}>
                 <Textarea
                   value={formData.usp}
                   onChange={(e) => handleInputChange('usp', e.target.value)}
-                  placeholder="Key differentiation factors..."
-                  className="rounded-2xl min-h-[120px] font-medium resize-none shadow-inner bg-background/50 border-input/60 focus-visible:ring-primary/20 text-xs leading-relaxed"
+                  placeholder={t("brands.form.uspPlaceholder")}
+                  className="min-h-[120px] text-xs resize-none"
                 />
               </FormField>
 
-              <FormField label="Target Sector (Audience)">
+              <FormField label={t("brands.form.audienceLabel")}>
                 <Textarea
                   value={formData.target_audience}
                   onChange={(e) => handleInputChange('target_audience', e.target.value)}
-                  placeholder="Demographic and psychographic targets..."
-                  className="rounded-2xl min-h-[120px] font-medium resize-none shadow-inner bg-background/50 border-input/60 focus-visible:ring-primary/20 text-xs leading-relaxed"
+                  placeholder={t("brands.form.audiencePlaceholder")}
+                  className="min-h-[120px] text-xs resize-none"
                 />
               </FormField>
             </div>
@@ -199,27 +179,23 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
         </section>
       </div>
 
-      <div className="flex items-center gap-4 pt-8 border-t border-dashed">
+      <div className="flex items-center gap-3 pt-6 border-t">
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           onClick={onCancel}
           disabled={submitting}
-          className="flex-1 rounded-2xl h-14 font-black uppercase tracking-widest text-xs border-2 hover:bg-muted"
+          className="flex-1 h-10 font-bold"
         >
-          Abort
+          {t("brands.form.cancel")}
         </Button>
         <Button
           type="submit"
           disabled={submitting}
-          className="flex-[2] rounded-2xl h-14 font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/25 bg-primary hover:bg-primary/90 transition-all hover:scale-[1.01]"
+          className="flex-[2] h-10 font-bold shadow-sm"
         >
-          {submitting ? (
-            <Loader2 className="size-4 animate-spin mr-3" />
-          ) : (
-            <Zap className="size-4 mr-3 fill-current" />
-          )}
-          {mode === 'create' ? 'Initialize Identity' : 'Update Parameters'}
+          {submitting && <Loader2 className="size-4 animate-spin mr-2" />}
+          {mode === 'create' ? t("brands.form.saveCreate") : t("brands.form.saveUpdate")}
         </Button>
       </div>
     </form>

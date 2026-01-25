@@ -12,14 +12,14 @@ export const productKeys = {
 }
 
 // Get all products (simple list)
-export function useProducts(brandId?: string) {
+export function useProducts(brandId?: string, enabled: boolean = true) {
   return useQuery({
     queryKey: brandId ? productKeys.listByBrand(brandId) : productKeys.lists(),
     queryFn: async (): Promise<Product[]> => {
       try {
         const url = brandId ? `${endpoints.products()}?brandId=${brandId}` : endpoints.products()
         const resp = await api.get<PaginatedResponse<Product>>(url)
-        
+
         // API trả về paginated response, cần lấy data.data
         return resp.data.data || []
       } catch (error) {
@@ -27,6 +27,7 @@ export function useProducts(brandId?: string) {
         throw error
       }
     },
+    enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: (failureCount, error) => {
       // Don't retry on auth errors
@@ -48,7 +49,7 @@ export function useProductsPaginated(params?: {
   sortDescending?: boolean
 }) {
   const queryParams = new URLSearchParams()
-  
+
   if (params?.brandId) queryParams.append('brandId', params.brandId)
   if (params?.page) queryParams.append('page', params.page.toString())
   if (params?.pageSize) queryParams.append('pageSize', params.pageSize.toString())
@@ -92,11 +93,11 @@ export function useCreateProduct() {
     mutationFn: async (payload: CreateProductForm): Promise<Product> => {
       // Convert to FormData as required by the API
       const formData = new FormData()
-      
+
       // Required fields according to swagger
       formData.append('BrandId', payload.brand_id)
       formData.append('Name', payload.name)
-      
+
       // Optional fields
       if (payload.description) {
         formData.append('Description', payload.description)
@@ -104,7 +105,7 @@ export function useCreateProduct() {
       if (payload.price !== undefined) {
         formData.append('Price', payload.price.toString())
       }
-      
+
       // Image files (required according to swagger)
       if (payload.images && payload.images.length > 0) {
         payload.images.forEach((file) => {
@@ -135,17 +136,17 @@ export function useUpdateProduct(productId: string) {
     mutationFn: async (payload: CreateProductForm): Promise<Product> => {
       // Convert to FormData for multipart upload
       const formData = new FormData()
-      
+
       formData.append('BrandId', payload.brand_id)
       formData.append('Name', payload.name)
-      
+
       if (payload.description) {
         formData.append('Description', payload.description)
       }
       if (payload.price !== undefined) {
         formData.append('Price', payload.price.toString())
       }
-      
+
       // Add image files if provided
       if (payload.images && payload.images.length > 0) {
         payload.images.forEach((file) => {

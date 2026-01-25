@@ -50,11 +50,11 @@ export function ProfileContentForm({
 }: ProfileContentFormProps) {
   // Fetch all brands if not provided
   const shouldFetchBrands = !providedBrands;
-  const { data: allBrands = [], isLoading: brandsLoading } = useBrands(shouldFetchBrands);
-  
+  const { data: allBrands = [], isLoading: brandsLoading } = useBrands(undefined, shouldFetchBrands);
+
   // Fetch all products if not provided
   const shouldFetchProducts = !providedProducts;
-  const { data: allProducts = [], isLoading: productsLoading } = useProducts(shouldFetchProducts ? undefined : undefined);
+  const { data: allProducts = [], isLoading: productsLoading } = useProducts(undefined, shouldFetchProducts);
 
   // Use provided brands/products or fetch all
   const brands = useMemo(() => {

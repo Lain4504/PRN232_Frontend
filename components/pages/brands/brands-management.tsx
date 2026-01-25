@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,27 +17,30 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Target,
   Plus,
   Search,
-  Edit,
-  Trash2,
+  MoreHorizontal,
   Package,
   FileText,
-  AlertTriangle,
-  Zap,
+  Trash2,
+  Building2,
+  Settings,
 } from "lucide-react";
-import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Brand } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
 import { useBrands, useDeleteBrand } from "@/hooks/use-brands";
 import { useTeamsByVendor } from "@/hooks/use-teams";
 import { useProfile } from "@/lib/contexts/profile-context";
 import { getActiveTeamId, setActiveTeamId, clearActiveTeamId } from "@/lib/utils/profile-utils";
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { BrandModal } from "@/components/brands/brand-modal";
-import { CustomTable } from "@/components/ui/custom-table";
-import { ColumnDef } from "@tanstack/react-table";
 import {
   Select,
   SelectContent,
@@ -45,124 +48,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-
-const createColumns = (
-  handleEditBrand: (brand: Brand) => void,
-  handleDeleteBrand: (brandId: string) => void,
-  isDeleting: boolean
-): ColumnDef<Brand>[] => [
-    {
-      accessorKey: "name",
-      header: "Brand Architecture",
-      cell: ({ row }) => {
-        const brandData = row.original as Brand & { logo_url?: string; logoUrl?: string };
-        const logo = brandData.logo_url || brandData.logoUrl;
-        return (
-          <div className="flex items-center gap-5 py-2">
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary/50 to-blue-500/50 rounded-2xl blur opacity-0 group-hover:opacity-25 transition duration-500" />
-              <Avatar className="size-14 rounded-2xl border-2 bg-muted overflow-hidden shrink-0 relative">
-                {logo ? (
-                  <AvatarImage src={logo} className="object-cover" />
-                ) : (
-                  <AvatarFallback className="bg-primary/5 text-primary">
-                    <Target className="size-6 opacity-30" />
-                  </AvatarFallback>
-                )}
-              </Avatar>
-            </div>
-            <div>
-              <div className="font-black text-foreground italic text-lg leading-tight uppercase tracking-tight">{row.getValue("name")}</div>
-              <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-0.5">Primary Core Identity</div>
-            </div>
-          </div>
-        )
-      },
-    },
-    {
-      accessorKey: "description",
-      header: "Strategic Directive",
-      cell: ({ row }) => (
-        <div className="max-w-[450px]">
-          <p className="text-sm font-bold text-muted-foreground/80 line-clamp-2 leading-relaxed italic border-l-2 border-primary/20 pl-4">
-            {row.getValue("description") || "No directive specified for this entity."}
-          </p>
-        </div>
-      ),
-    },
-    {
-      accessorKey: "productsCount",
-      header: "Assets",
-      cell: ({ row }) => (
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col items-center">
-            <span className="text-lg font-black text-foreground leading-none">{row.original.productsCount || 0}</span>
-            <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mt-1">Products</span>
-          </div>
-          <div className="w-px h-6 bg-border/50" />
-          <div className="flex flex-col items-center">
-            <span className="text-lg font-black text-foreground leading-none">{row.original.contentsCount || 0}</span>
-            <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mt-1">Contents</span>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: "actions",
-      header: () => <div className="text-right uppercase tracking-[0.2em] text-[10px]">Operations</div>,
-      cell: ({ row }) => {
-        const actions: ActionItem[] = [
-          {
-            label: "Product Matrix",
-            icon: <Package className="size-4" />,
-            onClick: () => window.open(`/dashboard/brands/${row.original.id}/products`, '_self'),
-          },
-          {
-            label: "Content Forge",
-            icon: <FileText className="size-4" />,
-            onClick: () => window.open(`/dashboard/brands/${row.original.id}/contents`, '_self'),
-          },
-          {
-            label: "Configure Identity",
-            icon: <Edit className="size-4" />,
-            onClick: () => handleEditBrand(row.original),
-          },
-          {
-            label: "Purge Identity",
-            icon: <Trash2 className="size-4" />,
-            onClick: () => handleDeleteBrand(row.original.id),
-            variant: "destructive",
-            disabled: isDeleting,
-          },
-        ];
-
-        return (
-          <div className="flex justify-end pr-4 gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-8 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors"
-              onClick={() => window.open(`/dashboard/brands/${row.original.id}/products`, '_self')}
-              title="Product Matrix"
-            >
-              <Package className="size-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-8 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors"
-              onClick={() => window.open(`/dashboard/brands/${row.original.id}/contents`, '_self')}
-              title="Content Forge"
-            >
-              <FileText className="size-4" />
-            </Button>
-            <ActionsDropdown actions={actions} disabled={isDeleting} />
-          </div>
-        );
-      },
-    },
-  ];
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import { vi } from "date-fns/locale";
 
 export function BrandsManagement() {
   const { t } = useTranslation("common");
@@ -170,7 +58,7 @@ export function BrandsManagement() {
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteBrandId, setDeleteBrandId] = useState<string | null>(null);
-  const { activeProfileId, activeProfile } = useProfile();
+  const { activeProfileId } = useProfile();
   const [selectedTeamId, setSelectedTeamId] = useState<string>(() => getActiveTeamId() || "all");
 
   // Sync selectedTeamId to localStorage
@@ -181,6 +69,7 @@ export function BrandsManagement() {
       setActiveTeamId(selectedTeamId);
     }
   }, [selectedTeamId]);
+
   const [pageSize, setPageSize] = useState(10);
 
   const { data: brands = [], isLoading: loading, refetch: refetchBrands } = useBrands({
@@ -205,137 +94,151 @@ export function BrandsManagement() {
     if (!deleteBrandId) return;
     try {
       await deleteBrandMutation.mutateAsync(deleteBrandId);
-      toast.success("Brand purged from registry");
+      toast.success(t("brands.deleteSuccess", "Đã xóa thương hiệu"));
       setDeleteBrandId(null);
     } catch {
-      toast.error("Purge sequence failed");
+      toast.error(t("brands.deleteError", "Lỗi khi xóa thương hiệu"));
     }
   };
 
-  const columns = createColumns(handleEditBrand, setDeleteBrandId, deleteBrandMutation.isPending);
-
   if (loading) return (
-    <div className="max-w-7xl mx-auto px-6 py-10 space-y-12 animate-pulse">
-      <div className="h-8 w-64 bg-muted rounded-xl" />
-      <div className="h-40 bg-muted rounded-3xl" />
-      <div className="h-[600px] bg-muted rounded-3xl" />
+    <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <div className="h-8 w-48 bg-muted rounded animate-pulse" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="h-48 bg-muted rounded-lg animate-pulse" />
+        ))}
+      </div>
     </div>
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10 space-y-12 font-fira-sans mb-20 animate-in fade-in duration-700">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
-        <div className="space-y-4">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem><BreadcrumbLink href="/dashboard" className="text-[10px] font-black uppercase">Dashboard</BreadcrumbLink></BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem><BreadcrumbPage className="text-[10px] font-black uppercase text-primary">Identity Matrix</BreadcrumbPage></BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <div className="space-y-1">
-            <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase italic leading-none">
-              {t("brands.title")}
-            </h1>
-            <p className="text-lg text-muted-foreground font-medium max-w-2xl leading-relaxed italic border-l-4 border-primary pl-6">
-              {t("brands.description")}
-            </p>
-          </div>
+    <div className="max-w-7xl mx-auto p-6 space-y-6 font-fira-sans animate-in fade-in duration-500">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            {t("brands.title")}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {t("brands.description")}
+          </p>
         </div>
-
-        <div className="flex items-center gap-4">
-          <BrandModal mode="create" onSuccess={refetchBrands}>
-            <Button size="lg" className="rounded-xl h-16 px-10 font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary">
-              <Plus className="mr-3 size-6" />
-              {t("brands.createBrand")}
-            </Button>
-          </BrandModal>
-        </div>
+        <BrandModal mode="create" onSuccess={refetchBrands}>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            {t("brands.createBrand")}
+          </Button>
+        </BrandModal>
       </div>
 
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-6 p-6 rounded-2xl border-2 bg-muted/10 backdrop-blur-md">
-        <div className="flex flex-col sm:flex-row items-center gap-6 w-full lg:w-auto">
-          <div className="relative w-full sm:w-[400px] group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-            <Input
-              placeholder={t("brands.searchPlaceholder")}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-background"
-            />
-          </div>
-
-          {teams.length > 0 && (
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">Team:</span>
-              <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
-                <SelectTrigger className="w-full sm:w-[200px] bg-background">
-                  <SelectValue placeholder="All Teams" />
-                </SelectTrigger>
-                <SelectContent className="rounded-2xl border-2">
-                  <SelectItem value="all" className="font-bold text-[10px] uppercase font-fira-sans italic">Full Workspace</SelectItem>
-                  {teams.map(team => (
-                    <SelectItem key={team.id} value={team.id} className="font-bold text-[10px] uppercase font-fira-sans">
-                      {team.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row items-center gap-4 bg-card p-4 rounded-lg border shadow-sm">
+        <div className="relative w-full sm:w-[300px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={t("brands.searchPlaceholder")}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 h-9"
+          />
         </div>
 
-        <div className="flex items-center gap-4 w-full sm:w-auto justify-end">
-          <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Visibility:</span>
-          <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
-            <SelectTrigger className="w-[140px] bg-background">
-              <SelectValue />
+        {teams.length > 0 && (
+          <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
+            <SelectTrigger className="w-full sm:w-[200px] h-9">
+              <SelectValue placeholder="All Teams" />
             </SelectTrigger>
-            <SelectContent className="rounded-2xl border-2">
-              {[10, 20, 50].map(s => <SelectItem key={s} value={String(s)} className="font-bold text-[10px] uppercase font-fira-sans">{s} Signals</SelectItem>)}
+            <SelectContent>
+              <SelectItem value="all">Tất cả đội nhóm</SelectItem>
+              {teams.map(team => (
+                <SelectItem key={team.id} value={team.id}>
+                  {team.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
-        </div>
+        )}
       </div>
 
+      {/* Content */}
       {filteredBrands.length > 0 ? (
-        <Card className="rounded-3xl border-2 bg-card/40 overflow-hidden shadow-2xl shadow-foreground/5 relative">
-          <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 transition-transform duration-1000">
-            <Zap className="size-40 text-primary" />
-          </div>
-          <CustomTable
-            columns={columns}
-            data={filteredBrands}
-            pageSize={pageSize}
-            className="border-0 shadow-none bg-transparent"
-            headerClassName="bg-muted/30 border-b py-6 px-10 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70"
-          />
-        </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredBrands.map((brand) => (
+            <Card key={brand.id} className="group hover:shadow-md transition-all duration-200">
+              <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2 p-4">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10 rounded-lg border bg-muted">
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    <AvatarImage src={brand.logo_url || (brand as any).logoUrl} className="object-cover" />
+                    <AvatarFallback className="rounded-lg bg-primary/10 text-primary">
+                      {brand.name.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid gap-0.5">
+                    <h3 className="font-semibold text-sm leading-none truncate max-w-[150px]" title={brand.name}>
+                      {brand.name}
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      {brand.productsCount || 0} {t("brands.manageProducts")} • {brand.contentsCount || 0} {t("brands.manageContents")}
+                    </p>
+                  </div>
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Menu</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-[160px]">
+                    <DropdownMenuItem onClick={() => window.open(`/dashboard/brands/${brand.id}/products`, '_self')}>
+                      <Package className="mr-2 h-4 w-4 text-muted-foreground" />
+                      {t("brands.manageProducts")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => window.open(`/dashboard/brands/${brand.id}/contents`, '_self')}>
+                      <FileText className="mr-2 h-4 w-4 text-muted-foreground" />
+                      {t("brands.manageContents")}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => handleEditBrand(brand)}>
+                      <Settings className="mr-2 h-4 w-4 text-muted-foreground" />
+                      {t("brands.configure")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setDeleteBrandId(brand.id)} className="text-destructive focus:text-destructive">
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {t("brands.delete")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </CardHeader>
+              <CardContent className="p-4 pt-2 space-y-4">
+                <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5em]">
+                  {brand.description || t("brands.noDescription", "Không có mô tả")}
+                </p>
+                <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t">
+                  <span>{t("brands.created")}: {format(new Date(brand.createdAt || new Date()), 'dd/MM/yyyy')}</span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-40 px-6 text-center border-2 border-dashed rounded-3xl bg-muted/5 font-fira-sans">
-          <div className="size-24 rounded-2xl bg-primary/5 flex items-center justify-center mb-10 text-primary border-2 border-primary/10 shadow-inner">
-            <Target className="size-12" />
+        <div className="flex flex-col items-center justify-center py-16 px-4 text-center border border-dashed rounded-lg bg-muted/5">
+          <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center mb-4">
+            <Building2 className="h-6 w-6 text-muted-foreground" />
           </div>
-          <div className="space-y-4 max-w-md">
-            <h3 className="text-3xl font-black uppercase tracking-tight text-foreground italic underline decoration-primary decoration-4 underline-offset-8">
-              {searchTerm ? 'Identity Not Found' : 'Pattern: NULL'}
-            </h3>
-            <p className="text-muted-foreground font-bold leading-relaxed italic opacity-80">
-              {searchTerm
-                ? "The specified descriptor does not match any known neural profiles in the current workspace."
-                : "The identity matrix is empty. Deploy your first brand architecture to begin content synthesis."
-              }
-            </p>
-          </div>
+          <h3 className="text-lg font-semibold">{t("brands.noBrands")}</h3>
+          <p className="text-sm text-muted-foreground max-w-sm mt-1 mb-6">
+            {searchTerm ? t("brands.noResults", "Không tìm thấy kết quả phù hợp") : t("brands.noBrandsDescription")}
+          </p>
           {!searchTerm && (
-            <div className="mt-12">
-              <BrandModal mode="create" onSuccess={refetchBrands}>
-                <Button size="lg" className="rounded-2xl h-16 px-10 font-black uppercase tracking-widest shadow-2xl shadow-primary/20">
-                  <Plus className="mr-3 size-5" />
-                  Launch Phase Alpha
-                </Button>
-              </BrandModal>
-            </div>
+            <BrandModal mode="create" onSuccess={refetchBrands}>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                {t("brands.createBrand")}
+              </Button>
+            </BrandModal>
           )}
         </div>
       )}
@@ -343,24 +246,21 @@ export function BrandsManagement() {
       <BrandModal mode="edit" brand={editingBrand || undefined} open={isEditModalOpen} onOpenChange={setIsEditModalOpen} onSuccess={refetchBrands} />
 
       <AlertDialog open={!!deleteBrandId} onOpenChange={() => setDeleteBrandId(null)}>
-        <AlertDialogContent className="rounded-3xl border-2 bg-background/95 backdrop-blur-2xl p-10 max-w-md font-fira-sans border-destructive/20 shadow-2xl">
-          <AlertDialogHeader className="space-y-6">
-            <div className="size-20 rounded-3xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto border border-destructive/20 shadow-inner">
-              <AlertTriangle className="size-10" />
-            </div>
-            <AlertDialogTitle className="text-3xl font-black tracking-tight text-center uppercase italic">Purge <span className="text-destructive">Identity</span>?</AlertDialogTitle>
-            <AlertDialogDescription className="text-base font-bold text-muted-foreground/80 leading-relaxed text-center italic mt-2">
-              This will permanently terminate the brand architecture and all associated neural patterns. This sequence is absolute.
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("brands.deleteTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("brands.deleteDesc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-12 grid grid-cols-2 gap-6">
-            <AlertDialogCancel className="rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] border-2">Abort</AlertDialogCancel>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("brands.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteBrand}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] border-none shadow-2xl shadow-destructive/30"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={deleteBrandMutation.isPending}
             >
-              {deleteBrandMutation.isPending ? 'TERMINATING...' : 'CONFIRM PURGE'}
+              {deleteBrandMutation.isPending ? t("common.processing", "Đang xử lý...") : t("brands.confirmDelete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
