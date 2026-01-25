@@ -14,47 +14,44 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarMode, setSidebarMode] = useState<"expanded" | "collapsed" | "hover">("hover")
 
   useEffect(() => {
-    // init sidebar mode
-    const stored = typeof window !== 'undefined' ? (localStorage.getItem('sidebarMode') as 'expanded' | 'collapsed' | 'hover' | null) : null
-    if (stored === 'expanded' || stored === 'collapsed' || stored === 'hover') {
-      setSidebarMode(stored)
-    }
+    if (typeof window === 'undefined') return
+
+    const stored = localStorage.getItem('sidebarMode') as 'expanded' | 'collapsed' | 'hover' | null
+    if (stored) setSidebarMode(stored)
+
     const onModeChange = (e: CustomEvent<'expanded' | 'collapsed' | 'hover'>) => {
-      const mode = e.detail
-      if (mode === 'expanded' || mode === 'collapsed' || mode === 'hover') setSidebarMode(mode)
+      setSidebarMode(e.detail)
     }
     window.addEventListener('sidebar-mode-change', onModeChange as unknown as EventListener)
 
-    return () => {
-      window.removeEventListener('sidebar-mode-change', onModeChange as unknown as EventListener)
-    }
+    return () => window.removeEventListener('sidebar-mode-change', onModeChange as unknown as EventListener)
   }, [])
 
   return (
-    <div className="h-screen w-full overflow-hidden bg-background font-fira-sans">
-      {/* Header - Fixed */}
+    <div className="h-screen w-full overflow-hidden bg-background font-fira-sans selection:bg-primary/30 selection:text-primary-foreground">
+      {/* Global Background Gradient */}
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background pointer-events-none -z-10" />
+
       <DashboardHeader />
 
-      <div className="flex h-full w-full max-w-full">
+      <div className="flex h-[calc(100vh-64px)] w-full">
         {/* Sidebar wrapper */}
-        <div className="group relative hidden lg:block z-40">
+        <aside className="hidden lg:block z-40 relative">
           <div className={cn(
-            "fixed left-0 top-16 h-[calc(100vh-4rem)] border-r border-border/20 bg-card transition-all duration-200 ease-in-out overflow-hidden shadow-sm",
-            sidebarMode === 'expanded' ? 'w-64' : sidebarMode === 'collapsed' ? 'w-[4.5rem]' : 'w-[4.5rem] hover:w-64'
+            "h-full border-r border-white/5 bg-background/40 backdrop-blur-xl transition-all duration-300 ease-in-out overflow-hidden shadow-2xl",
+            sidebarMode === 'expanded' ? 'w-72' : sidebarMode === 'collapsed' ? 'w-[70px]' : 'w-[70px] hover:w-72'
           )}>
+            <div className="absolute inset-y-0 w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent right-0" />
             <DashboardSidebar />
           </div>
-        </div>
+        </aside>
 
         {/* Main Content Area */}
-        <div className={cn(
-          "flex flex-col flex-1 min-h-0 max-w-full overflow-hidden relative z-10 transition-all duration-200",
-          sidebarMode === 'expanded' ? 'lg:ml-64' : 'lg:ml-[4.5rem]'
-        )}>
-          <main className="flex-1 overflow-x-hidden max-w-full scroll-smooth">
+        <main className="flex-1 min-w-0 overflow-y-auto scroll-smooth">
+          <div className="min-h-full p-1 lg:p-2">
             {children}
-          </main>
-        </div>
+          </div>
+        </main>
       </div>
     </div>
   )

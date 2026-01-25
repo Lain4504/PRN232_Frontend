@@ -21,17 +21,15 @@ import {
   Search,
   Edit,
   Trash2,
-  Calendar,
   Package,
   FileText,
-  AlertTriangle
+  AlertTriangle,
+  Zap,
 } from "lucide-react";
 import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
 import { Brand } from "@/lib/types/aisam-types";
 import { toast } from "sonner";
-import { useUser } from "@/hooks/use-user";
 import { useBrands, useDeleteBrand } from "@/hooks/use-brands";
-import Link from "next/link";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { BrandModal } from "@/components/brands/brand-modal";
 import { CustomTable } from "@/components/ui/custom-table";
@@ -43,8 +41,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
-// Create columns for the data table
 const createColumns = (
   handleEditBrand: (brand: Brand) => void,
   handleDeleteBrand: (brandId: string) => void,
@@ -52,74 +50,73 @@ const createColumns = (
 ): ColumnDef<Brand>[] => [
     {
       accessorKey: "name",
-      header: "Brand Name",
-      cell: ({ row }) => (
-        <div className="flex items-center gap-3 py-1">
-          <Avatar className="h-10 w-10 rounded-lg border bg-muted">
-            {(() => {
-              const logo = (row.original as unknown as { logo_url?: string; logoUrl?: string }).logo_url
-                || (row.original as unknown as { logo_url?: string; logoUrl?: string }).logoUrl
-              return logo ? (
-                <AvatarImage src={logo} alt={row.getValue("name")} />
-              ) : (
-                <AvatarFallback>
-                  <Target className="h-5 w-5 text-muted-foreground" />
-                </AvatarFallback>
-              )
-            })()}
-          </Avatar>
-          <div className="space-y-0.5">
-            <div className="font-semibold text-foreground text-sm">{row.getValue("name")}</div>
+      header: "Brand Architecture",
+      cell: ({ row }) => {
+        const logo = (row.original as any).logo_url || (row.original as any).logoUrl;
+        return (
+          <div className="flex items-center gap-5 py-2">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary/50 to-blue-500/50 rounded-2xl blur opacity-0 group-hover:opacity-25 transition duration-500" />
+              <Avatar className="size-14 rounded-2xl border-2 bg-muted overflow-hidden shrink-0 relative">
+                {logo ? (
+                  <AvatarImage src={logo} className="object-cover" />
+                ) : (
+                  <AvatarFallback className="bg-primary/5 text-primary">
+                    <Target className="size-6 opacity-30" />
+                  </AvatarFallback>
+                )}
+              </Avatar>
+            </div>
+            <div>
+              <div className="font-black text-foreground italic text-lg leading-tight uppercase tracking-tight">{row.getValue("name")}</div>
+              <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-0.5">Primary Core Identity</div>
+            </div>
           </div>
-        </div>
-      ),
+        )
+      },
     },
     {
       accessorKey: "description",
-      header: "About",
+      header: "Strategic Directive",
       cell: ({ row }) => (
-        <div className="text-sm text-balance max-w-[280px]">
-          {row.getValue("description") ? (
-            <p className="text-muted-foreground line-clamp-2 leading-relaxed">
-              {row.getValue("description")}
-            </p>
-          ) : (
-            <span className="text-muted-foreground/40 italic">No description provided</span>
-          )}
+        <div className="max-w-[450px]">
+          <p className="text-sm font-bold text-muted-foreground/80 line-clamp-2 leading-relaxed italic border-l-2 border-primary/20 pl-4">
+            {row.getValue("description") || "No directive specified for this entity."}
+          </p>
         </div>
       ),
     },
     {
       id: "actions",
-      header: "",
+      header: () => <div className="text-right uppercase tracking-[0.2em] text-[10px]">Operations</div>,
       cell: ({ row }) => {
         const actions: ActionItem[] = [
           {
-            label: "View Products",
-            icon: <Package className="h-4 w-4" />,
+            label: "Product Matrix",
+            icon: <Package className="size-4" />,
             onClick: () => window.open(`/dashboard/brands/${row.original.id}/products`, '_self'),
           },
           {
-            label: "Manage Content",
-            icon: <FileText className="h-4 w-4" />,
+            label: "Content Forge",
+            icon: <FileText className="size-4" />,
             onClick: () => window.open(`/dashboard/brands/${row.original.id}/contents`, '_self'),
           },
           {
-            label: "Edit",
-            icon: <Edit className="h-4 w-4" />,
+            label: "Configure Identity",
+            icon: <Edit className="size-4" />,
             onClick: () => handleEditBrand(row.original),
           },
           {
-            label: "Delete",
-            icon: <Trash2 className="h-4 w-4" />,
+            label: "Purge Identity",
+            icon: <Trash2 className="size-4" />,
             onClick: () => handleDeleteBrand(row.original.id),
-            variant: "destructive" as const,
+            variant: "destructive",
             disabled: isDeleting,
           },
         ];
 
         return (
-          <div className="flex justify-end">
+          <div className="flex justify-end pr-4">
             <ActionsDropdown actions={actions} disabled={isDeleting} />
           </div>
         );
@@ -132,190 +129,133 @@ export function BrandsManagement() {
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteBrandId, setDeleteBrandId] = useState<string | null>(null);
+  const [pageSize, setPageSize] = useState(10);
 
-  // Hooks
-  const { data: user } = useUser();
   const { data: brands = [], isLoading: loading, refetch: refetchBrands } = useBrands();
   const deleteBrandMutation = useDeleteBrand();
 
-  // Ensure brands and profiles are always arrays
   const safeBrands = Array.isArray(brands) ? brands : [];
-
-  // Filter brands based on search term
-  const filteredBrands = safeBrands.filter(brand => {
-    if (!searchTerm) return true;
-    return brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      brand.description?.toLowerCase().includes(searchTerm.toLowerCase());
-  });
-
-  const [pageSize, setPageSize] = useState(10);
-
-
-  const handleRefresh = () => {
-    refetchBrands();
-  };
+  const filteredBrands = safeBrands.filter(brand =>
+    brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    brand.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleEditBrand = (brand: Brand) => {
     setEditingBrand(brand);
     setIsEditModalOpen(true);
   };
 
-  const handleCloseEdit = () => {
-    setEditingBrand(null);
-    setIsEditModalOpen(false);
-  };
-
-  const handleDeleteBrand = (brandId: string) => {
-    setDeleteBrandId(brandId);
-  };
-
   const confirmDeleteBrand = async () => {
     if (!deleteBrandId) return;
-
-    const brandToDelete = safeBrands.find(b => b.id === deleteBrandId);
-    const brandName = brandToDelete?.name || 'this brand';
-
     try {
       await deleteBrandMutation.mutateAsync(deleteBrandId);
-      toast.success(`Brand "${brandName}" and all associated products have been deleted successfully`);
+      toast.success("Brand purged from registry");
       setDeleteBrandId(null);
     } catch (error) {
-      console.error('Failed to delete brand:', error);
-      toast.error('Failed to delete brand');
+      toast.error("Purge sequence failed");
     }
   };
 
-  // Loading state
-  if (loading) {
-    return (
-      <div className="flex-1 space-y-8 p-6 lg:p-8 bg-background">
-        <div className="space-y-6">
-          <div className="space-y-4">
-            <div>
-              <div className="h-10 w-64 mb-3 bg-muted animate-pulse rounded" />
-              <div className="h-5 w-80 bg-muted animate-pulse rounded" />
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="h-8 w-32 bg-muted animate-pulse rounded" />
-              <div className="h-8 w-28 bg-muted animate-pulse rounded" />
-            </div>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-40 bg-muted animate-pulse rounded" />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const columns = createColumns(handleEditBrand, setDeleteBrandId, deleteBrandMutation.isPending);
 
-  // Main UI
-  const totalBrands = safeBrands.length;
+  if (loading) return (
+    <div className="max-w-7xl mx-auto px-6 py-10 space-y-12 animate-pulse">
+      <div className="h-8 w-64 bg-muted rounded-xl" />
+      <div className="h-40 bg-muted rounded-[40px]" />
+      <div className="h-[600px] bg-muted rounded-[40px]" />
+    </div>
+  );
 
   return (
-    <div className="max-w-[1440px] mx-auto px-6 lg:px-10 py-8 space-y-8">
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard" className="text-sm font-medium">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage className="text-sm font-medium">Brands</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Brands
-          </h1>
-          <p className="text-muted-foreground">
-            Manage your brand profiles and visual identities.
-          </p>
+    <div className="max-w-7xl mx-auto px-6 py-10 space-y-12 font-fira-sans mb-20 animate-in fade-in duration-700">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+        <div className="space-y-4">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem><BreadcrumbLink href="/dashboard" className="text-[10px] font-black uppercase">Dashboard</BreadcrumbLink></BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem><BreadcrumbPage className="text-[10px] font-black uppercase text-primary">Identity Matrix</BreadcrumbPage></BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <div className="space-y-1">
+            <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase italic leading-none">
+              Brand <span className="text-primary italic">Architecture</span>
+            </h1>
+            <p className="text-lg text-muted-foreground font-medium max-w-2xl leading-relaxed italic border-l-4 border-primary pl-6">
+              Managing high-performance professional identities. Define the core descriptors for AI-driven deployment.
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className="text-right">
-            <p className="text-sm font-medium text-muted-foreground">Total Brands</p>
-            <p className="text-2xl font-bold">{totalBrands}</p>
-          </div>
-          <BrandModal mode="create" onSuccess={handleRefresh}>
-            <Button className="rounded-lg h-10 px-6 font-semibold">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Brand
+        <div className="flex items-center gap-4">
+          <BrandModal mode="create" onSuccess={refetchBrands}>
+            <Button size="lg" className="rounded-[20px] h-16 px-10 font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary">
+              <Plus className="mr-3 size-6" />
+              Initialize Identity
             </Button>
           </BrandModal>
         </div>
       </div>
 
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl border bg-card shadow-sm">
-        <div className="relative w-full sm:w-80 group">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-6 rounded-[32px] border-2 bg-muted/10 backdrop-blur-md">
+        <div className="relative w-full sm:w-[500px] group">
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
-            placeholder="Search brands..."
+            placeholder="Search identity registry..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-10 bg-background rounded-lg border-border/60"
+            className="pl-14 h-14 bg-background/50 border-none shadow-inner rounded-2xl font-black italic text-xs uppercase tracking-widest"
           />
         </div>
 
-        <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
-          <SelectTrigger className="w-[140px] h-10 rounded-lg">
-            <SelectValue placeholder="Per page" />
-          </SelectTrigger>
-          <SelectContent className="rounded-lg">
-            {[5, 10, 20, 50].map((size) => (
-              <SelectItem key={size} value={String(size)}>
-                {size} per page
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-4">
+          <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Visibility:</span>
+          <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
+            <SelectTrigger className="w-[140px] h-14 rounded-2xl border-none shadow-inner bg-background/50 font-black uppercase text-[10px] tracking-widest">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="rounded-2xl border-2">
+              {[10, 20, 50].map(s => <SelectItem key={s} value={String(s)} className="font-bold text-[10px] uppercase font-fira-sans">{s} Signals</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      {/* Brands Table */}
       {filteredBrands.length > 0 ? (
-        <Card className="rounded-xl border shadow-sm overflow-hidden">
+        <Card className="rounded-[40px] border-2 bg-card/40 overflow-hidden shadow-2xl shadow-foreground/5 relative">
+          <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 transition-transform duration-1000">
+            <Zap className="size-40 text-primary" />
+          </div>
           <CustomTable
-            columns={createColumns(
-              handleEditBrand,
-              handleDeleteBrand,
-              deleteBrandMutation.isPending
-            )}
+            columns={columns}
             data={filteredBrands}
             pageSize={pageSize}
             className="border-0 shadow-none bg-transparent"
-            headerClassName="bg-muted/30 border-b py-3"
+            headerClassName="bg-muted/30 border-b py-6 px-10 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70"
           />
         </Card>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 px-6 text-center border border-dashed rounded-xl bg-muted/5">
-          <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-6 text-muted-foreground">
-            <Target className="h-8 w-8" />
+        <div className="flex flex-col items-center justify-center py-40 px-6 text-center border-2 border-dashed rounded-[40px] bg-muted/5 font-fira-sans">
+          <div className="size-24 rounded-[32px] bg-primary/5 flex items-center justify-center mb-10 text-primary border-2 border-primary/10 shadow-inner">
+            <Target className="size-12" />
           </div>
-          <div className="space-y-2 max-w-sm mx-auto">
-            <h3 className="text-lg font-semibold text-foreground">
-              {searchTerm ? 'No brands found' : 'No brands yet'}
+          <div className="space-y-4 max-w-md">
+            <h3 className="text-3xl font-black uppercase tracking-tight text-foreground italic underline decoration-primary decoration-4 underline-offset-8">
+              {searchTerm ? 'Identity Not Found' : 'Pattern: NULL'}
             </h3>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground font-bold leading-relaxed italic opacity-80">
               {searchTerm
-                ? 'Try searching with a different term.'
-                : 'Get started by creating your first brand profile.'
+                ? "The specified descriptor does not match any known neural profiles in the current workspace."
+                : "The identity matrix is empty. Deploy your first brand architecture to begin content synthesis."
               }
             </p>
           </div>
           {!searchTerm && (
-            <div className="mt-8">
-              <BrandModal mode="create" onSuccess={handleRefresh}>
-                <Button className="rounded-lg h-10 px-6">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Brand
+            <div className="mt-12">
+              <BrandModal mode="create" onSuccess={refetchBrands}>
+                <Button size="lg" className="rounded-2xl h-16 px-10 font-black uppercase tracking-widest shadow-2xl shadow-primary/20">
+                  <Plus className="mr-3 size-5" />
+                  Launch Phase Alpha
                 </Button>
               </BrandModal>
             </div>
@@ -323,25 +263,27 @@ export function BrandsManagement() {
         </div>
       )}
 
-      {/* Delete Dialog */}
+      <BrandModal mode="edit" brand={editingBrand || undefined} open={isEditModalOpen} onOpenChange={setIsEditModalOpen} onSuccess={refetchBrands} />
+
       <AlertDialog open={!!deleteBrandId} onOpenChange={() => setDeleteBrandId(null)}>
-        <AlertDialogContent className="rounded-xl max-w-md">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl font-bold">
-              Delete Brand?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete this brand and all associated products. This action cannot be undone.
+        <AlertDialogContent className="rounded-[40px] border-2 bg-background/95 backdrop-blur-2xl p-10 max-w-md font-fira-sans border-destructive/20 shadow-2xl">
+          <AlertDialogHeader className="space-y-6">
+            <div className="size-20 rounded-3xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto border border-destructive/20 shadow-inner">
+              <AlertTriangle className="size-10" />
+            </div>
+            <AlertDialogTitle className="text-3xl font-black tracking-tight text-center uppercase italic">Purge <span className="text-destructive">Identity</span>?</AlertDialogTitle>
+            <AlertDialogDescription className="text-base font-bold text-muted-foreground/80 leading-relaxed text-center italic mt-2">
+              This will permanently terminate the brand architecture and all associated neural patterns. This sequence is absolute.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-6 gap-2">
-            <AlertDialogCancel className="rounded-lg h-10 px-4">Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="mt-12 grid grid-cols-2 gap-6">
+            <AlertDialogCancel className="rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] border-2">Abort</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteBrand}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg h-10 px-4"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] border-none shadow-2xl shadow-destructive/30"
               disabled={deleteBrandMutation.isPending}
             >
-              {deleteBrandMutation.isPending ? 'Deleting...' : 'Delete Brand'}
+              {deleteBrandMutation.isPending ? 'TERMINATING...' : 'CONFIRM PURGE'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -349,4 +291,3 @@ export function BrandsManagement() {
     </div>
   );
 }
-

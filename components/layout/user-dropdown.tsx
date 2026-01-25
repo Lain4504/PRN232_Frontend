@@ -11,9 +11,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup
 } from "@/components/ui/dropdown-menu"
 import { LogoutButton } from "@/components/auth/logout-button"
 import React from "react"
+import { Sparkles, Settings, LifeBuoy, Monitor, Moon, Sun, Laptop } from "lucide-react"
 
 type ThemeOption = "light" | "dark" | "system"
 
@@ -46,90 +48,84 @@ export function UserDropdown({ user }: UserDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
+        <Button variant="ghost" className="relative h-10 w-10 rounded-xl overflow-hidden shadow-sm border border-border/50 hover:border-primary/50 transition-colors bg-background/50">
+          <Avatar className="h-full w-full">
             <AvatarImage
               src={user?.avatarUrl}
               alt={user?.fullName}
+              className="object-cover"
             />
-            <AvatarFallback className="text-xs">
+            <AvatarFallback className="text-[10px] font-black bg-primary/10 text-primary">
               {user?.fullName
                 ? user.fullName
                   .split(" ")
                   .map((n: string) => n[0])
                   .join("")
                   .toUpperCase()
-                : user?.email?.[0]?.toUpperCase() || "U"}
+                  .substring(0, 2)
+                : user?.email?.[0]?.toUpperCase() || "ID"}
             </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal">
+      <DropdownMenuContent className="w-72 rounded-[24px] border border-white/10 bg-background/90 backdrop-blur-2xl p-2 font-fira-sans shadow-2xl" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal p-3">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {user?.fullName || "User"}
+            <p className="text-sm font-black leading-none text-foreground tracking-tight">
+              {user?.fullName || "Anonymous User"}
             </p>
-            <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+            <p className="text-[10px] font-medium leading-none text-muted-foreground uppercase tracking-wider">{user?.email}</p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>Account preferences</DropdownMenuItem>
-        <DropdownMenuItem>Feature previews</DropdownMenuItem>
-        <DropdownMenuItem>Center Help</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel className="text-xs text-muted-foreground">
-          Theme
+        <DropdownMenuSeparator className="bg-white/5" />
+        <DropdownMenuGroup className="p-1">
+          <DropdownMenuItem className="rounded-xl font-bold text-[11px] uppercase tracking-wide focus:bg-muted/50 cursor-pointer py-2.5">
+            <Settings className="mr-3 size-4 opacity-70" />
+            Preferences
+          </DropdownMenuItem>
+          <DropdownMenuItem className="rounded-xl font-bold text-[11px] uppercase tracking-wide focus:bg-muted/50 cursor-pointer py-2.5">
+            <Sparkles className="mr-3 size-4 text-amber-500 opacity-80" />
+            Feature Previews
+          </DropdownMenuItem>
+          <DropdownMenuItem className="rounded-xl font-bold text[11px] uppercase tracking-wide focus:bg-muted/50 cursor-pointer py-2.5">
+            <LifeBuoy className="mr-3 size-4 opacity-70" />
+            Help Nexus
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator className="bg-white/5" />
+
+        <DropdownMenuLabel className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-[0.2em] px-3 my-1">
+          Interface Mode
         </DropdownMenuLabel>
-        <DropdownMenuItem
-          onClick={(e) => handleThemeChange(e, "dark")}
-          className="flex items-center gap-2"
-        >
-          <span
-            className={
-              "h-2 w-2 rounded-full inline-block " +
-              (theme === "dark"
-                ? "bg-foreground"
-                : "bg-transparent border border-muted-foreground")
-            }
-          ></span>
-          <span>Dark</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={(e) => handleThemeChange(e, "light")}
-          className="flex items-center gap-2"
-        >
-          <span
-            className={
-              "h-2 w-2 rounded-full inline-block " +
-              (theme === "light"
-                ? "bg-foreground"
-                : "bg-transparent border border-muted-foreground")
-            }
-          ></span>
-          <span>Light</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={(e) => handleThemeChange(e, "system")}
-          className="flex items-center gap-2"
-        >
-          <span
-            className={
-              "h-2 w-2 rounded-full inline-block " +
-              (theme === "system"
-                ? "bg-foreground"
-                : "bg-transparent border border-muted-foreground")
-            }
-          ></span>
-          <span>System</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
+        <DropdownMenuGroup className="flex items-center gap-1 p-1">
+          <DropdownMenuItem
+            onClick={(e) => handleThemeChange(e, "light")}
+            className="flex-1 rounded-xl justify-center font-bold text-[10px] uppercase tracking-wide cursor-pointer py-2.5 data-[state=on]:bg-muted/50"
+          >
+            <Sun className={theme === "light" ? "size-4 text-primary" : "size-4 opacity-50"} />
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={(e) => handleThemeChange(e, "dark")}
+            className="flex-1 rounded-xl justify-center font-bold text-[10px] uppercase tracking-wide cursor-pointer py-2.5"
+          >
+            <Moon className={theme === "dark" ? "size-4 text-primary" : "size-4 opacity-50"} />
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={(e) => handleThemeChange(e, "system")}
+            className="flex-1 rounded-xl justify-center font-bold text-[10px] uppercase tracking-wide cursor-pointer py-2.5"
+          >
+            <Laptop className={theme === "system" ? "size-4 text-primary" : "size-4 opacity-50"} />
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator className="bg-white/5" />
+        <DropdownMenuItem asChild className="rounded-xl focus:bg-destructive/10 focus:text-destructive cursor-pointer py-2.5 mt-1">
           <LogoutButton />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
 }
-
-

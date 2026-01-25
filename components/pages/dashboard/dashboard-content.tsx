@@ -17,62 +17,50 @@ import {
   TrendingUp,
   Users,
   Sparkles,
-  Share2,
 } from "lucide-react"
-// Removed mock-api import - using real API instead
 import { User, DashboardStats } from "@/lib/types/aisam-types"
 import { api, endpoints } from "@/lib/api"
 import { QuickActionsPanel } from "./quick-actions-panel"
-// import { CurrentPlanCard } from "@/components/subscription/current-plan-card"
+import { cn } from "@/lib/utils"
 
-// Enhanced Stats Cards Data with better visualization
-const getStatsData = (stats: DashboardStats) => {
-  const teamsVal = stats.total_teams ?? 0
-  return [
-    {
-      title: "Active Teams",
-      value: teamsVal.toString(),
-      icon: Users,
-      color: "text-chart-2",
-      bgColor: "bg-chart-2/10",
-      borderColor: "border-chart-2/20",
-      description: "Teams you belong to",
-      href: "/overview/teams"
-    },
-    {
-      title: "My Brands",
-      value: stats.total_brands.toString(),
-      icon: Target,
-      color: "text-chart-1",
-      bgColor: "bg-chart-1/10",
-      borderColor: "border-chart-1/20",
-      description: "Active brand profiles",
-      href: "/dashboard/brands"
-    },
-    {
-      title: "Generated Content",
-      value: stats.total_contents.toString(),
-      icon: FileText,
-      color: "text-chart-3",
-      bgColor: "bg-chart-3/10",
-      borderColor: "border-chart-3/20",
-      description: "AI-generated content",
-      href: "/dashboard/contents"
-    },
-    {
-      title: "Published Posts",
-      value: stats.total_posts.toString(),
-      icon: Send,
-      color: "text-chart-4",
-      bgColor: "bg-chart-4/10",
-      borderColor: "border-chart-4/20",
-      description: "Social media posts",
-      href: "/dashboard/posts"
-    },
-  ]
-}
-
-// Recent Activities Data - will be populated from API
+const getStatsData = (stats: DashboardStats) => [
+  {
+    title: "Global Teams",
+    value: stats.total_teams?.toString() || "0",
+    icon: Users,
+    color: "text-blue-500",
+    bgColor: "bg-blue-500/10",
+    description: "Connected workspaces",
+    href: "/overview/teams"
+  },
+  {
+    title: "Active Identities",
+    value: stats.total_brands.toString(),
+    icon: Target,
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-500/10",
+    description: "Brand profiles managed",
+    href: "/dashboard/brands"
+  },
+  {
+    title: "Forge Vault",
+    value: stats.total_contents.toString(),
+    icon: FileText,
+    color: "text-amber-500",
+    bgColor: "bg-amber-500/10",
+    description: "AI assets generated",
+    href: "/dashboard/contents"
+  },
+  {
+    title: "Distribution",
+    value: stats.total_posts.toString(),
+    icon: Send,
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-500/10",
+    description: "Synchronized posts",
+    href: "/dashboard/posts"
+  },
+]
 
 const DashboardContent = () => {
   const [user, setUser] = useState<User | null>(null)
@@ -83,163 +71,165 @@ const DashboardContent = () => {
     const loadDashboardData = async () => {
       try {
         setLoading(true)
+        const userResp = await api.get<User>(endpoints.userProfile)
+        if (userResp.success) setUser(userResp.data)
 
-        // Get current user
-        const userResponse = await api.get<User>(endpoints.userProfile)
-        if (userResponse.success) {
-          setUser(userResponse.data)
+        const statsResp = await api.get<DashboardStats>(endpoints.dashboardStats())
+        if (statsResp.success) {
+          const raw = statsResp.data as any
+          const n = (v: any) => typeof v === 'number' ? v : (isNaN(Number(v)) ? 0 : Number(v))
+          setStats({
+            total_teams: n(raw?.total_teams ?? raw?.teamsCount),
+            total_brands: n(raw?.total_brands ?? raw?.brandsCount ?? raw?.totalBrands ?? raw?.brands),
+            total_products: n(raw?.total_products ?? raw?.totalProducts),
+            total_contents: n(raw?.total_contents ?? raw?.totalContents),
+            total_posts: n(raw?.total_posts ?? raw?.totalPosts),
+            pending_approvals: n(raw?.pending_approvals ?? raw?.pendingApprovalsCount),
+            scheduled_posts: n(raw?.scheduled_posts ?? raw?.scheduledPosts),
+          })
         }
-
-        // Get dashboard stats for current profile
-        const statsResponse = await api.get<DashboardStats>(endpoints.dashboardStats())
-        if (statsResponse.success) {
-          const raw = statsResponse.data as unknown as Record<string, unknown>
-          const toNumber = (value: unknown): number => {
-            if (typeof value === 'number') return value
-            if (typeof value === 'string') {
-              const parsed = Number(value)
-              return isNaN(parsed) ? 0 : parsed
-            }
-            return 0
-          }
-          const normalized: DashboardStats = {
-            total_teams: toNumber(raw?.total_teams ?? raw?.teamsCount),
-            total_brands: toNumber(raw?.total_brands ?? raw?.brandsCount ?? raw?.totalBrands ?? raw?.brands),
-            total_products: toNumber(raw?.total_products ?? raw?.totalProducts),
-            total_contents: toNumber(raw?.total_contents ?? raw?.totalContents),
-            total_posts: toNumber(raw?.total_posts ?? raw?.totalPosts),
-            pending_approvals: toNumber(raw?.pending_approvals ?? raw?.pendingApprovalsCount),
-            scheduled_posts: toNumber(raw?.scheduled_posts ?? raw?.scheduledPosts),
-          }
-          setStats(normalized)
-        }
-
-        // Recent activities removed from dashboard UI
-      } catch (error) {
-        console.error('Failed to load dashboard data:', error)
+      } catch (e) {
+        console.error('Core sync failed:', e)
       } finally {
         setLoading(false)
       }
     }
-
     loadDashboardData()
   }, [])
 
-  // Recent activity section removed
-
-  if (loading) {
-    return (
-      <div className="flex-1 space-y-6 p-6 bg-background">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading dashboard...</p>
-          </div>
-        </div>
+  if (loading) return (
+    <div className="max-w-7xl mx-auto px-6 py-10 space-y-10 animate-pulse">
+      <div className="h-12 w-64 bg-muted rounded-xl" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map(i => <div key={i} className="h-40 bg-muted rounded-2xl" />)}
       </div>
-    )
-  }
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-5 h-[500px] bg-muted rounded-2xl" />
+        <div className="lg:col-span-7 h-[500px] bg-muted rounded-2xl" />
+      </div>
+    </div>
+  )
 
   return (
-    <div className="flex-1 min-h-screen bg-background font-fira-sans">
-      <div className="max-w-[1440px] mx-auto px-6 py-8 lg:px-10 space-y-8">
-        {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Welcome back, <span className="font-semibold text-foreground">{user?.first_name || user?.email?.split('@')[0] || 'User'}</span>. Here is your overview for today.
-            </p>
-          </div>
+    <div className="flex-1 min-h-screen bg-background/50 font-fira-sans">
+      <div className="max-w-7xl mx-auto p-6 lg:p-10 space-y-12 mb-20">
+        {/* Banner Section */}
+        <div className="relative group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-3xl blur opacity-25 group-hover:opacity-40 transition" />
+          <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8 p-10 rounded-3xl border bg-card/40 backdrop-blur-md shadow-2xl shadow-foreground/5">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">System Online</div>
+                <span className="text-xs font-bold text-muted-foreground italic">Last update: Moments ago</span>
+              </div>
+              <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-foreground">
+                Control <span className="text-primary italic">Center</span>
+              </h1>
+              <p className="text-lg text-muted-foreground font-medium max-w-lg leading-relaxed italic">
+                Welcome back, <span className="text-foreground font-extrabold">{user?.first_name || user?.email?.split('@')[0]}</span>. Your AI-driven workspace is optimized and ready for deployment.
+              </p>
+            </div>
 
-          <div className="flex items-center gap-3">
-            <Button variant="outline" className="rounded-lg h-10 px-4">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
-            </Button>
-            <Button className="rounded-lg h-10 px-4">
-              <Plus className="h-4 w-4 mr-2" />
-              Create
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button variant="outline" size="lg" className="rounded-2xl h-14 px-8 border-2 font-bold hover:bg-muted/50">
+                <Filter className="size-5 mr-3" />
+                Analytics
+              </Button>
+              <Button size="lg" className="rounded-2xl h-14 px-8 font-bold shadow-xl shadow-primary/25 hover:scale-[1.02] transition-all">
+                <Plus className="size-5 mr-3" />
+                New Engine
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {stats && getStatsData(stats).map((stat, index) => (
-            <Card key={index} className="rounded-xl border shadow-sm hover:bg-muted/50 transition-colors">
-              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
-                <stat.icon className="h-4 w-4 text-muted-foreground" />
+        {/* Intelligence Grid */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {stats && getStatsData(stats).map((stat, i) => (
+            <Card key={i} className="group relative overflow-hidden rounded-3xl border bg-card/40 hover:bg-card transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-foreground/5 cursor-pointer">
+              <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                <stat.icon className="size-20 -rotate-12 group-hover:rotate-0 transition-transform duration-700" />
+              </div>
+              <CardHeader className="pb-2 flex flex-row items-center justify-between relative z-10">
+                <div className={cn("p-2.5 rounded-xl border shadow-inner", stat.bgColor, stat.color)}>
+                  <stat.icon className="size-5" />
+                </div>
+                <Badge variant="secondary" className="text-[10px] font-black uppercase tracking-widest bg-muted/50 border-none px-2">Realtime</Badge>
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
+              <CardContent className="relative z-10 pt-4">
+                <div className="text-4xl font-black tracking-tight flex items-baseline gap-1">
+                  {stat.value}
+                  <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Units</span>
+                </div>
+                <p className="text-sm font-bold text-foreground mt-2 italic group-hover:text-primary transition-colors">{stat.title}</p>
+                <p className="text-[11px] text-muted-foreground mt-1 font-medium">{stat.description}</p>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Main Content */}
-        <div className="grid gap-6 lg:grid-cols-12">
-          {/* Quick Actions */}
+        <div className="grid gap-10 lg:grid-cols-12">
+          {/* Quick Hub */}
           <div className="lg:col-span-5">
-            <QuickActionsPanel className="border rounded-xl shadow-sm" />
+            <QuickActionsPanel className="h-full border-2 border-dashed bg-muted/5 rounded-[40px] hover:bg-muted/10 transition-colors" />
           </div>
 
-          {/* Activity/Status */}
+          {/* Performance Node */}
           <div className="lg:col-span-7 space-y-6">
-            <Card className="rounded-xl border shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-primary" />
-                  Activity Overview
-                </CardTitle>
-                <CardDescription>Recent updates across your workspace.</CardDescription>
+            <Card className="rounded-[40px] border-2 bg-gradient-to-br from-card to-card/50 shadow-2xl shadow-foreground/5 overflow-hidden">
+              <CardHeader className="py-8 px-10 border-b bg-muted/20">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <CardTitle className="text-2xl font-black flex items-center gap-3 italic">
+                      <Activity className="size-6 text-primary animate-pulse" />
+                      Operations Output
+                    </CardTitle>
+                    <CardDescription className="text-sm font-bold text-muted-foreground/60 uppercase tracking-widest">Global engagement index</CardDescription>
+                  </div>
+                </div>
               </CardHeader>
 
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Status Item */}
-                  <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center text-amber-600">
-                        <Clock className="h-4 w-4" />
+              <CardContent className="p-10 space-y-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                  <div className="group flex items-center justify-between p-6 rounded-3xl border bg-background/50 hover:bg-muted/10 transition-all cursor-pointer">
+                    <div className="flex items-center gap-5">
+                      <div className="size-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 transition-transform group-hover:scale-110 shadow-inner">
+                        <Clock className="size-7" />
                       </div>
-                      <div>
-                        <p className="text-sm font-medium">Pending</p>
-                        <p className="text-xs text-muted-foreground">Approvals</p>
+                      <div className="space-y-0.5">
+                        <p className="text-sm font-black text-foreground italic uppercase tracking-tighter">Pending</p>
+                        <p className="text-xs font-bold text-muted-foreground">Auth Queue</p>
                       </div>
                     </div>
-                    <div className="text-xl font-bold">{stats?.pending_approvals || 0}</div>
+                    <div className="text-4xl font-black text-foreground italic">{stats?.pending_approvals || 0}</div>
                   </div>
 
-                  {/* Status Item */}
-                  <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center text-blue-600">
-                        <Calendar className="h-4 w-4" />
+                  <div className="group flex items-center justify-between p-6 rounded-3xl border bg-background/50 hover:bg-muted/10 transition-all cursor-pointer">
+                    <div className="flex items-center gap-5">
+                      <div className="size-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 transition-transform group-hover:scale-110 shadow-inner">
+                        <Calendar className="size-7" />
                       </div>
-                      <div>
-                        <p className="text-sm font-medium">Scheduled</p>
-                        <p className="text-xs text-muted-foreground">Posts</p>
+                      <div className="space-y-0.5">
+                        <p className="text-sm font-black text-foreground italic uppercase tracking-tighter">Scheduled</p>
+                        <p className="text-xs font-bold text-muted-foreground">Sync Horizon</p>
                       </div>
                     </div>
-                    <div className="text-xl font-bold">{stats?.scheduled_posts || 0}</div>
+                    <div className="text-4xl font-black text-foreground italic">{stats?.scheduled_posts || 0}</div>
                   </div>
                 </div>
 
-                {/* Insight */}
-                <div className="p-4 rounded-lg bg-primary/5 border border-primary/10 flex items-start gap-4">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary mt-0.5">
-                    <TrendingUp className="h-4 w-4" />
+                <div className="p-8 rounded-[32px] bg-primary/5 border-2 border-primary/10 flex items-start gap-6 relative overflow-hidden group hover:border-primary/30 transition-all">
+                  <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform group-hover:opacity-10">
+                    <Sparkles className="size-20 text-primary" />
                   </div>
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-semibold">Workspace Insight</h4>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Your engagement has increased by <span className="text-primary font-medium">14.2%</span> this week. Keeping a consistent post schedule will help maintain this growth.
+                  <div className="size-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground mt-1 shrink-0 shadow-lg shadow-primary/30 group-hover:rotate-12 transition-transform">
+                    <TrendingUp className="size-6" />
+                  </div>
+                  <div className="space-y-3 relative z-10">
+                    <h4 className="text-lg font-black text-foreground tracking-tight italic">AI Strategic Insights</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed font-bold italic opacity-80">
+                      Sync patterns indicate a <span className="text-primary underline decoration-2 underline-offset-4">14.2% acceleration</span> in workspace utilization.
+                      Predictive modeling suggests deploying content during the 18:00 corridor will maximize peak visibility.
                     </p>
                   </div>
                 </div>

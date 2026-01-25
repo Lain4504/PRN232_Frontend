@@ -18,6 +18,7 @@ import {
   Edit,
   ArrowLeft,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useCampaign } from "@/hooks/use-campaigns";
 import { useBrands } from "@/hooks/use-brands";
 import { getCampaignStatus, getCampaignStatusColor } from "@/lib/types/campaigns";
@@ -33,51 +34,34 @@ interface CampaignDetailsProps {
 export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignDetailsProps = {}) {
   const params = useParams();
   const campaignId = params.id as string;
-  
+
   const { data: campaign, isLoading, error } = useCampaign(campaignId);
   const { data: brands = [] } = useBrands();
-  
+
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
 
-  if (isLoading) {
-    return (
-      <div className="flex-1 space-y-8 p-6 lg:p-8 bg-background">
-        <div className="space-y-6">
-          <div className="space-y-4">
-            <div>
-              <div className="h-10 w-64 mb-3 bg-muted animate-pulse rounded" />
-              <div className="h-5 w-80 bg-muted animate-pulse rounded" />
-            </div>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-32 bg-muted animate-pulse rounded" />
-            ))}
-          </div>
-        </div>
+  if (isLoading) return (
+    <div className="max-w-7xl mx-auto px-6 py-10 space-y-8 animate-pulse">
+      <div className="h-8 w-64 bg-muted rounded-lg" />
+      <div className="h-32 bg-muted rounded-2xl" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map(i => <div key={i} className="h-40 bg-muted rounded-2xl" />)}
       </div>
-    );
-  }
+    </div>
+  );
 
-  if (error || !campaign) {
-    return (
-      <div className="flex-1 space-y-8 p-6 lg:p-8 bg-background">
-        <div className="text-center py-8">
-          <Megaphone className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-          <h3 className="text-lg font-semibold mb-2">Campaign not found</h3>
-          <p className="text-muted-foreground mb-4">
-            The campaign you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
-          </p>
-          <Button asChild>
-            <Link href={basePath}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Campaigns
-            </Link>
-          </Button>
-        </div>
+  if (error || !campaign) return (
+    <div className="max-w-7xl mx-auto px-6 py-20 flex flex-col items-center justify-center text-center">
+      <div className="size-20 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mb-6">
+        <Megaphone className="size-10" />
       </div>
-    );
-  }
+      <h2 className="text-3xl font-extrabold text-foreground">Campaign Identity Lost</h2>
+      <p className="text-muted-foreground mt-2 max-w-md">We couldn't retrieve the details for this campaign. It may have been archived or moved.</p>
+      <Button asChild className="mt-10 rounded-xl h-12 px-8 font-bold" variant="outline">
+        <Link href={basePath}><ArrowLeft className="mr-2 size-4" /> Back to Dashboard</Link>
+      </Button>
+    </div>
+  );
 
   const brand = brands.find(b => b.id === campaign.brandId);
   const status = getCampaignStatus(campaign);
@@ -85,219 +69,149 @@ export function CampaignDetails({ basePath = '/dashboard/campaigns' }: CampaignD
   const metrics = campaign.metrics;
 
   return (
-    <div className="w-full max-w-full overflow-x-hidden">
-      <div className="space-y-6 lg:space-y-8 p-4 lg:p-6 xl:p-8 bg-background">
-        {/* Breadcrumb */}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={basePath}>Campaigns</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{campaign.name}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        {/* Header */}
-        <div className="space-y-3 lg:space-y-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
-                <AvatarFallback>
-                  <Megaphone className="h-8 w-8" />
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight text-foreground">
-                  {campaign.name}
-                </h1>
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="secondary" className={statusColor}>
-                    {status}
+    <div className="max-w-7xl mx-auto px-6 py-10 space-y-10 mb-20">
+      {/* Header & Breadcrumbs */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-4">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem><BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink></BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem><BreadcrumbLink href={basePath}>Campaigns</BreadcrumbLink></BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem><BreadcrumbPage>{campaign.name}</BreadcrumbPage></BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <div className="flex items-center gap-5">
+            <div className="size-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 border border-primary/20 shadow-sm">
+              <Megaphone className="size-8" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-extrabold tracking-tight text-foreground">{campaign.name}</h1>
+              <div className="flex items-center gap-3 mt-1.5">
+                <Badge variant="secondary" className={cn("text-xs font-bold uppercase py-0.5 px-3 rounded-lg", statusColor)}>
+                  {status}
+                </Badge>
+                {brand && (
+                  <Badge variant="outline" className="text-xs font-bold uppercase py-0.5 px-3 rounded-lg border-2">
+                    {brand.name}
                   </Badge>
-                  {brand && (
-                    <Badge variant="outline">
-                      {brand.name}
-                    </Badge>
-                  )}
-                </div>
+                )}
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" asChild>
-                <Link href={`${basePath}/${campaign.id}/ad-sets`}>
-                  <Target className="mr-2 h-4 w-4" />
-                  Manage Ad Sets
-                </Link>
-              </Button>
             </div>
           </div>
         </div>
 
-        {/* Campaign Overview Chips */}
-        <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="border-0 shadow-none bg-muted/40">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Budget</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {campaign.budget ? new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                }).format(campaign.budget) : '₫0'}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Daily budget
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-none bg-muted/40">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Objective</CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {campaign.objective ? campaign.objective.replace(/_/g, ' ') : 'None'}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Campaign goal
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-none bg-muted/40">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Duration</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {campaign.startDate ? format(new Date(campaign.startDate), 'MMM dd') : 'Not set'}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {campaign.endDate ? `to ${format(new Date(campaign.endDate), 'MMM dd')}` : 'No end date'}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-none bg-muted/40">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Ad Sets</CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {campaign.adSets?.length || 0}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Active ad sets
-              </p>
-            </CardContent>
-          </Card>
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="lg" className="rounded-xl font-bold h-12 px-6 border-2" asChild>
+            <Link href={`${basePath}/${campaign.id}/ad-sets`}>
+              <Target className="mr-2 size-5" />
+              Performance Sets
+            </Link>
+          </Button>
+          <Button size="lg" className="rounded-xl font-bold h-12 px-6 shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]" onClick={() => setIsEditModalOpen(true)}>
+            <Edit className="mr-2 size-5" />
+            Edit Profile
+          </Button>
         </div>
+      </div>
 
-        {/* Performance Metrics */}
-        {metrics && (
-          <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="border-0 shadow-none bg-muted/40">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Impressions</CardTitle>
-                <Eye className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {metrics.totalImpressions.toLocaleString()}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Total views
-                </p>
-              </CardContent>
-            </Card>
+      {/* Primary Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { label: "Planned Budget", value: campaign.budget ? `₫${Number(campaign.budget).toLocaleString('vi-VN')}` : "None", desc: "Global investment target", icon: DollarSign, color: "text-emerald-500" },
+          { label: "Core Strategy", value: campaign.objective?.replace(/_/g, ' ') || "Dynamic", desc: "Primary conversion goal", icon: Target, color: "text-blue-500" },
+          { label: "Timeline", value: campaign.startDate ? format(new Date(campaign.startDate), 'MMM dd, yyyy') : "Pending", desc: "Deployment start date", icon: Calendar, color: "text-primary" },
+          { label: "Active Nodes", value: campaign.adSets?.length || 0, desc: "Connected ad sets", icon: BarChart3, color: "text-amber-500" },
+        ].map((stat, i) => (
+          <Card key={i} className="rounded-2xl border bg-card/40 p-6 shadow-sm border-b-4 border-b-transparent hover:border-b-primary transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <div className={cn("size-10 rounded-xl bg-muted/50 flex items-center justify-center", stat.color)}>
+                <stat.icon className="size-5" />
+              </div>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Metadata</span>
+            </div>
+            <div className="space-y-1">
+              <p className="text-2xl font-extrabold text-foreground truncate">{stat.value}</p>
+              <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-tight">{stat.label}</p>
+              <p className="text-[10px] text-muted-foreground italic mt-2">{stat.desc}</p>
+            </div>
+          </Card>
+        ))}
+      </div>
 
-            <Card className="border-0 shadow-none bg-muted/40">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Clicks</CardTitle>
-                <MousePointer className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {metrics.totalClicks.toLocaleString()}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Total clicks
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-none bg-muted/40">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">CTR</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {metrics.ctr.toFixed(2)}%
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Click-through rate
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-none bg-muted/40">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Spend</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
-                  }).format(metrics.totalSpend)}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Total spent
-                </p>
-              </CardContent>
-            </Card>
+      {/* Performance Analytics Section */}
+      {metrics && (
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-extrabold text-foreground tracking-tight">Live Analytics</h2>
+            <div className="h-px flex-1 bg-border" />
           </div>
-        )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { label: "Impressions", value: metrics.totalImpressions.toLocaleString(), sub: "Total visual reach", icon: Eye },
+              { label: "Click Interaction", value: metrics.totalClicks.toLocaleString(), sub: "User engagement count", icon: MousePointer },
+              { label: "Conversion Rate", value: `${metrics.ctr.toFixed(2)}%`, sub: "Performance index", icon: TrendingUp },
+              { label: "Actual Spend", value: `₫${Number(metrics.totalSpend).toLocaleString('vi-VN')}`, sub: "Resource consumption", icon: DollarSign },
+            ].map((metric, i) => (
+              <Card key={i} className="rounded-2xl border bg-card/10 backdrop-blur-md p-6 shadow-inner relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-5 translate-x-4 -translate-y-4 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform">
+                  <metric.icon className="size-16" />
+                </div>
+                <div className="space-y-1 relative">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{metric.label}</p>
+                  <p className="text-3xl font-black text-foreground">{metric.value}</p>
+                  <p className="text-xs text-muted-foreground/80 font-medium italic mt-2">{metric.sub}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
 
-        {/* Campaign Details */}
-        <Card className="border-0 shadow-none bg-muted/40">
-          <CardHeader>
-            <CardTitle>Campaign Information</CardTitle>
-            <CardDescription>
-              Basic details about this campaign
-            </CardDescription>
+      {/* Registry & Governance */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <Card className="lg:col-span-2 rounded-2xl border bg-card/40 overflow-hidden shadow-sm">
+          <CardHeader className="bg-muted/30 border-b py-6 px-8">
+            <CardTitle className="text-xl font-extrabold tracking-tight">Registry Information</CardTitle>
+            <CardDescription className="text-sm font-medium">Digital footprint and update registry</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Created</label>
-              <p className="text-sm">{format(new Date(campaign.createdAt), 'PPP')}</p>
+          <CardContent className="p-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
+            <div className="space-y-2 p-4 rounded-xl bg-background/50 border shadow-inner">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Initial Registry</label>
+              <div className="flex items-center gap-3 mt-1">
+                <Calendar className="size-4 text-primary" />
+                <p className="text-base font-bold text-foreground">{format(new Date(campaign.createdAt), 'PPP')}</p>
+              </div>
             </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
-              <p className="text-sm">{format(new Date(campaign.updatedAt), 'PPP')}</p>
+            <div className="space-y-2 p-4 rounded-xl bg-background/50 border shadow-inner">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Last Synchronization</label>
+              <div className="flex items-center gap-3 mt-1">
+                <TrendingUp className="size-4 text-blue-500" />
+                <p className="text-base font-bold text-foreground">{format(new Date(campaign.updatedAt), 'PPP')}</p>
+              </div>
             </div>
           </CardContent>
         </Card>
+
+        <Card className="rounded-2xl border bg-primary/5 flex flex-col items-center justify-center p-8 text-center border-l-4 border-l-primary shadow-sm">
+          <div className="size-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-sm">
+            <BarChart3 className="size-8" />
+          </div>
+          <h4 className="text-lg font-extrabold text-foreground tracking-tight">Smart Optimization</h4>
+          <p className="text-sm font-medium text-muted-foreground/80 leading-relaxed mt-4 italic">
+            Our enterprise engine is currently monitoring this campaign. Every metadata point is synchronized in real-time.
+          </p>
+          <Button variant="ghost" className="mt-8 font-bold text-primary hover:bg-primary/10">View Detailed Audit Log</Button>
+        </Card>
       </div>
+
+      <CampaignModal
+        mode="edit"
+        campaign={campaign}
+        open={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+      />
     </div>
   );
 }

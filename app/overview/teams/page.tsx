@@ -68,18 +68,17 @@ export default function TeamsPage() {
 
   if (userLoading || teamsLoading) {
     return (
-      <div className="w-full max-w-full overflow-x-hidden font-fira-sans">
-        <div className="space-y-10 p-6 lg:p-10 bg-background">
-          <Skeleton className="h-4 w-48 mb-6 rounded-xl" />
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <Skeleton className="h-12 w-64 rounded-xl" />
-              <Skeleton className="h-12 w-32 rounded-xl" />
-            </div>
-            <Skeleton className="h-16 w-full rounded-[2rem] mb-10" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6">
-              {[1, 2, 3].map(i => <Skeleton key={i} className="h-64 rounded-[2rem]" />)}
-            </div>
+      <div className="min-h-screen bg-background">
+        <div className="max-w-7xl mx-auto p-6 lg:p-10 space-y-8">
+          <div className="space-y-4">
+            <div className="h-10 w-48 bg-muted animate-pulse rounded-lg" />
+            <div className="h-5 w-80 bg-muted animate-pulse rounded-lg" />
+          </div>
+          <div className="h-12 w-full max-w-md bg-muted animate-pulse rounded-xl" />
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="rounded-xl border shadow-none bg-muted/5 animate-pulse h-48" />
+            ))}
           </div>
         </div>
       </div>
@@ -94,15 +93,15 @@ export default function TeamsPage() {
   })
 
   return (
-    <div className="max-w-[1440px] mx-auto font-fira-sans">
-      <div className="space-y-8 p-6 lg:p-10 bg-background min-h-screen">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto p-6 lg:p-10 space-y-8">
 
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
-            <Link href="/overview" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/overview" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-2">
               <ArrowLeft className="h-4 w-4" />
-              Back to Overview
+              Overview
             </Link>
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
               My Teams
@@ -114,7 +113,7 @@ export default function TeamsPage() {
 
           <div className="flex items-center gap-6">
             <div className="text-right">
-              <p className="text-sm font-medium text-muted-foreground">Total Teams</p>
+              <p className="text-sm font-medium text-muted-foreground">Teams</p>
               <p className="text-2xl font-bold">{teams.length}</p>
             </div>
             <div className="text-right">
@@ -129,7 +128,7 @@ export default function TeamsPage() {
           <div className="relative flex-1 w-full max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search your teams..."
+              placeholder="Search teams..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 h-10 bg-background rounded-lg border-border/60"
@@ -166,14 +165,14 @@ export default function TeamsPage() {
                   Unable to load your teams. Please check your connection.
                 </p>
               </div>
-              <Button onClick={() => window.location.reload()} variant="outline" className="mt-8 rounded-lg h-10 px-6">
+              <Button onClick={() => window.location.reload()} variant="outline" className="mt-8 rounded-lg h-10 px-6 font-semibold">
                 Try Again
               </Button>
             </div>
           ) : filteredTeams.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 px-6 text-center border border-dashed rounded-xl bg-muted/5">
-              <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-6">
-                <Shield className="h-8 w-8 text-muted-foreground/50" />
+              <div className="h-16 w-16 rounded-lg bg-muted flex items-center justify-center mb-6 text-muted-foreground">
+                <Shield className="h-8 w-8" />
               </div>
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">No teams found</h3>
@@ -188,7 +187,7 @@ export default function TeamsPage() {
                     setStatusFilter('all')
                   }}
                   variant="ghost"
-                  className="mt-8 h-10 px-6 rounded-lg text-primary"
+                  className="mt-8 h-10 px-6 rounded-lg text-primary font-semibold"
                 >
                   Clear Filters
                 </Button>
@@ -220,8 +219,8 @@ export default function TeamsPage() {
                       <Badge
                         variant="secondary"
                         className={`rounded-md text-[10px] font-semibold uppercase tracking-wider ${(team.status === 'Active' || !team.status)
-                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400'
-                          : 'bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'
+                          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/10 dark:text-emerald-400'
+                          : 'bg-amber-50 text-amber-700 dark:bg-amber-900/10 dark:text-amber-400'
                           }`}
                       >
                         {team.status || 'Active'}
@@ -233,11 +232,11 @@ export default function TeamsPage() {
                         {team.name}
                       </h3>
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className={`rounded-sm text-[10px] font-semibold ${getRoleStyle(team.userRole)}`}>
+                        <Badge variant="outline" className={`rounded-md text-[10px] font-semibold ${getRoleStyle(team.userRole)}`}>
                           {team.userRole}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
-                          Since {new Date(team.createdAt).getFullYear()}
+                          Joined {new Date(team.createdAt).getFullYear()}
                         </span>
                       </div>
                     </div>
@@ -245,9 +244,9 @@ export default function TeamsPage() {
                     <div className="pt-4 border-t flex items-center justify-between">
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Users className="h-4 w-4" />
-                        <span className="text-sm font-medium">{team.membersCount} Members</span>
+                        <span className="text-sm font-semibold">{team.membersCount} Members</span>
                       </div>
-                      <div className="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
                         <ArrowLeft className="h-4 w-4 rotate-180" />
                       </div>
                     </div>
@@ -259,5 +258,5 @@ export default function TeamsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

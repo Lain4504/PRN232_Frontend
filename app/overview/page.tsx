@@ -45,34 +45,16 @@ export default function OverviewPage() {
 
   if (userLoading || profilesLoading) {
     return (
-      <div className="min-h-screen py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <div className="h-10 w-64 bg-muted animate-pulse rounded mb-3 mx-auto"></div>
-            <div className="h-5 w-80 bg-muted animate-pulse rounded mx-auto"></div>
+      <div className="min-h-screen bg-background">
+        <div className="max-w-7xl mx-auto p-6 lg:p-10 space-y-8">
+          <div className="space-y-4">
+            <div className="h-10 w-48 bg-muted animate-pulse rounded-lg" />
+            <div className="h-5 w-80 bg-muted animate-pulse rounded-lg" />
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {[1, 2, 3, 4].map((i) => (
-              <Card key={i} className="animate-pulse shadow-none border border-neutral-200/40 dark:border-neutral-800/40 bg-gradient-to-br from-background to-muted/20">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-muted ring-1 ring-muted/50"></div>
-                      <div className="space-y-1 flex-1">
-                        <div className="h-4 w-3/4 bg-muted rounded"></div>
-                        <div className="h-3 w-1/2 bg-muted rounded"></div>
-                      </div>
-                    </div>
-                    <div className="h-4 w-12 bg-muted rounded"></div>
-                  </div>
-                  <div className="mb-2">
-                    <div className="h-3 w-full bg-muted rounded"></div>
-                  </div>
-                  <div className="flex justify-end">
-                    <div className="h-3 w-12 bg-muted rounded"></div>
-                  </div>
-                </CardContent>
-              </Card>
+          <div className="h-12 w-full max-w-md bg-muted animate-pulse rounded-xl" />
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="rounded-xl border shadow-none bg-muted/5 animate-pulse h-48" />
             ))}
           </div>
         </div>
@@ -80,7 +62,6 @@ export default function OverviewPage() {
     )
   }
 
-  // Filter profiles based on search query
   const filteredProfiles = Array.isArray(profiles) ? profiles.filter(profile => {
     const name = profile.name || profile.company_name || `${profile.profileType} Profile`
     return name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -88,100 +69,94 @@ export default function OverviewPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto p-6 space-y-8">
+      <div className="max-w-7xl mx-auto p-6 lg:p-10 space-y-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-black tracking-tight text-foreground">Profiles</h1>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              Profiles
+            </h1>
             <p className="text-muted-foreground font-medium">
               Manage and switch between your workspace identities.
             </p>
           </div>
           <Link href="/overview/profile/new">
-            <Button
-              className="h-11 px-6 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95"
-            >
+            <Button className="rounded-lg h-10 px-6 font-semibold">
               <Plus className="h-4 w-4 mr-2" />
-              CREATE PROFILE
+              New Profile
             </Button>
           </Link>
         </div>
 
         {/* Search */}
         <div className="relative max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="SEARCH PROFILES..."
+            placeholder="Search profiles..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-11 h-12 rounded-xl bg-muted/20 border-border/40 font-medium tracking-wide focus:bg-background transition-all"
+            className="pl-10 h-11 rounded-lg bg-background border-border/60 font-medium"
           />
         </div>
 
         {/* Profiles Grid */}
         {filteredProfiles.length === 0 ? (
-          <Card className="shadow-none border border-dashed border-border/60 rounded-[2rem] bg-muted/5">
-            <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="h-16 w-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-6">
-                <Building2 className="h-8 w-8 text-muted-foreground/50" />
-              </div>
-              <h3 className="text-lg font-bold mb-2">No profiles found</h3>
-              <p className="text-muted-foreground font-medium mb-8 max-w-xs mx-auto">
-                {searchQuery ? 'Try a different search term.' : 'Initialize your first brand profile to access the dashboard capabilities.'}
+          <div className="flex flex-col items-center justify-center py-24 px-6 text-center border border-dashed rounded-xl bg-muted/5">
+            <div className="h-16 w-16 rounded-lg bg-muted flex items-center justify-center mb-6">
+              <Building2 className="h-8 w-8 text-muted-foreground/40" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold">No profiles found</h3>
+              <p className="text-muted-foreground max-w-sm mx-auto">
+                {searchQuery ? 'Try searching with a different term.' : 'Get started by creating your first brand profile.'}
               </p>
-              {!searchQuery && (
+            </div>
+            {!searchQuery && (
+              <div className="mt-8">
                 <Link href="/overview/profile/new">
-                  <Button
-                    className="h-11 px-8 rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20"
-                  >
+                  <Button className="rounded-lg h-10 px-8 font-semibold">
                     <Plus className="h-4 w-4 mr-2" />
-                    CREATE PROFILE
+                    Create First Profile
                   </Button>
                 </Link>
-              )}
-            </CardContent>
-          </Card>
+              </div>
+            )}
+          </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredProfiles.map((profile) => (
               <Card
                 key={profile.id}
-                className="cursor-pointer transition-all duration-300 shadow-sm border border-border/40 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 rounded-[1.5rem] group bg-card/50 backdrop-blur-sm"
+                className="group rounded-xl border shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden bg-card"
                 onClick={() => handleProfileSelect(profile)}
               >
                 <CardContent className="p-6">
-                  {/* Header with Avatar and Name */}
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center border shrink-0">
                       {profile.avatarUrl ? (
                         <img
                           src={profile.avatarUrl}
                           alt=""
-                          className="h-12 w-12 rounded-xl object-cover shadow-sm"
+                          className="h-12 w-12 rounded-lg object-cover"
                         />
-                      ) : profile.profileType === 'Basic' || profile.profileType === 'Pro' ? (
-                        <Building2 className="h-6 w-6 text-primary" />
                       ) : (
                         <User className="h-6 w-6 text-primary" />
                       )}
                     </div>
 
-                    <div className="flex-1 min-w-0 pt-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-bold text-base text-foreground truncate group-hover:text-primary transition-colors">
-                          {profile.name || profile.company_name || 'Unnamed Profile'}
-                        </h3>
-                      </div>
-
-                      <div className="flex items-center gap-2">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
+                        {profile.name || profile.company_name || 'Unnamed Profile'}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-1">
                         <Badge
-                          variant="outline"
-                          className={`shrink-0 text-[9px] px-2 py-0.5 h-5 font-black uppercase tracking-wider border-0 ${PROFILE_TYPE_COLORS[profile.profileType] || 'bg-muted text-muted-foreground'}`}
+                          variant="secondary"
+                          className={`rounded-md text-[10px] font-semibold uppercase tracking-wider ${PROFILE_TYPE_COLORS[profile.profileType] || 'bg-muted text-muted-foreground'}`}
                         >
                           {PROFILE_TYPE_LABELS[profile.profileType]}
                         </Badge>
-                        {profile.company_name && profile.name && (
-                          <span className="text-xs text-muted-foreground truncate border-l border-border/60 pl-2">
+                        {profile.company_name && (
+                          <span className="text-xs text-muted-foreground truncate border-l pl-2">
                             {profile.company_name}
                           </span>
                         )}
@@ -189,19 +164,17 @@ export default function OverviewPage() {
                     </div>
                   </div>
 
-                  {/* Bio Section */}
                   {profile.bio && (
-                    <p className="text-xs text-muted-foreground font-medium line-clamp-2 leading-relaxed mb-5 min-h-[2.5em]">
+                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-6 min-h-[3em]">
                       {profile.bio}
                     </p>
                   )}
 
-                  {/* Divider */}
-                  <div className="flex items-center justify-end pt-2 mt-2 border-t border-border/30">
-                    <div className="flex items-center text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 group-hover:text-primary transition-colors">
-                      <span>Access Console</span>
-                      <ArrowRight className="h-3 w-3 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </div>
+                  <div className="pt-4 border-t flex items-center justify-between">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider group-hover:text-primary transition-colors">
+                      Enter Workspace
+                    </span>
+                    <ArrowRight className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                   </div>
                 </CardContent>
               </Card>
