@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -8,13 +8,16 @@ import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { CustomTable } from '@/components/ui/custom-table'
 import { ColumnDef } from '@tanstack/react-table'
-import { 
-  Plus, 
-  Trash2, 
+import {
+  Plus,
+  Trash2,
   AlertTriangle,
   ExternalLink,
   Search,
-  Target
+  Target,
+  Filter,
+  Building2,
+  ChevronRight
 } from 'lucide-react'
 import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
 import {
@@ -38,6 +41,7 @@ import { useBrandsByTeam } from '@/hooks/use-brands'
 import { useUnassignBrand } from '@/hooks/use-teams'
 import { toast } from 'sonner'
 import { Brand } from '@/lib/types/omniadly-types'
+import { cn } from "@/lib/utils"
 
 interface TeamBrandsListProps {
   teamId: string
@@ -45,110 +49,96 @@ interface TeamBrandsListProps {
   onAddBrand?: () => void
 }
 
-// Create columns for the data table
 const createColumns = (
   handleUnassignBrand: (brand: Brand) => void,
   canManage: boolean,
   isUnassigning: boolean
 ): ColumnDef<Brand>[] => [
-  {
-    accessorKey: "name",
-    header: "Brand Name",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-3">
-        <Avatar className="h-10 w-10">
-          {row.original.logo_url ? (
-            <AvatarImage src={row.original.logo_url} alt={row.getValue("name")} />
-          ) : (
-            <AvatarFallback>
-              <Target className="h-4 w-4" />
-            </AvatarFallback>
-          )}
-        </Avatar>
-        <div>
-          <div className="font-semibold text-gray-800">{row.getValue("name")}</div>
-          {row.original.description && (
-            <div className="text-sm text-muted-foreground line-clamp-1">
-              {row.original.description}
+    {
+      accessorKey: "name",
+      header: "Thương hiệu",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-6 py-4">
+          <Avatar className="size-14 rounded-2xl border border-slate-200 shadow-sm ring-4 ring-slate-50 overflow-hidden">
+            {row.original.logo_url ? (
+              <AvatarImage src={row.original.logo_url} alt={row.getValue("name")} className="object-cover" />
+            ) : (
+              <AvatarFallback className="bg-slate-900 text-white font-black text-xl">
+                {row.original.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            )}
+          </Avatar>
+          <div className="space-y-1">
+            <div className="font-black text-slate-900 text-lg leading-none truncate max-w-[250px]">{row.getValue("name")}</div>
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="bg-slate-50 text-slate-400 border-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg">ID: {row.original.id.slice(0, 8)}</Badge>
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => (
-      <div className="text-muted-foreground line-clamp-2 max-w-xs text-center">
-        {row.getValue("description") || 'No description'}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      return (
-        <div className="text-center">
-          <Badge variant={status === 'Active' ? 'default' : 'secondary'}>
-            {status || 'Active'}
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Trạng thái",
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string;
+        return (
+          <Badge variant="secondary" className={cn("text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border-none",
+            status === 'Active' ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"
+          )}>
+            {status === 'Active' ? "Hoạt động" : "Tạm dừng"}
           </Badge>
-        </div>
-      );
+        )
+      },
     },
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Created",
-    cell: ({ row }) => {
-      const date = row.getValue("createdAt") as string;
-      return (
-        <span className="text-sm text-muted-foreground text-center block">
-          {date ? new Date(date).toLocaleDateString() : '-'}
-        </span>
-      );
+    {
+      accessorKey: "createdAt",
+      header: "Ngày gán",
+      cell: ({ row }) => {
+        const date = row.getValue("createdAt") as string;
+        return (
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            {date ? new Date(date).toLocaleDateString('vi-VN').replace(/\//g, '.') : '-'}
+          </span>
+        )
+      },
     },
-  },
-  {
-    id: "actions",
-    header: "",
-    size: 50,
-    maxSize: 50,
-    cell: ({ row }) => {
-      const actions: ActionItem[] = [
-        {
-          label: "View Brand",
-          icon: <ExternalLink className="h-4 w-4" />,
-          onClick: () => window.open(`/dashboard/brands/${row.original.id}`, '_blank'),
-        },
-      ];
+    {
+      id: "actions",
+      header: () => <div className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Thao tác</div>,
+      cell: ({ row }) => {
+        const actions: ActionItem[] = [
+          {
+            label: "Xem chi tiết Brand",
+            icon: <ExternalLink className="size-4" />,
+            onClick: () => window.location.href = `/dashboard/brands/${row.original.id}`,
+          },
+        ];
 
-      if (canManage) {
-        actions.push({
-          label: "Remove from team",
-          icon: <Trash2 className="h-4 w-4" />,
-          onClick: () => handleUnassignBrand(row.original),
-          variant: "destructive" as const,
-          disabled: isUnassigning,
-        });
-      }
+        if (canManage) {
+          actions.push({
+            label: "Gỡ khỏi đội ngũ",
+            icon: <Trash2 className="size-4" />,
+            onClick: () => handleUnassignBrand(row.original),
+            variant: "destructive" as const,
+            disabled: isUnassigning,
+          });
+        }
 
-      return (
-        <div className="flex justify-center">
-          <ActionsDropdown actions={actions} disabled={isUnassigning} />
-        </div>
-      );
+        return (
+          <div className="flex justify-end">
+            <ActionsDropdown actions={actions} disabled={isUnassigning} />
+          </div>
+        )
+      },
     },
-  },
-];
+  ];
 
 export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBrandsListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [unassigningBrand, setUnassigningBrand] = useState<Brand | null>(null);
-  
+
   const { data: brands = [], isLoading } = useBrandsByTeam(teamId);
   const { mutateAsync: unassignBrand, isPending: unassigning } = useUnassignBrand(teamId);
 
@@ -163,91 +153,62 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
 
   const confirmUnassignBrand = async () => {
     if (!unassigningBrand) return;
-
     try {
       await unassignBrand({ brandId: unassigningBrand.id });
-      toast.success(`Brand "${unassigningBrand.name}" has been removed from the team successfully`);
+      toast.success(`Đã gỡ thương hiệu "${unassigningBrand.name}" khỏi đội ngũ thành công`);
       setUnassigningBrand(null);
     } catch (error) {
-      console.error('Failed to remove brand:', error);
-      toast.error('Failed to remove brand from team');
+      toast.error('Lỗi khi gỡ thương hiệu');
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex-1 space-y-8 p-6 lg:p-8 bg-background">
-        <div className="space-y-6">
-          <div className="space-y-4">
-            <div>
-              <div className="h-10 w-64 mb-3 bg-muted animate-pulse rounded" />
-              <div className="h-5 w-80 bg-muted animate-pulse rounded" />
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="h-8 w-32 bg-muted animate-pulse rounded" />
-              <div className="h-8 w-28 bg-muted animate-pulse rounded" />
-            </div>
-          </div>
-          <div className="h-64 bg-muted animate-pulse rounded" />
-        </div>
-      </div>
-    );
-  }
-
-  const totalBrands = brands.length;
+  if (isLoading) return (
+    <div className="space-y-8 animate-pulse">
+      <div className="h-10 w-full bg-slate-50 rounded-xl" />
+      <div className="h-64 w-full bg-slate-50 rounded-2xl border border-slate-100" />
+    </div>
+  )
 
   return (
-    <>
-      {/* Two Row Layout - Controls on top row, Button on bottom row */}
-      <div className="space-y-3">
-        {/* Row 1: Stats, Page Selector, Search */}
-        <div className="flex items-center gap-3">
-          {/* Stats Badge */}
-          <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg border border-gray-200 text-sm shadow-sm flex-shrink-0">
-            <Target className="h-4 w-4 text-gray-500 flex-shrink-0" />
-            <span className="font-semibold text-gray-700">{totalBrands}</span>
-            <span className="text-gray-500 hidden md:inline">Brands</span>
-          </div>
-
-          {/* Page Size Selector */}
-          <Select
-            value={String(pageSize)}
-            onValueChange={(value) => setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-20 h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {[5, 10, 20, 30, 40, 50].map((size) => (
-                <SelectItem key={size} value={String(size)} className="text-xs">
-                  {size}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Search Input */}
-          <div className="relative flex-1 min-w-0 max-w-sm">
-            <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+    <div className="space-y-10">
+      {/* Toolbar */}
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-4 w-full lg:w-auto">
+          <div className="relative flex-1 lg:w-80 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
             <Input
-              placeholder="Search brands..."
+              placeholder="Tìm kiếm thương hiệu..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8 h-8 text-sm"
+              className="pl-12 h-12 bg-white border-slate-100 rounded-2xl shadow-sm focus-visible:ring-slate-100 font-medium transition-all"
             />
+          </div>
+          <div className="flex items-center gap-2 bg-white p-1 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="size-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+              <Filter className="size-3.5" />
+            </div>
+            <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
+              <SelectTrigger className="w-[100px] border-none focus:ring-0 font-bold text-xs uppercase tracking-widest h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1">
+                {[5, 10, 20, 50].map((size) => (
+                  <SelectItem key={size} value={String(size)} className="rounded-xl">Top {size}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        {/* Row 2: Add Brand Button - Full Width */}
         {canManage && (
-          <Button onClick={onAddBrand} size="sm" className="w-full h-10 text-sm">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Brand
+          <Button onClick={onAddBrand} className="h-12 px-8 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-slate-200 transition-all hover:-translate-y-1">
+            <Plus className="mr-3 h-4 w-4" />
+            Gán thương hiệu mới
           </Button>
         )}
       </div>
 
-      {/* Brands Table */}
+      {/* Table Section */}
       {filteredBrands.length > 0 ? (
         <CustomTable
           columns={createColumns(
@@ -257,71 +218,48 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
           )}
           data={filteredBrands}
           pageSize={pageSize}
+          className="border-0 shadow-none bg-transparent"
+          headerClassName="bg-slate-50/50 border-b border-slate-100 py-6 px-10 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400"
         />
       ) : (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center py-6">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
-                <Target className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">
-                {searchTerm ? 'No brands found' : 'No brands yet'}
-              </h3>
-              <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
-                {searchTerm
-                  ? 'Try adjusting your search terms'
-                  : 'Add brands to this team to start managing them together'
-                }
-              </p>
-              {!searchTerm && canManage && (
-                <Button onClick={onAddBrand}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Your First Brand
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center py-24 px-6 text-center border border-dashed border-slate-200 rounded-[3rem] bg-slate-50/50">
+          <div className="size-16 rounded-[2rem] bg-white flex items-center justify-center mb-6 shadow-sm border border-slate-100">
+            <Building2 className="size-8 text-slate-200" />
+          </div>
+          <h3 className="text-xl font-black text-slate-900 mb-2 uppercase tracking-widest">
+            {searchTerm ? 'Không tìm thấy kết quả' : 'Chưa có thương hiệu'}
+          </h3>
+          <p className="text-slate-500 font-medium max-w-sm mb-8 leading-relaxed text-xs italic">
+            {searchTerm ? 'Thử điều chỉnh bộ lọc của bạn.' : 'Hãy gán thương hiệu đầu tiên cho nhóm này để bắt đầu cộng tác.'}
+          </p>
+        </div>
       )}
 
-      {/* Unassign Confirmation Dialog */}
+      {/* Unassign Confirmation */}
       <AlertDialog open={!!unassigningBrand} onOpenChange={() => setUnassigningBrand(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-destructive" />
-              Remove Brand from Team?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to remove <strong>{unassigningBrand?.name}</strong> from this team? 
-              This action will unlink the brand from the team, but the brand itself will remain intact.
+        <AlertDialogContent className="rounded-[2.5rem] border-slate-100 p-10 max-w-md shadow-2xl">
+          <AlertDialogHeader className="space-y-6">
+            <div className="size-20 rounded-3xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto border border-rose-100 shadow-sm">
+              <AlertTriangle className="size-10" />
+            </div>
+            <AlertDialogTitle className="text-3xl font-black tracking-tight text-center uppercase text-slate-900">Gỡ thương hiệu?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm font-medium text-slate-500 leading-relaxed text-center italic mt-2">
+              Bạn có chắc chắn muốn gỡ <strong>{unassigningBrand?.name}</strong> khỏi đội ngũ này?
+              Thương hiệu dữ liệu vẫn tồn tại nhưng nhóm sẽ mất quyền truy cập.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={unassigning}>
-              Cancel
-            </AlertDialogCancel>
+          <AlertDialogFooter className="mt-12 grid grid-cols-2 gap-4">
+            <AlertDialogCancel className="rounded-xl h-12 font-black uppercase tracking-widest text-[10px] bg-slate-50 border-none">Hủy bỏ</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmUnassignBrand}
+              className="bg-rose-500 text-white hover:bg-rose-600 rounded-xl h-12 font-black uppercase tracking-widest text-[10px] border-none shadow-lg shadow-rose-100"
               disabled={unassigning}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {unassigning ? (
-                <>
-                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  Removing...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Remove Brand
-                </>
-              )}
+              {unassigning ? "..." : "Xác nhận gỡ"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   )
 }

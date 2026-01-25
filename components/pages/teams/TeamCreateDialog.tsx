@@ -10,15 +10,15 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { AlertCircle, Building2 } from 'lucide-react'
+import { AlertCircle, Building2, ChevronRight, Target, Users } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
+import { cn } from "@/lib/utils"
 
-// Form validation schema
 const teamFormSchema = z.object({
-  name: z.string().min(1, 'Team name is required').max(100, 'Team name must be less than 100 characters'),
-  description: z.string().max(500, 'Description must be less than 500 characters').optional(),
+  name: z.string().min(1, 'Tên đội ngũ là bắt buộc').max(100, 'Tên không được quá 100 ký tự'),
+  description: z.string().max(500, 'Mô tả không được quá 500 ký tự').optional(),
 })
 
 type TeamFormValues = z.infer<typeof teamFormSchema>
@@ -53,79 +53,78 @@ export function TeamCreateDialog({ open, onOpenChange, onCreated }: Props) {
   async function onSubmit(values: TeamFormValues) {
     setError(null)
     try {
-      const created = await mutateAsync({ 
-        name: values.name, 
-        description: values.description || undefined 
+      const created = await mutateAsync({
+        name: values.name,
+        description: values.description || undefined
       })
       onOpenChange(false)
       onCreated?.(created.id)
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'An error occurred'
-      if (message.includes('401')) {
-        window.location.href = '/auth/login'
-        return
-      }
-      setError('Could not create team. ' + message)
+      const message = err instanceof Error ? err.message : 'Đã xảy ra lỗi'
+      setError('Không thể tạo nhóm: ' + message)
     }
   }
 
-  // Shared form content component
   const TeamFormContent = ({ onCancel }: { onCancel: () => void }) => (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Team Name</FormLabel>
+            <FormItem className="space-y-3">
+              <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Định danh Đội ngũ</FormLabel>
               <FormControl>
-                <Input placeholder="Enter team name" {...field} />
+                <Input
+                  placeholder="Ví dụ: Growth Hub, Content Wizards..."
+                  className="h-14 rounded-2xl border-2 border-slate-100 bg-white px-6 focus-visible:ring-slate-100 font-black text-slate-900 uppercase tracking-tight shadow-sm"
+                  {...field}
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-[10px] font-bold uppercase" />
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="description"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
+            <FormItem className="space-y-3">
+              <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Sứ mệnh / Mô tả (Tùy chọn)</FormLabel>
               <FormControl>
-                <Textarea 
-                  placeholder="Short description (optional)" 
-                  rows={3}
-                  {...field} 
+                <Textarea
+                  placeholder="Ghi chú ngắn gọn về mục tiêu của đội ngũ này..."
+                  rows={4}
+                  className="rounded-[1.5rem] border-2 border-slate-100 bg-white p-6 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm"
+                  {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-[10px] font-bold uppercase" />
             </FormItem>
           )}
         />
 
         {error && (
-          <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
-            <AlertCircle className="h-4 w-4 text-destructive" />
-            <div className="text-sm text-destructive">{error}</div>
+          <div className="flex items-center gap-4 p-5 rounded-2xl bg-rose-50 border border-rose-100 text-rose-500">
+            <AlertCircle className="size-5 shrink-0" />
+            <div className="text-[10px] font-black uppercase tracking-widest leading-relaxed">{error}</div>
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
-          <Button type="button" variant="outline" onClick={onCancel} size="lg" className="w-full sm:w-auto">
-            Cancel
+        <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6">
+          <Button type="button" variant="outline" onClick={onCancel} className="h-14 rounded-2xl border-slate-100 bg-slate-50 text-slate-400 hover:bg-slate-100 font-black uppercase tracking-widest text-[10px] order-2 sm:order-1 flex-1 sm:flex-none sm:px-10">
+            Hủy bỏ
           </Button>
-          <Button type="submit" disabled={isPending} size="lg" className="w-full sm:w-auto">
+          <Button type="submit" disabled={isPending} className="h-14 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 transition-all hover:-translate-y-1 order-1 sm:order-2 flex-1 sm:flex-none sm:px-10">
             {isPending ? (
               <>
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                Creating...
+                <div className="mr-3 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                Đang tạo...
               </>
             ) : (
               <>
-                <Building2 className="mr-2 h-4 w-4" />
-                Create Team
+                Triển khai Đội ngũ <ChevronRight className="ml-2 size-4" />
               </>
             )}
           </Button>
@@ -137,12 +136,15 @@ export function TeamCreateDialog({ open, onOpenChange, onCreated }: Props) {
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[90vh] flex flex-col">
-          <DrawerHeader className="flex-shrink-0 text-left">
-            <DrawerTitle>Create Team</DrawerTitle>
-            <DrawerDescription>Enter the information to create a new team.</DrawerDescription>
+        <DrawerContent className="max-h-[90vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white">
+          <DrawerHeader className="flex-shrink-0 text-left p-10 pb-4">
+            <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200">
+              <Users className="size-6" />
+            </div>
+            <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">Kiến tạo Đội ngũ</DrawerTitle>
+            <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">Phác thảo thông tin cơ bản để bắt đầu quy trình cộng tác.</DrawerDescription>
           </DrawerHeader>
-          <div className="px-4 overflow-y-auto flex-1">
+          <div className="px-10 overflow-y-auto flex-1 pb-10">
             <TeamFormContent onCancel={() => onOpenChange(false)} />
           </div>
         </DrawerContent>
@@ -152,12 +154,15 @@ export function TeamCreateDialog({ open, onOpenChange, onCreated }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader className="flex-shrink-0">
-          <DialogTitle>Create Team</DialogTitle>
-          <DialogDescription>Enter the information to create a new team.</DialogDescription>
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden flex flex-col rounded-[3rem] border-none p-0 shadow-2xl bg-white">
+        <DialogHeader className="flex-shrink-0 p-12 pb-8">
+          <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-8 border border-slate-200 shadow-sm">
+            <Users className="size-8" />
+          </div>
+          <DialogTitle className="text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">Kiến tạo Đội ngũ</DialogTitle>
+          <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic">Xây dựng cấu trúc cộng tác mới cho tổ chức truyền thông của bạn.</DialogDescription>
         </DialogHeader>
-        <div className="overflow-y-auto flex-1">
+        <div className="overflow-y-auto flex-1 px-12 pb-12">
           <TeamFormContent onCancel={() => onOpenChange(false)} />
         </div>
       </DialogContent>

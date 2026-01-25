@@ -14,24 +14,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Building2, Plus, ChevronsUpDown } from 'lucide-react'
+import { Avatar, AvatarImage } from '@/components/ui/avatar'
+import { Building2, Plus, ChevronsUpDown, Layout } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export function ProfileSwitcher() {
   const { data: user } = useUser()
   const { activeProfile, setActiveProfile } = useProfile()
   const { data: profiles = [] } = useGetProfiles(user?.id || '')
 
-  const handleProfileSelect = (profile: {
-    id: string;
-    name?: string;
-    company_name?: string;
-    companyName?: string;
-    profileType: string;
-    avatarUrl?: string;
-    isOwner?: boolean;
-    memberRole?: string;
-  }) => {
+  const handleProfileSelect = (profile: any) => {
     setActiveProfile(profile.id, {
       id: profile.id,
       name: profile.name || profile.company_name || profile.companyName || `${profile.profileType} Profile`,
@@ -43,20 +35,15 @@ export function ProfileSwitcher() {
     })
   }
 
-
-  const handleSwitchProfile = () => {
-    window.location.href = '/overview/profile/new'
-  }
-
-  const handleManageProfiles = () => {
+  const handleSwitchToOverview = () => {
     window.location.href = '/overview'
   }
 
   if (!activeProfile) {
     return (
-      <Button variant="outline" onClick={handleSwitchProfile}>
-        <Building2 className="h-4 w-4 mr-2" />
-        Select Profile
+      <Button variant="outline" size="sm" onClick={handleSwitchToOverview} className="rounded-xl font-bold bg-slate-50 border-slate-100">
+        <Building2 className="h-3.5 w-3.5 mr-2" />
+        Chọn hồ sơ
       </Button>
     )
   }
@@ -64,108 +51,93 @@ export function ProfileSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-9 px-3 gap-2 hover:bg-muted/50 rounded-xl border border-white/5 bg-background/40 transition-all duration-300">
-          <div className="flex items-center gap-2">
-            <div className="size-5 rounded-md bg-primary/10 flex items-center justify-center">
-              <Building2 className="size-3 text-primary" />
+        <Button variant="ghost" className="h-10 px-3 gap-3 hover:bg-slate-50 rounded-xl transition-all duration-200">
+          <div className="flex items-center gap-3">
+            <div className="size-7 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200 shadow-sm overflow-hidden">
+              {activeProfile.avatarUrl ? (
+                <img src={activeProfile.avatarUrl} alt="" className="size-full object-cover" />
+              ) : (
+                <Building2 className="size-4 text-slate-400" />
+              )}
             </div>
-            <span className="text-sm font-bold tracking-tight">
-              {activeProfile.name}
-            </span>
-            <Badge
-              variant="secondary"
-              className={`text-[9px] h-5 px-1.5 font-bold uppercase tracking-widest border-none ${PROFILE_TYPE_COLORS[activeProfile.type]}`}
-            >
-              {PROFILE_TYPE_LABELS[activeProfile.type]}
-            </Badge>
+            <div className="flex flex-col items-start leading-none group">
+              <span className="text-xs font-black text-slate-900 truncate max-w-[120px]">
+                {activeProfile.name}
+              </span>
+              <div className="flex items-center gap-1 mt-1">
+                <div className="size-1 rounded-full bg-emerald-500" />
+                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                  {PROFILE_TYPE_LABELS[activeProfile.type]}
+                </span>
+              </div>
+            </div>
           </div>
-          <ChevronsUpDown className="h-3 w-3 text-muted-foreground opacity-50" />
+          <ChevronsUpDown className="h-3 w-3 text-slate-300" />
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-80 rounded-xl bg-background/95 backdrop-blur-xl border border-white/10 p-2 shadow-2xl" align="start" sideOffset={8}>
-        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-2 py-2">Identity Selector</DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-white/5" />
+      <DropdownMenuContent className="w-80 rounded-[2rem] bg-white border-slate-100 p-3 shadow-2xl shadow-slate-200" align="start" sideOffset={12}>
+        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-4 py-3">Ma trận hồ sơ</DropdownMenuLabel>
 
-        {/* Current Profile */}
-        <DropdownMenuItem disabled className="mb-1 focus:bg-transparent">
-          <div className="flex items-center gap-3 w-full p-1">
-            <div className="size-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 shadow-inner">
-              {activeProfile.avatarUrl ? (
-                <AvatarImage src={activeProfile.avatarUrl} className="rounded-xl" />
-              ) : (
-                <Building2 className="size-4 text-primary" />
-              )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-bold text-sm truncate">{activeProfile.name}</div>
-              <div className="text-[10px] items-center flex gap-1.5 mt-0.5">
-                <span className="text-primary font-bold uppercase tracking-wider">Active Session</span>
-                <div className="size-1 rounded-full bg-primary animate-pulse" />
-              </div>
-            </div>
-          </div>
-        </DropdownMenuItem>
-
-        <div className="px-2 pb-2">
-          <Badge
-            variant="outline"
-            className={`w-full justify-center text-[10px] py-0.5 font-bold uppercase tracking-widest border-white/10 bg-white/5 ${PROFILE_TYPE_COLORS[activeProfile.type]}`}
-          >
-            {PROFILE_TYPE_LABELS[activeProfile.type]} Tier
-          </Badge>
-        </div>
-
-        <DropdownMenuSeparator className="bg-white/5" />
-
-        {/* Other Profiles */}
-        <div className="max-h-[200px] overflow-y-auto px-1 py-1 space-y-1">
-          {profiles.filter(p => p.id !== activeProfile.id).length > 0 && (
-            <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40 px-2 mb-1 mt-1">Available Profiles</div>
-          )}
-          {profiles.filter(p => p.id !== activeProfile.id).map((profile) => (
-            <DropdownMenuItem
-              key={profile.id}
-              onClick={() => handleProfileSelect(profile)}
-              className="rounded-xl cursor-pointer focus:bg-muted/50 transition-colors"
-            >
-              <div className="flex items-center gap-3 w-full">
-                <div className="size-8 rounded-lg bg-muted/30 flex items-center justify-center shrink-0 border border-white/5">
-                  {profile.avatarUrl ? (
-                    <AvatarImage src={profile.avatarUrl} className="rounded-lg" />
-                  ) : (
-                    <Building2 className="size-3.5 text-muted-foreground" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold text-xs truncate">
-                    {profile.name || profile.company_name || `${profile.profileType} Profile`}
+        <div className="max-h-[300px] overflow-y-auto px-1 py-1 space-y-1">
+          {profiles.map((profile) => {
+            const isActive = profile.id === activeProfile.id
+            return (
+              <DropdownMenuItem
+                key={profile.id}
+                onClick={() => handleProfileSelect(profile)}
+                className={cn(
+                  "rounded-2xl cursor-pointer p-4 transition-all duration-200",
+                  isActive ? "bg-slate-900 text-white" : "hover:bg-slate-50"
+                )}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-4">
+                    <div className={cn(
+                      "size-10 rounded-xl flex items-center justify-center shrink-0 border",
+                      isActive ? "bg-white/10 border-white/10" : "bg-slate-100 border-slate-200"
+                    )}>
+                      {profile.avatarUrl ? (
+                        <img src={profile.avatarUrl} alt="" className="size-full object-cover rounded-xl" />
+                      ) : (
+                        <Building2 className={cn("size-5", isActive ? "text-white" : "text-slate-400")} />
+                      )}
+                    </div>
+                    <div>
+                      <div className={cn("font-black text-sm truncate max-w-[140px]", isActive ? "text-white" : "text-slate-900")}>
+                        {profile.name || profile.company_name || "Hồ sơ không tên"}
+                      </div>
+                      <div className={cn("text-[9px] font-bold uppercase tracking-widest mt-0.5", isActive ? "text-slate-400" : "text-slate-400")}>
+                        {PROFILE_TYPE_LABELS[profile.profileType]} Tier
+                      </div>
+                    </div>
                   </div>
-                  <Badge
-                    variant="secondary"
-                    className={`mt-1 text-[9px] h-4 px-1.5 font-bold uppercase tracking-widest border-none bg-transparent p-0 ${PROFILE_TYPE_COLORS[profile.profileType]}`}
-                  >
-                    {PROFILE_TYPE_LABELS[profile.profileType]}
-                  </Badge>
+                  {isActive && <div className="size-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />}
                 </div>
-              </div>
-            </DropdownMenuItem>
-          ))}
+              </DropdownMenuItem>
+            )
+          })}
         </div>
 
-        {profiles.filter(p => p.id !== activeProfile.id).length > 0 && <DropdownMenuSeparator className="bg-white/5" />}
+        <DropdownMenuSeparator className="bg-slate-50 my-2 mx-4" />
 
-        {/* Actions */}
-        <div className="p-1 gap-1 flex flex-col">
-          <DropdownMenuItem onClick={handleSwitchProfile} className="rounded-xl cursor-pointer font-bold text-xs text-primary focus:text-primary focus:bg-primary/10">
+        <div className="grid grid-cols-2 gap-2 p-1">
+          <Button
+            variant="ghost"
+            onClick={() => window.location.href = '/overview/profile/new'}
+            className="rounded-xl h-11 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          >
             <Plus className="size-3.5 mr-2" />
-            Initialize New Identity
-          </DropdownMenuItem>
-
-          <DropdownMenuItem onClick={handleManageProfiles} className="rounded-xl cursor-pointer font-bold text-xs text-muted-foreground focus:text-foreground focus:bg-muted/50">
-            <Building2 className="size-3.5 mr-2" />
-            Manage Matrix
-          </DropdownMenuItem>
+            Tạo mới
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={handleSwitchToOverview}
+            className="rounded-xl h-11 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          >
+            <Layout className="size-3.5 mr-2" />
+            Quản lý
+          </Button>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

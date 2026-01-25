@@ -1,363 +1,225 @@
-'use client';
+"use client"
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { CustomTabs, CustomTabItem } from '@/components/ui/custom-tabs';
-import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-import {
-  Users, 
-  UserPlus, 
-  Activity,
-  Shield,
-  Mail,
-  MoreHorizontal,
-  Building2,
-  Plus
-} from 'lucide-react';
-import { TeamMembersTable } from '@/components/pages/teams/TeamMembersTable';
-import { AddMemberDialog } from '@/components/pages/teams/AddMemberDialog';
-import { AddBrandDialog } from '@/components/pages/teams/AddBrandDialog';
-import { TeamBrandsList } from '@/components/pages/teams/TeamBrandsList';
-import { EditMemberDialog } from './edit-member-dialog';
-// import { TeamInvitationSystem } from './team-invitation-system';
-// import { TeamActivityLog } from './team-activity-log';
-// import { TeamBillingManagement } from './team-billing-management';
-// import { TeamSettings } from './team-settings';
-// import { TeamAnalytics } from './team-analytics';
-// import { TeamAccessControl } from './team-access-control';
-// import { TeamSecurityAudit } from './team-security-audit';
-import { useTeam, useTeamMembers } from '@/hooks/use-teams';
-import { TeamMemberResponseDto } from '@/lib/types/omniadly-types';
-import { formatTeamSize, formatDate } from '@/lib/utils/teams';
+import { useState } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { CustomTabs, CustomTabItem } from '@/components/ui/custom-tabs'
+import { ArrowLeft, Users, UserPlus, Activity, Shield, Mail, MoreVertical, Building2, Plus, Target, ChevronRight } from 'lucide-react'
+import Link from 'next/link'
+import { TeamMembersTable } from '@/components/pages/teams/TeamMembersTable'
+import { AddMemberDialog } from '@/components/pages/teams/AddMemberDialog'
+import { AddBrandDialog } from '@/components/pages/teams/AddBrandDialog'
+import { TeamBrandsList } from '@/components/pages/teams/TeamBrandsList'
+import { EditMemberDialog } from './edit-member-dialog'
+import { useTeam, useTeamMembers } from '@/hooks/use-teams'
+import { TeamMemberResponseDto } from '@/lib/types/omniadly-types'
+import { cn } from "@/lib/utils"
 
 interface TeamManagementProps {
-  teamId: string;
-  canManage?: boolean;
+  teamId: string
+  canManage?: boolean
 }
 
 export function TeamManagement({ teamId, canManage = true }: TeamManagementProps) {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [addMemberOpen, setAddMemberOpen] = useState(false);
-  const [addBrandOpen, setAddBrandOpen] = useState(false);
-  const [editingMember, setEditingMember] = useState<TeamMemberResponseDto | null>(null);
+  const [activeTab, setActiveTab] = useState('overview')
+  const [addMemberOpen, setAddMemberOpen] = useState(false)
+  const [addBrandOpen, setAddBrandOpen] = useState(false)
+  const [editingMember, setEditingMember] = useState<TeamMemberResponseDto | null>(null)
 
-  const { data: team, isLoading: teamLoading } = useTeam(teamId);
-  const { data: members, isLoading: membersLoading } = useTeamMembers(teamId);
+  const { data: team, isLoading: teamLoading } = useTeam(teamId)
+  const { data: members, isLoading: membersLoading } = useTeamMembers(teamId)
 
   const handleEditMember = (member: TeamMemberResponseDto) => {
-    setEditingMember(member);
-  };
+    setEditingMember(member)
+  }
 
   const handleCloseEditMember = () => {
-    setEditingMember(null);
-  };
-
-  if (teamLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="animate-pulse">
-              <div className="h-32 bg-gray-200 rounded"></div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    setEditingMember(null)
   }
 
-  if (!team) {
-    return (
-      <div className="text-center py-12">
-        <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-lg font-semibold mb-2">Team not found</h3>
-        <p className="text-muted-foreground">The team you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.</p>
+  if (teamLoading) return (
+    <div className="space-y-12 animate-pulse">
+      <div className="h-12 w-64 bg-slate-50 rounded-xl" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        {[1, 2, 3, 4].map(i => <div key={i} className="h-40 bg-slate-50 rounded-[2rem] border border-slate-100" />)}
       </div>
-    );
-  }
+    </div>
+  )
 
-  // Use membersCount from team data for consistency with teams list page
-  const totalMembers = team.membersCount || 0;
-  const activeMembers = members?.filter(m => m.isActive).length || 0;
-  const pendingInvitations = 0; // TODO: Implement invitation count
+  if (!team) return (
+    <div className="flex flex-col items-center justify-center py-32 text-center bg-slate-50/50 rounded-[3rem] border border-dashed border-slate-200">
+      <Shield className="size-16 text-slate-300 mb-8" />
+      <h3 className="text-3xl font-black uppercase tracking-tight mb-3 text-slate-900 leading-none">Không tìm thấy đội nhóm</h3>
+      <p className="text-slate-500 font-medium max-w-sm mx-auto mb-10 leading-relaxed italic border-l-4 border-slate-100 pl-6">Dữ liệu đội nhóm không tồn tại hoặc bạn không có quyền truy cập phối hợp.</p>
+      <Link href="/dashboard/teams">
+        <Button variant="outline" className="h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] border-slate-200 bg-white hover:bg-slate-50">Quay lại danh sách</Button>
+      </Link>
+    </div>
+  )
 
-  // Tab configuration
+  const totalMembers = team.membersCount || 0
+  const activeMembers = members?.filter(m => m.isActive).length || 0
+  const pendingInvitations = 0
+
   const tabItems: CustomTabItem[] = [
-    {
-      value: 'overview',
-      label: 'Overview',
-    },
-    {
-      value: 'members',
-      label: 'Members',
-    },
-    {
-      value: 'brands',
-      label: 'Brands',
-    },
-  ];
+    { value: 'overview', label: 'Tổng quan' },
+    { value: 'members', label: 'Thành viên' },
+    { value: 'brands', label: 'Thương hiệu' },
+  ]
 
   return (
-    <div className="space-y-6">
-      {/* Back Button */}
-      <div>
-        <Link href="/dashboard/teams">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Teams
-          </Button>
-        </Link>
-      </div>
+    <div className="space-y-12 pb-20 font-sans">
+      {/* Navigation */}
+      <Link href="/dashboard/teams" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">
+        <ArrowLeft className="size-3.5" />
+        Quay lại danh sách đội ngũ
+      </Link>
 
-      {/* Team Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight break-words">{team.name}</h1>
-          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
-            {team.description || 'Manage your team members and settings'}
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-100 pb-12">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400">
+              <Target className="size-4" />
+            </div>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Hồ sơ định danh nhóm</span>
+          </div>
+          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-none truncate max-w-[800px]">
+            {team.name}
+          </h1>
+          <p className="text-lg text-slate-500 font-medium max-w-xl leading-relaxed">
+            {team.description || 'Quản lý cấu trúc thành viên, thương hiệu và quyền hạn cộng tác trong tổ chức của bạn.'}
           </p>
         </div>
+
         {canManage && (
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <Button variant="outline" size="sm" className="w-full sm:w-auto">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button variant="outline" className="h-14 w-14 rounded-2xl border-slate-200 bg-white hover:bg-slate-50 text-slate-900 shadow-sm transition-all hover:-translate-y-1">
+            <MoreHorizontal className="size-5" />
+          </Button>
         )}
       </div>
 
-      {/* Enhanced Team Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 hover:scale-105 hover:-translate-y-1">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Users className="h-5 w-5 text-primary" />
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {[
+          { label: "Tổng nhân sự", value: totalMembers, icon: Users, color: "text-slate-900", bg: "bg-slate-100" },
+          { label: "Đang hoạt động", value: activeMembers, icon: Activity, color: "text-emerald-600", bg: "bg-emerald-50" },
+          { label: "Lời mời chờ", value: pendingInvitations, icon: Mail, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "Trạng thái nhóm", value: team.status, icon: Shield, color: team.status === 'Active' ? "text-emerald-600" : "text-amber-600", bg: team.status === 'Active' ? "bg-emerald-50" : "bg-amber-50" },
+        ].map((stat, i) => (
+          <Card key={i} className="rounded-[2rem] border border-slate-100 bg-white p-8 shadow-sm group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between mb-8">
+              <div className={cn("size-12 rounded-2xl flex items-center justify-center shadow-sm border border-white ring-4 ring-slate-50", stat.bg, stat.color)}>
+                <stat.icon className="size-5 transition-transform group-hover:rotate-12" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{totalMembers}</p>
-                <p className="text-sm text-muted-foreground">Total Members</p>
-              </div>
+              <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest text-slate-300 border-slate-100 p-1 px-2">Thời gian thực</Badge>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 hover:scale-105 hover:-translate-y-1">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-chart-2/20 to-chart-2/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Shield className="h-5 w-5 text-chart-2" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{activeMembers}</p>
-                <p className="text-sm text-muted-foreground">Active Members</p>
-              </div>
+            <div className="space-y-1">
+              <p className="text-3xl font-black text-slate-900 tracking-tight">{stat.value}</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{stat.label}</p>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 hover:scale-105 hover:-translate-y-1">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-chart-3/20 to-chart-3/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Mail className="h-5 w-5 text-chart-3" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{pendingInvitations}</p>
-                <p className="text-sm text-muted-foreground">Pending Invites</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 hover:scale-105 hover:-translate-y-1">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-chart-4/20 to-chart-4/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Activity className="h-5 w-5 text-chart-4" />
-              </div>
-              <div>
-                <Badge variant={team.status === 'Active' ? 'default' : 'secondary'} className="text-xs font-medium">
-                  {team.status}
-                </Badge>
-                <p className="text-sm text-muted-foreground mt-1">Team Status</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </Card>
+        ))}
       </div>
 
-      {/* Team Management Tabs */}
-      <div className="space-y-6">
+      {/* Content Tabs */}
+      <div className="space-y-10">
         <CustomTabs
           items={tabItems}
           activeTab={activeTab}
           onTabChange={setActiveTab}
+          className="bg-transparent border-b border-slate-100 rounded-none p-0 inline-flex gap-8"
         />
 
         {activeTab === 'overview' && (
-          <div className="space-y-6">
-            {/* Enhanced Quick Actions */}
-            <Card className="border border-primary/20 group hover:shadow-lg transition-all duration-300">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-chart-3/20 to-chart-3/10 rounded-lg flex items-center justify-center">
-                    <Activity className="h-4 w-4 text-chart-3" />
-                  </div>
-                  <CardTitle className="text-lg font-semibold">Quick Actions</CardTitle>
-                </div>
-                <CardDescription className="text-sm text-muted-foreground">
-                  Common management actions for this team
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Button 
-                    variant="outline" 
-                    className="h-auto p-4 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary/30 transition-all duration-200 group/action"
-                    onClick={() => setAddMemberOpen(true)}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            {/* Quick Actions */}
+            <Card className="rounded-[2.5rem] border border-slate-100 bg-white shadow-sm p-10 space-y-8">
+              <div className="space-y-2">
+                <h4 className="text-xl font-black text-slate-900 uppercase tracking-widest leading-none">Thao tác nhanh</h4>
+                <p className="text-xs font-medium text-slate-400">Các quy trình quản trị đội ngũ được tối ưu hóa</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: "Mời nhân sự", desc: "Thêm thành viên mới", icon: UserPlus, onClick: () => setAddMemberOpen(true) },
+                  { label: "Gán thương hiệu", desc: "Liên kết Brand với Team", icon: Building2, onClick: () => setAddBrandOpen(true) },
+                  { label: "Xem thành viên", desc: "Danh sách chi tiết", icon: Users, onClick: () => setActiveTab('members') },
+                  { label: "Xem thương hiệu", desc: "Danh sách sở hữu", icon: Building2, onClick: () => setActiveTab('brands') },
+                ].map((action, i) => (
+                  <Button
+                    key={i}
+                    variant="outline"
+                    className="h-auto p-6 flex flex-col items-start gap-4 rounded-2xl border-slate-100 hover:bg-slate-50 hover:border-slate-300 transition-all text-left group"
+                    onClick={action.onClick}
                     disabled={!canManage}
                   >
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center group-hover/action:scale-110 transition-transform duration-200">
-                      <UserPlus className="h-5 w-5 text-primary" />
+                    <div className="size-10 rounded-xl bg-slate-900 flex items-center justify-center text-white ring-4 ring-slate-50 group-hover:scale-110 transition-transform">
+                      <action.icon className="size-5" />
                     </div>
-                    <span className="text-sm font-medium">Add Member</span>
-                    <span className="text-xs text-muted-foreground text-center">Add new team member</span>
-                  </Button>
-
-                  <Button 
-                    variant="outline" 
-                    className="h-auto p-4 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary/30 transition-all duration-200 group/action"
-                    onClick={() => setAddBrandOpen(true)}
-                    disabled={!canManage}
-                  >
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center group-hover/action:scale-110 transition-transform duration-200">
-                      <Plus className="h-5 w-5 text-primary" />
+                    <div className="space-y-1">
+                      <span className="text-sm font-black text-slate-900 uppercase tracking-tight block">{action.label}</span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{action.desc}</span>
                     </div>
-                    <span className="text-sm font-medium">Add Brand</span>
-                    <span className="text-xs text-muted-foreground text-center">Assign brand to team</span>
                   </Button>
-
-                  <Button 
-                    variant="outline" 
-                    className="h-auto p-4 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary/30 transition-all duration-200 group/action"
-                    onClick={() => setActiveTab('members')}
-                  >
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center group-hover/action:scale-110 transition-transform duration-200">
-                      <Users className="h-5 w-5 text-primary" />
-                    </div>
-                    <span className="text-sm font-medium">Manage Members</span>
-                    <span className="text-xs text-muted-foreground text-center">View all team members</span>
-                  </Button>
-
-                  <Button 
-                    variant="outline" 
-                    className="h-auto p-4 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary/30 transition-all duration-200 group/action"
-                    onClick={() => setActiveTab('brands')}
-                  >
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center group-hover/action:scale-110 transition-transform duration-200">
-                      <Building2 className="h-5 w-5 text-primary" />
-                    </div>
-                    <span className="text-sm font-medium">Manage Brands</span>
-                    <span className="text-xs text-muted-foreground text-center">View team brands</span>
-                  </Button>
-                </div>
-              </CardContent>
+                ))}
+              </div>
             </Card>
 
-            {/* Team Information Card */}
-            <Card className="border border-blue-200 dark:border-blue-800">
-              <CardContent className="p-3">
-                <div className="flex items-start gap-2">
-                  <div className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0">
-                    <Shield className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-blue-900 dark:text-blue-100 text-xs mb-1">
-                      Team Management Dashboard
-                    </h3>
-                    <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
-                      Manage your team members, assign brands, and monitor team activity. 
-                      Use the quick actions above to perform common management tasks.
-                    </p>
-                  </div>
+            {/* Strategy Banner */}
+            <Card className="p-10 rounded-[2.5rem] bg-slate-900 text-white relative overflow-hidden group border-none flex flex-col justify-center">
+              <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 rotate-12 group-hover:rotate-0 transition-transform duration-1000">
+                <Target className="size-48" />
+              </div>
+              <div className="space-y-6 relative z-10">
+                <div className="size-14 rounded-2xl bg-white/10 flex items-center justify-center text-white shrink-0 shadow-2xl border border-white/5">
+                  <Shield className="size-7" />
                 </div>
-              </CardContent>
+                <div className="space-y-4">
+                  <h4 className="text-xl font-black tracking-tight uppercase tracking-widest">Bảng điều khiển tác chiến</h4>
+                  <p className="text-sm text-slate-400 leading-relaxed font-bold">
+                    Tất cả các thành viên trong nhóm này sẽ có quyền truy cập phối hợp dựa trên vai trò được gán.
+                    Sử dụng các thao tác nhanh để duy trì luồng vận hành của tổ chức.
+                  </p>
+                  <Button variant="ghost" className="p-0 text-white hover:text-emerald-400 font-black text-[10px] uppercase tracking-widest hover:bg-transparent flex items-center gap-2">
+                    Hướng dẫn phân quyền <ChevronRight className="size-4" />
+                  </Button>
+                </div>
+              </div>
             </Card>
           </div>
         )}
 
         {activeTab === 'members' && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold">Team Members</h2>
-              <p className="text-muted-foreground text-sm">
-                Manage your team members and their permissions
-              </p>
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="p-8 rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/40">
+              <TeamMembersTable
+                teamId={teamId}
+                canManage={canManage}
+                onEditMember={handleEditMember}
+                onInviteMember={() => setAddMemberOpen(true)}
+              />
             </div>
-            <TeamMembersTable
-              teamId={teamId}
-              canManage={canManage}
-              onEditMember={handleEditMember}
-              onInviteMember={() => setAddMemberOpen(true)}
-            />
           </div>
         )}
 
         {activeTab === 'brands' && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold">Team Brands</h2>
-              <p className="text-muted-foreground text-sm">
-                Manage brands associated with this team
-              </p>
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="p-8 rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/40">
+              <TeamBrandsList
+                teamId={teamId}
+                canManage={canManage}
+                onAddBrand={() => setAddBrandOpen(true)}
+              />
             </div>
-            <TeamBrandsList 
-              teamId={teamId} 
-              canManage={canManage} 
-              onAddBrand={() => setAddBrandOpen(true)} 
-            />
           </div>
         )}
       </div>
 
-      {/* Add Member Dialog */}
-      <AddMemberDialog
-        open={addMemberOpen}
-        onOpenChange={setAddMemberOpen}
-        teamId={teamId}
-      />
-
-      {/* Edit Member Dialog */}
-      <EditMemberDialog
-        open={!!editingMember}
-        onOpenChange={(open) => !open && handleCloseEditMember()}
-        teamId={teamId}
-        member={editingMember}
-      />
-
-      {/* Add Brand Dialog */}
-      <AddBrandDialog
-        open={addBrandOpen}
-        onOpenChange={setAddBrandOpen}
-        teamId={teamId}
-        onSuccess={() => {
-          // Refresh data after adding brand
-          // You can add refresh logic here when backend is ready
-        }}
-      />
-
+      {/* Dialogs */}
+      <AddMemberDialog open={addMemberOpen} onOpenChange={setAddMemberOpen} teamId={teamId} />
+      <EditMemberDialog open={!!editingMember} onOpenChange={(open) => !open && handleCloseEditMember()} teamId={teamId} member={editingMember} />
+      <AddBrandDialog open={addBrandOpen} onOpenChange={setAddBrandOpen} teamId={teamId} onSuccess={() => { }} />
     </div>
-  );
+  )
 }

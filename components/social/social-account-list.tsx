@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -10,26 +10,31 @@ import {
   Eye,
   RefreshCw,
   AlertTriangle,
-  Link
+  Link,
+  Shield,
+  Zap,
+  Clock,
+  ExternalLink
 } from 'lucide-react'
 import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { SocialAccountDto, SocialAuthUrlResponse } from '@/lib/types/omniadly-types'
 import { LinkIntegrationModal } from './link-integration-modal'
 import { IntegrationsModal } from './integrations-modal'
 import { useUnlinkAccount, useUnlinkTarget } from '@/hooks/use-social-accounts'
 import { toast } from 'sonner'
-import {SiFacebook, SiInstagram, SiTiktok} from "@icons-pack/react-simple-icons";
+import { SiFacebook, SiInstagram, SiTiktok } from "@icons-pack/react-simple-icons"
 import { api, endpoints } from '@/lib/api'
+import { cn } from "@/lib/utils"
 
 interface SocialAccountListProps {
   accounts: SocialAccountDto[]
@@ -44,9 +49,9 @@ const providerIcons = {
 } as const
 
 const providerColors = {
-  facebook: 'bg-blue-500',
+  facebook: 'bg-[#1877F2]',
   tiktok: 'bg-black',
-  instagram: 'bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600',
+  instagram: 'bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888]',
 } as const
 
 export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccountListProps) {
@@ -54,19 +59,17 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
   const [integrationsModalOpen, setIntegrationsModalOpen] = useState<{ accountId: string; account: SocialAccountDto } | null>(null)
   const [linkModalOpen, setLinkModalOpen] = useState<{ accountId: string; provider: string } | null>(null)
   const [isReAuthing, setIsReAuthing] = useState<string | null>(null)
-  
+
   const unlinkAccountMutation = useUnlinkAccount()
   const unlinkTargetMutation = useUnlinkTarget()
 
   const handleDeleteAccount = async (accountId: string) => {
     try {
       await unlinkAccountMutation.mutateAsync({ socialAccountId: accountId })
-      toast.success('Account unlinked successfully')
+      toast.success('Đã hủy kết nối tài khoản')
       onRefresh?.()
     } catch (error) {
-      console.error('Delete account error:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Failed to unlink account'
-      toast.error(errorMessage)
+      toast.error('Lỗi khi hủy kết nối')
     } finally {
       setDeleteDialogOpen(null)
     }
@@ -75,14 +78,11 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
   const handleDeleteTarget = async (targetId: string) => {
     try {
       await unlinkTargetMutation.mutateAsync({ socialIntegrationId: targetId })
-      toast.success('Integration unlinked successfully')
+      toast.success('Đã hủy tích hợp trang')
       onRefresh?.()
-      // Close integrations modal after successful unlink
       setIntegrationsModalOpen(null)
     } catch (error) {
-      console.error('Delete target error:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Failed to unlink integration'
-      toast.error(errorMessage)
+      toast.error('Lỗi khi hủy tích hợp')
     } finally {
       setDeleteDialogOpen(null)
     }
@@ -92,264 +92,161 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
     try {
       setIsReAuthing(accountId)
       const response = await api.get<SocialAuthUrlResponse>(endpoints.socialAuth(provider))
-      
       if (response.data?.authUrl) {
-        // Redirect to OAuth URL
         window.location.href = response.data.authUrl
       } else {
-        toast.error('Failed to get authentication URL')
+        toast.error('Không thể lấy URL xác thực')
       }
     } catch (error) {
-      console.error('Re-auth error:', error)
-      toast.error('Failed to start re-authentication')
+      toast.error('Lỗi khởi tạo xác thực')
     } finally {
       setIsReAuthing(null)
     }
   }
 
-  const renderReAuthButton = (account: SocialAccountDto) => {
-    const isExpired = account.expiresAt ? new Date(account.expiresAt) < new Date() : false
-    const isExpiringSoon = account.expiresAt ? {
-      expires: new Date(account.expiresAt),
-      now: new Date(),
-      diff: new Date(account.expiresAt).getTime() - new Date().getTime(),
-      daysLeft: Math.ceil((new Date(account.expiresAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
-    } : null
-
-    const isLoading = isReAuthing === account.id
-
-    if (isExpired) {
-      return (
-        <div className="flex items-center gap-2">
-          <Badge variant="destructive" className="text-xs font-medium">
-            <AlertTriangle className="mr-1 h-3 w-3" />
-            Expired
-          </Badge>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleReAuth(account.provider, account.id)}
-            disabled={isLoading}
-            className="h-8 text-xs border-destructive/20 hover:bg-destructive/5"
-          >
-            {isLoading ? (
-              <RefreshCw className="mr-2 h-3 w-3 animate-spin" />
-            ) : (
-              <RefreshCw className="mr-2 h-3 w-3" />
-            )}
-            Re-authenticate
-          </Button>
-        </div>
-      )
-    }
-
-    if (isExpiringSoon && isExpiringSoon.daysLeft <= 7) {
-      return (
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400">
-            Expires in {isExpiringSoon.daysLeft} day{isExpiringSoon.daysLeft !== 1 ? 's' : ''}
-          </Badge>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleReAuth(account.provider, account.id)}
-            disabled={isLoading}
-            className="h-8 text-xs border-orange-200 hover:bg-orange-50 dark:border-orange-800 dark:hover:bg-orange-900/10"
-          >
-            {isLoading ? (
-              <RefreshCw className="mr-2 h-3 w-3 animate-spin" />
-            ) : (
-              <RefreshCw className="mr-2 h-3 w-3" />
-            )}
-            Refresh Token
-          </Button>
-        </div>
-      )
-    }
-
-    return (
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => handleReAuth(account.provider, account.id)}
-        disabled={isLoading}
-        className="h-8 text-xs hover:bg-muted/50"
-      >
-        {isLoading ? (
-          <RefreshCw className="mr-2 h-3 w-3 animate-spin" />
-        ) : (
-          <RefreshCw className="mr-2 h-3 w-3" />
-        )}
-        Re-authenticate
-      </Button>
-    )
-  }
-
-
-  if (accounts.length === 0) {
-    return null
-  }
+  if (accounts.length === 0) return null
 
   return (
-    <div className="w-full max-w-full overflow-hidden">
-      {/* Table View - Responsive for all screen sizes */}
-      <div className="overflow-x-auto border rounded-lg">
-        <Table className="min-w-[600px] w-full">
+    <div className="w-full">
+      <div className="overflow-x-auto">
+        <Table className="w-full border-separate border-spacing-0">
           <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="w-[200px] lg:w-[300px] py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Account</TableHead>
-              <TableHead className="hidden sm:table-cell py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Status</TableHead>
-              <TableHead className="hidden md:table-cell py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Created</TableHead>
-              <TableHead className="hidden lg:table-cell py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Expires</TableHead>
-              <TableHead className="py-2 px-2 lg:px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">Integrations</TableHead>
-              <TableHead className="w-16 px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide text-center"></TableHead>
+            <TableRow className="hover:bg-transparent border-none">
+              <TableHead className="py-6 px-8 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50">Tài khoản & Nền tảng</TableHead>
+              <TableHead className="py-6 px-8 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50">Trạng thái</TableHead>
+              <TableHead className="hidden md:table-cell py-6 px-8 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50">Đăng ký lúc</TableHead>
+              <TableHead className="hidden lg:table-cell py-6 px-8 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50">Thời hạn mã</TableHead>
+              <TableHead className="py-6 px-8 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50">Tích hợp</TableHead>
+              <TableHead className="w-16 py-6 px-8 border-b border-slate-50"></TableHead>
             </TableRow>
           </TableHeader>
-            <TableBody>
-              {accounts.map((account) => {
-                const Icon = providerIcons[account.provider]
-                const colorClass = providerColors[account.provider]
-                const isExpired = account.expiresAt ? new Date(account.expiresAt) < new Date() : false
+          <TableBody>
+            {accounts.map((account) => {
+              const Icon = providerIcons[account.provider]
+              const colorClass = providerColors[account.provider]
+              const isExpired = account.expiresAt ? new Date(account.expiresAt) < new Date() : false
 
-                return (
-                  <TableRow key={account.id} className="hover:bg-muted/50">
-                    <TableCell className="py-3 px-2 lg:px-3">
-                      <div className="flex items-center gap-2 lg:gap-3">
-                        <div className={`p-1.5 lg:p-2 rounded-lg ${colorClass} shadow-sm flex-shrink-0`}>
-                          <Icon className="h-4 w-4 lg:h-5 lg:w-5 text-white" />
+              return (
+                <TableRow key={account.id} className="group hover:bg-slate-50/50 transition-colors border-none">
+                  <TableCell className="py-6 px-8 border-b border-slate-50">
+                    <div className="flex items-center gap-4">
+                      <div className={cn("size-12 rounded-2xl flex items-center justify-center shadow-lg shadow-slate-200 group-hover:scale-110 transition-transform", colorClass)}>
+                        <Icon className="size-6 text-white" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="font-black text-slate-900 text-lg leading-none capitalize">
+                          {account.provider} <span className="text-slate-300 font-medium">Node</span>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="font-semibold capitalize text-sm lg:text-base truncate">
-                            {account.provider} Account
-                          </div>
-
-                          {/* Mobile: Show status inline */}
-                          <div className="sm:hidden flex items-center gap-1 mt-1">
-                            <Badge 
-                              variant={account.isActive ? 'default' : 'secondary'} 
-                              className="text-xs font-medium"
-                            >
-                              {account.isActive ? 'Active' : 'Inactive'}
-                            </Badge>
-                            {isExpired && (
-                              <Badge variant="destructive" className="text-xs font-medium">
-                                Expired
-                              </Badge>
-                            )}
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="secondary" className="bg-slate-100/50 text-slate-400 border-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg">PROT: OAUTH 2.0</Badge>
                         </div>
                       </div>
-                    </TableCell>
-                    
-                    {/* Desktop Status Column */}
-                    <TableCell className="hidden sm:table-cell py-3 px-2 lg:px-3">
-                      <div className="flex items-center gap-2">
-                        <Badge 
-                          variant={account.isActive ? 'default' : 'secondary'} 
-                          className="text-xs font-medium"
-                        >
-                          {account.isActive ? 'Active' : 'Inactive'}
-                        </Badge>
-                        {isExpired && (
-                          <Badge variant="destructive" className="text-xs font-medium">
-                            Expired
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    
-                    {/* Desktop Created Column */}
-                    <TableCell className="hidden md:table-cell py-3 px-2 lg:px-3 font-mono text-sm">
-                      {new Date(account.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    
-                    {/* Desktop Expires Column */}
-                    <TableCell className="hidden lg:table-cell py-3 px-2 lg:px-3 font-mono text-sm">
-                      {account.expiresAt ? new Date(account.expiresAt).toLocaleDateString() : 'Never'}
-                    </TableCell>
-                    
-                    <TableCell className="py-3 px-2 lg:px-3">
-                      <Badge variant="outline" className="text-xs">
-                        {account.targets?.length || 0} Linked
-                      </Badge>
-                    </TableCell>
-                    
-                    <TableCell className="w-16 px-4 py-3 text-center">
-                      <ActionsDropdown
-                        actions={[
-                          ...(account.targets?.length ? [{
-                            label: "View Integrations",
-                            icon: <Eye className="h-4 w-4" />,
-                            onClick: () => setIntegrationsModalOpen({ accountId: account.id, account }),
-                          }] : []),
-                          {
-                            label: "Re-authenticate",
-                            icon: isReAuthing === account.id ? <RefreshCw className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />,
-                            onClick: () => handleReAuth(account.provider, account.id),
-                            disabled: isReAuthing === account.id,
-                          },
-                          {
-                            label: "Link to Brand",
-                            icon: <Link className="h-4 w-4" />,
-                            onClick: () => setLinkModalOpen({ accountId: account.id, provider: account.provider }),
-                          },
-                          {
-                            label: "Unlink Account",
-                            icon: <Trash2 className="h-4 w-4" />,
-                            onClick: () => setDeleteDialogOpen({ accountId: account.id }),
-                            variant: "destructive" as const,
-                          },
-                        ] as ActionItem[]}
-                        disabled={isReAuthing === account.id}
-                      />
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </div>
+                    </div>
+                  </TableCell>
 
-        {/* Link Integration Modal */}
-        {linkModalOpen && (
-          <LinkIntegrationModal
-            socialAccountId={linkModalOpen.accountId}
-            provider={linkModalOpen.provider}
-            open={!!linkModalOpen}
-            onOpenChange={(open) => !open && setLinkModalOpen(null)}
-          />
-        )}
+                  <TableCell className="py-6 px-8 border-b border-slate-50">
+                    <div className="flex items-center gap-2">
+                      <div className={cn("size-2 rounded-full", account.isActive && !isExpired ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-rose-500")} />
+                      <span className={cn("text-[9px] font-black uppercase tracking-widest", account.isActive && !isExpired ? "text-emerald-600" : "text-rose-500")}>
+                        {account.isActive && !isExpired ? 'Đang hoạt động' : (isExpired ? 'Hết hạn mã' : 'Ngắt kết nối')}
+                      </span>
+                    </div>
+                  </TableCell>
 
-        {/* Integrations Modal */}
-        {integrationsModalOpen && (
-          <IntegrationsModal
-            account={integrationsModalOpen.account}
-            isOpen={!!integrationsModalOpen}
-            onClose={() => setIntegrationsModalOpen(null)}
-            onDeleteTarget={(targetId, accountId) => setDeleteDialogOpen({ accountId, targetId })}
-          />
-        )}
+                  <TableCell className="hidden md:table-cell py-6 px-8 border-b border-slate-50">
+                    <div className="text-[10px] font-black text-slate-900 flex items-center gap-2">
+                      <Clock className="size-3 text-slate-300" />
+                      {new Date(account.createdAt).toLocaleDateString('vi-VN').replace(/\//g, '.')}
+                    </div>
+                  </TableCell>
 
-        {/* Delete Confirmation Dialog */}
-      <AlertDialog 
-        open={!!deleteDialogOpen} 
-        onOpenChange={() => setDeleteDialogOpen(null)}
-      >
-        <AlertDialogContent className="sm:max-w-md">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <Trash2 className="h-5 w-5 text-destructive" />
-              {deleteDialogOpen?.targetId ? 'Unlink Page' : 'Unlink Account'}
+                  <TableCell className="hidden lg:table-cell py-6 px-8 border-b border-slate-50">
+                    <div className={cn("text-[10px] font-black uppercase tracking-widest", isExpired ? "text-rose-500" : "text-slate-400")}>
+                      {account.expiresAt ? new Date(account.expiresAt).toLocaleDateString('vi-VN').replace(/\//g, '.') : 'Vô thời hạn'}
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="py-6 px-8 border-b border-slate-50">
+                    <Badge variant="secondary" className="bg-slate-900 text-white border-none text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+                      {account.targets?.length || 0} Trang đã gán
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell className="py-6 px-8 border-b border-slate-50 text-right">
+                    <ActionsDropdown
+                      actions={[
+                        ...(account.targets?.length ? [{
+                          label: "Xem tích hợp trang",
+                          icon: <Eye className="size-4" />,
+                          onClick: () => setIntegrationsModalOpen({ accountId: account.id, account }),
+                        }] : []),
+                        {
+                          label: "Gia hạn quyền truy cập",
+                          icon: isReAuthing === account.id ? <RefreshCw className="size-4 animate-spin" /> : <RefreshCw className="size-4" />,
+                          onClick: () => handleReAuth(account.provider, account.id),
+                          disabled: isReAuthing === account.id,
+                        },
+                        {
+                          label: "Gán thương hiệu",
+                          icon: <ExternalLink className="size-4" />,
+                          onClick: () => setLinkModalOpen({ accountId: account.id, provider: account.provider }),
+                        },
+                        {
+                          label: "Gỡ bỏ tài khoản",
+                          icon: <Trash2 className="size-4" />,
+                          onClick: () => setDeleteDialogOpen({ accountId: account.id }),
+                          variant: "destructive" as const,
+                        },
+                      ] as ActionItem[]}
+                      disabled={isReAuthing === account.id}
+                    />
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Link Integration Modal */}
+      {linkModalOpen && (
+        <LinkIntegrationModal
+          socialAccountId={linkModalOpen.accountId}
+          provider={linkModalOpen.provider}
+          open={!!linkModalOpen}
+          onOpenChange={(open) => !open && setLinkModalOpen(null)}
+        />
+      )}
+
+      {/* Integrations Modal */}
+      {integrationsModalOpen && (
+        <IntegrationsModal
+          account={integrationsModalOpen.account}
+          isOpen={!!integrationsModalOpen}
+          onClose={() => setIntegrationsModalOpen(null)}
+          onDeleteTarget={(targetId, accountId) => setDeleteDialogOpen({ accountId, targetId })}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteDialogOpen} onOpenChange={() => setDeleteDialogOpen(null)}>
+        <AlertDialogContent className="rounded-[2.5rem] border-slate-100 p-10 max-w-md shadow-2xl">
+          <AlertDialogHeader className="space-y-6">
+            <div className="size-20 rounded-3xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto border border-rose-100 shadow-sm">
+              <Trash2 className="size-10" />
+            </div>
+            <AlertDialogTitle className="text-3xl font-black tracking-tight text-center uppercase text-slate-900">
+              {deleteDialogOpen?.targetId ? 'Hủy tích hợp?' : 'Gỡ tài khoản?'}
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm text-muted-foreground">
-              {deleteDialogOpen?.targetId 
-                ? 'Are you sure you want to unlink this page from its brand? This action cannot be undone.'
-                : 'Are you sure you want to unlink this social account? All associated integrations will also be removed.'
+            <AlertDialogDescription className="text-sm font-medium text-slate-500 leading-relaxed text-center italic mt-2">
+              {deleteDialogOpen?.targetId
+                ? 'Bạn có chắc chắn muốn hủy liên kết trang này khỏi thương hiệu? Hành động này sẽ dừng mọi hoạt động đăng bài.'
+                : 'Thoát khỏi mạng lưới tài khoản? Tất cả các trang và chiến dịch liên kết sẽ bị dừng hoạt động ngay lập tức.'
               }
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex-col-reverse sm:flex-row gap-2">
-            <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="mt-12 grid grid-cols-2 gap-4">
+            <AlertDialogCancel className="rounded-xl h-12 font-black uppercase tracking-widest text-[10px] bg-slate-50 border-none">Hủy bỏ</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (deleteDialogOpen?.targetId) {
@@ -358,9 +255,9 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
                   handleDeleteAccount(deleteDialogOpen.accountId)
                 }
               }}
-              className="w-full sm:w-auto bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-rose-500 text-white hover:bg-rose-600 rounded-xl h-12 font-black uppercase tracking-widest text-[10px] border-none shadow-lg shadow-rose-100"
             >
-              {deleteDialogOpen?.targetId ? 'Unlink Page' : 'Unlink Account'}
+              {deleteDialogOpen?.targetId ? 'Xác nhận hủy' : 'Xác nhận gỡ'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

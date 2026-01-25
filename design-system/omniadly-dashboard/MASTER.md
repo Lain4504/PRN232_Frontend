@@ -7,8 +7,8 @@
 ---
 
 **Project:** omniadly Dashboard
-**Generated:** 2026-01-25 23:51:47
-**Category:** Luxury/Premium Brand
+**Generated:** 2026-01-26 00:00:52
+**Category:** Marketing Agency
 
 ---
 
@@ -18,13 +18,13 @@
 
 | Role | Hex | CSS Variable |
 |------|-----|--------------|
-| Primary | `#1C1917` | `--color-primary` |
-| Secondary | `#44403C` | `--color-secondary` |
-| CTA/Accent | `#CA8A04` | `--color-cta` |
-| Background | `#FAFAF9` | `--color-background` |
-| Text | `#0C0A09` | `--color-text` |
+| Primary | `#EC4899` | `--color-primary` |
+| Secondary | `#F472B6` | `--color-secondary` |
+| CTA/Accent | `#06B6D4` | `--color-cta` |
+| Background | `#FDF2F8` | `--color-background` |
+| Text | `#831843` | `--color-text` |
 
-**Color Notes:** Premium black + gold accent
+**Color Notes:** Bold pink + creative cyan
 
 ### Typography
 
@@ -68,7 +68,7 @@
 ```css
 /* Primary Button */
 .btn-primary {
-  background: #CA8A04;
+  background: #06B6D4;
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -85,8 +85,8 @@
 /* Secondary Button */
 .btn-secondary {
   background: transparent;
-  color: #1C1917;
-  border: 2px solid #1C1917;
+  color: #EC4899;
+  border: 2px solid #EC4899;
   padding: 12px 24px;
   border-radius: 8px;
   font-weight: 600;
@@ -99,7 +99,7 @@
 
 ```css
 .card {
-  background: #FAFAF9;
+  background: #FDF2F8;
   border-radius: 12px;
   padding: 24px;
   box-shadow: var(--shadow-md);
@@ -125,9 +125,9 @@
 }
 
 .input:focus {
-  border-color: #1C1917;
+  border-color: #EC4899;
   outline: none;
-  box-shadow: 0 0 0 3px #1C191720;
+  box-shadow: 0 0 0 3px #EC489920;
 }
 ```
 
@@ -153,13 +153,13 @@
 
 ## Style Guidelines
 
-**Style:** Liquid Glass
+**Style:** Motion-Driven
 
-**Keywords:** Flowing glass, morphing, smooth transitions, fluid effects, translucent, animated blur, iridescent, chromatic aberration
+**Keywords:** Animation-heavy, microinteractions, smooth transitions, scroll effects, parallax, entrance anim, page transitions
 
-**Best For:** Premium SaaS, high-end e-commerce, creative platforms, branding experiences, luxury portfolios
+**Best For:** Portfolio sites, storytelling platforms, interactive experiences, entertainment apps, creative, SaaS
 
-**Key Effects:** Morphing elements (SVG/CSS), fluid animations (400-600ms curves), dynamic blur (backdrop-filter), color transitions
+**Key Effects:** Scroll anim (Intersection Observer), hover (300-400ms), entrance, parallax (3-5 layers), page transitions
 
 ### Page Pattern
 
@@ -172,8 +172,8 @@
 
 ## Anti-Patterns (Do NOT Use)
 
-- ❌ Cheap visuals
-- ❌ Fast animations
+- ❌ Boring design
+- ❌ Hidden work
 
 ### Additional Forbidden Patterns
 

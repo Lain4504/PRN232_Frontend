@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { useTranslation } from "react-i18next";
+import React, { useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { useTranslation } from "react-i18next"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,7 +15,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/components/ui/alert-dialog"
 import {
   Megaphone,
   Plus,
@@ -30,29 +30,30 @@ import {
   X,
   Sparkles,
   Zap,
-} from "lucide-react";
-import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown";
-import { cn } from "@/lib/utils";
-import { AdCampaignResponse } from "@/lib/types/campaigns";
-import { toast } from "sonner";
-import { useBrands } from "@/hooks/use-brands";
-import { useCampaigns, useDeleteCampaign } from "@/hooks/use-campaigns";
-import { useTeamsByVendor } from "@/hooks/use-teams";
-import { useProfile } from "@/lib/contexts/profile-context";
-import { getActiveTeamId, setActiveTeamId, clearActiveTeamId } from "@/lib/utils/profile-utils";
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { CustomTable } from "@/components/ui/custom-table";
-import { ColumnDef } from "@tanstack/react-table";
-import { getCampaignStatus, getCampaignStatusColor, CAMPAIGN_OBJECTIVES } from "@/lib/types/campaigns";
-import { CampaignModal } from "@/components/campaigns/campaign-modal";
+  ChevronRight,
+  Filter
+} from "lucide-react"
+import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown"
+import { cn } from "@/lib/utils"
+import { AdCampaignResponse } from "@/lib/types/campaigns"
+import { toast } from "sonner"
+import { useBrands } from "@/hooks/use-brands"
+import { useCampaigns, useDeleteCampaign } from "@/hooks/use-campaigns"
+import { useTeamsByVendor } from "@/hooks/use-teams"
+import { useProfile } from "@/lib/contexts/profile-context"
+import { getActiveTeamId, setActiveTeamId, clearActiveTeamId } from "@/lib/utils/profile-utils"
+import { CustomTable } from "@/components/ui/custom-table"
+import { ColumnDef } from "@tanstack/react-table"
+import { getCampaignStatus, getCampaignStatusColor, CAMPAIGN_OBJECTIVES } from "@/lib/types/campaigns"
+import { CampaignModal } from "@/components/campaigns/campaign-modal"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { TFunction } from "i18next";
+} from "@/components/ui/select"
+import { TFunction } from "i18next"
 
 const createColumns = (
   t: TFunction,
@@ -66,391 +67,381 @@ const createColumns = (
       accessorKey: "name",
       header: t("campaigns.table.directive"),
       cell: ({ row }) => {
-        const campaign = row.original;
-        const status = getCampaignStatus(campaign);
-        const statusColor = getCampaignStatusColor(status);
+        const campaign = row.original
+        const status = getCampaignStatus(campaign)
+        const statusColor = getCampaignStatusColor(status)
 
         return (
-          <div className="flex items-center gap-5 py-2">
-            <div className="size-14 rounded-2xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-primary shrink-0 shadow-2xl shadow-primary/5 group-hover:scale-110 transition-transform">
+          <div className="flex items-center gap-6 py-4">
+            <div className="size-14 rounded-2xl bg-slate-900 flex items-center justify-center text-white shrink-0 shadow-lg shadow-slate-200 group-hover:scale-110 transition-transform">
               <Megaphone className="size-6" />
             </div>
-            <div>
-              <div className="font-black text-foreground italic text-lg leading-tight uppercase tracking-tight">{row.getValue("name")}</div>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant="secondary" className={cn("text-[9px] font-black uppercase tracking-widest py-0 px-2 rounded-sm", statusColor)}>
+            <div className="space-y-1">
+              <div className="font-black text-slate-900 text-lg leading-tight truncate max-w-[250px]">{row.getValue("name")}</div>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className={cn("text-[9px] font-black uppercase tracking-widest py-0.5 px-2 rounded-lg border-none", statusColor)}>
                   {status}
                 </Badge>
               </div>
             </div>
           </div>
-        );
+        )
       },
     },
     {
       accessorKey: "objective",
       header: t("campaigns.table.strategy"),
       cell: ({ row }) => {
-        const objective = row.getValue("objective") as string;
-        const brandId = row.original.brandId;
-        const brand = brands.find(b => b.id === brandId);
+        const objective = row.getValue("objective") as string
+        const brandId = row.original.brandId
+        const brand = brands.find(b => b.id === brandId)
         return (
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <Target className="size-4 text-primary" />
-              <span className="text-xs font-black italic uppercase tracking-tighter text-foreground">{objective?.replace(/_/g, ' ') || "UNDEFINED"}</span>
+              <Target className="size-3.5 text-slate-400" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">{objective?.replace(/_/g, ' ') || "UNDEFINED"}</span>
             </div>
             {brand && (
-              <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest pl-6">Sector: {brand.name}</div>
+              <div className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Sect: {brand.name}</div>
             )}
           </div>
-        );
+        )
       },
     },
     {
       accessorKey: "budget",
       header: t("campaigns.table.capital"),
       cell: ({ row }) => {
-        const budget = row.getValue("budget") as number;
+        const budget = row.getValue("budget") as number
         return (
-          <div className="space-y-0.5">
-            <div className="text-sm font-black text-foreground italic flex items-center gap-1">
-              <span className="text-primary opacity-50">₫</span>
-              {(budget || 0).toLocaleString('vi-VN')}
+          <div className="space-y-1">
+            <div className="text-sm font-black text-slate-900">
+              ₫{(budget || 0).toLocaleString('vi-VN')}
             </div>
-            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Global Allocation</div>
+            <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest opacity-60">Ngân sách</div>
           </div>
-        );
+        )
       },
     },
     {
       accessorKey: "metrics",
       header: t("campaigns.table.velocity"),
       cell: ({ row }) => {
-        const metrics = row.original.metrics;
-        if (!metrics) return <span className="text-[10px] font-black text-muted-foreground/40 italic uppercase tracking-widest">Awaiting Sync</span>;
+        const metrics = row.original.metrics
+        if (!metrics) return <span className="text-[10px] font-black text-slate-200 uppercase tracking-widest">Chờ đồng bộ</span>
 
         return (
-          <div className="space-y-3 min-w-[180px]">
-            <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em]">
-              <span className="text-muted-foreground/60">{t("campaigns.metrics")}</span>
-              <span className="text-primary italic">{metrics.ctr?.toFixed(2) || 0}% CTR</span>
+          <div className="space-y-3 min-w-[200px]">
+            <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-[0.2em]">
+              <span className="text-slate-400">Tỉ lệ nhấp (CTR)</span>
+              <span className="text-slate-900">{metrics.ctr?.toFixed(2) || 0}%</span>
             </div>
-            <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden shadow-inner border border-foreground/5">
+            <div className="h-1 w-full bg-slate-50 rounded-full overflow-hidden shadow-inner">
               <div
-                className="bg-primary h-full rounded-full transition-all duration-1000 shadow-lg shadow-primary/30"
+                className="bg-slate-900 h-full rounded-full transition-all duration-1000 shadow-sm"
                 style={{ width: `${Math.min((metrics.ctr || 0) * 15, 100)}%` }}
               />
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 text-[10px] font-black italic">
-                <Eye className="size-3 text-muted-foreground" />
-                {(metrics.totalImpressions || 0).toLocaleString()}
-              </div>
-              <div className="flex items-center gap-1.5 text-[10px] font-black italic text-primary">
-                <TrendingUp className="size-3" />
-                {(metrics.totalClicks || 0).toLocaleString()}
+              <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400">
+                <Eye className="size-3" />
+                {(metrics.totalImpressions || 0).toLocaleString()} hiển thị
               </div>
             </div>
           </div>
-        );
+        )
       },
     },
     {
       id: "actions",
-      header: () => <div className="text-right uppercase tracking-[0.2em] text-[10px]">{t("campaigns.table.operations")}</div>,
+      header: () => <div className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Thao tác</div>,
       cell: ({ row }) => {
         const actions: ActionItem[] = [
           {
-            label: t("campaigns.viewAnalytics"),
+            label: "Chi tiết",
             icon: <Eye className="size-4" />,
-            onClick: () => window.open(`${basePath}/${row.original.id}`, '_self'),
+            onClick: () => window.location.href = `${basePath}/${row.original.id}`,
           },
           {
-            label: t("campaigns.edit"),
+            label: "Chỉnh sửa",
             icon: <Edit className="size-4" />,
             onClick: () => handleEditCampaign(row.original),
           },
           {
-            label: t("campaigns.delete"),
+            label: "Xóa bỏ",
             icon: <Trash2 className="size-4" />,
             onClick: () => handleDeleteCampaign(row.original.id),
             variant: "destructive",
             disabled: isDeleting,
           },
-        ];
+        ]
 
         return (
-          <div className="flex justify-end pr-4">
+          <div className="flex justify-end">
             <ActionsDropdown actions={actions} disabled={isDeleting} />
           </div>
-        );
+        )
       },
     },
-  ];
+  ]
 
 interface CampaignsManagementProps {
-  basePath?: string;
+  basePath?: string
 }
 
 export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: CampaignsManagementProps = {}) {
-  const { t } = useTranslation("common");
-  const { activeProfileId } = useProfile();
-  const [selectedTeamId, setSelectedTeamId] = useState<string>(() => getActiveTeamId() || "all");
+  const { t } = useTranslation("common")
+  const { activeProfileId } = useProfile()
+  const [selectedTeamId, setSelectedTeamId] = useState<string>(() => getActiveTeamId() || "all")
 
-  // Sync selectedTeamId to localStorage
   React.useEffect(() => {
     if (selectedTeamId === "all") {
-      clearActiveTeamId();
+      clearActiveTeamId()
     } else {
-      setActiveTeamId(selectedTeamId);
+      setActiveTeamId(selectedTeamId)
     }
-  }, [selectedTeamId]);
+  }, [selectedTeamId])
 
-  const { data: teams = [] } = useTeamsByVendor(activeProfileId || undefined);
-  const { data: brands = [] } = useBrands({ teamId: selectedTeamId === "all" ? undefined : selectedTeamId });
+  const { data: teams = [] } = useTeamsByVendor(activeProfileId || undefined)
+  const { data: brands = [] } = useBrands({ teamId: selectedTeamId === "all" ? undefined : selectedTeamId })
   const { data: campaignsData, isLoading: loading, refetch: refetchCampaigns } = useCampaigns({
     teamId: selectedTeamId === "all" ? undefined : selectedTeamId
-  });
-  const deleteCampaignMutation = useDeleteCampaign();
+  })
+  const deleteCampaignMutation = useDeleteCampaign()
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [objectiveFilter, setObjectiveFilter] = useState("all");
-  const [brandFilter, setBrandFilter] = useState("all");
-  const [editingCampaign, setEditingCampaign] = useState<AdCampaignResponse | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [deleteCampaignId, setDeleteCampaignId] = useState<string | null>(null);
-  const [pageSize, setPageSize] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [objectiveFilter, setObjectiveFilter] = useState("all")
+  const [editingCampaign, setEditingCampaign] = useState<AdCampaignResponse | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [deleteCampaignId, setDeleteCampaignId] = useState<string | null>(null)
 
-  const campaigns = campaignsData?.data || [];
-  const safeBrands = Array.isArray(brands) ? brands : [];
+  const campaigns = campaignsData?.data || []
+  const safeBrands = Array.isArray(brands) ? brands : []
 
   const filteredCampaigns = campaigns.filter(campaign => {
-    const campaignStatus = getCampaignStatus(campaign);
+    const campaignStatus = getCampaignStatus(campaign)
     return (
       (!searchTerm || campaign.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (statusFilter === "all" || campaignStatus === statusFilter) &&
-      (objectiveFilter === "all" || campaign.objective === objectiveFilter) &&
-      (brandFilter === "all" || campaign.brandId === brandFilter)
-    );
-  });
+      (objectiveFilter === "all" || campaign.objective === objectiveFilter)
+    )
+  })
 
   const confirmDeleteCampaign = async () => {
-    if (!deleteCampaignId) return;
+    if (!deleteCampaignId) return
     try {
-      await deleteCampaignMutation.mutateAsync(deleteCampaignId);
-      toast.success(t("notifications.campaignEjected"));
-      setDeleteCampaignId(null);
+      await deleteCampaignMutation.mutateAsync(deleteCampaignId)
+      toast.success("Đã xóa chiến dịch thành công")
+      setDeleteCampaignId(null)
     } catch (error) {
-      toast.error(t("notifications.ejectionAborted"));
+      toast.error("Lỗi khi xóa chiến dịch")
     }
-  };
+  }
 
   const handleEditCampaign = (campaign: AdCampaignResponse) => {
-    setEditingCampaign(campaign);
-    setIsEditModalOpen(true);
-  };
+    setEditingCampaign(campaign)
+    setIsEditModalOpen(true)
+  }
 
   if (loading) return (
-    <div className="max-w-7xl mx-auto px-6 py-10 space-y-12 animate-pulse">
-      <div className="h-8 w-64 bg-muted rounded-xl" />
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {[1, 2, 3, 4].map(i => <div key={i} className="h-40 bg-muted rounded-2xl" />)}
+    <div className="space-y-12 animate-pulse">
+      <div className="h-12 w-64 bg-slate-50 rounded-xl" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        {[1, 2, 3, 4].map(i => <div key={i} className="h-40 bg-slate-50 rounded-[2rem] border border-slate-100" />)}
       </div>
-      <div className="h-[600px] bg-muted rounded-3xl" />
+      <div className="h-[600px] w-full bg-slate-50 rounded-[2.5rem] border border-slate-100" />
     </div>
-  );
+  )
 
-  const totalBudget = campaigns.reduce((sum, c) => sum + (c.budget || 0), 0);
-  const activeCount = campaigns.filter(c => getCampaignStatus(c) === 'active').length;
+  const totalBudget = campaigns.reduce((sum, c) => sum + (c.budget || 0), 0)
+  const activeCount = campaigns.filter(c => getCampaignStatus(c) === 'active').length
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10 space-y-12 font-fira-sans mb-20 animate-in fade-in duration-700">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+    <div className="space-y-12 pb-20 font-sans">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-100 pb-12">
         <div className="space-y-4">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem><BreadcrumbLink href="/dashboard" className="text-[10px] font-black uppercase">{t("dashboard.title")}</BreadcrumbLink></BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem><BreadcrumbPage className="text-[10px] font-black uppercase text-primary">{t("campaigns.title")}</BreadcrumbPage></BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <div className="space-y-1">
-            <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase italic leading-none">
-              {t("campaigns.title")}
-            </h1>
-            <p className="text-lg text-muted-foreground font-medium max-w-2xl leading-relaxed italic border-l-4 border-primary pl-6">
-              {t("campaigns.description")}
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400">
+              <Megaphone className="size-4" />
+            </div>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Hành lang chiến lược</span>
           </div>
+          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-none">
+            {t("campaigns.title")}
+          </h1>
+          <p className="text-lg text-slate-500 font-medium max-w-xl leading-relaxed">
+            Quản lý và theo dõi hiệu suất toàn bộ chiến dịch marketing đa kênh của bạn.
+          </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <CampaignModal mode="create" onSuccess={refetchCampaigns}>
-            <Button size="lg" className="rounded-xl h-16 px-10 font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary">
-              <Plus className="mr-3 size-6" />
-              {t("campaigns.createCampaign")}
-            </Button>
-          </CampaignModal>
-        </div>
+        <CampaignModal mode="create" onSuccess={refetchCampaigns}>
+          <Button className="h-14 px-8 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 transition-all hover:-translate-y-1">
+            <Plus className="mr-3 h-4 w-4" />
+            {t("campaigns.createCampaign")}
+          </Button>
+        </CampaignModal>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Highlights Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {[
-          { label: t("campaigns.stats.active"), value: activeCount, icon: TrendingUp, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-          { label: t("campaigns.stats.budget"), value: `₫${totalBudget.toLocaleString('vi-VN')}`, icon: DollarSign, color: "text-primary", bg: "bg-primary/10" },
-          { label: t("campaigns.stats.count"), value: campaigns.length, icon: Megaphone, color: "text-blue-500", bg: "bg-blue-500/10" },
-          { label: t("campaigns.stats.efficiency"), value: "92/100", icon: Sparkles, color: "text-amber-500", bg: "bg-amber-500/10" },
+          { label: t("campaigns.stats.active"), value: activeCount, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
+          { label: "Tổng ngân sách", value: `₫${totalBudget.toLocaleString('vi-VN')}`, icon: DollarSign, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "Số lượng chiến dịch", value: campaigns.length, icon: Target, color: "text-slate-900", bg: "bg-slate-100" },
+          { label: "Hiệu số AI", value: "92/100", icon: Sparkles, color: "text-purple-600", bg: "bg-purple-50" },
         ].map((stat, i) => (
-          <Card key={i} className="rounded-2xl border-2 bg-card/40 p-8 shadow-sm group hover:border-primary/50 transition-all cursor-pointer">
-            <div className="flex items-center justify-between mb-6">
-              <div className={cn("size-12 rounded-2xl flex items-center justify-center shadow-inner", stat.bg, stat.color)}>
-                <stat.icon className="size-6 transition-transform group-hover:rotate-12" />
+          <Card key={i} className="rounded-[2rem] border border-slate-100 bg-white p-8 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 group cursor-pointer hover:-translate-y-1">
+            <div className="flex items-center justify-between mb-8">
+              <div className={cn("size-12 rounded-2xl flex items-center justify-center shadow-sm border border-white ring-4 ring-slate-50", stat.bg, stat.color)}>
+                <stat.icon className="size-5 transition-transform group-hover:rotate-12" />
               </div>
-              <Badge variant="outline" className="text-[9px] font-black uppercase border-none bg-muted/5 p-1 px-2 italic tracking-widest">Realtime Stats</Badge>
+              <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest text-slate-300 border-slate-100 p-1 px-2">Thời gian thực</Badge>
             </div>
             <div className="space-y-1">
-              <p className="text-3xl font-black text-foreground italic tracking-tight">{stat.value}</p>
-              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{stat.label}</p>
+              <p className="text-3xl font-black text-slate-900 tracking-tight">{stat.value}</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{stat.label}</p>
             </div>
           </Card>
         ))}
       </div>
 
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-6 p-6 rounded-2xl border-2 bg-muted/10 backdrop-blur-md">
-        <div className="relative w-full lg:w-[400px] group">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+      {/* Control Bar */}
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div className="relative flex-1 group w-full lg:max-w-[400px]">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
           <Input
             placeholder={t("campaigns.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-14 h-14 bg-background/50 border-none shadow-inner rounded-2xl font-black italic text-xs uppercase tracking-widest"
+            className="pl-12 h-12 bg-white border-slate-100 rounded-2xl shadow-sm focus-visible:ring-slate-100 font-medium transition-all"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
-          <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
-            <SelectTrigger className="h-14 w-[180px] rounded-2xl border-none shadow-inner bg-background/50 font-black uppercase text-[10px] tracking-widest px-6">
-              <SelectValue placeholder="All Workspaces" />
-            </SelectTrigger>
-            <SelectContent className="rounded-2xl border-2">
-              <SelectItem value="all" className="font-bold text-[10px] uppercase font-fira-sans">GLOBAL SCOPE</SelectItem>
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-              {teams.map((team: any) => (
-                <SelectItem key={team.id} value={team.id} className="font-bold text-[10px] uppercase font-fira-sans">
-                  {team.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2 bg-white p-1 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="size-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+              <Target className="size-3.5" />
+            </div>
+            <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
+              <SelectTrigger className="w-[160px] border-none focus:ring-0 font-bold text-xs uppercase tracking-widest h-8">
+                <SelectValue placeholder="Scope" />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1">
+                <SelectItem value="all" className="rounded-xl">Toàn bộ hồ sơ</SelectItem>
+                {teams.map(team => (
+                  <SelectItem key={team.id} value={team.id} className="rounded-xl">
+                    {team.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="h-14 w-[160px] rounded-2xl border-none shadow-inner bg-background/50 font-black uppercase text-[10px] tracking-widest px-6">
-              <SelectValue placeholder={t("campaigns.filterStatus")} />
-            </SelectTrigger>
-            <SelectContent className="rounded-2xl border-2">
-              <SelectItem value="all" className="font-bold text-[10px] uppercase font-fira-sans">{t("campaigns.allStatuses")}</SelectItem>
-              <SelectItem value="active" className="font-bold text-[10px] uppercase font-fira-sans">{t("campaigns.active")}</SelectItem>
-              <SelectItem value="paused" className="font-bold text-[10px] uppercase font-fira-sans">{t("campaigns.paused")}</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2 bg-white p-1 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="size-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+              <Filter className="size-3.5" />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[140px] border-none focus:ring-0 font-bold text-xs uppercase tracking-widest h-8">
+                <SelectValue placeholder="Trạng thái" />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1">
+                <SelectItem value="all" className="rounded-xl">Tất cả</SelectItem>
+                <SelectItem value="active" className="rounded-xl">Đang chạy</SelectItem>
+                <SelectItem value="paused" className="rounded-xl">Tạm dừng</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-          <Select value={objectiveFilter} onValueChange={setObjectiveFilter}>
-            <SelectTrigger className="h-14 w-[180px] rounded-2xl border-none shadow-inner bg-background/50 font-black uppercase text-[10px] tracking-widest px-6">
-              <SelectValue placeholder={t("campaigns.filterObjective")} />
-            </SelectTrigger>
-            <SelectContent className="rounded-2xl border-2 max-h-[400px]">
-              <SelectItem value="all" className="font-bold text-[10px] uppercase font-fira-sans">{t("campaigns.allStrategies")}</SelectItem>
-              {CAMPAIGN_OBJECTIVES.map(obj => (
-                <SelectItem key={obj} value={obj} className="font-bold text-[10px] uppercase font-fira-sans">{obj.replace(/_/g, ' ')}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {(searchTerm || statusFilter !== "all" || objectiveFilter !== "all") && (
-            <Button variant="ghost" className="h-14 px-8 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-destructive/10 hover:text-destructive" onClick={() => {
-              setSearchTerm("");
-              setStatusFilter("all");
-              setObjectiveFilter("all");
+          {(searchTerm || statusFilter !== "all") && (
+            <Button variant="ghost" className="h-10 px-4 rounded-xl font-bold text-xs text-rose-500 hover:bg-rose-50" onClick={() => {
+              setSearchTerm("")
+              setStatusFilter("all")
             }}>
-              <X className="mr-3 size-4" /> {t("campaigns.resetFilters")}
+              <X className="mr-2 size-4" /> Đặt lại
             </Button>
           )}
         </div>
       </div>
 
+      {/* Campaigns Table */}
       {filteredCampaigns.length > 0 ? (
-        <Card className="rounded-3xl border-2 bg-card/40 overflow-hidden shadow-2xl shadow-foreground/5 relative group">
-          <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 transition-transform duration-1000">
-            <Zap className="size-40 text-primary" />
+        <Card className="rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 group-hover:rotate-0 transition-transform duration-1000">
+            <Zap className="size-40 text-slate-900" />
           </div>
           <CustomTable
             columns={createColumns(t, handleEditCampaign, setDeleteCampaignId, safeBrands, deleteCampaignMutation.isPending, basePath)}
             data={filteredCampaigns}
             pageSize={10}
             className="border-0 shadow-none bg-transparent"
-            headerClassName="bg-muted/30 border-b py-6 px-10 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70"
+            headerClassName="bg-slate-50/50 border-b border-slate-100 py-6 px-10 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400"
           />
         </Card>
       ) : (
-        <div className="flex flex-col items-center justify-center py-40 px-6 text-center border-2 border-dashed rounded-3xl bg-muted/5 font-fira-sans">
-          <div className="size-24 rounded-2xl bg-primary/5 flex items-center justify-center mb-10 text-primary border-2 border-primary/10 shadow-inner">
-            <Megaphone className="size-12" />
+        <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-[3rem] bg-slate-50/50">
+          <div className="size-20 rounded-[2rem] bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
+            <Megaphone className="size-10 text-slate-200" />
           </div>
-          <div className="space-y-4 max-w-md">
-            <h3 className="text-3xl font-black uppercase tracking-tight text-foreground italic underline decoration-primary decoration-4 underline-offset-8">
-              {searchTerm ? t("campaigns.empty.title") : t("campaigns.empty.noDataTitle")}
-            </h3>
-            <p className="text-muted-foreground font-bold leading-relaxed italic opacity-80">
-              {searchTerm
-                ? t("campaigns.empty.description")
-                : t("campaigns.empty.noDataDescription")
-              }
-            </p>
-          </div>
+          <h3 className="text-2xl font-black text-slate-900 mb-3 uppercase tracking-widest">
+            {searchTerm ? "Không tìm thấy chiến dịch" : "Chưa có chiến dịch nào"}
+          </h3>
+          <p className="text-slate-500 font-medium max-w-sm mb-10 leading-relaxed uppercase tracking-tighter text-xs">
+            {searchTerm ? "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm của bạn." : "Hãy khởi tạo chiến dịch quảng cáo đầu tiên để bắt đầu hành trình tiếp cận khách hàng."}
+          </p>
+          {!searchTerm && (
+            <CampaignModal mode="create" onSuccess={refetchCampaigns}>
+              <Button className="h-14 px-10 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-slate-200 transition-all hover:-translate-y-1">
+                <Plus className="mr-3 h-5 w-5" />
+                Triển khai chiến dịch
+              </Button>
+            </CampaignModal>
+          )}
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-20">
+      {/* Logic Insights Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         {[
-          { title: "Smart Synthetic Monitoring", desc: "Neural engines are monitoring all clusters. CTR above 2.8% detected in Sector Alpha warrants a budget scaling maneuver.", icon: Sparkles, color: "text-amber-500", bg: "bg-amber-500/10" },
-          { title: "Velocity Optimization", desc: "Current throughput indicates peak engagement during the 19:00 corridor. Align scheduled posts for maximum saturation.", icon: Target, color: "text-blue-500", bg: "bg-blue-500/10" },
+          { title: "Mô phỏng hiệu suất AI", desc: "Hệ thống đang giám sát toàn bộ các luồng dữ liệu. Chỉ số CTR trên 2.8% được phát hiện tại một số phân khúc khách hàng tiềm năng.", icon: Sparkles, color: "text-amber-600", bg: "bg-amber-50" },
+          { title: "Tối ưu hóa thời gian đăng", desc: "Dữ liệu mới cho thấy sự tương tác đạt đỉnh vào lúc 19:00 chiều. Hãy căn chỉnh các bài đăng quảng cáo để đạt độ phủ tối đa.", icon: Clock, color: "text-blue-600", bg: "bg-blue-50" },
         ].map((insight, i) => (
-          <Card key={i} className="p-10 rounded-3xl border-2 bg-card/40 flex items-start gap-8 shadow-xl shadow-foreground/5 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:scale-125 transition-transform duration-1000">
-              <insight.icon className="size-32" />
-            </div>
-            <div className={cn("size-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg relative z-10", insight.bg, insight.color)}>
+          <Card key={i} className="p-10 rounded-[2.5rem] border border-slate-100 bg-white shadow-sm flex items-start gap-8 group hover:-translate-y-1 transition-all">
+            <div className={cn("size-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-white ring-4 ring-slate-50", insight.bg, insight.color)}>
               <insight.icon className="size-7" />
             </div>
-            <div className="space-y-3 relative z-10">
-              <h4 className="text-xl font-black text-foreground tracking-tight italic uppercase">{insight.title}</h4>
-              <p className="text-sm font-bold text-muted-foreground/80 leading-relaxed italic">{insight.desc}</p>
+            <div className="space-y-3">
+              <h4 className="text-xl font-black text-slate-900 tracking-tight uppercase leading-none">{insight.title}</h4>
+              <p className="text-sm font-medium text-slate-500 leading-relaxed">{insight.desc}</p>
+              <Button variant="ghost" className="p-0 text-slate-900 font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-2 hover:bg-transparent hover:text-slate-400">
+                Tìm hiểu thêm <ChevronRight className="size-4 transition-transform group-hover:translate-x-1" />
+              </Button>
             </div>
           </Card>
         ))}
       </div>
 
       <AlertDialog open={!!deleteCampaignId} onOpenChange={() => setDeleteCampaignId(null)}>
-        <AlertDialogContent className="rounded-3xl border-2 bg-background/95 backdrop-blur-2xl p-10 max-w-md font-fira-sans border-destructive/20 shadow-2xl shadow-destructive/10">
+        <AlertDialogContent className="rounded-[2.5rem] border-slate-100 p-10 max-w-md shadow-2xl">
           <AlertDialogHeader className="space-y-6">
-            <div className="size-20 rounded-3xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto border border-destructive/20 shadow-inner">
+            <div className="size-20 rounded-3xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto border border-rose-100 shadow-sm">
               <AlertTriangle className="size-10" />
             </div>
-            <AlertDialogTitle className="text-3xl font-black tracking-tight text-center uppercase italic">{t("campaigns.deleteDialog.title")}</AlertDialogTitle>
-            <AlertDialogDescription className="text-base font-bold text-muted-foreground/80 leading-relaxed text-center italic mt-2">
-              {t("campaigns.deleteDialog.description")}
+            <AlertDialogTitle className="text-3xl font-black tracking-tight text-center uppercase text-slate-900">Xóa chiến dịch?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm font-medium text-slate-500 leading-relaxed text-center italic mt-2">
+              Tất cả dữ liệu và hoạt động liên quan đến chiến dịch này sẽ bị loại bỏ khỏi hệ thống. Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-12 grid grid-cols-2 gap-6">
-            <AlertDialogCancel className="rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] border-2">{t("campaigns.deleteDialog.cancel")}</AlertDialogCancel>
+          <AlertDialogFooter className="mt-12 grid grid-cols-2 gap-4">
+            <AlertDialogCancel className="rounded-xl h-12 font-black uppercase tracking-widest text-[10px] bg-slate-50 border-none">{t("campaigns.deleteDialog.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteCampaign}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] border-none shadow-2xl shadow-destructive/30"
+              className="bg-rose-500 text-white hover:bg-rose-600 rounded-xl h-12 font-black uppercase tracking-widest text-[10px] border-none shadow-lg shadow-rose-100"
               disabled={deleteCampaignMutation.isPending}
             >
-              {deleteCampaignMutation.isPending ? '...' : t("campaigns.deleteDialog.confirm")}
+              Xác nhận xóa
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -458,5 +449,5 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
 
       <CampaignModal mode="edit" campaign={editingCampaign || undefined} open={isEditModalOpen} onOpenChange={setIsEditModalOpen} onSuccess={refetchCampaigns} />
     </div>
-  );
+  )
 }

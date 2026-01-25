@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -44,10 +44,11 @@ import { Button } from '@/components/ui/button'
 import { useUpdateTeam } from '@/hooks/use-teams'
 import { toast } from 'sonner'
 import { TeamResponse, UpdateTeamRequest } from '@/lib/types/omniadly-types'
+import { Edit3, CheckCircle2, X, ChevronRight, Settings2 } from 'lucide-react'
 
 const editTeamSchema = z.object({
-  name: z.string().min(1, 'Team name is required').max(100, 'Team name must be less than 100 characters'),
-  description: z.string().max(500, 'Description must be less than 500 characters').optional(),
+  name: z.string().min(1, 'Tên nhóm là bắt buộc').max(100, 'Tên nhóm không quá 100 ký tự'),
+  description: z.string().max(500, 'Mô tả không quá 500 ký tự').optional(),
   status: z.enum(['Active', 'Inactive', 'Archived']).optional(),
 })
 
@@ -85,36 +86,31 @@ function EditTeamForm({ team, onSuccess, onCancel, isSubmitting, className }: Ed
         description: data.description || undefined,
         status: data.status,
       }
-
       await updateTeam.mutateAsync(updateData)
-      
-      toast.success('Team updated successfully!', {
-        description: 'The team information has been updated.',
-        duration: 3000,
-      })
-      
+      toast.success('Đã cập nhật cấu trúc đội ngũ!')
       onSuccess()
     } catch (error) {
-      toast.error('Failed to update team', {
-        description: error instanceof Error ? error.message : 'Please try again later.',
-        duration: 4000,
-      })
+      toast.error('Lỗi khi cập nhật thông tin')
     }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className={cn("space-y-4", className)}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className={cn("space-y-8", className)}>
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Team Name</FormLabel>
+            <FormItem className="space-y-3">
+              <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Định danh Đội ngũ</FormLabel>
               <FormControl>
-                <Input placeholder="Enter team name" {...field} />
+                <Input
+                  placeholder="Nhập tên mới cho đội ngũ..."
+                  className="h-14 rounded-2xl border-2 border-slate-100 bg-white px-6 focus-visible:ring-slate-100 font-black text-slate-900 uppercase tracking-tight shadow-sm"
+                  {...field}
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-[10px] font-bold uppercase" />
             </FormItem>
           )}
         />
@@ -123,17 +119,17 @@ function EditTeamForm({ team, onSuccess, onCancel, isSubmitting, className }: Ed
           control={form.control}
           name="description"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
+            <FormItem className="space-y-3">
+              <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Sứ mệnh vận hành</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter team description"
-                  className="resize-none"
-                  rows={3}
+                  placeholder="Mô tả mục tiêu chiến lược của nhóm..."
+                  className="rounded-[1.5rem] border-2 border-slate-100 bg-white p-6 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm"
+                  rows={4}
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-[10px] font-bold uppercase" />
             </FormItem>
           )}
         />
@@ -142,37 +138,46 @@ function EditTeamForm({ team, onSuccess, onCancel, isSubmitting, className }: Ed
           control={form.control}
           name="status"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Status</FormLabel>
+            <FormItem className="space-y-3">
+              <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Trạng thái Hệ thống</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
+                  <SelectTrigger className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 px-6 focus:ring-0 shadow-sm font-black text-slate-900 uppercase tracking-tight">
+                    <SelectValue placeholder="Chọn trạng thái..." />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Inactive">Inactive</SelectItem>
-                  <SelectItem value="Archived">Archived</SelectItem>
+                <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1">
+                  <SelectItem value="Active" className="rounded-xl font-black text-[10px] uppercase tracking-widest text-emerald-600 focus:bg-emerald-50 h-11">Hoạt động (Active)</SelectItem>
+                  <SelectItem value="Inactive" className="rounded-xl font-black text-[10px] uppercase tracking-widest text-slate-400 focus:bg-slate-100 h-11">Tạm dừng (Inactive)</SelectItem>
+                  <SelectItem value="Archived" className="rounded-xl font-black text-[10px] uppercase tracking-widest text-rose-500 focus:bg-rose-50 h-11">Lưu trữ (Archived)</SelectItem>
                 </SelectContent>
               </Select>
-              <FormMessage />
+              <FormMessage className="text-[10px] font-bold uppercase" />
             </FormItem>
           )}
         />
 
-        <div className="space-y-2 pt-4">
+        <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6">
           <Button
             type="button"
             variant="outline"
             onClick={onCancel}
             disabled={isSubmitting}
-            className="w-full"
+            className="h-14 rounded-2xl border-slate-100 bg-slate-50 text-slate-400 hover:bg-slate-100 font-black uppercase tracking-widest text-[10px] order-2 sm:order-1 flex-1 sm:flex-none sm:px-10"
           >
-            Cancel
+            Hủy bỏ
           </Button>
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? 'Updating...' : 'Update Team'}
+          <Button type="submit" disabled={isSubmitting} className="h-14 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 transition-all hover:-translate-y-1 order-1 sm:order-2 flex-1 sm:flex-none sm:px-10">
+            {isSubmitting ? (
+              <>
+                <div className="mr-3 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                Đang lưu...
+              </>
+            ) : (
+              <>
+                Cập nhật Cấu trúc <ChevronRight className="ml-2 size-4" />
+              </>
+            )}
           </Button>
         </div>
       </form>
@@ -194,23 +199,25 @@ export function EditTeamDialog({ open, onOpenChange, team }: EditTeamDialogProps
     onOpenChange(false)
   }
 
-
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Edit Team</DialogTitle>
-            <DialogDescription>
-              Update the team information. You can modify the name, description, and status.
-            </DialogDescription>
+        <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden flex flex-col rounded-[3rem] border-none p-0 shadow-2xl bg-white">
+          <DialogHeader className="flex-shrink-0 p-12 pb-8 text-left">
+            <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-8 border border-slate-200 shadow-sm">
+              <Settings2 className="size-8" />
+            </div>
+            <DialogTitle className="text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">Cấu hình Nhóm</DialogTitle>
+            <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic">Hiệu chỉnh các tham số vận hành của đội ngũ chuyên gia.</DialogDescription>
           </DialogHeader>
-          <EditTeamForm
-            team={team}
-            onSuccess={handleSuccess}
-            onCancel={handleCancel}
-            isSubmitting={isSubmitting}
-          />
+          <div className="overflow-y-auto flex-1 px-12 pb-12">
+            <EditTeamForm
+              team={team}
+              onSuccess={handleSuccess}
+              onCancel={handleCancel}
+              isSubmitting={isSubmitting}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     )
@@ -218,19 +225,20 @@ export function EditTeamDialog({ open, onOpenChange, team }: EditTeamDialogProps
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
-        <DrawerHeader className="text-left">
-          <DrawerTitle>Edit Team</DrawerTitle>
-          <DrawerDescription>
-            Update the team information. You can modify the name, description, and status.
-          </DrawerDescription>
+      <DrawerContent className="max-h-[90vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white">
+        <DrawerHeader className="flex-shrink-0 text-left p-10 pb-4">
+          <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200">
+            <Settings2 className="size-6" />
+          </div>
+          <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">Cấu hình Nhóm</DrawerTitle>
+          <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">Cập nhật thông tin nhận diện đội ngũ.</DrawerDescription>
         </DrawerHeader>
         <EditTeamForm
           team={team}
           onSuccess={handleSuccess}
           onCancel={handleCancel}
           isSubmitting={isSubmitting}
-          className="px-4"
+          className="px-10 pb-10"
         />
       </DrawerContent>
     </Drawer>
