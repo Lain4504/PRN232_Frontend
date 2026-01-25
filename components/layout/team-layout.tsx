@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React from "react"
 import { useAuth } from "@/lib/contexts/auth-context"
 import { TeamSidebar } from "@/components/layout/team-sidebar"
 import { TeamHeader } from "@/components/layout/team-header"
 import { useTeam } from "@/lib/contexts/team-context"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 
 // Main layout component for team workspace
 interface TeamLayoutProps {
@@ -13,86 +14,56 @@ interface TeamLayoutProps {
 
 export default function TeamLayout({ children }: TeamLayoutProps) {
   const { user } = useAuth()
-  const [sidebarMode, setSidebarMode] = useState<"expanded" | "collapsed" | "hover">("hover")
   const { activeTeam, activeTeamId, isLoading: teamLoading } = useTeam()
 
-  useEffect(() => {
-    // init sidebar mode
-    const stored = typeof window !== 'undefined' ? (localStorage.getItem('sidebarMode') as 'expanded' | 'collapsed' | 'hover' | null) : null
-    if (stored === 'expanded' || stored === 'collapsed' || stored === 'hover') {
-      setSidebarMode(stored)
-    }
-    const onModeChange = (e: CustomEvent<'expanded' | 'collapsed' | 'hover'>) => {
-      const mode = e.detail
-      if (mode === 'expanded' || mode === 'collapsed' || mode === 'hover') setSidebarMode(mode)
-    }
-    window.addEventListener('sidebar-mode-change', onModeChange as unknown as EventListener)
-
-    return () => {
-      window.removeEventListener('sidebar-mode-change', onModeChange as unknown as EventListener)
-    }
-  }, [])
-
   // Show loading while team context is loading or if we have an activeTeamId but not activeTeam yet
-  // Only show loading if we have an activeTeamId (meaning we're trying to load a specific team)
-  // If we don't have activeTeamId, the parent layout will handle redirect
   if (teamLoading || (activeTeamId && !activeTeam)) {
     return (
-      <div className="h-screen w-full overflow-hidden flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading team workspace...</p>
+      <div className="h-screen w-full overflow-hidden flex items-center justify-center bg-background font-fira-sans">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto"></div>
+          <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Authenticating Team Protocol...</p>
         </div>
       </div>
     )
   }
 
   // If no active team but we have activeTeamId, something went wrong
-  // Return null and let the parent layout handle the redirect
   if (!activeTeam && activeTeamId) {
     return null
   }
 
-  // If no active team and no activeTeamId, show error (only show if we're sure we're not loading)
-  // This should rarely happen as the parent layout should redirect, but handle it just in case
+  // If no active team and no activeTeamId, show error
   if (!activeTeam && !activeTeamId) {
     return (
-      <div className="h-screen w-full overflow-hidden flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-destructive mb-4">No team selected</div>
-          <p className="text-muted-foreground">Please select a team to continue.</p>
+      <div className="h-screen w-full overflow-hidden flex items-center justify-center bg-background font-fira-sans">
+        <div className="text-center space-y-4">
+          <div className="text-destructive font-black text-xl uppercase tracking-tighter">Access Denied</div>
+          <p className="text-muted-foreground font-medium">No active team detected in current session.</p>
         </div>
       </div>
     )
   }
 
-  // At this point, activeTeam must exist (TypeScript doesn't narrow the type automatically)
   if (!activeTeam) {
     return null
   }
 
   return (
-    <div className="h-screen w-full overflow-hidden">
-      <div className="flex h-full w-full max-w-full">
-        {/* Custom Sidebar với hover expand - chỉ hiện trên desktop */}
-        <div className="group relative hidden lg:block">
-          <div className={"fixed left-0 top-12 h-[calc(100vh-3rem)] bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out z-40 overflow-hidden " + (sidebarMode === 'expanded' ? 'w-64' : sidebarMode === 'collapsed' ? 'w-12' : 'w-12 hover:w-64')}>
-            <TeamSidebar />
-          </div>
-        </div>
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex min-h-screen w-full bg-background font-fira-sans selection:bg-primary/30 selection:text-primary-foreground">
+        {/* Global Background Gradient */}
+        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background pointer-events-none -z-10" />
 
-        {/* Main Content Area */}
-        <div className={"flex flex-col flex-1 pt-12 min-h-0 max-w-full overflow-hidden team-content " + (sidebarMode === 'expanded' ? 'lg:ml-64' : 'lg:ml-12')}>
-          <main className="flex-1 overflow-x-hidden max-w-full">
+        <TeamSidebar />
+
+        <SidebarInset className="bg-transparent flex flex-col flex-1 min-w-0 transition-all duration-300">
+          <TeamHeader user={user} team={activeTeam} />
+          <main className="flex-1 w-full p-2 lg:p-4 overflow-x-hidden">
             {children}
           </main>
-        </div>
+        </SidebarInset>
       </div>
-
-      {/* Header được đặt ngoài sidebar để trải dài hết màn hình */}
-      <div className="fixed top-0 left-0 right-0 z-50">
-        <TeamHeader user={user} team={activeTeam} />
-      </div>
-    </div>
+    </SidebarProvider>
   )
 }

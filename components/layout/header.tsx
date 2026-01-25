@@ -16,7 +16,8 @@ import {
     Code,
     FileText,
     Sparkles,
-    Layout
+    Layout,
+    ChevronRight,
 } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { UserDropdown } from "@/components/layout/user-dropdown"

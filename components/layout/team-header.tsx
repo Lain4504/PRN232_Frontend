@@ -1,18 +1,17 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React from "react"
 import { AuthUser } from "@/lib/types/auth"
 import { useTeam } from "@/lib/contexts/team-context"
 import { useUser } from "@/hooks/use-user"
 import { useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/api"
-import { Zap, Menu, Building2, ChevronDown } from "lucide-react"
+import { Building2, ChevronDown } from "lucide-react"
 import { SearchCommand } from "@/components/search/search-command"
 import { MobileSearchCommand } from "@/components/search/mobile-search-command"
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { EnhancedUserMenu } from "@/components/layout/enhanced-user-menu"
-import { TeamSidebar } from "@/components/layout/team-sidebar"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -92,79 +91,66 @@ export function TeamHeader({ user, team }: TeamHeaderProps) {
 
   return (
     <>
-      <header className="flex h-12 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-2 px-2 lg:px-3">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-72 p-0">
-              <SheetTitle className="sr-only">Team Navigation</SheetTitle>
-              <div className="h-full">
-                <TeamSidebar />
-              </div>
-            </SheetContent>
-          </Sheet>
+      <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-white/5 bg-background/60 backdrop-blur-2xl px-4 shadow-sm font-fira-sans transition-all duration-300">
+        <div className="flex items-center gap-4">
+          <SidebarTrigger className="-ml-1" />
 
-          <div className="flex items-center gap-2">
-            <Zap className="size-4 lg:size-5 text-primary" />
-            <span className="font-semibold text-sm lg:text-base">AISAM</span>
-          </div>
+          <div className="h-6 w-px bg-white/10 mx-2 hidden lg:block" />
 
           {/* Team Switcher */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 px-2">
-                <Building2 className="h-4 w-4 mr-2" />
-                <span className="font-medium text-xs sm:text-sm">{team.name}</span>
-                <ChevronDown className="h-4 w-4 ml-1" />
+              <Button variant="ghost" className="h-9 px-3 rounded-xl border border-white/5 bg-background/50 hover:bg-muted/50 transition-all">
+                <Building2 className="h-4 w-4 mr-2 text-primary" />
+                <span className="font-bold text-sm tracking-tight">{team.name}</span>
+                <ChevronDown className="h-3 w-3 ml-2 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-64">
-              <DropdownMenuLabel>Switch Team</DropdownMenuLabel>
-              <DropdownMenuSeparator />
+            <DropdownMenuContent align="start" className="w-72 rounded-2xl bg-background/95 backdrop-blur-xl border border-white/10 p-2">
+              <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 px-2 py-2">Active Networks</DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-white/5" />
               {userTeams.map((userTeam) => (
                 <DropdownMenuItem
                   key={userTeam.id}
                   onClick={() => handleTeamSwitch(userTeam.id)}
-                  className={userTeam.id === team.id ? "bg-accent" : ""}
+                  className={`rounded-xl py-3 cursor-pointer ${userTeam.id === team.id ? "bg-primary/10" : ""}`}
                 >
-                  <div className="flex items-center gap-2 w-full">
-                    <Building2 className="h-4 w-4" />
+                  <div className="flex items-center gap-3 w-full">
+                    <div className="size-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                      <Building2 className="h-4 w-4 text-blue-500" />
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">{userTeam.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {userTeam.userRole} • {userTeam.membersCount} members
+                      <div className="font-bold text-sm truncate">{userTeam.name}</div>
+                      <div className="text-[10px] text-muted-foreground uppercase font-medium">
+                        {userTeam.userRole} • {userTeam.membersCount} operatives
                       </div>
                     </div>
                     {userTeam.id === team.id && (
-                      <Badge variant="secondary" className="text-xs">
-                        Current
+                      <Badge variant="secondary" className="text-[9px] font-bold uppercase tracking-widest bg-primary/20 text-primary border-none">
+                        Active
                       </Badge>
                     )}
                   </div>
                 </DropdownMenuItem>
               ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLeaveTeam} className="text-destructive">
-                Leave Team
+              <DropdownMenuSeparator className="bg-white/5 my-2" />
+              <DropdownMenuItem onClick={handleLeaveTeam} className="text-destructive font-bold text-xs uppercase tracking-wide rounded-xl py-3 cursor-pointer hover:bg-destructive/10">
+                Exit Protocol
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
-        <div className="flex-1"></div>
-
-        <div className="flex items-center gap-1 lg:gap-2 px-2 lg:px-3">
-          <div className="hidden lg:block">
+        <div className="flex items-center gap-5">
+          <div className="hidden md:block">
             <SearchCommand />
           </div>
 
-          <div className="lg:hidden">
+          <div className="md:hidden">
             <MobileSearchCommand />
           </div>
+
+          <div className="h-6 w-px bg-white/10 mx-1 hidden lg:block" />
 
           <EnhancedUserMenu user={currentUser} />
         </div>
@@ -172,18 +158,17 @@ export function TeamHeader({ user, team }: TeamHeaderProps) {
 
       {/* Leave Team Confirmation Dialog */}
       <AlertDialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="rounded-[32px] bg-background/95 backdrop-blur-2xl border border-white/10 p-8 font-fira-sans">
           <AlertDialogHeader>
-            <AlertDialogTitle>Leave Team</AlertDialogTitle>
-            <AlertDialogDescription>
-              This only exits the team view. You’ll remain a member of
-              <strong> {team.name}</strong>. You’ll be taken to the teams overview.
+            <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight italic">Abort Mission?</AlertDialogTitle>
+            <AlertDialogDescription className="text-base font-medium text-muted-foreground/80">
+              You are about to exit the <strong>{team.name}</strong> workspace view. Your credentials remain active for future login.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmLeaveTeam} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Leave Team
+          <AlertDialogFooter className="mt-8">
+            <AlertDialogCancel className="rounded-xl font-bold border-2">Hold Position</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmLeaveTeam} className="rounded-xl font-bold bg-destructive text-destructive-foreground hover:bg-destructive/90 border-none shadow-lg shadow-destructive/20">
+              Confirm Exit
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

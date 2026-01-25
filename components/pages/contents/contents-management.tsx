@@ -52,7 +52,7 @@ import type { ApiResponse } from "@/lib/types/aisam-types";
 import { useProfile } from "@/lib/contexts/profile-context";
 import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 import { useUser } from "@/hooks/use-user";
-import {cn} from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 
 // Create columns for the data table
@@ -281,6 +281,57 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
 
   const queryClient = useQueryClient();
 
+  const handleEditContent = (contentId: string) => {
+    const content = contents.find((c) => c.id === contentId) || null;
+    setSelectedContent(content);
+    setIsEditing(true);
+    if (contentId) setCurrentContentId(contentId);
+  };
+
+  const handleViewContent = (content: ContentResponseDto) => {
+    setPreviewContent(content);
+    setIsPreviewModalOpen(true);
+  };
+
+  const handleDeleteContent = async (contentId: string) => {
+    if (confirm("Are you sure you want to delete this content?")) {
+      try {
+        await api.delete(endpoints.contentById(contentId));
+        queryClient.invalidateQueries({ queryKey: ["contents"] });
+        toast.success("Content deleted successfully");
+      } catch (error) {
+        toast.error("Failed to delete content");
+      }
+    }
+  };
+
+  const handleSubmitContent = (contentId: string) => {
+    setCurrentContentId(contentId);
+    setIsApprovalDialogOpen(true);
+  };
+
+  const handleCloneContent = async (contentId: string) => {
+    try {
+      // Assuming a standard clone endpoint pattern
+      await api.post(`${endpoints.contentById(contentId)}/clone`);
+      queryClient.invalidateQueries({ queryKey: ["contents"] });
+      toast.success("Content cloned successfully");
+    } catch (error) {
+      toast.error("Failed to clone content");
+    }
+  };
+
+  const handleChangeStatus = (content: ContentResponseDto) => {
+    setStatusChangeContent(content);
+    setIsChangeStatusModalOpen(true);
+  };
+
+  const handleSaveContent = async (data: any) => {
+    if (selectedContent) {
+      await handleUpdateContent(selectedContent.id, data);
+    }
+  };
+
   const handleUpdateContent = async (contentId: string, data: UpdateContentRequest) => {
     try {
       await api.put(endpoints.contentById(contentId), data);
@@ -413,7 +464,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
       <SubmitApprovalDialog content={selectedContent || contents.find(c => c.id === currentContentId) || null} isOpen={isApprovalDialogOpen} onClose={() => setIsApprovalDialogOpen(false)} isSubmitting={createApprovalMutation.isPending} approvers={teamMembers.map(m => ({ id: m.userId, email: m.userEmail, name: m.userEmail.split('@')[0], canApproveContent: m.canApproveContent }))} onSubmit={(d: any) => createApprovalMutation.mutateAsync(d).then(() => setIsApprovalDialogOpen(false))} />
 
       {previewContent && (
-        <ContentPreviewModal content={previewContent} open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen} onSubmit={id => handleSubmitContent(id).then(() => setIsPreviewModalOpen(false))} onPublish={(id, iid) => { setCurrentContentId(id); publishContentMutation.mutateAsync(iid).then(() => setIsPreviewModalOpen(false)); }} isProcessing={publishContentMutation.isPending} brands={brands} />
+        <ContentPreviewModal content={previewContent} open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen} onSubmit={async (id) => { handleSubmitContent(id); setIsPreviewModalOpen(false); }} onPublish={(id, iid) => { setCurrentContentId(id); publishContentMutation.mutateAsync(iid).then(() => setIsPreviewModalOpen(false)); }} isProcessing={publishContentMutation.isPending} brands={brands} />
       )}
 
       <ChangeStatusModal content={statusChangeContent} isOpen={isChangeStatusModalOpen} onClose={() => setIsChangeStatusModalOpen(false)} onSuccess={() => queryClient.invalidateQueries({ queryKey: ['contents'] })} />
