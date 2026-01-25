@@ -34,7 +34,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Brand } from "@/lib/types/aisam-types";
+import { Brand } from "@/lib/types/omniadly-types";
 import { toast } from "sonner";
 import { useBrands, useDeleteBrand } from "@/hooks/use-brands";
 import { useTeamsByVendor } from "@/hooks/use-teams";

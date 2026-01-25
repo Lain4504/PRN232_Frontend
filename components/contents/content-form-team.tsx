@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo } from "react";
-import { ContentResponseDto, CreateContentRequest } from "@/lib/types/aisam-types";
+import { ContentResponseDto, CreateContentRequest } from "@/lib/types/omniadly-types";
 import { useTeamBrands } from "@/hooks/use-team-brands";
 import { useTeamProducts } from "@/hooks/use-team-products";
 import { ContentFormShared } from "./content-form-shared";

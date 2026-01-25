@@ -16,10 +16,10 @@ import { Input as UIInput } from "@/components/ui/input";
 import { createCreativeSchema, type CreateCreativeFormData } from "@/lib/validators/creative-schemas";
 import { toast } from "sonner";
 import { useContentsByBrand } from "@/hooks/use-contents";
-import { ContentStatusEnum } from "@/lib/types/aisam-types";
+import { ContentStatusEnum } from "@/lib/types/omniadly-types";
 import { useGetAdAccounts, useGetSocialAccounts } from "@/hooks/use-social-accounts";
 import { useBrands } from "@/hooks/use-brands";
-import type { SocialAccountDto, AdAccountDto, ContentResponseDto } from "@/lib/types/aisam-types";
+import type { SocialAccountDto, AdAccountDto, ContentResponseDto } from "@/lib/types/omniadly-types";
 
 interface CreativeUploadProps {
   adSetId: string;

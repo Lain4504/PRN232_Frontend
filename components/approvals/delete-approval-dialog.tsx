@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ApprovalResponseDto } from "@/lib/types/aisam-types";
+import { ApprovalResponseDto } from "@/lib/types/omniadly-types";
 
 interface DeleteApprovalDialogProps {
   approval: ApprovalResponseDto | null;

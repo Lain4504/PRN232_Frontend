@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { UnifiedContentCalendar } from "@/components/content-calendar/unified-content-calendar";
 import { ScheduleContentModal } from "@/components/content-calendar/schedule-content-modal";
-import type { ContentCalendar } from "@/lib/types/aisam-types";
+import type { ContentCalendar } from "@/lib/types/omniadly-types";
 import { Plus, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";

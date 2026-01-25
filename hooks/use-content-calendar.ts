@@ -4,7 +4,7 @@ import type {
   ContentCalendar,
   ScheduleContentRequest,
   ScheduleRecurringContentRequest,
-} from '@/lib/types/aisam-types'
+} from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const contentCalendarKeys = {
@@ -17,9 +17,9 @@ export const contentCalendarKeys = {
 export function useUpcomingSchedules(limit = 50, brandId?: string) {
   // Enable query when brandId is provided OR when no brandId is provided (for general upcoming schedules)
   const enabled = brandId === undefined || (!!brandId && brandId !== "all" && brandId !== "")
-  
+
   console.log('[useUpcomingSchedules] brandId:', brandId, 'enabled:', enabled)
-  
+
   return useQuery({
     queryKey: [...contentCalendarKeys.upcoming(brandId), limit],
     queryFn: async (): Promise<ContentCalendar[]> => {

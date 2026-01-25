@@ -15,7 +15,7 @@ import {
   Lightbulb,
   Clock,
 } from "lucide-react";
-import { Brand } from "@/lib/types/aisam-types";
+import { Brand } from "@/lib/types/omniadly-types";
 import { toast } from "sonner";
 import { useBrand } from "@/hooks/use-brands";
 import Link from "next/link";

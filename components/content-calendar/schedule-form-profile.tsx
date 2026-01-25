@@ -6,8 +6,8 @@ import { useContentsByBrand } from "@/hooks/use-contents";
 import { useBrands } from "@/hooks/use-brands";
 import { useGetSocialAccounts } from "@/hooks/use-social-accounts";
 import { ScheduleFormShared } from "./schedule-form-shared";
-import type { ScheduleContentRequest, ContentResponseDto } from "@/lib/types/aisam-types";
-import { ContentStatusEnum } from "@/lib/types/aisam-types";
+import type { ScheduleContentRequest, ContentResponseDto } from "@/lib/types/omniadly-types";
+import { ContentStatusEnum } from "@/lib/types/omniadly-types";
 import { toast } from "sonner";
 
 interface ProfileScheduleFormProps {

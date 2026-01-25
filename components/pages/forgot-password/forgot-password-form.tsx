@@ -8,18 +8,16 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import Link from "next/link";
 import { useState } from "react";
 import { Mail, ArrowLeft, CheckCircle, AlertCircle, Loader2, Send } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { passwordResetSchema, type PasswordResetFormData, type AuthError } from "@/lib/types/auth";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
-import { useTranslation } from "react-i18next";
 
 export function ForgotPasswordForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const { t } = useTranslation("auth");
   const [error, setError] = useState<AuthError | null>(null);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,15 +37,14 @@ export function ForgotPasswordForm({
       const response = await api.post(endpoints.forgotPassword, { email: data.email }, { requireAuth: false });
 
       if (!response.success) {
-        throw new Error(response.message || "Failed to send reset link");
+        throw new Error(response.message || "Không thể gửi email khôi phục");
       }
 
       setSuccess(true);
-      toast.success(t("recoveryEmailSent"));
+      toast.success("Email khôi phục đã được gửi");
     } catch (error: unknown) {
       const authError: AuthError = {
-        message: error instanceof Error ? error.message : "An unexpected error occurred",
-        code: error instanceof Error && 'code' in error ? String(error.code) : undefined,
+        message: error instanceof Error ? error.message : "Đã có lỗi xảy ra. Vui lòng thử lại.",
       };
       setError(authError);
       toast.error(authError.message);
@@ -57,95 +54,90 @@ export function ForgotPasswordForm({
   };
 
   return (
-    <div className={cn("space-y-10 font-fira-sans", className)} {...props}>
+    <div className={cn("space-y-8", className)} {...props}>
       {success ? (
-        <div className="text-center space-y-10 animate-fade-in">
+        <div className="text-center space-y-10 animate-in fade-in zoom-in duration-500">
           <div className="flex flex-col items-center gap-6">
-            <div className="h-24 w-24 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30 shadow-2xl shadow-emerald-500/20">
-              <CheckCircle className="h-12 w-12 text-emerald-500 stroke-[2.5]" />
+            <div className="h-20 w-20 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100 shadow-xl shadow-emerald-50">
+              <CheckCircle className="h-10 w-10 text-emerald-500" />
             </div>
-            <div className="space-y-4">
-              <h3 className="text-2xl font-black uppercase tracking-tighter leading-none text-foreground">
-                {t('recoveryEmailSent')}
+            <div className="space-y-3">
+              <h3 className="text-2xl font-black text-slate-900 leading-tight">
+                Email đã được gửi!
               </h3>
-              <p className="text-muted-foreground font-medium leading-relaxed max-w-sm mx-auto">
-                {t('recoveryEmailMessage')}
+              <p className="text-slate-500 font-medium leading-relaxed max-w-sm mx-auto">
+                Chúng tôi đã gửi hướng dẫn khôi phục mật khẩu đến email của bạn. Vui lòng kiểm tra hộp thư đến.
               </p>
             </div>
           </div>
 
-          <div className="space-y-4 pt-4">
-            <Button asChild className="w-full h-11 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-[10px] shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98]">
-              <Link href="/auth/login" className="flex items-center justify-center gap-3">
-                <ArrowLeft className="w-4 h-4 stroke-[3]" />
-                {t('backToLogin')}
-              </Link>
-            </Button>
-          </div>
+          <Button asChild className="w-full h-12 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition-all shadow-xl shadow-slate-100">
+            <Link href="/auth/login" className="flex items-center justify-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Quay lại đăng nhập
+            </Link>
+          </Button>
         </div>
       ) : (
-        <div className="space-y-8 animate-fade-in">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleForgotPassword)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(handleForgotPassword)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 italic">{t('email')}</FormLabel>
+                  <FormItem>
+                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-slate-500 px-1">Email của bạn</FormLabel>
                     <FormControl>
                       <div className="relative group">
-                        <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 h-4 w-4 group-focus-within:text-primary transition-colors" />
+                        <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
                         <Input
                           {...field}
                           type="email"
-                          placeholder="your@email.com"
-                          className="pl-12 h-11 rounded-xl border-border/40 bg-muted/10 group-focus-within:bg-background group-focus-within:border-primary/50 transition-all font-fira-mono text-sm tracking-tight"
+                          placeholder="email@vidu.com"
+                          className="pl-12 h-12 rounded-xl border-slate-100 bg-white focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all font-medium"
                         />
                       </div>
                     </FormControl>
-                    <FormMessage className="text-[10px] font-bold uppercase tracking-widest text-destructive" />
+                    <FormMessage className="text-xs font-medium" />
                   </FormItem>
                 )}
               />
 
-              {/* Error Alert */}
               {error && (
-                <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-xl flex items-center gap-3">
-                  <AlertCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-destructive leading-tight">{error.message}</p>
-                </div>
+                <Alert variant="destructive" className="rounded-xl border-rose-100 bg-rose-50 text-rose-600">
+                  <AlertCircle className="h-4 w-4 fill-rose-600 text-white" />
+                  <AlertDescription className="text-xs font-bold">{error.message}</AlertDescription>
+                </Alert>
               )}
 
-              {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full h-11 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full h-12 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold shadow-xl shadow-slate-200 transition-all active:scale-[0.98]"
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-3 animate-spin" />
-                    {t('sendingEmail')}
+                    Đang gửi email...
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4 mr-3 stroke-[2.5]" />
-                    {t('sendRecoveryEmail')}
+                    <Send className="w-4 h-4 mr-3" />
+                    Gửi kướn dẫn khôi phục
                   </>
                 )}
               </Button>
             </form>
           </Form>
 
-          {/* Footer Navigation */}
-          <div className="text-center pt-2">
+          <div className="text-center">
             <Link
               href="/auth/login"
-              className="text-[10px] font-black text-muted-foreground hover:text-primary transition-all uppercase tracking-[0.2em] inline-flex items-center gap-2"
+              className="text-xs font-bold text-slate-400 hover:text-primary transition-all inline-flex items-center gap-2"
             >
-              <ArrowLeft className="w-4 h-4 mr-1 stroke-[3]" />
-              {t('backToLogin')}
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Quay lại đăng nhập
             </Link>
           </div>
         </div>

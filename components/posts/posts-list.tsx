@@ -7,7 +7,7 @@ import { Send, BarChart3 } from "lucide-react";
 import { usePosts } from "@/hooks/use-posts";
 import { PostCard } from "./post-card";
 import { PostsFilters } from "./posts-filters";
-import type { PostFilters } from "@/lib/types/aisam-types";
+import type { PostFilters } from "@/lib/types/omniadly-types";
 import Link from "next/link";
 
 interface PostsListProps {

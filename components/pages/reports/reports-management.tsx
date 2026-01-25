@@ -26,7 +26,7 @@ import {
   SiTiktok
 } from "@icons-pack/react-simple-icons";
 // Removed mock-api import - using real API instead
-import { User, PerformanceReport } from "@/lib/types/aisam-types";
+import { User, PerformanceReport } from "@/lib/types/omniadly-types";
 import { toast } from "sonner";
 import { api, endpoints } from "@/lib/api";
 

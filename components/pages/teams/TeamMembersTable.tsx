@@ -6,7 +6,7 @@ import {
   useTeamMembers,
   useTeam
 } from '@/hooks/use-teams'
-import { TeamMemberResponseDto } from '@/lib/types/aisam-types'
+import { TeamMemberResponseDto } from '@/lib/types/omniadly-types'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'

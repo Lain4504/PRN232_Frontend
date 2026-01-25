@@ -267,7 +267,7 @@ export function useExportTemplates() {
         filters: {},
         template: 'executive',
         branding: {
-          companyName: 'AISAM',
+          companyName: 'omniadly',
           colors: ['#3b82f6', '#10b981'],
         }
       },

@@ -37,7 +37,7 @@ import {
 import { useBrandsByTeam } from '@/hooks/use-brands'
 import { useUnassignBrand } from '@/hooks/use-teams'
 import { toast } from 'sonner'
-import { Brand } from '@/lib/types/aisam-types'
+import { Brand } from '@/lib/types/omniadly-types'
 
 interface TeamBrandsListProps {
   teamId: string

@@ -30,7 +30,7 @@ import { EditMemberDialog } from './edit-member-dialog';
 // import { TeamAccessControl } from './team-access-control';
 // import { TeamSecurityAudit } from './team-security-audit';
 import { useTeam, useTeamMembers } from '@/hooks/use-teams';
-import { TeamMemberResponseDto } from '@/lib/types/aisam-types';
+import { TeamMemberResponseDto } from '@/lib/types/omniadly-types';
 import { formatTeamSize, formatDate } from '@/lib/utils/teams';
 
 interface TeamManagementProps {

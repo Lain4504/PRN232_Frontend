@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api, endpoints, PaginatedResponse } from '@/lib/api'
-import { Notification, NotificationFilters } from '@/lib/types/aisam-types'
+import { Notification, NotificationFilters } from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const notificationKeys = {
@@ -24,7 +24,7 @@ export function useGetNotifications(filters?: NotificationFilters & { page?: num
         ...(filters?.isRead !== undefined && { unread: (!filters.isRead).toString() }),
         ...(filters?.type && { type: filters.type }),
       })
-      
+
       const response = await api.get<PaginatedResponse<Notification>>(`${endpoints.notifications()}?${params}`)
       return response.data
     },

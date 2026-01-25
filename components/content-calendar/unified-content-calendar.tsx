@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { UpcomingSchedulesList } from "./upcoming-schedules-list";
 import { CalendarGrid } from "./calendar-grid";
 import { useCalendarData } from "@/hooks/use-calendar-data";
-import type { ContentCalendar } from "@/lib/types/aisam-types";
+import type { ContentCalendar } from "@/lib/types/omniadly-types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 

@@ -17,7 +17,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Eye, Users, Building2, Trash2, Edit, Plus, Search, Shield, AlertCircle } from 'lucide-react'
 import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
 import { ColumnDef } from '@tanstack/react-table'
-import type { TeamResponse } from '@/lib/types/aisam-types'
+import type { TeamResponse } from '@/lib/types/omniadly-types'
 import { Input } from "@/components/ui/input"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"

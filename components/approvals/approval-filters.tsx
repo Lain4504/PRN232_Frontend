@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
-import { ContentStatusEnum } from "@/lib/types/aisam-types";
+import { ContentStatusEnum } from "@/lib/types/omniadly-types";
 
 interface ApprovalFiltersProps {
   searchTerm: string;

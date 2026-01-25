@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api, endpoints, PaginatedResponse } from '@/lib/api'
-import type { Post, PostFilters, Brand, PublishResultDto } from '@/lib/types/aisam-types'
+import type { Post, PostFilters, Brand, PublishResultDto } from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const profilePostKeys = {
@@ -27,14 +27,14 @@ export function useProfilePosts(profileId?: string, filters?: PostFilters) {
     queryKey: profileId ? [...profilePostKeys.byProfile(profileId), queryString] : profilePostKeys.lists(),
     queryFn: async (): Promise<PaginatedResponse<Post>> => {
       if (!profileId) return { data: [], totalCount: 0, page: 1, pageSize: 10, totalPages: 0, hasNextPage: false, hasPreviousPage: false }
-      
+
       // If specific brandId is provided, use it directly
       if (filters?.brandId) {
         const url = queryString ? `${endpoints.posts.list()}?${queryString}` : `${endpoints.posts.list()}?brandId=${filters.brandId}`
         const resp = await api.get<PaginatedResponse<Post>>(url)
         return resp.data
       }
-      
+
       // No brand filter: call posts endpoint directly; backend will infer by profile context
       const url = queryString ? `${endpoints.posts.list()}?${queryString}` : endpoints.posts.list()
       const resp = await api.get<PaginatedResponse<Post>>(url)
@@ -51,17 +51,17 @@ export function useProfileScheduledPosts(profileId?: string) {
     queryKey: profileId ? profilePostKeys.scheduled(profileId) : profilePostKeys.lists(),
     queryFn: async (): Promise<Post[]> => {
       if (!profileId) return []
-      
+
       // Get profile brands first - use the brands endpoint that returns brands for the active profile
       const brandsResp = await api.get<Brand[]>(endpoints.brands())
       const brandIds = brandsResp.data.map(brand => brand.id)
-      
+
       if (brandIds.length === 0) return []
 
       // Get scheduled posts for profile brands
       const brandIdParams = brandIds.map(id => `brandId=${id}`).join('&')
       const url = `${endpoints.posts.list()}?${brandIdParams}&status=Scheduled`
-      
+
       const resp = await api.get<PaginatedResponse<Post>>(url)
       return resp.data.data
     },
@@ -76,7 +76,7 @@ export function useProfilePostsByContent(profileId?: string, contentId?: string)
     queryKey: profileId && contentId ? [...profilePostKeys.byProfile(profileId), 'content', contentId] : profilePostKeys.lists(),
     queryFn: async (): Promise<Post[]> => {
       if (!profileId || !contentId) return []
-      
+
       const resp = await api.get<Post[]>(endpoints.posts.byContent(contentId))
       return resp.data
     },

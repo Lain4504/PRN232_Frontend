@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CalendarManagement } from "@/components/pages/calendar/calendar-management";
 
 export const metadata: Metadata = {
-  title: "Content Calendar | AISAM",
+  title: "Content Calendar | omniadly",
   description: "Schedule and manage your content publishing",
 };
 

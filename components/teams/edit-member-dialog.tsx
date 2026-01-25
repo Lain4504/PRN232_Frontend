@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useUpdateTeamMember } from '@/hooks/use-teams';
-import { TeamMemberResponseDto } from '@/lib/types/aisam-types';
+import { TeamMemberResponseDto } from '@/lib/types/omniadly-types';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';

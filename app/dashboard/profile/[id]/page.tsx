@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ProfileDetail } from "@/components/pages/profile/profile-detail";
 
 export const metadata: Metadata = {
-  title: "Profile Detail | AISAM",
+  title: "Profile Detail | omniadly",
   description: "View profile details",
 };
 

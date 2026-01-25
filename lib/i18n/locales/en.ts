@@ -49,7 +49,7 @@ export const en = {
 
         header: {
             brand: {
-                name: "AISAM",
+                name: "omniadly",
                 slogan: "Intelligence Grid"
             },
             menu: {
@@ -124,7 +124,7 @@ export const en = {
             privacy: "Privacy",
             terms: "Terms",
             security: "Security",
-            rightsReserved: "© 2026 AISAM Platform. All rights reserved."
+            rightsReserved: "© 2026 omniadly Platform. All rights reserved."
         },
 
         pricing: {
@@ -185,7 +185,7 @@ export const en = {
             badge: "User Guides",
             title: "Documentation",
             accent: "Hub.",
-            description: "Guides and tutorials for every AISAM workflow.",
+            description: "Guides and tutorials for every omniadly workflow.",
             searchPlaceholder: "Search help...",
             sections: [
                 { title: "Getting Started", items: ["Quick Start", "Authentication", "Setup Guide"] },
@@ -198,20 +198,20 @@ export const en = {
                 { title: "API Reference", description: "Full developer guide for custom platform integrations.", icon: "code" }
             ],
             overviewTitle: "Platform Overview",
-            overviewBody: "AISAM provides a unified workspace for high-speed content generation and automated social media distribution. Manage all your brands in one place with AI-driven consistency and performance analytics.",
+            overviewBody: "omniadly provides a unified workspace for high-speed content generation and automated social media distribution. Manage all your brands in one place with AI-driven consistency and performance analytics.",
             overviewFootnote: "Advanced automation features require a Strategic or Enterprise tier."
         },
         blog: {
             badge: "Latest News",
             title: "Insights",
             accent: "Blog.",
-            description: "Updates from the AISAM team on AI marketing.",
+            description: "Updates from the omniadly team on AI marketing.",
             featured: {
                 tag: "Platform Updates",
                 title: "The Future of AI in Creative Marketing",
                 desc: "How deep-learning models are simplifying content creation for modern marketing teams.",
                 date: "JAN 24, 2026",
-                author: "AISAM Editorial",
+                author: "omniadly Editorial",
                 image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop"
             },
             posts: [
@@ -232,7 +232,7 @@ export const en = {
                     image: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=800&auto=format&fit=crop"
                 }
             ],
-            footer: "© 2026 AISAM Platform. Latest Insights."
+            footer: "© 2026 omniadly Platform. Latest Insights."
         },
 
         about: {
@@ -240,7 +240,7 @@ export const en = {
             title: "The Modern AI",
             accent: "Marketing",
             subtitle: "Hub.",
-            description: "We build the infrastructure for the next generation of social advertising. AISAM is designed to simplify creative work and unify global brand management.",
+            description: "We build the infrastructure for the next generation of social advertising. omniadly is designed to simplify creative work and unify global brand management.",
             values: [
                 { title: "Control", desc: "Maintain absolute control over your brand identity and digital assets." },
                 { title: "Precision", desc: "Surgical accuracy in content generation and deployment timing." },
@@ -262,7 +262,7 @@ export const en = {
             description: "Have questions or want to partner with us? Reach out and we'll get back to you within 24 hours.",
             detailsTitle: "Contact Details.",
             contactInfo: [
-                { label: "Email Address", value: "hello@aisam.app" },
+                { label: "Email Address", value: "hello@omniadly.app" },
                 { label: "Live Support", value: "Chat Available" },
                 { label: "Location", value: "Global (Distributed)" },
                 { label: "Availability", value: "24/7 Digital Hub" }
@@ -280,7 +280,7 @@ export const en = {
                 messagePlaceholder: "How can we help you today?",
                 sendButton: "SEND MESSAGE"
             },
-            footer: "© 2026 AISAM Platform. Contact Us Anytime."
+            footer: "© 2026 omniadly Platform. Contact Us Anytime."
         },
 
         features: {
@@ -362,7 +362,7 @@ export const en = {
             badge: "Developer Tools",
             title: "API",
             accent: "Reference.",
-            baseUrl: "V1.0.4 - Base URL: https://api.aisam.app",
+            baseUrl: "V1.0.4 - Base URL: https://api.omniadly.app",
             authentication: {
                 title: "Authentication",
                 description: "All API requests must include a Bearer token in the `Authorization` header.",
@@ -376,7 +376,7 @@ export const en = {
                 { desc: "List all active brand identity profiles." }
             ],
             viewDetails: "VIEW DETAILS",
-            footer: "© 2026 AISAM Intelligence Core. API Integrity Verified."
+            footer: "© 2026 omniadly Intelligence Core. API Integrity Verified."
         },
 
         solutions: {
@@ -896,7 +896,7 @@ export const en = {
     auth: {
         welcomeBack: "Welcome Back",
         signInSubtitle: "Sign in to manage your AI marketing campaigns",
-        quote: "AISAM has completely transformed how we handle our social media creative. We've seen a 4x increase in engagement while spending 70% less time on production.",
+        quote: "omniadly has completely transformed how we handle our social media creative. We've seen a 4x increase in engagement while spending 70% less time on production.",
         authorRole: "Marketing Director",
         secureConnection: "Secure Connection",
         systemsActive: "Systems Active",
@@ -910,7 +910,7 @@ export const en = {
         forgotPassword: "Forgot password?",
         signIn: "Sign In",
         signingIn: "Signing in...",
-        newToAisam: "New to AISAM?",
+        newToomniadly: "New to omniadly?",
         createAccount: "Create an account",
 
         createAccountTitle: "Create an Account",
@@ -962,6 +962,6 @@ export const en = {
         tryAgain: "Try Again",
 
         // Core user label
-        coreUser: "AISAM Core User"
+        coreUser: "omniadly Core User"
     }
 };

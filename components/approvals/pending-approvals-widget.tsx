@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Eye, AlertCircle } from "lucide-react";
 import { usePendingApprovals } from "@/hooks/use-approvals";
-import { ContentStatusEnum } from "@/lib/types/aisam-types";
+import { ContentStatusEnum } from "@/lib/types/omniadly-types";
 import Link from "next/link";
 
 interface PendingApprovalsWidgetProps {

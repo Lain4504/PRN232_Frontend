@@ -4,8 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { ShieldAlert, Fingerprint, EyeOff, Database } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "AISAM | Privacy Policy",
-    description: "How we protect and manage your data at AISAM.",
+    title: "omniadly | Privacy Policy",
+    description: "How we protect and manage your data at omniadly.",
 };
 
 export default function PrivacyPage() {
@@ -80,7 +80,7 @@ export default function PrivacyPage() {
 
             <footer className="py-20 px-6 border-t border-border/40 text-center">
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/40">
-                    © 2026 AISAM Platform. Privacy Ensured.
+                    © 2026 omniadly Platform. Privacy Ensured.
                 </p>
             </footer>
         </div>

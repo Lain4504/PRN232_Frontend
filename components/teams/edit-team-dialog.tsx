@@ -43,7 +43,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { useUpdateTeam } from '@/hooks/use-teams'
 import { toast } from 'sonner'
-import { TeamResponse, UpdateTeamRequest } from '@/lib/types/aisam-types'
+import { TeamResponse, UpdateTeamRequest } from '@/lib/types/omniadly-types'
 
 const editTeamSchema = z.object({
   name: z.string().min(1, 'Team name is required').max(100, 'Team name must be less than 100 characters'),

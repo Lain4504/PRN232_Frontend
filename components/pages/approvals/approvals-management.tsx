@@ -38,7 +38,7 @@ import {
   ApprovalResponseDto,
   ContentStatusEnum,
   ApprovalFilters
-} from "@/lib/types/aisam-types";
+} from "@/lib/types/omniadly-types";
 import { ApprovalModal } from "@/components/approvals/approval-modal";
 import { toast } from "sonner";
 import {

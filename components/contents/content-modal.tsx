@@ -16,7 +16,7 @@ import {
   UpdateContentRequest, 
   ContentStatusEnum, 
   AdTypeEnum 
-} from "@/lib/types/aisam-types";
+} from "@/lib/types/omniadly-types";
 import { api, endpoints } from "@/lib/api";
 import { ProfileContentForm } from "./content-form-profile";
 import { TeamContentForm } from "./content-form-team";

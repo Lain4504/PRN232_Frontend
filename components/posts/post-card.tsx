@@ -26,7 +26,7 @@ import { useContent } from "@/hooks/use-contents";
 import { useGetSocialAccounts } from "@/hooks/use-social-accounts";
 import { PostStatusBadge } from "./post-status-badge";
 import { PostMetrics } from "./post-metrics";
-import type { Post } from "@/lib/types/aisam-types";
+import type { Post } from "@/lib/types/omniadly-types";
 import Link from "next/link";
 
 interface PostCardProps {

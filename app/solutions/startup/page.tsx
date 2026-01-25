@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-    title: "AISAM | For Startups",
-    description: "Accelerate your creative cycles with the AISAM Startup Program.",
+    title: "omniadly | For Startups",
+    description: "Accelerate your creative cycles with the omniadly Startup Program.",
 };
 
 export default function StartupPage() {
@@ -27,7 +27,7 @@ export default function StartupPage() {
                             <span className="text-amber-500 italic">Faster</span>.
                         </h1>
                         <p className="text-xl md:text-3xl text-muted-foreground font-medium leading-relaxed tracking-tight">
-                            Stop struggling with content blocks. AISAM gives early-stage teams the creative power of a 50-person agency.
+                            Stop struggling with content blocks. omniadly gives early-stage teams the creative power of a 50-person agency.
                         </p>
                     </section>
 
@@ -81,7 +81,7 @@ export default function StartupPage() {
 
             <footer className="py-20 px-6 border-t border-border/40 text-center">
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/40">
-                    © 2026 AISAM Platform. Startup Program.
+                    © 2026 omniadly Platform. Startup Program.
                 </p>
             </footer>
         </div>

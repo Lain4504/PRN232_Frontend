@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGetSocialAccounts } from "@/hooks/use-social-accounts";
-import type { ContentCalendar } from "@/lib/types/aisam-types";
+import type { ContentCalendar } from "@/lib/types/omniadly-types";
 import {
   Calendar,
   Clock,

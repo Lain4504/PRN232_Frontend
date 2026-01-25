@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { api, endpoints, PaginatedResponse } from '@/lib/api'
-import type { Product, Brand } from '@/lib/types/aisam-types'
+import type { Product, Brand } from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const teamProductKeys = {
@@ -15,17 +15,17 @@ export function useTeamProducts(teamId?: string, brandId?: string) {
     queryKey: teamId ? [...teamProductKeys.byTeam(teamId), brandId || 'all'] : teamProductKeys.lists(),
     queryFn: async (): Promise<Product[]> => {
       if (!teamId) return []
-      
+
       // If specific brandId is provided, use it directly
       if (brandId) {
         const resp = await api.get<PaginatedResponse<Product>>(`${endpoints.products()}?brandId=${brandId}`)
         return resp.data.data || []
       }
-      
+
       // Otherwise, get all team brands
       const brandsResp = await api.get<Brand[]>(`/brands/team/${teamId}`)
       const brandIds = brandsResp.data.map(brand => brand.id)
-      
+
       if (brandIds.length === 0) {
         return []
       }
@@ -33,7 +33,7 @@ export function useTeamProducts(teamId?: string, brandId?: string) {
       // Get products for all team brands
       const brandIdParams = brandIds.map(id => `brandId=${id}`).join('&')
       const url = `${endpoints.products()}?${brandIdParams}`
-      
+
       const resp = await api.get<PaginatedResponse<Product>>(url)
       return resp.data.data || []
     },

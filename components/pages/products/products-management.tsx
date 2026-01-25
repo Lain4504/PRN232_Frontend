@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CustomTable } from "@/components/ui/custom-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { Product, Brand } from "@/lib/types/aisam-types";
+import { Product, Brand } from "@/lib/types/omniadly-types";
 import { useBrands } from "@/hooks/use-brands";
 import { useProducts, useDeleteProduct } from "@/hooks/use-products";
 import { useTeamBrands } from "@/hooks/use-team-brands";

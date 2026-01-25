@@ -7,7 +7,7 @@ import {
   ContentResponseDto, 
   CreateContentRequest, 
   UpdateContentRequest 
-} from "@/lib/types/aisam-types";
+} from "@/lib/types/omniadly-types";
 import { ContentCard } from "./content-card";
 import { ContentModal } from "./content-modal";
 

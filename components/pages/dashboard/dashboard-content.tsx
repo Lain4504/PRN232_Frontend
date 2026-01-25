@@ -18,7 +18,7 @@ import {
   Users,
   Sparkles,
 } from "lucide-react"
-import { User, DashboardStats } from "@/lib/types/aisam-types"
+import { User, DashboardStats } from "@/lib/types/omniadly-types"
 import { api, endpoints } from "@/lib/api"
 import { QuickActionsPanel } from "./quick-actions-panel"
 import { cn } from "@/lib/utils"

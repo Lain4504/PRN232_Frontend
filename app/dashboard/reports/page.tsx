@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ReportsManagement } from "@/components/pages/reports/reports-management";
 
 export const metadata: Metadata = {
-  title: "Performance Reports | AISAM",
+  title: "Performance Reports | omniadly",
   description: "View detailed analytics and performance reports",
 };
 

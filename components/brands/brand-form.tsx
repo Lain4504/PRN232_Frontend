@@ -12,7 +12,7 @@ import {
   Loader2,
   Trash2,
 } from "lucide-react";
-import { Brand, CreateBrandForm as CreateBrandFormType } from "@/lib/types/aisam-types";
+import { Brand, CreateBrandForm as CreateBrandFormType } from "@/lib/types/omniadly-types";
 import { toast } from "sonner";
 import { useCreateBrand, useUpdateBrand } from "@/hooks/use-brands";
 import { useTranslation } from "react-i18next";

@@ -15,7 +15,7 @@ import {
   ContentResponseDto, 
   ContentStatusEnum, 
   AdTypeEnum 
-} from "@/lib/types/aisam-types";
+} from "@/lib/types/omniadly-types";
 import { useSocialIntegrations } from "@/hooks/use-social-integrations";
 import { Send, FileText, Image, Video, Calendar, Package, Share, Loader2 } from "lucide-react";
 import { toast } from "sonner";

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CampaignDetails } from "@/components/pages/campaigns/campaign-details";
 
 export const metadata: Metadata = {
-  title: "Campaign Details | AISAM",
+  title: "Campaign Details | omniadly",
   description: "View and manage campaign details and performance",
 };
 

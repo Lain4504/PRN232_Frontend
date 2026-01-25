@@ -11,7 +11,7 @@ import type {
   TeamMemberUpdateRequest,
   TeamResponse,
   UpdateTeamStatusRequest,
-} from '@/lib/types/aisam-types'
+} from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const teamKeys = {
@@ -304,12 +304,12 @@ export function useCurrentTeamMember(teamId: string) {
       try {
         const resp = await api.get<TeamMemberResponseDto[]>(endpoints.teamMembers(teamId))
         const members = resp.data
-        
+
         // Get current user ID from localStorage or context
         const userId = localStorage.getItem('userId') // You might need to adjust this based on your auth setup
-        
+
         if (!userId) return null
-        
+
         const currentMember = members.find(member => member.userId === userId)
         return currentMember || null
       } catch (error) {

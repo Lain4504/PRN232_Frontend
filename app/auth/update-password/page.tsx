@@ -4,7 +4,7 @@ import { AuthSplitLayout } from "@/components/pages/auth/auth-split-layout";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Update Password | AISAM",
+  title: "Update Password | omniadly",
   description: "Update your biometric and security credentials for account access.",
 };
 

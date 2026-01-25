@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-    title: "AISAM | Enterprise Solutions",
+    title: "omniadly | Enterprise Solutions",
     description: "Enterprise-grade AI marketing infrastructure for global corporations.",
 };
 
@@ -27,7 +27,7 @@ export default function EnterprisePage() {
                             <span className="text-primary italic">Control</span>.
                         </h1>
                         <p className="text-xl md:text-3xl text-muted-foreground font-medium leading-relaxed tracking-tight">
-                            AISAM Enterprise provides the integrated AI stack for global organizations requiring scale, security, and team collaboration.
+                            omniadly Enterprise provides the integrated AI stack for global organizations requiring scale, security, and team collaboration.
                         </p>
                     </section>
 
@@ -78,7 +78,7 @@ export default function EnterprisePage() {
 
             <footer className="py-20 px-6 border-t border-border/40 text-center">
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/40">
-                    © 2026 AISAM Platform. Enterprise Division.
+                    © 2026 omniadly Platform. Enterprise Division.
                 </p>
             </footer>
         </div>

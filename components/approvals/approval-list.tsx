@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
-import { ApprovalResponseDto, ContentStatusEnum } from "@/lib/types/aisam-types";
+import { ApprovalResponseDto, ContentStatusEnum } from "@/lib/types/omniadly-types";
 import { ApprovalCard } from "./approval-card";
 import { ApprovalModal } from "./approval-modal";
 import { DeleteApprovalDialog } from "./delete-approval-dialog";

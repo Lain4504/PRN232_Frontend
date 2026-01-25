@@ -1,4 +1,4 @@
-// AISAM Frontend Types - Mock Data Structures
+// omniadly Frontend Types - Mock Data Structures
 // Based on the database schema described in the requirements
 
 export interface User {

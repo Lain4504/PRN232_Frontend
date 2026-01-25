@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Eye, Heart, Share, MessageCircle, TrendingUp } from "lucide-react";
-import type { PostMetrics as PostMetricsType } from "@/lib/types/aisam-types";
+import type { PostMetrics as PostMetricsType } from "@/lib/types/omniadly-types";
 
 interface PostMetricsProps {
   metrics: PostMetricsType;

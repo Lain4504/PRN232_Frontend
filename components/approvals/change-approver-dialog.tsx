@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { User, Loader2 } from "lucide-react";
-import { ApprovalResponseDto } from "@/lib/types/aisam-types";
+import { ApprovalResponseDto } from "@/lib/types/omniadly-types";
 import { useChangeApprover, useAvailableApprovers } from "@/hooks/use-approvals";
 import { toast } from "sonner";
 

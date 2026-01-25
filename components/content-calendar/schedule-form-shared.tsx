@@ -19,7 +19,7 @@ import {
   XCircle,
   AlertCircle
 } from "lucide-react";
-import type { ScheduleContentRequest, ContentResponseDto, Brand, SocialAccountDto } from "@/lib/types/aisam-types";
+import type { ScheduleContentRequest, ContentResponseDto, Brand, SocialAccountDto } from "@/lib/types/omniadly-types";
 import { toast } from "sonner";
 
 interface ScheduleFormSharedProps {

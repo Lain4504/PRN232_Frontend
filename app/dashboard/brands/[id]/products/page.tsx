@@ -3,7 +3,7 @@ import { ProductsManagement } from "@/components/pages/products/products-managem
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Products | AISAM",
+  title: "Products | omniadly",
   description: "Manage your products and inventory",
 };
 

@@ -18,10 +18,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ContentStatusEnum, ContentResponseDto } from "@/lib/types/aisam-types";
+import { ContentStatusEnum, ContentResponseDto } from "@/lib/types/omniadly-types";
 import { toast } from "sonner";
 import { api, endpoints, ApiResponse } from "@/lib/api";
-import { UpdateContentRequest } from "@/lib/types/aisam-types";
+import { UpdateContentRequest } from "@/lib/types/omniadly-types";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface ChangeStatusModalProps {

@@ -12,7 +12,7 @@ import { Building2, ArrowLeft, CheckCircle, User, CreditCard } from "lucide-reac
 import Link from "next/link"
 import { useCreateProfile } from "@/hooks/use-profiles"
 import { useUser } from "@/hooks/use-user"
-import { CreateProfileForm } from "@/lib/types/aisam-types"
+import { CreateProfileForm } from "@/lib/types/omniadly-types"
 import { toast } from "sonner"
 
 export default function CreateProfilePage() {

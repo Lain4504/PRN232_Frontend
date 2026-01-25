@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Check, X, Loader2 } from "lucide-react";
-import { ApprovalResponseDto, ContentStatusEnum } from "@/lib/types/aisam-types";
+import { ApprovalResponseDto, ContentStatusEnum } from "@/lib/types/omniadly-types";
 import { useSocialIntegrations } from "@/hooks/use-social-integrations";
 import { usePublishContent, useContent } from "@/hooks/use-contents";
 import { ContentPreviewView } from "@/components/contents/content-preview-view";

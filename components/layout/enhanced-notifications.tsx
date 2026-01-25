@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useNotifications, useGetUnreadNotificationCount } from "@/hooks/use-notifications"
-import { Notification } from "@/lib/types/aisam-types"
+import { Notification } from "@/lib/types/omniadly-types"
 import { formatDistanceToNow } from "date-fns"
 import { cn } from "@/lib/utils"
 import { NotificationSkeleton } from "@/components/ui/notification-skeleton"

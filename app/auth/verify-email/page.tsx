@@ -4,8 +4,8 @@ import { Zap } from "lucide-react";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Identity Verification | AISAM",
-  description: "Securely verify your email address to activate your AISAM deployment.",
+  title: "Identity Verification | omniadly",
+  description: "Securely verify your email address to activate your omniadly deployment.",
 };
 
 export default function VerifyEmailPage() {
@@ -25,7 +25,7 @@ export default function VerifyEmailPage() {
               <Zap className="size-7 text-primary-foreground fill-current" />
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-black text-foreground tracking-[0.2em] uppercase leading-none">AISAM</span>
+              <span className="text-2xl font-black text-foreground tracking-[0.2em] uppercase leading-none">omniadly</span>
               <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em] italic leading-none">AI Platform</span>
             </div>
           </Link>
@@ -39,7 +39,7 @@ export default function VerifyEmailPage() {
             <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-[9px] font-black uppercase tracking-widest leading-none">Systems Operational</span>
           </div>
-          <span className="text-[9px] font-black uppercase tracking-widest leading-none">© 2026 AISAM Intelligence</span>
+          <span className="text-[9px] font-black uppercase tracking-widest leading-none">© 2026 omniadly Intelligence</span>
         </div>
       </div>
     </div>

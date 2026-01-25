@@ -23,7 +23,7 @@ import {
   AlertDialogHeader, 
   AlertDialogTitle 
 } from '@/components/ui/alert-dialog'
-import { SocialAccountDto, SocialAuthUrlResponse } from '@/lib/types/aisam-types'
+import { SocialAccountDto, SocialAuthUrlResponse } from '@/lib/types/omniadly-types'
 import { LinkIntegrationModal } from './link-integration-modal'
 import { IntegrationsModal } from './integrations-modal'
 import { useUnlinkAccount, useUnlinkTarget } from '@/hooks/use-social-accounts'

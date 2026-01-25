@@ -49,7 +49,7 @@ export const vi = {
 
         header: {
             brand: {
-                name: "AISAM",
+                name: "omniadly",
                 slogan: "Giải pháp thông minh"
             },
             menu: {
@@ -124,7 +124,7 @@ export const vi = {
             privacy: "Quyền riêng tư",
             terms: "Điều khoản",
             security: "Bảo mật",
-            rightsReserved: "© 2026 Nền tảng AISAM. Bảo lưu mọi quyền."
+            rightsReserved: "© 2026 Nền tảng omniadly. Bảo lưu mọi quyền."
         },
 
         pricing: {
@@ -185,7 +185,7 @@ export const vi = {
             badge: "Hướng dẫn người dùng",
             title: "Tài liệu",
             accent: "Hub.",
-            description: "Hướng dẫn và hướng dẫn cho mọi quy trình AISAM.",
+            description: "Hướng dẫn và hướng dẫn cho mọi quy trình omniadly.",
             searchPlaceholder: "Tìm kiếm trợ giúp...",
             sections: [
                 { title: "Bắt đầu", items: ["Khởi động nhanh", "Xác thực", "Hướng dẫn cài đặt"] },
@@ -198,20 +198,20 @@ export const vi = {
                 { title: "Tham chiếu API", description: "Hướng dẫn đầy đủ cho nhà phát triển về tích hợp nền tảng tùy chỉnh.", icon: "code" }
             ],
             overviewTitle: "Tổng quan nền tảng",
-            overviewBody: "AISAM cung cấp không gian làm việc thống nhất để tạo nội dung tốc độ cao và phân phối truyền thông xã hội tự động. Quản lý tất cả thương hiệu của bạn ở một nơi với tính nhất quán và phân tích hiệu suất được hỗ trợ bởi AI.",
+            overviewBody: "omniadly cung cấp không gian làm việc thống nhất để tạo nội dung tốc độ cao và phân phối truyền thông xã hội tự động. Quản lý tất cả thương hiệu của bạn ở một nơi với tính nhất quán và phân tích hiệu suất được hỗ trợ bởi AI.",
             overviewFootnote: "Các tính năng tự động hóa nâng cao yêu cầu cấp Chiến lược hoặc Doanh nghiệp."
         },
         blog: {
             badge: "Tin tức mới nhất",
             title: "Thông tin chi tiết",
             accent: "Blog.",
-            description: "Cập nhật từ đội AISAM về tiếp thị AI.",
+            description: "Cập nhật từ đội omniadly về tiếp thị AI.",
             featured: {
                 tag: "Cập nhật nền tảng",
                 title: "Tương lai của AI trong tiếp thị sáng tạo",
                 desc: "Cách các mô hình học sâu đang đơn giản hóa việc tạo nội dung cho các đội tiếp thị hiện đại.",
                 date: "24 THG 1, 2026",
-                author: "Ban biên tập AISAM",
+                author: "Ban biên tập omniadly",
                 image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop"
             },
             posts: [
@@ -232,7 +232,7 @@ export const vi = {
                     image: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=800&auto=format&fit=crop"
                 }
             ],
-            footer: "© 2026 Nền tảng AISAM. Thông tin chi tiết mới nhất."
+            footer: "© 2026 Nền tảng omniadly. Thông tin chi tiết mới nhất."
         },
 
         about: {
@@ -240,7 +240,7 @@ export const vi = {
             title: "Trung tâm AI",
             accent: "Marketing",
             subtitle: "hiện đại.",
-            description: "Chúng tôi xây dựng cơ sở hạ tầng cho thế hệ quảng cáo xã hội tiếp theo. AISAM được thiết kế để đơn giản hóa công việc sáng tạo và thống nhất quản lý thương hiệu toàn cầu.",
+            description: "Chúng tôi xây dựng cơ sở hạ tầng cho thế hệ quảng cáo xã hội tiếp theo. omniadly được thiết kế để đơn giản hóa công việc sáng tạo và thống nhất quản lý thương hiệu toàn cầu.",
             values: [
                 { title: "Kiểm soát", desc: "Duy trì quyền kiểm soát tuyệt đối đối với danh tính thương hiệu và tài sản kỹ thuật số của bạn." },
                 { title: "Chính xác", desc: "Độ chính xác trong việc tạo nội dung và thời gian triển khai." },
@@ -262,7 +262,7 @@ export const vi = {
             description: "Có câu hỏi hoặc muốn hợp tác với chúng tôi? Liên hệ và chúng tôi sẽ phản hồi trong vòng 24 giờ.",
             detailsTitle: "Chi tiết liên hệ.",
             contactInfo: [
-                { label: "Địa chỉ Email", value: "hello@aisam.app" },
+                { label: "Địa chỉ Email", value: "hello@omniadly.app" },
                 { label: "Hỗ trợ trực tiếp", value: "Chat có sẵn" },
                 { label: "Vị trí", value: "Toàn cầu (Phân tán)" },
                 { label: "Khả dụng", value: "Trung tâm kỹ thuật số 24/7" }
@@ -280,7 +280,7 @@ export const vi = {
                 messagePlaceholder: "Chúng tôi có thể giúp gì cho bạn hôm nay?",
                 sendButton: "GỬI TIN NHẮN"
             },
-            footer: "© 2026 Nền tảng AISAM. Liên hệ bất cứ lúc nào."
+            footer: "© 2026 Nền tảng omniadly. Liên hệ bất cứ lúc nào."
         },
 
         features: {
@@ -362,7 +362,7 @@ export const vi = {
             badge: "Công cụ dành cho nhà phát triển",
             title: "API",
             accent: "Tham chiếu.",
-            baseUrl: "V1.0.4 - Base URL: https://api.aisam.app",
+            baseUrl: "V1.0.4 - Base URL: https://api.omniadly.app",
             authentication: {
                 title: "Xác thực",
                 description: "Tất cả các yêu cầu API phải bao gồm một token Bearer trong header `Authorization`.",
@@ -376,7 +376,7 @@ export const vi = {
                 { desc: "Liệt kê tất cả hồ sơ danh tính thương hiệu đang hoạt động." }
             ],
             viewDetails: "XEM CHI TIẾT",
-            footer: "© 2026 AISAM Intelligence Core. Tính toàn vẹn API đã được xác minh."
+            footer: "© 2026 omniadly Intelligence Core. Tính toàn vẹn API đã được xác minh."
         },
 
         solutions: {
@@ -545,7 +545,7 @@ export const vi = {
                 saveUpdate: "Cập nhật thông tin",
                 cancel: "Hủy bỏ",
                 required: "Bắt buộc",
-                namePlaceholder: "Ví dụ: AISAM Corp",
+                namePlaceholder: "Ví dụ: omniadly Corp",
                 sloganPlaceholder: "Ví dụ: Giải pháp Marketing AI toàn diện",
                 descPlaceholder: "Mô tả ngắn gọn về thương hiệu và giá trị cốt lõi...",
                 uspPlaceholder: "Điều gì khiến thương hiệu của bạn khác biệt so với đối thủ?",
@@ -992,7 +992,7 @@ export const vi = {
     auth: {
         welcomeBack: "Chào mừng trở lại",
         signInSubtitle: "Đăng nhập để quản lý các chiến dịch tiếp thị AI của bạn",
-        quote: "AISAM đã thay đổi hoàn toàn cách chúng tôi xử lý sáng tạo trên mạng xã hội. Chúng tôi đã thấy mức độ tương tác tăng gấp 4 lần trong khi dành ít hơn 70% thời gian cho sản xuất.",
+        quote: "omniadly đã thay đổi hoàn toàn cách chúng tôi xử lý sáng tạo trên mạng xã hội. Chúng tôi đã thấy mức độ tương tác tăng gấp 4 lần trong khi dành ít hơn 70% thời gian cho sản xuất.",
         authorRole: "Giám đốc Marketing",
         secureConnection: "Kết nối an toàn",
         systemsActive: "Hệ thống hoạt động",
@@ -1006,7 +1006,7 @@ export const vi = {
         forgotPassword: "Quên mật khẩu?",
         signIn: "Đăng nhập",
         signingIn: "Đang đăng nhập...",
-        newToAisam: "Mới với AISAM?",
+        newToomniadly: "Mới với omniadly?",
         createAccount: "Tạo tài khoản",
 
         createAccountTitle: "Tạo tài khoản",
@@ -1058,6 +1058,6 @@ export const vi = {
         tryAgain: "Thử lại",
 
         // Core user label
-        coreUser: "Người dùng cốt lõi AISAM"
+        coreUser: "Người dùng cốt lõi omniadly"
     }
 };

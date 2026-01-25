@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LogoutButton } from "@/components/auth/logout-button"
 import React from "react"
-import { Sparkles, Settings, LifeBuoy, Monitor, Moon, Sun, Laptop } from "lucide-react"
-import { useTranslation } from "react-i18next"
+import { Sparkles, Settings, LifeBuoy, Moon, Sun, Laptop, LayoutDashboard, User, LogOut } from "lucide-react"
+import Link from "next/link"
 
 type ThemeOption = "light" | "dark" | "system"
 
@@ -30,7 +30,6 @@ interface UserDropdownProps {
 
 export function UserDropdown({ user }: UserDropdownProps) {
   const { setTheme, theme } = useTheme()
-  const { t } = useTranslation("common")
 
   const handleThemeChange = (
     e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>,
@@ -50,14 +49,14 @@ export function UserDropdown({ user }: UserDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-xl overflow-hidden shadow-sm border border-border/50 hover:border-primary/50 transition-colors bg-background/50">
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full overflow-hidden hover:bg-slate-100 transition-colors">
           <Avatar className="h-full w-full">
             <AvatarImage
               src={user?.avatarUrl}
               alt={user?.fullName}
               className="object-cover"
             />
-            <AvatarFallback className="text-[10px] font-black bg-primary/10 text-primary">
+            <AvatarFallback className="bg-slate-900 text-white text-[10px] font-bold">
               {user?.fullName
                 ? user.fullName
                   .split(" ")
@@ -65,68 +64,77 @@ export function UserDropdown({ user }: UserDropdownProps) {
                   .join("")
                   .toUpperCase()
                   .substring(0, 2)
-                : user?.email?.[0]?.toUpperCase() || "ID"}
+                : user?.email?.[0]?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-72 rounded-[24px] border border-white/10 bg-background/90 backdrop-blur-2xl p-2 font-fira-sans shadow-2xl" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal p-3">
+      <DropdownMenuContent className="w-64 rounded-2xl border border-slate-100 bg-white p-2 shadow-2xl shadow-slate-200" align="end" forceMount>
+        <DropdownMenuLabel className="p-3">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-black leading-none text-foreground tracking-tight">
-              {user?.fullName || t("header.userMenu.anonymousUser")}
+            <p className="text-sm font-bold text-slate-900 leading-none">
+              {user?.fullName || "Người dùng"}
             </p>
-            <p className="text-[10px] font-medium leading-none text-muted-foreground uppercase tracking-wider">{user?.email}</p>
+            <p className="text-xs font-medium text-slate-400 truncate">{user?.email}</p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-white/5" />
+
+        <DropdownMenuSeparator className="bg-slate-50" />
+
         <DropdownMenuGroup className="p-1">
-          <DropdownMenuItem className="rounded-xl font-bold text-[11px] uppercase tracking-wide focus:bg-muted/50 cursor-pointer py-2.5">
+          <DropdownMenuItem asChild>
+            <Link href="/overview" className="flex items-center w-full px-3 py-2 rounded-xl text-sm font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer outline-none">
+              <LayoutDashboard className="mr-3 size-4 opacity-70" />
+              Bảng điều khiển
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex items-center px-3 py-2 rounded-xl text-sm font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer outline-none">
+            <User className="mr-3 size-4 opacity-70" />
+            Trang cá nhân
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex items-center px-3 py-2 rounded-xl text-sm font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer outline-none">
             <Settings className="mr-3 size-4 opacity-70" />
-            {t("header.userMenu.preferences")}
-          </DropdownMenuItem>
-          <DropdownMenuItem className="rounded-xl font-bold text-[11px] uppercase tracking-wide focus:bg-muted/50 cursor-pointer py-2.5">
-            <Sparkles className="mr-3 size-4 text-amber-500 opacity-80" />
-            {t("header.userMenu.featurePreviews")}
-          </DropdownMenuItem>
-          <DropdownMenuItem className="rounded-xl font-bold text[11px] uppercase tracking-wide focus:bg-muted/50 cursor-pointer py-2.5">
-            <LifeBuoy className="mr-3 size-4 opacity-70" />
-            {t("header.userMenu.helpNexus")}
+            Cài đặt
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
-        <DropdownMenuSeparator className="bg-white/5" />
+        <DropdownMenuSeparator className="bg-slate-50" />
 
-        <DropdownMenuLabel className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-[0.2em] px-3 my-1">
-          {t("header.userMenu.interfaceMode")}
+        <DropdownMenuLabel className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-3 my-2">
+          Giao diện
         </DropdownMenuLabel>
-        <DropdownMenuGroup className="flex items-center gap-1 p-1">
-          <DropdownMenuItem
-            onClick={(e) => handleThemeChange(e, "light")}
-            className="flex-1 rounded-xl justify-center font-bold text-[10px] uppercase tracking-wide cursor-pointer py-2.5 data-[state=on]:bg-muted/50"
+        <div className="flex items-center gap-1 p-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => handleThemeChange(e as any, "light")}
+            className={`flex-1 rounded-lg h-9 ${theme === "light" ? "bg-slate-100 text-slate-900" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
           >
-            <Sun className={theme === "light" ? "size-4 text-primary" : "size-4 opacity-50"} />
-          </DropdownMenuItem>
-
-          <DropdownMenuItem
-            onClick={(e) => handleThemeChange(e, "dark")}
-            className="flex-1 rounded-xl justify-center font-bold text-[10px] uppercase tracking-wide cursor-pointer py-2.5"
+            <Sun className="size-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => handleThemeChange(e as any, "dark")}
+            className={`flex-1 rounded-lg h-9 ${theme === "dark" ? "bg-slate-100 text-slate-900" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
           >
-            <Moon className={theme === "dark" ? "size-4 text-primary" : "size-4 opacity-50"} />
-          </DropdownMenuItem>
-
-          <DropdownMenuItem
-            onClick={(e) => handleThemeChange(e, "system")}
-            className="flex-1 rounded-xl justify-center font-bold text-[10px] uppercase tracking-wide cursor-pointer py-2.5"
+            <Moon className="size-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => handleThemeChange(e as any, "system")}
+            className={`flex-1 rounded-lg h-9 ${theme === "system" ? "bg-slate-100 text-slate-900" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
           >
-            <Laptop className={theme === "system" ? "size-4 text-primary" : "size-4 opacity-50"} />
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+            <Laptop className="size-4" />
+          </Button>
+        </div>
 
-        <DropdownMenuSeparator className="bg-white/5" />
-        <DropdownMenuItem asChild className="rounded-xl focus:bg-destructive/10 focus:text-destructive cursor-pointer py-2.5 mt-1">
-          <LogoutButton />
-        </DropdownMenuItem>
+        <DropdownMenuSeparator className="bg-slate-50" />
+
+        <div className="p-1 mt-1">
+          <LogoutButton className="w-full flex items-center justify-start px-3 py-2 rounded-xl text-sm font-bold text-rose-500 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer" />
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   )

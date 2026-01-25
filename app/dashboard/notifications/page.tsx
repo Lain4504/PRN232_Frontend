@@ -21,7 +21,7 @@ import {
   Settings,
   CheckCheck,
 } from "lucide-react"
-import { Notification } from "@/lib/types/aisam-types"
+import { Notification } from "@/lib/types/omniadly-types"
 import { formatDistanceToNow } from "date-fns"
 import { cn } from "@/lib/utils"
 import { NotificationListSkeleton } from "@/components/ui/notification-skeleton"

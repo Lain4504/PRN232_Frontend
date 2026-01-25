@@ -6,7 +6,7 @@ import { Loader2, CheckCircle, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useConnectSocialAccount } from '@/hooks/use-social-accounts'
-import { SocialCallbackResponse } from '@/lib/types/aisam-types'
+import { SocialCallbackResponse } from '@/lib/types/omniadly-types'
 import { toast } from 'sonner'
 
 type LoadState = 'loading' | 'success' | 'error'

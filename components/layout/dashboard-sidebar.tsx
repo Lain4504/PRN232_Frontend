@@ -107,7 +107,7 @@ export function DashboardSidebar() {
             <Zap className="size-4 text-primary-foreground fill-current" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden overflow-hidden transition-all duration-300">
-            <span className="font-black text-base tracking-tighter text-foreground leading-none italic">AISAM</span>
+            <span className="font-black text-base tracking-tighter text-foreground leading-none italic">omniadly</span>
             <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em] leading-none opacity-80">{t("sidebar.console")}</span>
           </div>
         </div>

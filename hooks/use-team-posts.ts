@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api, endpoints, PaginatedResponse } from '@/lib/api'
-import type { Post, PostFilters, Brand, PublishResultDto } from '@/lib/types/aisam-types'
+import type { Post, PostFilters, Brand, PublishResultDto } from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const teamPostKeys = {
@@ -27,18 +27,18 @@ export function useTeamPosts(teamId?: string, filters?: PostFilters) {
     queryKey: teamId ? [...teamPostKeys.byTeam(teamId), queryString] : teamPostKeys.lists(),
     queryFn: async (): Promise<PaginatedResponse<Post>> => {
       if (!teamId) return { data: [], totalCount: 0, page: 1, pageSize: 10, totalPages: 0, hasNextPage: false, hasPreviousPage: false }
-      
+
       // If specific brandId is provided, use it directly
       if (filters?.brandId) {
         const url = queryString ? `${endpoints.posts.list()}?${queryString}` : `${endpoints.posts.list()}?brandId=${filters.brandId}`
         const resp = await api.get<PaginatedResponse<Post>>(url)
         return resp.data
       }
-      
+
       // Otherwise, get all team brands
       const brandsResp = await api.get<Brand[]>(`/brands/team/${teamId}`)
       const brandIds = brandsResp.data.map(brand => brand.id)
-      
+
       if (brandIds.length === 0) {
         return { data: [], totalCount: 0, page: 1, pageSize: 10, totalPages: 0, hasNextPage: false, hasPreviousPage: false }
       }
@@ -46,7 +46,7 @@ export function useTeamPosts(teamId?: string, filters?: PostFilters) {
       // Get posts for all team brands
       const brandIdParams = brandIds.map(id => `brandId=${id}`).join('&')
       const url = queryString ? `${endpoints.posts.list()}?${queryString}&${brandIdParams}` : `${endpoints.posts.list()}?${brandIdParams}`
-      
+
       const resp = await api.get<PaginatedResponse<Post>>(url)
       return resp.data
     },
@@ -61,17 +61,17 @@ export function useTeamScheduledPosts(teamId?: string) {
     queryKey: teamId ? teamPostKeys.scheduled(teamId) : teamPostKeys.lists(),
     queryFn: async (): Promise<Post[]> => {
       if (!teamId) return []
-      
+
       // Get team brands first
       const brandsResp = await api.get<Brand[]>(`/brands/team/${teamId}`)
       const brandIds = brandsResp.data.map(brand => brand.id)
-      
+
       if (brandIds.length === 0) return []
 
       // Get scheduled posts for team brands
       const brandIdParams = brandIds.map(id => `brandId=${id}`).join('&')
       const url = `${endpoints.posts.list()}?${brandIdParams}&status=Scheduled`
-      
+
       const resp = await api.get<PaginatedResponse<Post>>(url)
       return resp.data.data
     },
@@ -86,7 +86,7 @@ export function useTeamPostsByContent(teamId?: string, contentId?: string) {
     queryKey: teamId && contentId ? [...teamPostKeys.byTeam(teamId), 'content', contentId] : teamPostKeys.lists(),
     queryFn: async (): Promise<Post[]> => {
       if (!teamId || !contentId) return []
-      
+
       const resp = await api.get<Post[]>(endpoints.posts.byContent(contentId))
       return resp.data
     },

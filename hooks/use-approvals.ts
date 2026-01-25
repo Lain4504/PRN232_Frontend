@@ -5,8 +5,8 @@ import type {
   CreateApprovalRequest,
   UpdateApprovalRequest,
   ApprovalFilters,
-} from '@/lib/types/aisam-types'
-import { ContentStatusEnum } from '@/lib/types/aisam-types'
+} from '@/lib/types/omniadly-types'
+import { ContentStatusEnum } from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const approvalKeys = {
@@ -202,8 +202,8 @@ export function useApproveApproval(approvalId: string) {
       await qc.cancelQueries({ queryKey: key })
       const prev = qc.getQueryData<ApprovalResponseDto>(key)
       if (prev) {
-        qc.setQueryData<ApprovalResponseDto>(key, { 
-          ...prev, 
+        qc.setQueryData<ApprovalResponseDto>(key, {
+          ...prev,
           status: ContentStatusEnum.Approved,
           notes: notes || prev.notes
         })
@@ -246,8 +246,8 @@ export function useRejectApproval(approvalId: string) {
       await qc.cancelQueries({ queryKey: key })
       const prev = qc.getQueryData<ApprovalResponseDto>(key)
       if (prev) {
-        qc.setQueryData<ApprovalResponseDto>(key, { 
-          ...prev, 
+        qc.setQueryData<ApprovalResponseDto>(key, {
+          ...prev,
           status: ContentStatusEnum.Rejected,
           notes: notes || prev.notes
         })
@@ -320,8 +320,8 @@ export function useChangeApprover(approvalId: string) {
 export function useAvailableApprovers(brandId?: string) {
   return useQuery({
     queryKey: brandId ? ['approvals', 'available-approvers', brandId] : ['approvals', 'available-approvers'],
-    queryFn: async (): Promise<Array<{id: string; email: string; name?: string}>> => {
-      const resp = await api.get<Array<{id: string; email: string; firstName?: string; lastName?: string}>>(endpoints.approvalAvailableApprovers(brandId!))
+    queryFn: async (): Promise<Array<{ id: string; email: string; name?: string }>> => {
+      const resp = await api.get<Array<{ id: string; email: string; firstName?: string; lastName?: string }>>(endpoints.approvalAvailableApprovers(brandId!))
       return resp.data.map(user => ({
         id: user.id,
         email: user.email,

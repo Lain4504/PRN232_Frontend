@@ -671,7 +671,7 @@ function EditProfileForm({
               <Input
                 value={formData.avatarUrl}
                 onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
-                placeholder="URL: HTTPS://ASSETS.AISAM.IO/USER_01.JPG"
+                placeholder="URL: HTTPS://ASSETS.omniadly.IO/USER_01.JPG"
                 className="bg-muted/20 border-border/40 hover:border-primary/40 transition-all rounded-xl h-12 font-black text-[10px] uppercase tracking-[0.1em]"
               />
             </div>

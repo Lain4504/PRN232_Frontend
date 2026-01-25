@@ -92,7 +92,7 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <p className="text-sm font-black tracking-tight leading-none truncate text-foreground">
-                  {user?.fullName || "AISAM Operative"}
+                  {user?.fullName || "omniadly Operative"}
                 </p>
               </div>
               <p className="text-[10px] font-medium leading-none text-muted-foreground mt-1.5 truncate flex items-center gap-1.5">

@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, Plus } from "lucide-react";
 import { ScheduleContentModal } from "@/components/content-calendar/schedule-content-modal";
 import { useUpcomingSchedules } from "@/hooks/use-content-calendar";
-import type { ContentResponseDto } from "@/lib/types/aisam-types";
+import type { ContentResponseDto } from "@/lib/types/omniadly-types";
 
 interface ContentScheduleActionsProps {
   content: ContentResponseDto;

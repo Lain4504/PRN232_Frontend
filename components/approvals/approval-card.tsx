@@ -13,7 +13,7 @@ import {
   Trash2,
   User
 } from "lucide-react";
-import { ApprovalResponseDto, ContentStatusEnum } from "@/lib/types/aisam-types";
+import { ApprovalResponseDto, ContentStatusEnum } from "@/lib/types/omniadly-types";
 import { useProfile } from "@/lib/contexts/profile-context";
 import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 

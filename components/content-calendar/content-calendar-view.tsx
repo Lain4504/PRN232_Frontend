@@ -11,7 +11,7 @@ import {
   Plus
 } from "lucide-react";
 import { useUpcomingSchedules } from "@/hooks/use-content-calendar";
-import type { ContentCalendar } from "@/lib/types/aisam-types";
+import type { ContentCalendar } from "@/lib/types/omniadly-types";
 
 interface ContentCalendarViewProps {
   onScheduleClick?: () => void;

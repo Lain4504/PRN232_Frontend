@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api, endpoints, PaginatedResponse } from '@/lib/api'
-import { 
-  SocialAccountDto, 
-  SocialTargetDto, 
+import {
+  SocialAccountDto,
+  SocialTargetDto,
   AvailableTargetDto,
   SocialAuthUrlResponse,
   SocialCallbackRequest,
@@ -12,7 +12,7 @@ import {
   AccountsWithTargetsResponse,
   AdAccountDto,
   Brand
-} from '@/lib/types/aisam-types'
+} from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const socialAccountKeys = {
@@ -32,7 +32,7 @@ export function useGetSocialAccounts(userId?: string) {
   return useQuery({
     queryKey: socialAccountKeys.list(userId),
     queryFn: async (): Promise<SocialAccountDto[]> => {
-      const endpoint = userId 
+      const endpoint = userId
         ? endpoints.socialAccountsUser(userId)
         : endpoints.socialAccountsMe()
       const response = await api.get<SocialAccountDto[]>(endpoint)
@@ -111,7 +111,7 @@ export function useGetAuthUrl(provider: 'facebook' | 'tiktok' | 'instagram') {
 // Connect social account (OAuth callback)
 export function useConnectSocialAccount() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: async ({ provider, data }: { provider: string; data: SocialCallbackRequest }): Promise<SocialCallbackResponse> => {
       const response = await api.post<SocialCallbackResponse>(endpoints.socialCallback(provider), data)
@@ -127,7 +127,7 @@ export function useConnectSocialAccount() {
 // Link targets (fanpages) to brand
 export function useLinkTargets() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: async ({ socialAccountId, data }: { socialAccountId: string; data: LinkTargetsRequest }): Promise<LinkTargetsResponse> => {
       const response = await api.post<LinkTargetsResponse>(endpoints.linkTargets(socialAccountId), data)
@@ -145,7 +145,7 @@ export function useLinkTargets() {
 // Unlink social account
 export function useUnlinkAccount() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: async ({ socialAccountId }: { socialAccountId: string }): Promise<void> => {
       await api.delete(endpoints.socialUnlinkAccount(socialAccountId))
@@ -159,7 +159,7 @@ export function useUnlinkAccount() {
 // Unlink target (fanpage) from brand
 export function useUnlinkTarget() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: async ({ socialIntegrationId }: { socialIntegrationId: string }): Promise<void> => {
       await api.delete(endpoints.unlinkTarget(socialIntegrationId))

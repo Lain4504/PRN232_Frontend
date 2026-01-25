@@ -99,7 +99,7 @@ export default function DocsContent() {
 
             <footer className="py-20 px-6 border-t border-border/40 text-center">
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/40">
-                    © 2026 AISAM Platform. All documentation is kept current.
+                    © 2026 omniadly Platform. All documentation is kept current.
                 </p>
             </footer>
         </div>

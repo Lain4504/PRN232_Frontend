@@ -15,7 +15,7 @@ import {
   CreateContentRequest, 
   ContentStatusEnum, 
   AdTypeEnum 
-} from "@/lib/types/aisam-types";
+} from "@/lib/types/omniadly-types";
 import { useProfile } from "@/lib/contexts/profile-context";
 import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 

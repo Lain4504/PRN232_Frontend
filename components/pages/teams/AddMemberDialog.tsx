@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAddTeamMember } from '@/hooks/use-teams'
 import { api, endpoints } from '@/lib/api'
-import { User, TeamMemberCreateRequest } from '@/lib/types/aisam-types'
+import { User, TeamMemberCreateRequest } from '@/lib/types/omniadly-types'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'

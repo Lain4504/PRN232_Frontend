@@ -53,7 +53,7 @@ import {
   CreateContentRequest,
   UpdateContentRequest,
   CreateApprovalRequest
-} from "@/lib/types/aisam-types";
+} from "@/lib/types/omniadly-types";
 import { ContentModal } from "@/components/contents/content-modal";
 import { ContentPreviewModal } from "@/components/contents/content-preview-modal";
 import { ChangeStatusModal } from "@/components/contents/change-status-modal";

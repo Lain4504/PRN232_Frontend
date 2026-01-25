@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Eye, TrendingUp } from "lucide-react";
 import { useContents } from "@/hooks/use-contents";
-import { ContentStatusEnum } from "@/lib/types/aisam-types";
+import { ContentStatusEnum } from "@/lib/types/omniadly-types";
 import Link from "next/link";
 
 interface ContentStatusWidgetProps {

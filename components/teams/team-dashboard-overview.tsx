@@ -16,7 +16,7 @@ import {
   ArrowRight
 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import type { Brand } from '@/lib/types/aisam-types'
+import type { Brand } from '@/lib/types/omniadly-types'
 
 interface TeamStatsResponse {
   membersCount: number

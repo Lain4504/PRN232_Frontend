@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useContents } from './use-contents';
-import type { ContentFilters, ContentStatusEnum, AdTypeEnum } from '@/lib/types/aisam-types';
+import type { ContentFilters, ContentStatusEnum, AdTypeEnum } from '@/lib/types/omniadly-types';
 
 interface UseContentsByBrandOptions {
   brandId?: string;

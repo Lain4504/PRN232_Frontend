@@ -24,7 +24,7 @@ import {
   Video,
   FileText
 } from "lucide-react";
-import { ContentResponseDto, ContentStatusEnum, AdTypeEnum } from "@/lib/types/aisam-types";
+import { ContentResponseDto, ContentStatusEnum, AdTypeEnum } from "@/lib/types/omniadly-types";
 import { ContentScheduleActions } from "./content-schedule-actions";
 
 interface ContentCardProps {

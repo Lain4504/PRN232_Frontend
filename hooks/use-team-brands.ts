@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { api, endpoints } from '@/lib/api'
-import type { Brand } from '@/lib/types/aisam-types'
+import type { Brand } from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const teamBrandKeys = {

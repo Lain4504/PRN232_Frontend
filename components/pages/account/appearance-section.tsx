@@ -50,12 +50,12 @@ export function AppearanceSection() {
           <div>
             <h3 className="text-lg font-medium">Theme mode</h3>
             <p className="text-sm text-muted-foreground">
-              Choose how AISAM looks to you. Select a single theme, or sync with your system.
+              Choose how omniadly looks to you. Select a single theme, or sync with your system.
             </p>
           </div>
           
           <p className="text-sm text-muted-foreground">
-            AISAM will use your selected theme
+            omniadly will use your selected theme
           </p>
 
           <RadioGroup value={theme} onValueChange={handleThemeChange} className="grid grid-cols-1 sm:grid-cols-3 gap-4">

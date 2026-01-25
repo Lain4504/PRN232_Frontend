@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Calendar, Activity } from "lucide-react";
-import type { ContentCalendar } from "@/lib/types/aisam-types";
+import type { ContentCalendar } from "@/lib/types/omniadly-types";
 import { format, parseISO, isToday, isTomorrow, isPast } from "date-fns";
 import { cn } from "@/lib/utils";
 

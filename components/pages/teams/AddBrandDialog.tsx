@@ -14,7 +14,7 @@ import { toast } from 'sonner'
 import { api, endpoints } from '@/lib/api'
 import { useBrands } from '@/hooks/use-brands'
 import { useAssignBrands } from '@/hooks/use-teams'
-import type { Brand } from '@/lib/types/aisam-types'
+import type { Brand } from '@/lib/types/omniadly-types'
 
 interface Props {
     open: boolean

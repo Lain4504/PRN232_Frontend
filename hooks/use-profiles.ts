@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api, endpoints } from '@/lib/api'
-import { Profile, CreateProfileForm } from '@/lib/types/aisam-types'
+import { Profile, CreateProfileForm } from '@/lib/types/omniadly-types'
 
 export const profileKeys = {
   all: ['profiles'] as const,

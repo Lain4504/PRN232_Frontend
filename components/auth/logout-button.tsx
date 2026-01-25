@@ -1,29 +1,33 @@
 "use client";
 
 import { useAuth } from "@/lib/contexts/auth-context";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
-export function LogoutButton() {
+interface LogoutButtonProps {
+  className?: string;
+}
+
+export function LogoutButton({ className }: LogoutButtonProps) {
   const { logout } = useAuth();
-  const { t } = useTranslation("common");
 
-  const handleLogout = async () => {
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
     try {
       await logout();
+      window.location.href = "/auth/login";
     } catch (error) {
       console.error("Error logging out:", error);
     }
   };
 
   return (
-    <Link href="/auth/login">
-      <Button onClick={handleLogout} variant="link" size="sm" className="w-full justify-start px-2">
-        <LogOut className="h-4 w-4 mr-2" />
-        {t("userMenu.logout")}
-      </Button>
-    </Link>
+    <button
+      onClick={handleLogout}
+      className={cn("flex items-center gap-2", className)}
+    >
+      <LogOut className="h-4 w-4" />
+      <span>Đăng xuất</span>
+    </button>
   );
 }

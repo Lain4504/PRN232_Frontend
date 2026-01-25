@@ -28,7 +28,7 @@ export function EmptyState({ onConnect, type = 'accounts' }: EmptyStateProps) {
         </h3>
         <p className="text-muted-foreground mb-4 text-sm leading-relaxed max-w-sm mx-auto">
           {isAccounts 
-            ? 'Connect your social media accounts to start managing your content and campaigns with AISAM.'
+            ? 'Connect your social media accounts to start managing your content and campaigns with omniadly.'
             : 'Link your social accounts to brands to create integrations for seamless content posting.'
           }
         </p>

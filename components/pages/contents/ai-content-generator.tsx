@@ -24,7 +24,7 @@ import {
   MessageSquare,
   Menu,
 } from "lucide-react";
-import { Brand, Product, ConversationSummary, ConversationDetails, ConversationsResponse } from "@/lib/types/aisam-types";
+import { Brand, Product, ConversationSummary, ConversationDetails, ConversationsResponse } from "@/lib/types/omniadly-types";
 import { useAIChat, AdTypes } from "@/hooks/use-ai-chat";
 import { api, endpoints } from "@/lib/api";
 import { toast } from "sonner";
@@ -672,7 +672,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                     What can we <br /><span className="text-primary italic">create</span> today?
                   </h2>
                   <p className="text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
-                    Collaborate with AISAM Intelligence to architect multi-channel campaigns,
+                    Collaborate with omniadly Intelligence to architect multi-channel campaigns,
                     creative copies, or market strategies.
                   </p>
                 </div>

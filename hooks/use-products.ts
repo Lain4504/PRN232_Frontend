@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, endpoints, PaginatedResponse } from '@/lib/api'
-import type { Product, CreateProductForm, CreateProductRequest } from '@/lib/types/aisam-types'
+import type { Product, CreateProductForm, CreateProductRequest } from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const productKeys = {

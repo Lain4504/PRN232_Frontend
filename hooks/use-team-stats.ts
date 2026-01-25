@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { api, endpoints, PaginatedResponse } from '@/lib/api'
-import type { Brand, ContentResponseDto, Post, TeamMemberResponseDto } from '@/lib/types/aisam-types'
+import type { Brand, ContentResponseDto, Post, TeamMemberResponseDto } from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const teamStatsKeys = {
@@ -16,22 +16,22 @@ export function useTeamStatistics(teamId?: string) {
       // Team info
       teamMembersCount: number
       brandsCount: number
-      
+
       // Content stats
       totalContents: number
       draftContents: number
       pendingApprovals: number
       publishedContents: number
-      
+
       // Post stats
       totalPosts: number
       scheduledPosts: number
       publishedPosts: number
-      
+
       // Performance stats
       averageCTR: number
       totalEngagement: number
-      
+
       // Recent activity
       recentContents: ContentResponseDto[]
       recentPosts: Post[]

@@ -31,7 +31,7 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { SocialAccountDto } from '@/lib/types/aisam-types'
+import { SocialAccountDto } from '@/lib/types/omniadly-types'
 import {SiFacebook, SiTiktok, SiInstagram} from "@icons-pack/react-simple-icons";
 
 interface IntegrationsModalProps {

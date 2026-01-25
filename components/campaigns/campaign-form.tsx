@@ -9,7 +9,7 @@ import { useBrands } from "@/hooks/use-brands";
 import { useCreateCampaign, useUpdateCampaign } from "@/hooks/use-campaigns";
 import { useGetSocialAccounts, useGetAdAccounts } from "@/hooks/use-social-accounts";
 import { AdCampaignResponse } from "@/lib/types/campaigns";
-import { SocialAccountDto, AdAccountDto } from "@/lib/types/aisam-types";
+import { SocialAccountDto, AdAccountDto } from "@/lib/types/omniadly-types";
 
 import {
   Dialog,

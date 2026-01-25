@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, endpoints, PaginatedResponse } from '@/lib/api'
-import type { Post, PostFilters } from '@/lib/types/aisam-types'
+import type { Post, PostFilters } from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const postKeys = {

@@ -9,7 +9,7 @@ import {
   ChevronRight,
   Loader2
 } from "lucide-react";
-import type { ContentCalendar } from "@/lib/types/aisam-types";
+import type { ContentCalendar } from "@/lib/types/omniadly-types";
 import { cn } from "@/lib/utils";
 
 interface CalendarGridProps {

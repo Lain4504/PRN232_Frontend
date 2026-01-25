@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter } from "lucide-react";
-import type { PostFilters } from "@/lib/types/aisam-types";
+import type { PostFilters } from "@/lib/types/omniadly-types";
 
 interface PostsFiltersProps {
   filters?: PostFilters;

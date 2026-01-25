@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FormField } from "@/components/ui/form-field";
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
-import { Product, CreateProductForm, Brand } from "@/lib/types/aisam-types";
+import { Product, CreateProductForm, Brand } from "@/lib/types/omniadly-types";
 import { toast } from "sonner";
 import { useTeamBrands } from "@/hooks/use-team-brands";
 import { useCreateProduct, useUpdateProduct } from "@/hooks/use-products";

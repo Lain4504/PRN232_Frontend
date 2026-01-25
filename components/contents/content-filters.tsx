@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Plus, Filter } from "lucide-react";
-import { ContentStatusEnum, AdTypeEnum } from "@/lib/types/aisam-types";
+import { ContentStatusEnum, AdTypeEnum } from "@/lib/types/omniadly-types";
 
 interface ContentFiltersProps {
   searchTerm: string;

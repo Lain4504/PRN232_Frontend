@@ -5,7 +5,7 @@ import type {
   CreateContentRequest,
   ContentFilters,
   Brand,
-} from '@/lib/types/aisam-types'
+} from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const teamContentKeys = {
@@ -33,10 +33,10 @@ export function useTeamContents(teamId?: string, filters?: ContentFilters) {
     queryKey: teamId ? [...teamContentKeys.byTeam(teamId), queryString] : teamContentKeys.lists(),
     queryFn: async (): Promise<PaginatedResponse<ContentResponseDto>> => {
       if (!teamId) return { data: [], totalCount: 0, page: 1, pageSize: 10, totalPages: 0, hasNextPage: false, hasPreviousPage: false }
-      
+
       // Get all contents (no brandId filter when "All team brands" is selected)
       const url = queryString ? `${endpoints.contents()}?${queryString}` : endpoints.contents()
-      
+
       const resp = await api.get<PaginatedResponse<ContentResponseDto>>(url)
       return resp.data
     },
@@ -69,7 +69,7 @@ export function useTeamContentStats(teamId?: string) {
       // Get team brands first
       const brandsResp = await api.get<Brand[]>(`/brands/team/${teamId}`)
       const brandIds = brandsResp.data.map(brand => brand.id)
-      
+
       if (brandIds.length === 0) {
         return {
           totalContents: 0,

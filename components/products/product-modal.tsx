@@ -8,7 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { Plus, Edit } from 'lucide-react'
 import { ProductForm } from '@/components/products/product-form'
 import { TeamProductForm } from '@/components/products/product-form-team'
-import { Product, Brand } from '@/lib/types/aisam-types'
+import { Product, Brand } from '@/lib/types/omniadly-types'
 
 interface ProductModalProps {
   children?: React.ReactNode

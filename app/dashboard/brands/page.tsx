@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BrandsManagement } from "@/components/pages/brands/brands-management";
 
 export const metadata: Metadata = {
-  title: "Brands Management | AISAM",
+  title: "Brands Management | omniadly",
   description: "Manage your brands and brand assets",
 };
 

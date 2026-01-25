@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, endpoints } from '@/lib/api'
-import type { Brand, CreateBrandForm } from '@/lib/types/aisam-types'
+import type { Brand, CreateBrandForm } from '@/lib/types/omniadly-types'
 
 // Query Keys
 export const brandKeys = {

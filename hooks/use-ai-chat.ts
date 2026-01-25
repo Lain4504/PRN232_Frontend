@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { api, endpoints } from '@/lib/api';
-import { AIChatRequest, AIChatResponse, AIChatError, AdTypes } from '@/lib/types/aisam-types';
+import { AIChatRequest, AIChatResponse, AIChatError, AdTypes } from '@/lib/types/omniadly-types';
 
 export { AdTypes };
 export type { AIChatRequest, AIChatResponse, AIChatError };

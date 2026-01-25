@@ -3,7 +3,7 @@ import { useUpcomingSchedules, useTeamSchedules } from '@/hooks/use-content-cale
 import { useTeamBrands } from '@/hooks/use-team-brands';
 import { useBrands } from '@/hooks/use-brands';
 import { useTeam } from '@/hooks/use-teams';
-import type { ContentCalendar } from '@/lib/types/aisam-types';
+import type { ContentCalendar } from '@/lib/types/omniadly-types';
 
 interface UseCalendarDataProps {
   teamId?: string; // Optional: undefined for profile context, string for team context
@@ -23,37 +23,37 @@ interface UseCalendarDataReturn {
   };
 }
 
-export function useCalendarData({ 
-  teamId, 
-  limit = 50 
+export function useCalendarData({
+  teamId,
+  limit = 50
 }: UseCalendarDataProps): UseCalendarDataReturn {
   const [brandFilter, setBrandFilter] = useState<string | undefined>(undefined);
-  
+
   // For profile/dashboard context, teamId is undefined
   const isProfileContext = !teamId;
-  
+
   // Get team info to get team name (only for team context)
   const { data: team } = useTeam(teamId || undefined);
-  
+
   // Load team brands (for team context) or all brands (for profile context)
   const { data: teamBrands = [] } = useTeamBrands(teamId || undefined);
   const { data: allBrands = [] } = useBrands();
-  
+
   // Use appropriate brands based on context
   const availableBrands = isProfileContext ? allBrands : teamBrands;
-  
+
   // Use brand-specific API when a brand is selected, otherwise use team schedules
   const { data: teamSchedules = [], isLoading: teamLoading, error: teamError } = useTeamSchedules(teamId || "", limit);
   const { data: brandSchedules = [], isLoading: brandLoading, error: brandError } = useUpcomingSchedules(limit, brandFilter);
-  
+
   // For profile context, use upcoming schedules directly
   const { data: profileSchedules = [], isLoading: profileLoading, error: profileError } = useUpcomingSchedules(limit);
-  
+
   // Use brand-specific schedules if a brand is selected, otherwise use team/profile schedules
   const isBrandSelected = !!brandFilter && brandFilter !== "all" && brandFilter !== "";
-  
+
   let schedules, isLoading, error;
-  
+
   if (isProfileContext) {
     // For profile context, use upcoming schedules directly
     schedules = isBrandSelected ? brandSchedules : profileSchedules;

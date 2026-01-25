@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import ProfileLayout from "@/components/layout/profile-layout";
 
 export const metadata: Metadata = {
-  title: "Profile Management | AISAM",
+  title: "Profile Management | omniadly",
   description: "Manage your profiles and team memberships.",
 };
 

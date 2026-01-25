@@ -25,19 +25,19 @@ const firaMono = Fira_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AISAM | Quản lý quảng cáo thông minh",
+  title: "omniadly | Quản lý quảng cáo thông minh",
   description: "Quản lý chiến dịch quảng cáo đa nền tảng với AI: tạo nội dung, lập lịch, phân tích hiệu quả.",
   openGraph: {
-    title: "AISAM | Quản lý quảng cáo thông minh",
+    title: "omniadly | Quản lý quảng cáo thông minh",
     description: "Quản lý chiến dịch quảng cáo đa nền tảng với AI: tạo nội dung, lập lịch, phân tích hiệu quả.",
-    url: "https://aisam.app/",
-    siteName: "AISAM",
+    url: "https://omniadly.app/",
+    siteName: "omniadly",
     locale: "vi_VN",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AISAM | Quản lý quảng cáo thông minh",
+    title: "omniadly | Quản lý quảng cáo thông minh",
     description: "Quản lý chiến dịch quảng cáo đa nền tảng với AI: tạo nội dung, lập lịch, phân tích hiệu quả.",
   },
 };

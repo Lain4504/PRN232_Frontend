@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { BrandForm } from '@/components/brands/brand-form'
-import { Brand } from '@/lib/types/aisam-types'
+import { Brand } from '@/lib/types/omniadly-types'
 import { useTranslation } from 'react-i18next'
 
 interface BrandModalProps {

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BarChart3 } from "lucide-react";
 import { PostsList } from "@/components/posts/posts-list";
-import type { PostFilters } from "@/lib/types/aisam-types";
+import type { PostFilters } from "@/lib/types/omniadly-types";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 

@@ -8,7 +8,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { 
   ContentResponseDto, 
   ContentStatusEnum
-} from "@/lib/types/aisam-types";
+} from "@/lib/types/omniadly-types";
 import { ContentPreviewView } from "./content-preview-view";
 
 interface ContentPreviewModalProps {

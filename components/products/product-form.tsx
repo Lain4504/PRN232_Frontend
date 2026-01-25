@@ -9,13 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FormField } from "@/components/ui/form-field";
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
-import { Product, CreateProductForm } from "@/lib/types/aisam-types";
+import { Product, CreateProductForm } from "@/lib/types/omniadly-types";
 import { toast } from "sonner";
 import { useBrands } from "@/hooks/use-brands";
 import { useTeamBrands } from "@/hooks/use-team-brands";
 import { useCreateProduct, useUpdateProduct } from "@/hooks/use-products";
 import { Loader2, Package, Upload, Image as ImageIcon } from "lucide-react";
-import { Brand } from "@/lib/types/aisam-types";
+import { Brand } from "@/lib/types/omniadly-types";
 
 interface ProductFormProps {
   mode: 'create' | 'edit';

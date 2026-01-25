@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AIContentGenerator } from "@/components/pages/contents/ai-content-generator";
 
 export const metadata: Metadata = {
-  title: "AI Content Generator | AISAM",
+  title: "AI Content Generator | omniadly",
   description: "Generate social media content with AI assistance",
 };
 
