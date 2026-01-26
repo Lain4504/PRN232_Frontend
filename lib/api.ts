@@ -430,6 +430,7 @@ export const endpoints = {
   socialAccountsUser: (userId: string) => `/social/accounts/user/${userId}`,
   socialAccountsWithTargets: () => '/social/accounts/me/accounts-with-targets',
   socialUnlinkAccount: (socialAccountId: string) => `/social/accounts/unlink/${socialAccountId}`,
+  googleLogin: () => "/auth/google",
 
   // Social Targets endpoints
   availableTargets: (socialAccountId: string) => `/social/accounts/${socialAccountId}/available-targets`,

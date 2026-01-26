@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { AuthUser, AuthSession, LoginFormData, RegistrationFormData } from "@/lib/types/auth";
-import { api } from "@/lib/api";
+import { api, endpoints } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -13,6 +13,7 @@ interface AuthContextType {
     login: (data: LoginFormData) => Promise<void>;
     register: (data: RegistrationFormData) => Promise<void>;
     logout: () => Promise<void>;
+    googleLogin: (idToken: string) => Promise<void>;
     refreshSession: () => Promise<void>;
 }
 
@@ -161,6 +162,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
+    const googleLogin = async (idToken: string) => {
+        try {
+            const response = await api.post<AuthSession>(endpoints.googleLogin(), { idToken }, { requireAuth: false });
+            if (response.success) {
+                saveSession(response.data);
+                toast.success(`Welcome back, ${response.data.user.fullName || 'User'}!`);
+                await handleAuthRedirect(response.data.user.id);
+            } else {
+                throw new Error(response.message || "Google login failed");
+            }
+        } catch (error: unknown) {
+            toast.error((error as Error).message || "Google login failed");
+            throw error;
+        }
+    };
+
     const logout = async () => {
         try {
             if (session) {
@@ -196,7 +213,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider value={{ user, session, isLoading, login, register, logout, refreshSession }}>
+        <AuthContext.Provider value={{ user, session, isLoading, login, register, logout, googleLogin, refreshSession }}>
             {children}
         </AuthContext.Provider>
     );

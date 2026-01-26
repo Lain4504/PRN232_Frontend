@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useForm } from "react-hook-form";
@@ -23,8 +23,9 @@ export function LoginForm({
   const [error, setError] = useState<AuthError | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -51,20 +52,75 @@ export function LoginForm({
   };
 
   const handleGoogleLogin = async () => {
-    setIsGoogleLoading(true);
-    setError(null);
-
-    try {
-      window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5283/api'}/auth/social/google`;
-    } catch (error: unknown) {
-      const authError: AuthError = {
-        message: "Không thể khởi tạo đăng nhập Google",
-      };
-      setError(authError);
-      toast.error(authError.message);
-      setIsGoogleLoading(false);
+    const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!googleClientId) {
+      toast.error('Google OAuth is not configured');
+      return;
     }
+
+    setIsGoogleLoading(true);
+
+    if (typeof window === 'undefined' || !(window as any).google?.accounts?.id) {
+      toast.error('Google Sign-In library chưa được tải. Vui lòng tải lại trang.');
+      setIsGoogleLoading(false);
+      return;
+    }
+
+    (window as any).google.accounts.id.initialize({
+      client_id: googleClientId,
+      callback: async (response: any) => {
+        try {
+          await googleLogin(response.credential);
+          // Redirect is handled in context
+        } catch (error: any) {
+          toast.error(error?.message || 'Đăng nhập Google thất bại');
+        } finally {
+          setIsGoogleLoading(false);
+        }
+      },
+    });
+
+    const buttonWrapper = document.createElement('div');
+    buttonWrapper.id = 'google-signin-trigger';
+    buttonWrapper.style.cssText = 'position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0;';
+    document.body.appendChild(buttonWrapper);
+
+    (window as any).google.accounts.id.renderButton(buttonWrapper, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      text: 'signin_with',
+    });
+
+    setTimeout(() => {
+      const googleButton = buttonWrapper.querySelector('div[role="button"]') as HTMLElement;
+      if (googleButton) {
+        googleButton.click();
+      } else {
+        try {
+          (window as any).google.accounts.id.prompt();
+        } catch (err) {
+          console.error('Google Sign-In failed:', err);
+          setIsGoogleLoading(false);
+          toast.error('Không thể khởi tạo Google Sign-In. Vui lòng thử lại.');
+        }
+      }
+    }, 200);
   };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    return () => {
+      // Cleanup if needed
+    };
+  }, []);
 
   return (
     <div className={cn("space-y-8", className)} {...props}>

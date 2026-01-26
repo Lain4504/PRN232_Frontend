@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useTranslation } from 'react-i18next'
-import { enUS, vi as viLocale } from 'date-fns/locale'
+import { enUS } from 'date-fns/locale'
 import { Mail, Edit, Eye, Calendar, Search, Activity, Share2, Globe, ExternalLink } from 'lucide-react'
 import { ActionsDropdown, ActionItem } from '@/components/ui/actions-dropdown'
 import type { Post } from '@/lib/types/omniadly-types'
