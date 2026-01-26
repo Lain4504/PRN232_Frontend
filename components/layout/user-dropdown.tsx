@@ -49,14 +49,14 @@ export function UserDropdown({ user }: UserDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full overflow-hidden hover:bg-slate-100 transition-colors">
+        <Button variant="ghost" className="relative h-10 w-10 p-0 rounded-full overflow-hidden hover:bg-slate-100 transition-colors">
           <Avatar className="h-full w-full">
             <AvatarImage
               src={user?.avatarUrl}
               alt={user?.fullName}
               className="object-cover"
             />
-            <AvatarFallback className="bg-slate-900 text-white text-[10px] font-bold">
+            <AvatarFallback className="bg-slate-900 text-white w-full h-full flex items-center justify-center text-sm font-bold">
               {user?.fullName
                 ? user.fullName
                   .split(" ")

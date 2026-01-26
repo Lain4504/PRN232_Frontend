@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import Link from "next/link";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mail, Lock, AlertCircle, CheckCircle, Loader2, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,7 +24,7 @@ export function SignUpForm({
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
-  const { register } = useAuth();
+  const { register, googleLogin } = useAuth();
 
   const form = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
@@ -54,20 +54,81 @@ export function SignUpForm({
   };
 
   const handleGoogleSignUp = async () => {
-    setIsGoogleLoading(true);
-    setError(null);
-
-    try {
-      window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5283/api'}/auth/social/google`;
-    } catch (error: unknown) {
-      const authError: AuthError = {
-        message: "Không thể khởi tạo đăng ký Google",
-      };
-      setError(authError);
-      toast.error(authError.message);
-      setIsGoogleLoading(false);
+    const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!googleClientId) {
+      toast.error('Google OAuth is not configured');
+      return;
     }
+
+    setIsGoogleLoading(true);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (typeof window === 'undefined' || !(window as any).google?.accounts?.id) {
+      toast.error('Google Sign-In library chưa được tải. Vui lòng tải lại trang.');
+      setIsGoogleLoading(false);
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).google.accounts.id.initialize({
+      client_id: googleClientId,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      callback: async (response: any) => {
+        try {
+          await googleLogin(response.credential);
+          // Redirect is handled in context
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : "Đăng nhập Google thất bại";
+          toast.error(message);
+        } finally {
+          setIsGoogleLoading(false);
+        }
+      },
+    });
+
+    const buttonWrapper = document.createElement('div');
+    buttonWrapper.id = 'google-signin-trigger';
+    buttonWrapper.style.cssText = 'position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0;';
+    document.body.appendChild(buttonWrapper);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).google.accounts.id.renderButton(buttonWrapper, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      text: 'signin_with',
+    });
+
+    setTimeout(() => {
+      const googleButton = buttonWrapper.querySelector('div[role="button"]') as HTMLElement;
+      if (googleButton) {
+        googleButton.click();
+      } else {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (window as any).google.accounts.id.prompt();
+        } catch (err) {
+          console.error('Google Sign-In failed:', err);
+          setIsGoogleLoading(false);
+          toast.error('Không thể khởi tạo Google Sign-In. Vui lòng thử lại.');
+        }
+      }
+    }, 200);
   };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    return () => {
+      // Cleanup if needed
+    };
+  }, []);
 
   return (
     <div className={cn("space-y-8", className)} {...props}>
