@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+// import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -24,8 +24,8 @@ export function LoginForm({
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { login, googleLogin } = useAuth();
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  // const router = useRouter();
+  // const searchParams = useSearchParams();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -60,20 +60,24 @@ export function LoginForm({
 
     setIsGoogleLoading(true);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof window === 'undefined' || !(window as any).google?.accounts?.id) {
       toast.error('Google Sign-In library chưa được tải. Vui lòng tải lại trang.');
       setIsGoogleLoading(false);
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).google.accounts.id.initialize({
       client_id: googleClientId,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       callback: async (response: any) => {
         try {
           await googleLogin(response.credential);
           // Redirect is handled in context
-        } catch (error: any) {
-          toast.error(error?.message || 'Đăng nhập Google thất bại');
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : "Đăng nhập Google thất bại";
+          toast.error(message);
         } finally {
           setIsGoogleLoading(false);
         }
@@ -85,6 +89,7 @@ export function LoginForm({
     buttonWrapper.style.cssText = 'position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0;';
     document.body.appendChild(buttonWrapper);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).google.accounts.id.renderButton(buttonWrapper, {
       type: 'standard',
       theme: 'outline',
@@ -98,6 +103,7 @@ export function LoginForm({
         googleButton.click();
       } else {
         try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (window as any).google.accounts.id.prompt();
         } catch (err) {
           console.error('Google Sign-In failed:', err);
