@@ -20,7 +20,8 @@ import {
   Layout,
   ChevronRight,
   Filter,
-  Sparkles
+  Sparkles,
+  X
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import {
@@ -30,6 +31,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu"
+import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { CustomTable } from "@/components/ui/custom-table"
 import { ColumnDef } from "@tanstack/react-table"
@@ -220,6 +222,11 @@ const createColumns = (
       },
     },
   ]
+
+interface ContentsManagementProps {
+  initialBrandId?: string;
+  teamId?: string;
+}
 
 export function ContentsManagement({ initialBrandId, teamId }: ContentsManagementProps = {}) {
   const { t } = useTranslation("common")

@@ -5,17 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FormField } from "@/components/ui/form-field";
+import { Label } from "@/components/ui/label";
 import {
   Upload,
   Plus,
   Loader2,
-  Trash2,
+  Landmark,
+  Target,
+  Users,
+  Sparkles,
+  ChevronRight,
+  Fingerprint
 } from "lucide-react";
 import { Brand, CreateBrandForm as CreateBrandFormType } from "@/lib/types/omniadly-types";
 import { toast } from "sonner";
 import { useCreateBrand, useUpdateBrand } from "@/hooks/use-brands";
-import { useTranslation } from "react-i18next";
 
 interface BrandFormProps {
   mode: 'create' | 'edit';
@@ -25,7 +29,6 @@ interface BrandFormProps {
 }
 
 export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) {
-  const { t } = useTranslation("common");
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<CreateBrandFormType>({
     name: '',
@@ -48,9 +51,7 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
         usp: brand.usp || '',
         target_audience: brand.target_audience || '',
       });
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const existingLogo = (brand as any).logo_url || (brand as any).logoUrl || null;
+      const existingLogo = brand.logo_url || brand.logoUrl || null;
       if (existingLogo) setLogoPreview(existingLogo as string);
     }
   }, [mode, brand]);
@@ -71,39 +72,44 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim()) return toast.error(t("brands.form.required"));
+    if (!formData.name.trim()) return toast.error("Vui lòng nhập tên thương hiệu");
 
     try {
       setSubmitting(true);
       if (mode === 'create') await createBrandMutation.mutateAsync(formData);
       else await updateBrandMutation.mutateAsync(formData);
-      toast.success(t("success"));
+      toast.success("Thao tác thành công!");
       onSuccess?.();
-    } catch (error) {
-      toast.error(t("error"));
+    } catch {
+      toast.error("Đã xảy ra lỗi khi lưu dữ liệu");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-1 space-y-8 font-fira-sans">
-      <div className="grid gap-8">
-        {/* Core Identity Section */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-4 border-b pb-3">
-            <h3 className="font-bold text-lg text-foreground">{t("brands.form.identityCore")}</h3>
+    <form onSubmit={handleSubmit} className="space-y-12 animate-in fade-in duration-500 pb-4">
+      <div className="space-y-12">
+        {/* Identity Cluster */}
+        <section className="space-y-8">
+          <div className="flex items-center gap-3 px-1">
+            <Fingerprint className="size-4 text-slate-400" />
+            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Định danh Cốt lõi</Label>
           </div>
 
-          <div className="flex flex-col md:flex-row items-start gap-8">
+          <div className="flex flex-col md:flex-row items-center gap-10 p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-10 opacity-[0.03] -rotate-12 group-hover:rotate-0 transition-transform pointer-events-none">
+              <Landmark className="size-32 text-slate-900" />
+            </div>
+
             <div className="relative shrink-0">
-              <Avatar className="size-28 rounded-xl border bg-muted shadow-sm overflow-hidden cursor-pointer" onClick={() => document.getElementById('logo-upload')?.click()}>
+              <Avatar className="size-32 rounded-[2rem] border-4 border-white shadow-2xl ring-4 ring-slate-100 overflow-hidden cursor-pointer group/avatar transition-transform hover:scale-105 duration-500" onClick={() => document.getElementById('logo-upload')?.click()}>
                 {logoPreview ? (
                   <AvatarImage src={logoPreview} className="object-cover" />
                 ) : (
-                  <AvatarFallback className="flex flex-col items-center justify-center gap-2">
-                    <Upload className="size-6 text-muted-foreground/60" />
-                    <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">{t("brands.form.uploadLogo")}</span>
+                  <AvatarFallback className="bg-white flex flex-col items-center justify-center gap-2">
+                    <Upload className="size-6 text-slate-200" />
+                    <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest text-center px-4">Tải Logo</span>
                   </AvatarFallback>
                 )}
               </Avatar>
@@ -111,91 +117,105 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
               <Button
                 type="button"
                 size="icon"
-                variant="secondary"
-                className="absolute -bottom-2 -right-2 size-8 rounded-lg shadow-md border"
+                className="absolute -bottom-2 -right-2 size-10 rounded-xl shadow-[0_8px_20px_rgba(0,0,0,0.1)] border-4 border-white bg-slate-900 text-white hover:bg-slate-800 transition-all active:scale-95"
                 onClick={() => document.getElementById('logo-upload')?.click()}
               >
-                <Plus className="size-4" />
+                <Plus className="size-5" />
               </Button>
             </div>
 
-            <div className="flex-1 space-y-4 w-full">
-              <FormField label={t("brands.form.brandNameLabel")} required>
+            <div className="flex-1 space-y-6 w-full relative z-10">
+              <div className="space-y-3">
+                <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">Tên Thương hiệu</Label>
                 <Input
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder={t("brands.form.namePlaceholder")}
-                  className="h-10 font-semibold"
+                  placeholder="Vị dụ: Nike, Apple, Omniadly..."
+                  className="h-14 rounded-2xl border-2 border-slate-100 bg-white px-6 focus-visible:ring-slate-100 font-black text-slate-900 uppercase tracking-tight shadow-sm"
+                  required
                 />
-              </FormField>
-              <FormField label={t("brands.form.sloganLabel")}>
+              </div>
+              <div className="space-y-3">
+                <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">Slogan / Khẩu hiệu</Label>
                 <Input
                   value={formData.slogan}
                   onChange={(e) => handleInputChange('slogan', e.target.value)}
-                  placeholder={t("brands.form.sloganPlaceholder")}
-                  className="h-10 text-sm"
+                  placeholder="Just Do It, Think Different..."
+                  className="h-14 rounded-2xl border-2 border-slate-100 bg-white px-6 focus-visible:ring-slate-100 font-bold text-slate-600 shadow-sm"
                 />
-              </FormField>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Messaging Section */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-4 border-b pb-3">
-            <h3 className="font-bold text-lg text-foreground">{t("brands.form.strategicNarrative")}</h3>
+        {/* Narrative & Strategy Section */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div className="md:col-span-2 space-y-4">
+            <div className="flex items-center gap-3 px-1">
+              <Sparkles className="size-4 text-slate-400" />
+              <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Sứ mệnh & Câu chuyện</Label>
+            </div>
+            <Textarea
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              placeholder="Mô tả tầm nhìn, sứ mệnh và hành trình của thương hiệu..."
+              className="min-h-[140px] rounded-[2rem] border-2 border-slate-100 bg-white p-8 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm leading-relaxed"
+            />
           </div>
 
-          <div className="grid gap-6">
-            <FormField label={t("brands.form.descriptionLabel")}>
-              <Textarea
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder={t("brands.form.descPlaceholder")}
-                className="min-h-[100px] text-sm resize-none"
-              />
-            </FormField>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              <FormField label={t("brands.form.uspLabel")}>
-                <Textarea
-                  value={formData.usp}
-                  onChange={(e) => handleInputChange('usp', e.target.value)}
-                  placeholder={t("brands.form.uspPlaceholder")}
-                  className="min-h-[120px] text-xs resize-none"
-                />
-              </FormField>
-
-              <FormField label={t("brands.form.audienceLabel")}>
-                <Textarea
-                  value={formData.target_audience}
-                  onChange={(e) => handleInputChange('target_audience', e.target.value)}
-                  placeholder={t("brands.form.audiencePlaceholder")}
-                  className="min-h-[120px] text-xs resize-none"
-                />
-              </FormField>
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 px-1">
+              <Target className="size-4 text-slate-400" />
+              <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Giá trị Độc bản (USP)</Label>
             </div>
+            <Textarea
+              value={formData.usp}
+              onChange={(e) => handleInputChange('usp', e.target.value)}
+              placeholder="Điều gì khiến thương hiệu của bạn khác biệt?"
+              className="min-h-[160px] rounded-[2rem] border-2 border-slate-100 bg-slate-50/50 p-6 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm text-sm"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 px-1">
+              <Users className="size-4 text-slate-400" />
+              <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Chân dung Khách hàng</Label>
+            </div>
+            <Textarea
+              value={formData.target_audience}
+              onChange={(e) => handleInputChange('target_audience', e.target.value)}
+              placeholder="Ai là người sẽ yêu thích và tin dùng thương hiệu này?"
+              className="min-h-[160px] rounded-[2rem] border-2 border-slate-100 bg-slate-50/50 p-6 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm text-sm"
+            />
           </div>
         </section>
       </div>
 
-      <div className="flex items-center gap-3 pt-6 border-t">
+      <div className="flex flex-col sm:flex-row items-center gap-4 pt-8 border-t border-slate-100">
         <Button
           type="button"
-          variant="ghost"
+          variant="outline"
           onClick={onCancel}
           disabled={submitting}
-          className="flex-1 h-10 font-bold"
+          className="h-16 rounded-2xl border-slate-100 bg-slate-50 text-slate-400 hover:bg-slate-100 font-black uppercase tracking-widest text-[11px] order-2 sm:order-1 flex-1 sm:flex-none sm:px-12"
         >
-          {t("brands.form.cancel")}
+          Hủy bỏ
         </Button>
         <Button
           type="submit"
           disabled={submitting}
-          className="flex-[2] h-10 font-bold shadow-sm"
+          className="h-16 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-slate-200 transition-all hover:-translate-y-1 order-1 sm:order-2 flex-1 sm:w-full"
         >
-          {submitting && <Loader2 className="size-4 animate-spin mr-2" />}
-          {mode === 'create' ? t("brands.form.saveCreate") : t("brands.form.saveUpdate")}
+          {submitting ? (
+            <>
+              <Loader2 className="mr-3 size-5 animate-spin" />
+              Đang lưu dữ liệu...
+            </>
+          ) : (
+            <>
+              {mode === 'create' ? 'Xác nhận Khởi tạo' : 'Cập nhật Thay đổi'} <ChevronRight className="ml-2 size-5" />
+            </>
+          )}
         </Button>
       </div>
     </form>

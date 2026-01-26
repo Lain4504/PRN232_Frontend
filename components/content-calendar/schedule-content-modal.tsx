@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Calendar } from "lucide-react";
+import { Calendar, X, Rocket } from "lucide-react";
 import { ProfileScheduleForm } from "./schedule-form-profile";
 import { TeamScheduleForm } from "./schedule-form-team";
 import { cn } from "@/lib/utils";
@@ -31,22 +31,21 @@ export function ScheduleContentModal({
 }: ScheduleContentModalProps) {
   const isMobile = useIsMobile();
 
+  const title = "Lập lịch Phân phối";
+  const description = "Xác định thời điểm chính xác để tài sản số của bạn tiếp cận khách hàng tiềm năng.";
+
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={onClose}>
-        <DrawerContent className="max-h-[90vh] flex flex-col bg-background/80 backdrop-blur-xl border-t border-white/10">
-          <DrawerHeader className="flex-shrink-0 text-left border-b border-white/5 pb-4">
-            <DrawerTitle className="flex items-center gap-3 font-fira-sans text-xl uppercase tracking-tight">
-              <div className="p-2 rounded-lg bg-primary/10 border border-primary/20 text-primary">
-                <Calendar className="size-5" />
-              </div>
-              Initialize Sequence
-            </DrawerTitle>
-            <DrawerDescription className="font-light">
-              Schedule content distribution across selected channels
-            </DrawerDescription>
+        <DrawerContent className="max-h-[95vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white">
+          <DrawerHeader className="flex-shrink-0 text-left p-10 pb-4">
+            <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200">
+              <Calendar className="size-6" />
+            </div>
+            <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">{title}</DrawerTitle>
+            <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">{description}</DrawerDescription>
           </DrawerHeader>
-          <div className="px-4 overflow-y-auto flex-1 py-4">
+          <div className="px-10 overflow-y-auto flex-1 pb-10 scrollbar-hide">
             {teamId ? (
               <TeamScheduleForm
                 teamId={teamId}
@@ -66,11 +65,6 @@ export function ScheduleContentModal({
               />
             )}
           </div>
-          <DrawerFooter className="flex-shrink-0 pt-2 border-t border-white/5">
-            <DrawerClose asChild>
-              <Button variant="outline" className="w-full">Abort Sequence</Button>
-            </DrawerClose>
-          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     );
@@ -78,20 +72,23 @@ export function ScheduleContentModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col bg-background/80 backdrop-blur-2xl border-white/10 shadow-2xl p-0 gap-0">
-        <DialogHeader className="flex-shrink-0 p-6 border-b border-white/5 bg-gradient-to-r from-primary/5 via-transparent to-transparent">
-          <DialogTitle className="flex items-center gap-3 font-fira-sans text-xl uppercase tracking-tight text-foreground">
-            <div className="p-2 rounded-lg bg-primary/10 border border-primary/20 text-primary shadow-sm">
-              <Calendar className="size-5" />
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-[3rem] border-none p-0 shadow-2xl bg-white">
+        <DialogHeader className="flex-shrink-0 p-12 pb-8">
+          <div className="flex items-center justify-between">
+            <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-0 border border-slate-200 shadow-sm">
+              <Calendar className="size-8" />
             </div>
-            Initialize Content Sequence
-          </DialogTitle>
-          <DialogDescription className="text-muted-foreground font-light ml-1">
-            Configure deployment parameters for your content asset.
-          </DialogDescription>
+            <Button onClick={onClose} variant="ghost" className="size-10 rounded-xl bg-slate-50 hover:bg-slate-100 p-0 text-slate-400">
+              <X className="size-5" />
+            </Button>
+          </div>
+          <div className="mt-8">
+            <DialogTitle className="text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">{title}</DialogTitle>
+            <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic">{description}</DialogDescription>
+          </div>
         </DialogHeader>
 
-        <div className="overflow-y-auto flex-1 p-6 custom-scrollbar">
+        <div className="overflow-y-auto flex-1 px-12 pb-12 scrollbar-hide">
           {teamId ? (
             <TeamScheduleForm
               teamId={teamId}

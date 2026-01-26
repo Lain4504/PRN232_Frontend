@@ -82,7 +82,7 @@ export function TeamDeleteDialog({
 
           <div className="space-y-4">
             <Label htmlFor="confirm-text" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block px-1">
-              Nhập mã định danh <strong className="text-slate-900">"{teamName}"</strong> để xác nhận:
+              Nhập mã định danh <strong className="text-slate-900">&quot;{teamName}&quot;</strong> để xác nhận:
             </Label>
             <Input
               id="confirm-text"

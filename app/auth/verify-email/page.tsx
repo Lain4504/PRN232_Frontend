@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { VerifyEmailStatus } from "@/components/pages/verify-email/verify-email-status";
-import { Zap } from "lucide-react";
+import { Zap, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Identity Verification | omniadly",
@@ -31,7 +32,14 @@ export default function VerifyEmailPage() {
           </Link>
         </div>
 
-        <VerifyEmailStatus />
+        <Suspense fallback={
+          <div className="flex flex-col items-center justify-center p-12 space-y-4">
+            <Loader2 className="size-8 animate-spin text-primary" />
+            <p className="text-xs font-black uppercase tracking-widest text-slate-400">Đang chuẩn bị xác thực...</p>
+          </div>
+        }>
+          <VerifyEmailStatus />
+        </Suspense>
 
         {/* System Footer */}
         <div className="flex items-center justify-center gap-8 opacity-30">

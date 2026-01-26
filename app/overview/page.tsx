@@ -6,6 +6,7 @@ import { useUser } from '@/hooks/use-user'
 import { useGetProfiles } from '@/hooks/use-profiles'
 import { useProfile } from '@/lib/contexts/profile-context'
 import { PROFILE_TYPE_LABELS, PROFILE_TYPE_COLORS, ProfileTypeEnum } from '@/lib/utils/profile-utils'
+import { Profile } from '@/lib/types/omniadly-types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -28,7 +29,7 @@ export default function OverviewPage() {
   const userLoading = userStatus === 'pending'
   const profilesLoading = profilesStatus === 'pending'
 
-  const handleProfileSelect = (profile: any) => {
+  const handleProfileSelect = (profile: Profile) => {
     setActiveProfile(profile.id, {
       id: profile.id,
       name: profile.name || profile.company_name || `${profile.profileType} Profile`,
@@ -178,8 +179,8 @@ export default function OverviewPage() {
   );
 }
 
-function ProfileCard({ profile, onSelect }: { profile: any; onSelect: (p: any) => void }) {
-  const isAgency = profile.profileType >= 1
+function ProfileCard({ profile, onSelect }: { profile: Profile; onSelect: (p: Profile) => void }) {
+  const isAgency = profile.profileType !== 'Free'
   const isOwner = profile.isOwner
 
   return (
@@ -207,11 +208,11 @@ function ProfileCard({ profile, onSelect }: { profile: any; onSelect: (p: any) =
             variant="secondary"
             className={cn(
               "rounded-full text-[10px] font-black uppercase tracking-widest px-3 py-1",
-              profile.profileType === ProfileTypeEnum.Pro ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500"
+              profile.profileType === 'Pro' ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500"
             )}
           >
-            {profile.profileType === ProfileTypeEnum.Pro ? "PRO" :
-              profile.profileType === ProfileTypeEnum.Basic ? "BASIC" : "FREE"}
+            {profile.profileType === 'Pro' ? "PRO" :
+              profile.profileType === 'Basic' ? "BASIC" : "FREE"}
           </Badge>
         </div>
 
@@ -244,7 +245,7 @@ function ProfileCard({ profile, onSelect }: { profile: any; onSelect: (p: any) =
   )
 }
 
-function Users(props: any) {
+function Users(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

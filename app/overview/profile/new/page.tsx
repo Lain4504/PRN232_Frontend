@@ -209,7 +209,7 @@ export default function CreateProfilePage() {
   )
 }
 
-function ShieldCheck(props: any) {
+function ShieldCheck(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

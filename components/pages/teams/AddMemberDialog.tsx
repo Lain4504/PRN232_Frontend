@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAddTeamMember } from '@/hooks/use-teams'
-import { api, endpoints } from '@/lib/api'
+import { api, endpoints, PaginatedResponse } from '@/lib/api'
 import { User, TeamMemberCreateRequest } from '@/lib/types/omniadly-types'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { Search, UserPlus, Shield, ChevronRight, X, UserSearch, Target, LayoutDashboard, Key } from 'lucide-react'
+import { Search, UserPlus, Shield, ChevronRight, X, UserSearch, Target, LayoutDashboard, Key, Loader2 } from 'lucide-react'
 import { getPermissionsForRole, getPermissionInfo } from '@/lib/constants/team-roles'
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -52,7 +52,7 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
             setLoading(true)
             try {
                 const url = `${endpoints.userSearch}?searchTerm=${encodeURIComponent(searchQuery)}&page=1&pageSize=10`
-                const response = await api.get<any>(url)
+                const response = await api.get<PaginatedResponse<User>>(url)
                 if (response.data && Array.isArray(response.data.data)) {
                     setUsers(response.data.data)
                 } else {

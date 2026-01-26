@@ -61,7 +61,7 @@ const createColumns = (
   handleEditProduct: (product: Product) => void,
   handleDeleteRequest: (productId: string) => void,
   brands: Brand[],
-  t: any
+  t: (key: string) => string
 ): ColumnDef<Product>[] => [
     {
       accessorKey: "name",
@@ -143,6 +143,11 @@ const createColumns = (
       },
     },
   ]
+
+interface ProductsManagementProps {
+  initialBrandId?: string;
+  teamId?: string;
+}
 
 export function ProductsManagement({ initialBrandId, teamId }: ProductsManagementProps = {}) {
   const { t } = useTranslation("common")

@@ -49,9 +49,10 @@ export function VerifyEmailStatus({
         // Reset ref on failure so user can retry if it was a temporary issue
         hasVerifiedRef.current = false;
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : t("authErrorMessage");
       setStatus('error');
-      setError(err.message || t("authErrorMessage"));
+      setError(errorMsg);
       hasVerifiedRef.current = false;
     }
   }, [refreshSession, t]);

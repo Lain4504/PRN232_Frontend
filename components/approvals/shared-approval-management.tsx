@@ -1,12 +1,11 @@
 "use client"
 
 import React, { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
-import { CheckCircle, Search, Calendar, User, FileText, Eye, Trash2, Plus, AlertTriangle, Zap, Filter, ChevronRight } from "lucide-react"
+import { CheckCircle, Search, User, FileText, Eye, Trash2, Plus, AlertTriangle, Zap, Filter, ChevronRight } from "lucide-react"
 import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown"
 import {
   Dialog,
@@ -41,15 +40,6 @@ import {
 import { ApprovalModal } from "@/components/approvals/approval-modal"
 import { ChangeApproverDialog } from "@/components/approvals/change-approver-dialog"
 import { toast } from "sonner"
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useProfile } from "@/lib/contexts/profile-context"
 import { useTranslation } from "react-i18next"
 import { ProfileTypeEnum } from "@/lib/utils/profile-utils"
@@ -70,7 +60,7 @@ const createColumns = (
   isProcessing: boolean,
   canUseTeamFeatures: boolean,
   t: (key: string) => string,
-  i18n: any
+  i18n: { language: string }
 ): ColumnDef<ApprovalResponseDto>[] => [
     {
       accessorKey: "contentTitle",

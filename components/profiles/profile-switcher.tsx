@@ -3,6 +3,7 @@
 import { useProfile } from '@/lib/contexts/profile-context'
 import { useGetProfiles } from '@/hooks/use-profiles'
 import { useUser } from '@/hooks/use-user'
+import { Profile } from '@/lib/types/omniadly-types'
 import { PROFILE_TYPE_LABELS, PROFILE_TYPE_COLORS, ProfileTypeEnum } from '@/lib/utils/profile-utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -23,13 +24,13 @@ export function ProfileSwitcher() {
   const { activeProfile, setActiveProfile } = useProfile()
   const { data: profiles = [] } = useGetProfiles(user?.id || '')
 
-  const handleProfileSelect = (profile: any) => {
+  const handleProfileSelect = (profile: Profile) => {
     setActiveProfile(profile.id, {
       id: profile.id,
-      name: profile.name || profile.company_name || profile.companyName || `${profile.profileType} Profile`,
+      name: profile.name || profile.company_name || `${profile.profileType} Profile`,
       type: profile.profileType as unknown as ProfileTypeEnum,
       avatarUrl: profile.avatarUrl,
-      companyName: profile.company_name || profile.companyName,
+      companyName: profile.company_name,
       isOwner: profile.isOwner ?? false,
       memberRole: profile.memberRole
     })

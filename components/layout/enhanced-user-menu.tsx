@@ -112,7 +112,7 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={(e) => handleThemeChange(e as any, "light")}
+            onClick={(e) => handleThemeChange(e, "light")}
             className={`flex-1 rounded-lg h-9 ${theme === "light" ? "bg-slate-100 text-slate-900" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
           >
             <Sun className="size-4" />
@@ -120,7 +120,7 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={(e) => handleThemeChange(e as any, "dark")}
+            onClick={(e) => handleThemeChange(e, "dark")}
             className={`flex-1 rounded-lg h-9 ${theme === "dark" ? "bg-slate-100 text-slate-900" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
           >
             <Moon className="size-4" />
@@ -128,7 +128,7 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={(e) => handleThemeChange(e as any, "system")}
+            onClick={(e) => handleThemeChange(e, "system")}
             className={`flex-1 rounded-lg h-9 ${theme === "system" ? "bg-slate-100 text-slate-900" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
           >
             <Monitor className="size-4" />

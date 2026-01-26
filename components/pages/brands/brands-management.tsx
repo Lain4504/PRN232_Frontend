@@ -180,7 +180,7 @@ export function BrandsManagement() {
                 <div className="relative">
                   <div className="absolute -inset-2 bg-slate-100 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity" />
                   <Avatar className="size-16 rounded-[1.25rem] border-2 border-white bg-slate-50 shadow-sm relative z-10 transition-transform group-hover:scale-110">
-                    <AvatarImage src={brand.logo_url || (brand as any).logoUrl} className="object-cover" />
+                    <AvatarImage src={brand.logo_url || (brand as Brand).logoUrl} className="object-cover" />
                     <AvatarFallback className="bg-slate-900 text-white text-xl font-black">
                       {brand.name.substring(0, 1).toUpperCase()}
                     </AvatarFallback>

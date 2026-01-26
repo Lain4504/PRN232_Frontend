@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -6,7 +6,8 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, Dr
 import { useIsMobile } from '@/hooks/use-mobile'
 import { BrandForm } from '@/components/brands/brand-form'
 import { Brand } from '@/lib/types/omniadly-types'
-import { useTranslation } from 'react-i18next'
+import { Landmark, X, Target } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface BrandModalProps {
   children?: React.ReactNode
@@ -18,7 +19,6 @@ interface BrandModalProps {
 }
 
 export function BrandModal({ children, mode, brand, onSuccess, open: controlledOpen, onOpenChange }: BrandModalProps) {
-  const { t } = useTranslation("common");
   const [internalOpen, setInternalOpen] = useState(false)
   const isMobile = useIsMobile()
 
@@ -30,8 +30,10 @@ export function BrandModal({ children, mode, brand, onSuccess, open: controlledO
     onSuccess?.()
   }
 
-  const title = mode === 'create' ? t("brands.form.titleCreate") : t("brands.form.titleEdit");
-  const description = mode === 'create' ? t("brands.form.descCreate") : t("brands.form.descEdit");
+  const title = mode === 'create' ? "Kiến tạo Thương hiệu" : "Cấu hình Thương hiệu";
+  const description = mode === 'create'
+    ? "Thiết lập nền tảng định danh và giá trị cốt lõi cho thương hiệu mới."
+    : "Hiệu chỉnh các tham số chiến lược và nhận diện của thương hiệu.";
 
   if (isMobile) {
     return (
@@ -41,12 +43,15 @@ export function BrandModal({ children, mode, brand, onSuccess, open: controlledO
             {children}
           </DrawerTrigger>
         )}
-        <DrawerContent className="max-h-[95vh] flex flex-col font-fira-sans">
-          <DrawerHeader className="flex-shrink-0 text-left border-b pb-4">
-            <DrawerTitle>{title}</DrawerTitle>
-            <DrawerDescription>{description}</DrawerDescription>
+        <DrawerContent className="max-h-[95vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white">
+          <DrawerHeader className="flex-shrink-0 text-left p-10 pb-4">
+            <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200">
+              <Target className="size-6" />
+            </div>
+            <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">{title}</DrawerTitle>
+            <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">{description}</DrawerDescription>
           </DrawerHeader>
-          <div className="px-4 py-4 overflow-y-auto flex-1">
+          <div className="px-10 overflow-y-auto flex-1 pb-10 scrollbar-hide">
             <BrandForm
               mode={mode}
               brand={brand}
@@ -66,12 +71,22 @@ export function BrandModal({ children, mode, brand, onSuccess, open: controlledO
           {children}
         </DialogTrigger>
       )}
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col font-fira-sans">
-        <DialogHeader className="flex-shrink-0 border-b pb-4">
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-[3rem] border-none p-0 shadow-2xl bg-white">
+        <DialogHeader className="flex-shrink-0 p-12 pb-8">
+          <div className="flex items-center justify-between">
+            <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-0 border border-slate-200 shadow-sm">
+              <Landmark className="size-8" />
+            </div>
+            <Button onClick={() => setOpen(false)} variant="ghost" className="size-10 rounded-xl bg-slate-50 hover:bg-slate-100 p-0 text-slate-400">
+              <X className="size-5" />
+            </Button>
+          </div>
+          <div className="mt-8">
+            <DialogTitle className="text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">{title}</DialogTitle>
+            <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic">{description}</DialogDescription>
+          </div>
         </DialogHeader>
-        <div className="overflow-y-auto flex-1 py-4">
+        <div className="overflow-y-auto flex-1 px-12 pb-12 scrollbar-hide">
           <BrandForm
             mode={mode}
             brand={brand}

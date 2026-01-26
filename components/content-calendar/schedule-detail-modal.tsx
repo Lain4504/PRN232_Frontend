@@ -5,8 +5,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGetSocialAccounts } from "@/hooks/use-social-accounts";
@@ -20,8 +18,13 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  X
+  X,
+  Smartphone,
+  CheckCircle2,
+  Info
 } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface ScheduleDetailModalProps {
   schedule: ContentCalendar | null;
@@ -34,185 +37,125 @@ function ScheduleDetailContent({ schedule }: { schedule: ContentCalendar | null 
 
   if (!schedule) return null;
 
-  // Map integrationIds to actual platform names
   const platforms = schedule.integrationIds?.map(integrationId => {
-    const target = socialAccounts?.flatMap(account => 
+    const target = socialAccounts?.flatMap(account =>
       account.targets?.filter(t => t.id === integrationId) || []
     )?.[0];
     return target || null;
-  }).filter(Boolean) || [];
+  }).filter((t): t is NonNullable<typeof t> => !!t) || [];
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return {
-      date: date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-      time: date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+      date: date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' }),
+      time: date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
     };
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'scheduled':
-        return (
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-800">
-            <Clock className="h-3 w-3 mr-1" />
-            Scheduled
-          </Badge>
-        );
       case 'published':
-        return (
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-950/20 dark:text-green-400 dark:border-green-800">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            Published
-          </Badge>
-        );
+        return <Badge className="bg-emerald-100 text-emerald-600 border-none font-black text-[9px] uppercase tracking-widest px-3 py-1">Đã phát hành</Badge>;
       case 'failed':
-        return (
-          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 dark:bg-red-950/20 dark:text-red-400 dark:border-red-800">
-            <XCircle className="h-3 w-3 mr-1" />
-            Failed
-          </Badge>
-        );
+        return <Badge className="bg-rose-100 text-rose-600 border-none font-black text-[9px] uppercase tracking-widest px-3 py-1">Thất bại</Badge>;
       case 'cancelled':
-        return (
-          <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-950/20 dark:text-gray-400 dark:border-gray-800">
-            <X className="h-3 w-3 mr-1" />
-            Cancelled
-          </Badge>
-        );
+        return <Badge className="bg-slate-100 text-slate-400 border-none font-black text-[9px] uppercase tracking-widest px-3 py-1">Đã hủy</Badge>;
       default:
-        return (
-          <Badge variant="outline">
-            {status}
-          </Badge>
-        );
+        return <Badge className="bg-blue-100 text-blue-600 border-none font-black text-[9px] uppercase tracking-widest px-3 py-1">Đang chờ</Badge>;
     }
   };
 
   const { date, time } = formatDate(schedule.scheduledDate);
 
   return (
-    <div className="space-y-4">
-      {/* Content Info */}
-      <Card className="border-0 bg-card/50">
-        <CardHeader className="pb-3">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <FileText className="h-5 w-5 text-primary shrink-0" />
-              <CardTitle className="text-lg font-bold line-clamp-2">
-                {schedule.contentTitle || 'Untitled Content'}
-              </CardTitle>
+    <div className="space-y-12 animate-in fade-in duration-500">
+      {/* Content Identity */}
+      <div className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 space-y-6">
+        <div className="flex items-start justify-between">
+          <div className="space-y-3 flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <FileText className="size-4 text-slate-400" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Thực thể Nội dung</span>
             </div>
-            {getStatusBadge(schedule.status)}
+            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-tight line-clamp-2">
+              {schedule.contentTitle || 'Nội dung không tên'}
+            </h3>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Building2 className="h-4 w-4" />
-            <span className="font-medium">{schedule.brandName || 'Unknown Brand'}</span>
-          </div>
-        </CardContent>
-      </Card>
+          {getStatusBadge(schedule.status)}
+        </div>
 
-      {/* Schedule Info */}
-      <Card className="border-0 bg-card/50">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-bold flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            Schedule Details
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
+        <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <div className="flex-1">
-              <div className="text-sm font-medium">{date}</div>
-              <div className="text-xs text-muted-foreground">{time} ({schedule.timezone})</div>
-            </div>
+            <Building2 className="h-4 w-4 text-slate-400" />
+            <span className="text-xs font-black text-slate-900 uppercase tracking-tight">{schedule.brandName || 'Thương hiệu'}</span>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Platforms */}
-      {schedule.integrationIds && schedule.integrationIds.length > 0 && (
-        <Card className="border-0 bg-card/50">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-bold flex items-center gap-2">
-              <Globe className="h-4 w-4" />
-              Platforms ({schedule.integrationIds.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {platforms.length > 0 ? (
-              <div className="space-y-2">
-                {platforms.map((target) => (
-                  target && (
-                    <div key={target.id} className="flex items-center gap-3 p-2 rounded-lg border bg-muted/30">
-                      {target.profilePictureUrl && (
-                        <Avatar className="h-8 w-8 ring-1 ring-muted shrink-0">
-                          <AvatarImage src={target.profilePictureUrl} alt={target.name} />
-                          <AvatarFallback className="text-xs font-semibold">
-                            {target.name.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium truncate">{target.name}</div>
-                        <div className="flex items-center gap-2 flex-wrap mt-0.5">
-                          <Badge variant="outline" className="text-xs">
-                            {target.provider || target.type}
-                          </Badge>
-                          {target.category && (
-                            <span className="text-xs text-muted-foreground truncate">
-                              {target.category}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )
-                ))}
+      {/* Deployment Specs */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Clock className="size-4 text-slate-400" />
+            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Thời điểm Phân phối</Label>
+          </div>
+          <div className="p-6 rounded-2xl border-2 border-slate-100 bg-white shadow-sm space-y-1">
+            <p className="text-base font-black text-slate-900 uppercase tracking-tight">{date}</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{time} ({schedule.timezone})</p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Globe className="size-4 text-slate-400" />
+            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Kênh truyền thông ({platforms.length})</Label>
+          </div>
+          <div className="space-y-3">
+            {platforms.map((target) => (
+              <div key={target.id} className="flex items-center gap-4 p-4 rounded-xl border border-slate-100 bg-slate-50/50">
+                <Avatar className="size-10 rounded-xl border-2 border-white shadow-sm">
+                  <AvatarImage src={target.profilePictureUrl} />
+                  <AvatarFallback className="bg-slate-900 text-white font-black text-xs">{target.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{target.name}</p>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{target.provider}</p>
+                </div>
+                <CheckCircle2 className="size-4 text-emerald-500" />
               </div>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {schedule.integrationIds.map((integrationId, index) => (
-                  <Badge key={index} variant="secondary" className="text-xs">
-                    Platform {index + 1}
-                  </Badge>
-                ))}
+            ))}
+            {platforms.length === 0 && (
+              <div className="p-4 rounded-xl bg-orange-50 text-orange-600 border border-orange-100 flex items-center gap-3">
+                <Info className="size-4" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Không có dữ liệu kênh</span>
               </div>
             )}
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 export function ScheduleDetailModal({ schedule, isOpen, onClose }: ScheduleDetailModalProps) {
   const isMobile = useIsMobile();
+  const title = "Chi tiết Lịch trình";
+  const description = "Thông tin thực thi và trạng thái phân phối của nội dung đã lập lịch.";
 
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={onClose}>
-        <DrawerContent className="max-h-[90vh] flex flex-col">
-          <DrawerHeader className="flex-shrink-0 text-left">
-            <DrawerTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              Scheduled Content Details
-            </DrawerTitle>
-            <DrawerDescription>
-              View details of scheduled content
-            </DrawerDescription>
+        <DrawerContent className="max-h-[95vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white">
+          <DrawerHeader className="flex-shrink-0 text-left p-10 pb-4">
+            <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200">
+              <Smartphone className="size-6" />
+            </div>
+            <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">{title}</DrawerTitle>
+            <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">{description}</DrawerDescription>
           </DrawerHeader>
-          <div className="px-4 overflow-y-auto flex-1">
+          <div className="px-10 overflow-y-auto flex-1 pb-10 scrollbar-hide">
             <ScheduleDetailContent schedule={schedule} />
           </div>
-          <DrawerFooter className="flex-shrink-0 pt-2">
-            <DrawerClose asChild>
-              <Button variant="outline">Close</Button>
-            </DrawerClose>
-          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     );
@@ -220,21 +163,25 @@ export function ScheduleDetailModal({ schedule, isOpen, onClose }: ScheduleDetai
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader className="flex-shrink-0">
-          <DialogTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Scheduled Content Details
-          </DialogTitle>
-          <DialogDescription>
-            View details of scheduled content
-          </DialogDescription>
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-[3rem] border-none p-0 shadow-2xl bg-white focus:outline-none">
+        <DialogHeader className="flex-shrink-0 p-12 pb-8">
+          <div className="flex items-center justify-between">
+            <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-0 border border-slate-200 shadow-sm">
+              <Calendar className="size-8" />
+            </div>
+            <Button onClick={onClose} variant="ghost" className="size-10 rounded-xl bg-slate-50 hover:bg-slate-100 p-0 text-slate-400">
+              <X className="size-5" />
+            </Button>
+          </div>
+          <div className="mt-8">
+            <DialogTitle className="text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">{title}</DialogTitle>
+            <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic">{description}</DialogDescription>
+          </div>
         </DialogHeader>
-        <div className="overflow-y-auto flex-1">
+        <div className="overflow-y-auto flex-1 px-12 pb-12 scrollbar-hide">
           <ScheduleDetailContent schedule={schedule} />
         </div>
       </DialogContent>
     </Dialog>
   );
 }
-
