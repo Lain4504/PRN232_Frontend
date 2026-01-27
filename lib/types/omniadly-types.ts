@@ -679,6 +679,7 @@ export interface AIChatResponse {
     contentId?: string | null;
     aiGenerationId?: string | null;
     generatedContent?: string | null;
+    generatedImageUrl?: string | null;
     conversationId?: string | null;
   } | null;
   error?: {
@@ -721,6 +722,8 @@ export interface ConversationMessage {
   message: string;
   aiGenerationId?: string | null;
   contentId?: string | null;
+  generatedText?: string | null;
+  generatedImageUrl?: string | null;
   createdAt: string;
 }
 

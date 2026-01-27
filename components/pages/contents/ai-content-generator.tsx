@@ -23,6 +23,9 @@ import {
   Plus,
   MessageSquare,
   Menu,
+  Image as ImageIcon,
+  Type,
+  Maximize2
 } from "lucide-react";
 import { Brand, Product, ConversationSummary, ConversationDetails, ConversationsResponse } from "@/lib/types/omniadly-types";
 import { useAIChat, AdTypes } from "@/hooks/use-ai-chat";
@@ -44,6 +47,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
     product_id?: string;
     style_context: string;
     generated_content: string;
+    generated_image_url?: string;
     status: 'pending' | 'completed' | 'failed';
     created_at: string;
     brand_name?: string;
@@ -65,6 +69,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
     content: string;
     timestamp: string;
     generation?: AIContentGeneration;
+    adTypeRequested?: number;
   }
 
   interface ChatSession {
@@ -97,6 +102,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
     style_context: '',
     ad_type: 'text_only',
   });
+  const [selectedAdType, setSelectedAdType] = useState<number>(AdTypes.TextOnly);
 
   useEffect(() => {
     const loadData = async () => {
@@ -261,6 +267,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
       ...currentSession,
       messages: [...currentSession.messages, userMessage],
       updated_at: new Date().toISOString(),
+      adTypeRequested: selectedAdType
     };
 
     setCurrentSession(updatedSession);
@@ -273,7 +280,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
         profileId: user.id, // Add profileId for the request
         brandId: currentSession.brand_id || null,
         productId: currentSession.product_id || null,
-        adType: AdTypes.TextOnly,
+        adType: selectedAdType,
         message: chatInput,
         conversationId: currentSession.conversationId || null,
       };
@@ -317,7 +324,8 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
             brand_id: currentSession.brand_id || '',
             product_id: currentSession.product_id,
             style_context: '',
-            generated_content: response.data.generatedContent,
+            generated_content: response.data.generatedContent || '',
+            generated_image_url: response.data.generatedImageUrl || undefined,
             status: 'completed',
             created_at: new Date().toISOString(),
             brand_name: brands.find(b => b.id === currentSession.brand_id)?.name,
@@ -400,7 +408,8 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
               brand_id: response.data.brandId || '',
               product_id: response.data.productId || undefined,
               style_context: '',
-              generated_content: '',
+              generated_content: msg.generatedText || '',
+              generated_image_url: msg.generatedImageUrl || undefined,
               status: 'completed',
               created_at: msg.createdAt,
               brand_name: response.data.brandName || undefined,
@@ -736,6 +745,21 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                             &ldquo;{message.generation.generated_content}&rdquo;
                           </div>
 
+                          {message.generation.generated_image_url && (
+                            <div className="relative group/img overflow-hidden rounded-2xl border border-border/40 shadow-xl aspect-square w-full max-w-lg mx-auto bg-muted">
+                              <img
+                                src={message.generation.generated_image_url}
+                                alt="AI Generated Content"
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-105"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                                <Button variant="secondary" size="sm" className="rounded-xl font-bold backdrop-blur-md bg-white/10 border-white/20 text-white" onClick={() => window.open(message.generation!.generated_image_url, '_blank')}>
+                                  <Maximize2 className="h-4 w-4 mr-2" /> View Full Resolution
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+
                           <div className="flex gap-4">
                             <Button
                               variant="outline"
@@ -802,6 +826,28 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                   <div className="pl-4 pr-1 hidden sm:block">
                     <Sparkles className="h-5 w-5 text-primary/40 group-focus-within:text-primary transition-colors" />
                   </div>
+
+                  <div className="flex bg-muted/50 rounded-2xl p-1 gap-1 border border-border/40 ml-2">
+                    <Button
+                      variant={selectedAdType === AdTypes.TextOnly ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setSelectedAdType(AdTypes.TextOnly)}
+                      className={`h-9 px-3 rounded-xl transition-all ${selectedAdType === AdTypes.TextOnly ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:bg-muted'}`}
+                    >
+                      <Type className="h-4 w-4 mr-2" />
+                      <span className="text-[10px] font-black uppercase tracking-widest hidden lg:inline">Text</span>
+                    </Button>
+                    <Button
+                      variant={selectedAdType === AdTypes.Image ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setSelectedAdType(AdTypes.Image)}
+                      className={`h-9 px-3 rounded-xl transition-all ${selectedAdType === AdTypes.Image ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:bg-muted'}`}
+                    >
+                      <ImageIcon className="h-4 w-4 mr-2" />
+                      <span className="text-[10px] font-black uppercase tracking-widest hidden lg:inline">Image</span>
+                    </Button>
+                  </div>
+
                   <Input
                     placeholder="Brief your content requirements here..."
                     value={chatInput}
