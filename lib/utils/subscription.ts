@@ -1,7 +1,7 @@
-import type { 
-  Subscription, 
-  SubscriptionPlan, 
-  SubscriptionTier, 
+import type {
+  Subscription,
+  SubscriptionPlan,
+  SubscriptionTier,
   FeatureGate,
 } from '@/lib/types/subscription'
 import { FEATURE_GATES, getPlanByTier } from '@/lib/constants/subscription-plans'
@@ -56,7 +56,7 @@ export const getFeatureGate = (
   }
 
   const isEnabled = canAccessFeature(subscription, featureId)
-  
+
   return {
     featureId,
     requiredTier: getRequiredTierForFeature(featureId),
@@ -173,9 +173,8 @@ export const comparePlans = (currentPlan: SubscriptionPlan | undefined | null, t
 
   const added = targetPlan.features.filter(feature => !currentFeatures.has(feature))
   const removed = currentPlan.features.filter(feature => !targetFeatures.has(feature))
-  const improved = targetPlan.features.filter(feature => 
-    currentFeatures.has(feature) && 
-    targetPlan.limits[feature as keyof typeof targetPlan.limits] > currentPlan.limits[feature as keyof typeof currentPlan.limits]
+  const improved = targetPlan.features.filter(feature =>
+    currentFeatures.has(feature)
   )
 
   return {
@@ -223,7 +222,7 @@ export const analyzePlanChangeImpact = (
 } => {
   // Get current plan, fallback to free if not found
   const currentPlan = getPlanByTier(currentSubscription.tier) ?? getPlanByTier('free')
-  
+
   if (!currentPlan) {
     // If we can't get any plan, return safe defaults
     return {
@@ -238,7 +237,11 @@ export const analyzePlanChangeImpact = (
   const comparison = comparePlans(currentPlan, targetPlan)
 
   const willLoseFeatures = comparison.featureChanges.removed.length > 0
-  const willLoseData = comparison.isDowngrade && currentSubscription.usage.campaigns > targetPlan.limits.campaigns
+  const willLoseData = comparison.isDowngrade && (
+    (targetPlan.limits.postsPerMonth !== -1 && currentSubscription.usage.postsThisMonth > targetPlan.limits.postsPerMonth) ||
+    (targetPlan.limits.platforms !== -1 && currentSubscription.usage.platforms > targetPlan.limits.platforms) ||
+    (targetPlan.limits.accounts !== -1 && currentSubscription.usage.accounts > targetPlan.limits.accounts)
+  )
 
   const immediateChanges: string[] = []
   const endOfPeriodChanges: string[] = []
@@ -252,7 +255,7 @@ export const analyzePlanChangeImpact = (
   if (comparison.isDowngrade) {
     endOfPeriodChanges.push('Access to premium features will end at the end of your billing period')
     endOfPeriodChanges.push('Usage limits will be reduced at the end of your billing period')
-    
+
     if (willLoseData) {
       warnings.push('You may need to delete some campaigns to stay within the new plan limits')
     }

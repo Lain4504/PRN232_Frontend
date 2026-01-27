@@ -77,12 +77,12 @@ function SuccessContent() {
 
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-4">
-              {isFreePlan ? 'Profile Created Successfully!' : 'Subscription Activated!'}
+              {isFreePlan ? 'Tạo hồ sơ thành công!' : 'Kích hoạt gói dịch vụ thành công!'}
             </h1>
             <p className="text-muted-foreground text-lg">
               {isFreePlan
-                ? 'Your free profile is ready to use. You can upgrade anytime.'
-                : 'Your subscription is now active and you can start using all features.'}
+                ? 'Hồ sơ miễn phí của bạn đã sẵn sàng. Bạn có thể nâng cấp bất cứ lúc nào.'
+                : 'Gói dịch vụ của bạn đã được kích hoạt. Bạn có thể bắt đầu sử dụng tất cả tính năng ngay bây giờ.'}
             </p>
           </div>
 
@@ -91,28 +91,28 @@ function SuccessContent() {
               <CardHeader>
                 <CardTitle className="flex items-center justify-center gap-2">
                   {getPlanIcon(subscription.plan)}
-                  {getPlanName(subscription.plan)} Plan
+                  Gói {getPlanName(subscription.plan)}
                 </CardTitle>
-                <CardDescription>Your subscription details</CardDescription>
+                <CardDescription>Chi tiết đăng ký của bạn</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">Status</span>
+                    <span className="font-medium">Trạng thái</span>
                     <Badge variant="secondary" className="bg-green-100 text-green-800">
-                      Active
+                      Đang hoạt động
                     </Badge>
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">Next Billing Date</span>
+                    <span className="font-medium">Ngày gia hạn tiếp theo</span>
                     <span className="text-muted-foreground">
-                      {subscription.endDate ? new Date(subscription.endDate).toLocaleDateString() : 'N/A'}
+                      {subscription.endDate ? new Date(subscription.endDate).toLocaleDateString('vi-VN') : 'Không giới hạn'}
                     </span>
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">Subscription ID</span>
+                    <span className="font-medium">Mã đăng ký</span>
                     <span className="text-muted-foreground font-mono text-sm">
                       {subscription.id}
                     </span>
@@ -124,7 +124,7 @@ function SuccessContent() {
 
           <Card className="mb-8 shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
             <CardHeader>
-              <CardTitle>What&apos;s Next?</CardTitle>
+              <CardTitle>Tiếp theo bạn nên làm gì?</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -133,9 +133,9 @@ function SuccessContent() {
                     <CheckCircle className="h-4 w-4 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-medium">Complete your profile setup</p>
+                    <p className="font-medium">Hoàn tất thiết lập hồ sơ</p>
                     <p className="text-sm text-muted-foreground">
-                      Add your business information and social media accounts
+                      Thêm thông tin doanh nghiệp và các tài khoản mạng xã hội của bạn
                     </p>
                   </div>
                 </div>
@@ -145,9 +145,9 @@ function SuccessContent() {
                     <CheckCircle className="h-4 w-4 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-medium">Create your first content</p>
+                    <p className="font-medium">Tạo nội dung đầu tiên</p>
                     <p className="text-sm text-muted-foreground">
-                      Start creating and scheduling posts for your social media
+                      Bắt đầu sáng tạo và lên lịch bài viết cho mạng xã hội của bạn
                     </p>
                   </div>
                 </div>
@@ -157,9 +157,9 @@ function SuccessContent() {
                     <CheckCircle className="h-4 w-4 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-medium">Set up your first campaign</p>
+                    <p className="font-medium">Thiết lập chiến dịch đầu tiên</p>
                     <p className="text-sm text-muted-foreground">
-                      Launch your first advertising campaign to reach more customers
+                      Ra mắt chiến dịch quảng cáo đầu tiên để tiếp cận thêm nhiều khách hàng
                     </p>
                   </div>
                 </div>
@@ -170,7 +170,7 @@ function SuccessContent() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/overview">
               <Button size="lg" className="w-full sm:w-auto">
-                Go to Dashboard
+                Đi đến Bảng điều khiển
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
@@ -178,9 +178,9 @@ function SuccessContent() {
 
           <div className="mt-8 text-sm text-muted-foreground">
             <p>
-              Need help getting started?{' '}
+              Cần hỗ trợ bắt đầu?{' '}
               <Link href="/support" className="text-primary hover:underline">
-                Contact our support team
+                Liên hệ đội ngũ hỗ trợ của chúng tôi
               </Link>
             </p>
           </div>

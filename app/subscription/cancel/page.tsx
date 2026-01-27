@@ -38,7 +38,7 @@ function CancelSubscriptionContent() {
           setSubscription(data)
         } catch (error) {
           console.error('Error loading subscription:', error)
-          toast.error('Failed to load subscription details')
+          toast.error('Không thể tải thông tin đăng ký')
         } finally {
           setIsLoading(false)
         }
@@ -55,11 +55,11 @@ function CancelSubscriptionContent() {
     setIsCancelling(true)
     try {
       await cancelSubscription(subscription.id)
-      toast.success('Subscription cancelled successfully')
+      toast.success('Hủy gói dịch vụ thành công')
       router.push('/dashboard/subscription')
     } catch (error) {
       console.error('Error cancelling subscription:', error)
-      toast.error('Failed to cancel subscription')
+      toast.error('Không thể hủy gói dịch vụ')
     } finally {
       setIsCancelling(false)
     }
@@ -90,12 +90,12 @@ function CancelSubscriptionContent() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold">Subscription Not Found</h2>
+          <h2 className="text-2xl font-semibold">Không tìm thấy gói dịch vụ</h2>
           <p className="text-muted-foreground mt-2">
-            The subscription you&apos;re looking for doesn&apos;t exist or has been removed.
+            Gói dịch vụ bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.
           </p>
           <Link href="/dashboard/subscription">
-            <Button className="mt-4">Back to Subscriptions</Button>
+            <Button className="mt-4">Quay lại trang Gói dịch vụ</Button>
           </Link>
         </div>
       </div>
@@ -111,12 +111,12 @@ function CancelSubscriptionContent() {
             <Link href="/dashboard/subscription">
               <Button variant="ghost" size="sm" className="mb-4">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Subscriptions
+                Quay lại trang Gói dịch vụ
               </Button>
             </Link>
-            <h1 className="text-3xl font-bold">Cancel Subscription</h1>
+            <h1 className="text-3xl font-bold">Hủy gói dịch vụ</h1>
             <p className="text-muted-foreground mt-2">
-              Are you sure you want to cancel your subscription?
+              Bạn có chắc chắn muốn hủy gói dịch vụ hiện tại không?
             </p>
           </div>
 
@@ -125,45 +125,45 @@ function CancelSubscriptionContent() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5" />
-                Current Subscription
+                Gói dịch vụ hiện tại
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium">Plan</span>
+                  <span className="font-medium">Gói</span>
                   <Badge variant="secondary">
-                    {getPlanName(subscription.plan)} Plan
+                    Gói {getPlanName(subscription.plan)}
                   </Badge>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="font-medium">Profile ID</span>
+                  <span className="font-medium">Mã hồ sơ</span>
                   <span className="text-muted-foreground font-mono text-sm">
                     {subscription.profileId}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="font-medium">Start Date</span>
+                  <span className="font-medium">Ngày bắt đầu</span>
                   <span className="text-muted-foreground">
-                    {new Date(subscription.startDate).toLocaleDateString()}
+                    {new Date(subscription.startDate).toLocaleDateString('vi-VN')}
                   </span>
                 </div>
 
                 {subscription.endDate && (
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">End Date</span>
+                    <span className="font-medium">Ngày kết thúc</span>
                     <span className="text-muted-foreground">
-                      {new Date(subscription.endDate).toLocaleDateString()}
+                      {new Date(subscription.endDate).toLocaleDateString('vi-VN')}
                     </span>
                   </div>
                 )}
 
                 <div className="flex justify-between items-center">
-                  <span className="font-medium">Status</span>
+                  <span className="font-medium">Trạng thái</span>
                   <Badge className="bg-green-100 text-green-800">
-                    Active
+                    Đang hoạt động
                   </Badge>
                 </div>
               </div>
@@ -174,24 +174,24 @@ function CancelSubscriptionContent() {
           <Alert className="mb-8">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              <strong>Warning:</strong> Cancelling your subscription will immediately stop your access to premium features.
-              You will be moved to the Free plan and lose access to advanced features.
+              <strong>Cảnh báo:</strong> Việc hủy gói dịch vụ sẽ ngay lập tức dừng quyền truy cập của bạn vào các tính năng cao cấp.
+              Bạn sẽ được chuyển sang gói Miễn phí (Free) và mất quyền truy cập vào các công cụ nâng cao.
             </AlertDescription>
           </Alert>
 
           {/* What Happens Next */}
           <Card className="mb-8 shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
             <CardHeader>
-              <CardTitle>What happens when you cancel?</CardTitle>
+              <CardTitle>Chuyện gì sẽ xảy ra khi bạn hủy?</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
                   <div>
-                    <p className="font-medium">Immediate access loss</p>
+                    <p className="font-medium">Mất quyền truy cập ngay lập tức</p>
                     <p className="text-sm text-muted-foreground">
-                      You&apos;ll lose access to premium features immediately
+                      Bạn sẽ mất quyền truy cập vào các tính năng cao cấp ngay sau khi hủy
                     </p>
                   </div>
                 </div>
@@ -199,9 +199,9 @@ function CancelSubscriptionContent() {
                 <div className="flex items-start gap-3">
                   <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
                   <div>
-                    <p className="font-medium">Data retention</p>
+                    <p className="font-medium">Lưu trữ dữ liệu</p>
                     <p className="text-sm text-muted-foreground">
-                      Your data will be preserved but you won&apos;t be able to create new content
+                      Dữ liệu của bạn vẫn được giữ lại nhưng bạn sẽ không thể tạo nội dung mới vượt quá hạn mức
                     </p>
                   </div>
                 </div>
@@ -209,9 +209,9 @@ function CancelSubscriptionContent() {
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
                   <div>
-                    <p className="font-medium">Free plan access</p>
+                    <p className="font-medium">Truy cập gói Miễn phí</p>
                     <p className="text-sm text-muted-foreground">
-                      You&apos;ll still have access to basic features with the Free plan
+                      Bạn vẫn có thể sử dụng các tính năng cơ bản của gói Miễn phí
                     </p>
                   </div>
                 </div>
@@ -219,9 +219,9 @@ function CancelSubscriptionContent() {
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
                   <div>
-                    <p className="font-medium">Easy reactivation</p>
+                    <p className="font-medium">Dễ dàng kích hoạt lại</p>
                     <p className="text-sm text-muted-foreground">
-                      You can reactivate your subscription anytime from your dashboard
+                      Bạn có thể kích hoạt lại gói dịch vụ bất kỳ lúc nào từ Bảng điều khiển
                     </p>
                   </div>
                 </div>
@@ -238,12 +238,12 @@ function CancelSubscriptionContent() {
               disabled={isCancelling}
               className="flex-1"
             >
-              {isCancelling ? 'Cancelling...' : 'Yes, Cancel Subscription'}
+              {isCancelling ? 'Đang thực hiện...' : 'Đúng, tôi muốn Hủy'}
             </Button>
 
             <Link href="/dashboard/subscription" className="flex-1">
               <Button variant="outline" size="lg" className="w-full">
-                Keep Subscription
+                Giữ gói dịch vụ
               </Button>
             </Link>
           </div>
@@ -251,9 +251,9 @@ function CancelSubscriptionContent() {
           {/* Support */}
           <div className="mt-8 text-center text-sm text-muted-foreground">
             <p>
-              Need help?{' '}
+              Cần trợ giúp?{' '}
               <Link href="/support" className="text-primary hover:underline">
-                Contact our support team
+                Liên hệ đội ngũ hỗ trợ
               </Link>
             </p>
           </div>

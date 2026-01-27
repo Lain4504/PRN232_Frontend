@@ -11,6 +11,7 @@ import { formatPrice } from '@/lib/constants/subscription-plans'
 import { getSubscriptionStatusColor, getSubscriptionStatusText, getDaysUntilBilling } from '@/lib/utils/subscription'
 import { SubscriptionPlanEnum, SubscriptionTier, Subscription } from '@/lib/types/subscription'
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 
 // Helper function to create fallback subscription from profile type
 const createFallbackSubscription = (
@@ -35,20 +36,21 @@ const createFallbackSubscription = (
     cancelAtPeriodEnd: false,
     features: [],
     limits: {
-      campaigns: profileType === 2 ? -1 : profileType === 1 ? 15 : 3,
-      adSets: profileType === 2 ? -1 : profileType === 1 ? 50 : 10,
-      ads: profileType === 2 ? -1 : profileType === 1 ? 200 : 50,
-      teamMembers: profileType === 2 ? 20 : profileType === 1 ? 5 : 1,
-      storage: profileType === 2 ? '100' : profileType === 1 ? '25' : '1',
-      apiCalls: profileType === 2 ? -1 : profileType === 1 ? 5000 : 1000
+      postsPerMonth: profileType === 2 ? -1 : profileType === 1 ? 1000 : 100,
+      aiContentPerDay: profileType === 2 ? -1 : profileType === 1 ? 50 : 10,
+      aiImagesPerDay: profileType === 2 ? -1 : profileType === 1 ? 20 : 5,
+      platforms: profileType === 2 ? -1 : profileType === 1 ? 5 : 2,
+      accounts: profileType === 2 ? -1 : profileType === 1 ? 20 : 5,
+      analysisLevel: profileType === 2 ? 3 : profileType === 1 ? 2 : 1,
+      adBudgetMonthly: profileType === 2 ? -1 : profileType === 1 ? 50000000 : 5000000,
+      adCampaigns: profileType === 2 ? -1 : profileType === 1 ? 15 : 3
     },
     usage: {
-      campaigns: 0,
-      adSets: 0,
-      ads: 0,
-      teamMembers: 0,
-      storage: 0,
-      apiCalls: 0
+      postsThisMonth: 0,
+      aiContentToday: 0,
+      aiImagesToday: 0,
+      platforms: 0,
+      accounts: 0
     }
   }
 }
@@ -59,13 +61,14 @@ interface CurrentPlanCardProps {
   className?: string
 }
 
-export function CurrentPlanCard({ 
-  showUsage = true, 
+export function CurrentPlanCard({
+  showUsage = true,
   showActions = true,
-  className = '' 
+  className = ''
 }: CurrentPlanCardProps) {
   const { data: subscription, isLoading, error } = useSubscription()
   const { profileType, activeProfileId } = useProfile()
+  const { t } = useTranslation()
 
   // Create fallback subscription if API returns null but we have profile type
   const effectiveSubscription = subscription || createFallbackSubscription(profileType, activeProfileId || undefined)
@@ -130,7 +133,7 @@ export function CurrentPlanCard({
     return (
       <Card className={className}>
         <CardContent className="text-center py-8">
-          <p className="text-muted-foreground">Unable to load subscription information</p>
+          <p className="text-muted-foreground">{t('common.subscription.unableToLoad')}</p>
         </CardContent>
       </Card>
     )
@@ -149,18 +152,17 @@ export function CurrentPlanCard({
             <div>
               <CardTitle className="text-lg">{effectiveSubscription.planName}</CardTitle>
               <CardDescription>
-                {effectiveSubscription.billingCycle === 'yearly' ? 'Annual' : 'Monthly'} billing
+                {effectiveSubscription.billingCycle === 'yearly' ? t('common.subscription.annualBilling') : t('common.subscription.monthlyBilling')}
               </CardDescription>
             </div>
           </div>
-          <Badge 
+          <Badge
             variant={statusColor === 'green' ? 'default' : 'secondary'}
-            className={`${
-              statusColor === 'green' ? 'bg-green-100 text-green-800' :
+            className={`${statusColor === 'green' ? 'bg-green-100 text-green-800' :
               statusColor === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
-              statusColor === 'red' ? 'bg-red-100 text-red-800' :
-              'bg-gray-100 text-gray-800'
-            }`}
+                statusColor === 'red' ? 'bg-red-100 text-red-800' :
+                  'bg-gray-100 text-gray-800'
+              }`}
           >
             {statusText}
           </Badge>
@@ -173,22 +175,22 @@ export function CurrentPlanCard({
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span>Next billing date</span>
+              <span>{t('common.subscription.nextBillingDate')}</span>
             </div>
             <span className="font-medium">
               {new Date(effectiveSubscription.currentPeriodEnd).toLocaleDateString()}
             </span>
           </div>
-          
+
           {daysUntilBilling > 0 && (
             <div className="text-sm text-muted-foreground">
-              {daysUntilBilling} days remaining in current period
+              {daysUntilBilling} {t('common.subscription.daysRemaining')}
             </div>
           )}
 
           {effectiveSubscription.cancelAtPeriodEnd && (
             <div className="text-sm text-orange-600 bg-orange-50 p-2 rounded">
-              Your subscription will be cancelled at the end of the current period
+              {t('common.subscription.cancelAtPeriodEnd')}
             </div>
           )}
         </div>
@@ -196,107 +198,90 @@ export function CurrentPlanCard({
         {/* Usage Statistics */}
         {showUsage && (
           <div className="space-y-4">
-            <h4 className="font-medium text-sm">Usage This Month</h4>
-            
+            <h4 className="font-medium text-sm">{t('common.subscription.usageThisMonth')}</h4>
+
             <div className="space-y-3">
-              {/* Campaigns */}
+              {/* Posts */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center space-x-2">
                     <Activity className="h-4 w-4 text-muted-foreground" />
-                    <span>Campaigns</span>
+                    <span>{t('common.subscription.postsPerMonth')}</span>
                   </div>
                   <span className="font-mono text-sm">
-                    {formatUsage(effectiveSubscription.usage.campaigns, effectiveSubscription.limits.campaigns)}
+                    {formatUsage(effectiveSubscription.usage.postsThisMonth, effectiveSubscription.limits.postsPerMonth)}
                   </span>
                 </div>
-                <Progress 
-                  value={getUsagePercentage(effectiveSubscription.usage.campaigns, effectiveSubscription.limits.campaigns)}
+                <Progress
+                  value={getUsagePercentage(effectiveSubscription.usage.postsThisMonth, effectiveSubscription.limits.postsPerMonth)}
                   className="h-2"
                 />
               </div>
 
-              {/* Ad Sets */}
+              {/* AI Content */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center space-x-2">
                     <Activity className="h-4 w-4 text-muted-foreground" />
-                    <span>Ad Sets</span>
+                    <span>{t('common.subscription.aiContentDaily')}</span>
                   </div>
                   <span className="font-mono text-sm">
-                    {formatUsage(effectiveSubscription.usage.adSets, effectiveSubscription.limits.adSets)}
+                    {formatUsage(effectiveSubscription.usage.aiContentToday, effectiveSubscription.limits.aiContentPerDay)}
                   </span>
                 </div>
-                <Progress 
-                  value={getUsagePercentage(effectiveSubscription.usage.adSets, effectiveSubscription.limits.adSets)}
+                <Progress
+                  value={getUsagePercentage(effectiveSubscription.usage.aiContentToday, effectiveSubscription.limits.aiContentPerDay)}
                   className="h-2"
                 />
               </div>
 
-              {/* Ads */}
+              {/* AI Images */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center space-x-2">
                     <Activity className="h-4 w-4 text-muted-foreground" />
-                    <span>Ads</span>
+                    <span>{t('common.subscription.aiImagesDaily')}</span>
                   </div>
                   <span className="font-mono text-sm">
-                    {formatUsage(effectiveSubscription.usage.ads, effectiveSubscription.limits.ads)}
+                    {formatUsage(effectiveSubscription.usage.aiImagesToday, effectiveSubscription.limits.aiImagesPerDay)}
                   </span>
                 </div>
-                <Progress 
-                  value={getUsagePercentage(effectiveSubscription.usage.ads, effectiveSubscription.limits.ads)}
+                <Progress
+                  value={getUsagePercentage(effectiveSubscription.usage.aiImagesToday, effectiveSubscription.limits.aiImagesPerDay)}
                   className="h-2"
                 />
               </div>
 
-              {/* Team Members */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center space-x-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                    <span>Team Members</span>
-                  </div>
-                  <span className="font-mono text-sm">
-                    {formatUsage(effectiveSubscription.usage.teamMembers, effectiveSubscription.limits.teamMembers)}
-                  </span>
-                </div>
-                <Progress 
-                  value={getUsagePercentage(effectiveSubscription.usage.teamMembers, effectiveSubscription.limits.teamMembers)}
-                  className="h-2"
-                />
-              </div>
-
-              {/* Storage */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center space-x-2">
-                    <HardDrive className="h-4 w-4 text-muted-foreground" />
-                    <span>Storage</span>
-                  </div>
-                  <span className="font-mono text-sm">
-                    {formatUsage(effectiveSubscription.usage.storage, effectiveSubscription.limits.storage)}
-                  </span>
-                </div>
-                <Progress 
-                  value={getUsagePercentage(effectiveSubscription.usage.storage, effectiveSubscription.limits.storage)}
-                  className="h-2"
-                />
-              </div>
-
-              {/* API Calls */}
+              {/* Platforms */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center space-x-2">
                     <Activity className="h-4 w-4 text-muted-foreground" />
-                    <span>API Calls</span>
+                    <span>{t('common.subscription.connectedPlatforms')}</span>
                   </div>
                   <span className="font-mono text-sm">
-                    {formatUsage(effectiveSubscription.usage.apiCalls, effectiveSubscription.limits.apiCalls)}
+                    {formatUsage(effectiveSubscription.usage.platforms, effectiveSubscription.limits.platforms)}
                   </span>
                 </div>
-                <Progress 
-                  value={getUsagePercentage(effectiveSubscription.usage.apiCalls, effectiveSubscription.limits.apiCalls)}
+                <Progress
+                  value={getUsagePercentage(effectiveSubscription.usage.platforms, effectiveSubscription.limits.platforms)}
+                  className="h-2"
+                />
+              </div>
+
+              {/* Accounts */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center space-x-2">
+                    <Activity className="h-4 w-4 text-muted-foreground" />
+                    <span>{t('common.subscription.socialAccounts')}</span>
+                  </div>
+                  <span className="font-mono text-sm">
+                    {formatUsage(effectiveSubscription.usage.accounts, effectiveSubscription.limits.accounts)}
+                  </span>
+                </div>
+                <Progress
+                  value={getUsagePercentage(effectiveSubscription.usage.accounts, effectiveSubscription.limits.accounts)}
                   className="h-2"
                 />
               </div>
@@ -309,13 +294,13 @@ export function CurrentPlanCard({
           <div className="flex space-x-2 pt-4 border-t">
             <Button asChild variant="outline" size="sm" className="flex-1">
               <Link href="/subscription/plans">
-                Change Plan
+                {t('common.subscription.changePlan')}
               </Link>
             </Button>
             <Button asChild variant="outline" size="sm" className="flex-1">
               <Link href="/subscription/billing">
                 <CreditCard className="h-4 w-4 mr-2" />
-                Billing
+                {t('common.subscription.billing')}
               </Link>
             </Button>
           </div>

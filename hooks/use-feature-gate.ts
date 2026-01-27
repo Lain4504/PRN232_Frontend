@@ -3,12 +3,12 @@ import { useSubscription } from './use-subscription'
 import { useProfile } from '@/lib/contexts/profile-context'
 import { checkFeatureAccess, ProfileTypeEnum } from '@/lib/utils/profile-utils'
 import type { FeatureGate } from '@/lib/types/subscription'
-import { 
-  canAccessFeature, 
-  getFeatureGate, 
-  getUsagePercentage, 
+import {
+  canAccessFeature,
+  getFeatureGate,
+  getUsagePercentage,
   isUsageNearLimit,
-  getRemainingUsage 
+  getRemainingUsage
 } from '@/lib/utils/subscription'
 
 export const useFeatureGate = (featureId: string) => {
@@ -153,16 +153,12 @@ export const useCanPerformAction = (action: string) => {
 
     // Map actions to features
     const actionToFeatureMap: Record<string, string> = {
-      'create_campaign': 'campaigns',
-      'create_ad_set': 'adSets',
-      'create_ad': 'ads',
-      'add_team_member': 'teamMembers',
-      'upload_file': 'storage',
-      'api_call': 'apiCalls',
-      'view_advanced_analytics': 'advanced_analytics',
-      'manage_team': 'team_management',
-      'priority_support': 'priority_support',
-      'custom_integrations': 'custom_integrations',
+      'create_post': 'postsPerMonth',
+      'generate_content': 'aiContentPerDay',
+      'generate_image': 'aiImagesPerDay',
+      'connect_platform': 'platforms',
+      'link_account': 'accounts',
+      'create_campaign': 'adCampaigns',
     }
 
     const featureId = actionToFeatureMap[action]
@@ -179,16 +175,12 @@ export const useCanPerformAction = (action: string) => {
     }
 
     const actionToFeatureMap: Record<string, string> = {
-      'create_campaign': 'campaigns',
-      'create_ad_set': 'adSets',
-      'create_ad': 'ads',
-      'add_team_member': 'teamMembers',
-      'upload_file': 'storage',
-      'api_call': 'apiCalls',
-      'view_advanced_analytics': 'advanced_analytics',
-      'manage_team': 'team_management',
-      'priority_support': 'priority_support',
-      'custom_integrations': 'custom_integrations',
+      'create_post': 'postsPerMonth',
+      'generate_content': 'aiContentPerDay',
+      'generate_image': 'aiImagesPerDay',
+      'connect_platform': 'platforms',
+      'link_account': 'accounts',
+      'create_campaign': 'adCampaigns',
     }
 
     const featureId = actionToFeatureMap[action]
@@ -234,12 +226,11 @@ export const useSubscriptionLimits = () => {
     }
 
     return {
-      campaigns: subscription.usage.campaigns >= subscription.limits.campaigns && subscription.limits.campaigns !== -1,
-      adSets: subscription.usage.adSets >= subscription.limits.adSets && subscription.limits.adSets !== -1,
-      ads: subscription.usage.ads >= subscription.limits.ads && subscription.limits.ads !== -1,
-      teamMembers: subscription.usage.teamMembers >= subscription.limits.teamMembers && subscription.limits.teamMembers !== -1,
-      storage: subscription.usage.storage >= parseFloat(subscription.limits.storage) && subscription.limits.storage !== 'unlimited',
-      apiCalls: subscription.usage.apiCalls >= subscription.limits.apiCalls && subscription.limits.apiCalls !== -1,
+      posts: subscription.usage.postsThisMonth >= subscription.limits.postsPerMonth && subscription.limits.postsPerMonth !== -1,
+      aiContent: subscription.usage.aiContentToday >= subscription.limits.aiContentPerDay && subscription.limits.aiContentPerDay !== -1,
+      aiImages: subscription.usage.aiImagesToday >= subscription.limits.aiImagesPerDay && subscription.limits.aiImagesPerDay !== -1,
+      platforms: subscription.usage.platforms >= subscription.limits.platforms && subscription.limits.platforms !== -1,
+      accounts: subscription.usage.accounts >= subscription.limits.accounts && subscription.limits.accounts !== -1,
     }
   }, [subscription, isLoading, error])
 

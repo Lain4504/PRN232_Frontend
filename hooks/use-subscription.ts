@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getUserSubscriptions, getActiveSubscription, getActiveSubscriptionByProfile, getPlanPricing } from '@/lib/api/subscription'
 import { SubscriptionResponseDto, Subscription, SubscriptionPlanEnum, SubscriptionTier } from '@/lib/types/subscription'
+import { SUBSCRIPTION_PLANS } from '@/lib/constants/subscription-plans'
 
 export function useSubscription(profileId?: string) {
   const [subscriptions, setSubscriptions] = useState<SubscriptionResponseDto[]>([])
@@ -208,84 +209,8 @@ export function useSubscriptionPlans() {
   return useQuery({
     queryKey: ['subscription-plans'],
     queryFn: async () => {
-      // Mock subscription plans data
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      // In a real implementation, this would fetch from your API
-      return [
-        {
-          id: 'free',
-          name: 'Free',
-          tier: 'free' as const,
-          price: { monthly: 0, yearly: 0 },
-          description: 'Perfect for getting started',
-          billingCycle: 'monthly' as const,
-          features: [
-            'Up to 3 campaigns',
-            'Basic analytics',
-            'Email support',
-            '1 team member'
-          ],
-          limits: {
-            campaigns: 3,
-            adSets: 10,
-            ads: 50,
-            teamMembers: 1,
-            storage: '1GB',
-            apiCalls: 1000
-          },
-          isPopular: false
-        },
-        {
-          id: 'basic',
-          name: 'Basic',
-          tier: 'basic' as const,
-          price: { monthly: 29, yearly: 290 },
-          description: 'Great for small teams',
-          billingCycle: 'monthly' as const,
-          features: [
-            'Up to 15 campaigns',
-            'Advanced analytics',
-            'Priority support',
-            '5 team members',
-            'AI content generation'
-          ],
-          limits: {
-            campaigns: 15,
-            adSets: 50,
-            ads: 200,
-            teamMembers: 5,
-            storage: '25GB',
-            apiCalls: 5000
-          },
-          isPopular: true
-        },
-        {
-          id: 'pro',
-          name: 'Pro',
-          tier: 'pro' as const,
-          price: { monthly: 99, yearly: 990 },
-          description: 'For growing businesses',
-          billingCycle: 'monthly' as const,
-          features: [
-            'Unlimited campaigns',
-            'Advanced reporting',
-            '24/7 support',
-            '20 team members',
-            'API access',
-            'Custom integrations'
-          ],
-          limits: {
-            campaigns: -1,
-            adSets: -1,
-            ads: -1,
-            teamMembers: 20,
-            storage: '100GB',
-            apiCalls: -1
-          },
-          isPopular: false
-        }
-      ]
+      // Use the actual plans defined in constants
+      return SUBSCRIPTION_PLANS
     },
     staleTime: 10 * 60 * 1000 // 10 minutes
   })

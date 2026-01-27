@@ -7,12 +7,12 @@ export enum ProfileTypeEnum {
 }
 
 export const PROFILE_TYPE_LABELS = {
-  [ProfileTypeEnum.Free]: 'Free',
-  [ProfileTypeEnum.Basic]: 'Basic', 
-  [ProfileTypeEnum.Pro]: 'Pro',
-  'Free': 'Free',
-  'Basic': 'Basic',
-  'Pro': 'Pro'
+  [ProfileTypeEnum.Free]: 'Miễn phí',
+  [ProfileTypeEnum.Basic]: 'Plus',
+  [ProfileTypeEnum.Pro]: 'Premium',
+  'Free': 'Miễn phí',
+  'Basic': 'Plus',
+  'Pro': 'Premium'
 } as const
 
 export const PROFILE_TYPE_COLORS = {
@@ -92,23 +92,23 @@ export const getFeatureErrorMessage = (profileType: ProfileTypeEnum, feature: st
     case 'teams':
     case 'team_management':
     case 'team_members':
-      return 'Team features require Basic or Pro subscription. Please upgrade your profile.'
+      return 'Tính năng Đội nhóm yêu cầu gói Plus hoặc Premium. Vui lòng nâng cấp hồ sơ để sử dụng.'
     case 'advanced_analytics':
-      return 'Advanced analytics require Pro subscription. Please upgrade your profile.'
+      return 'Tính năng Phân tích chuyên sâu yêu cầu gói Premium. Vui lòng nâng cấp hồ sơ để sử dụng.'
     case 'priority_support':
-      return 'Priority support requires Pro subscription. Please upgrade your profile.'
+      return 'Hỗ trợ ưu tiên yêu cầu gói Premium. Vui lòng nâng cấp hồ sơ để sử dụng.'
     default:
-      return `This feature is not available for ${PROFILE_TYPE_LABELS[profileType]} profiles.`
+      return `Tính năng này không khả dụng cho gói ${PROFILE_TYPE_LABELS[profileType]}.`
   }
 }
 
 export const getUpgradeMessage = (currentType: ProfileTypeEnum, requiredType: ProfileTypeEnum): string => {
   if (currentType >= requiredType) return ''
-  
+
   const currentLabel = PROFILE_TYPE_LABELS[currentType]
   const requiredLabel = PROFILE_TYPE_LABELS[requiredType]
-  
-  return `Upgrade from ${currentLabel} to ${requiredLabel} to access this feature.`
+
+  return `Nâng cấp từ gói ${currentLabel} lên gói ${requiredLabel} để sử dụng tính năng này.`
 }
 
 // Clear all profile context
@@ -121,7 +121,7 @@ export const clearProfileContext = (): void => {
 // Debug helper
 export const debugProfileContext = () => {
   if (typeof window === 'undefined') return
-  
+
   console.log('Profile Context Debug:', {
     activeProfileId: getActiveProfileId(),
     activeTeamId: getActiveTeamId(),

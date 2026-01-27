@@ -137,39 +137,39 @@ export const vi = {
             actionPrefix: "KHỞI TẠO",
             tiers: [
                 {
-                    name: "Cơ bản",
-                    price: "$29",
-                    desc: "Dành cho cá nhân và nhóm nhỏ.",
+                    name: "Miễn phí",
+                    price: "0đ",
+                    desc: "Dùng thử các tính năng cơ bản.",
                     features: [
-                        "3 Tài khoản MXH",
-                        "Tạo nội dung AI (100 bài/tháng)",
-                        "Phân tích cơ bản",
-                        "Lịch đăng bài tự động"
+                        "1 Nền tảng & 1 Tài khoản",
+                        "Tạo nội dung (5 bài/tháng)",
+                        "Lên lịch đăng bài tự động",
+                        "Phân tích nhân khẩu học"
                     ]
                 },
                 {
-                    name: "Chuyên nghiệp",
-                    price: "$99",
-                    desc: "Tiêu chuẩn cho các đội ngũ đang phát triển.",
+                    name: "Plus",
+                    price: "359.000đ",
+                    desc: "Nâng cấp trải nghiệm với AI hỗ trợ chuyên sâu.",
                     featured: true,
                     features: [
-                        "15 Tài khoản MXH",
-                        "Tạo nội dung AI không giới hạn",
-                        "Phân tích nâng cao",
-                        "Quản lý thương hiệu",
-                        "Hỗ trợ 24/7"
+                        "2 Nền tảng & 3 Tài khoản",
+                        "Tạo nội dung (30 bài/tháng)",
+                        "AI Content (2 bài/ngày)",
+                        "AI Image (7 hình/ngày)",
+                        "Phân tích hiệu quả quảng cáo"
                     ]
                 },
                 {
-                    name: "Doanh nghiệp",
-                    price: "Liên hệ",
-                    desc: "Giải pháp toàn diện cho tổ chức lớn.",
+                    name: "Premium",
+                    price: "559.000đ",
+                    desc: "Giải pháp tối ưu cho doanh nghiệp và agency chuyên nghiệp.",
                     features: [
-                        "Không giới hạn tài khoản",
-                        "Mô hình AI riêng biệt",
-                        "Quản lý phân quyền cao cấp",
-                        "API tích hợp riêng",
-                        "Đội ngũ hỗ trợ chuyên biệt"
+                        "3 Nền tảng & 5 Tài khoản",
+                        "Tạo nội dung không giới hạn",
+                        "AI Content (4 bài/ngày)",
+                        "AI Image (10 hình/ngày)",
+                        "Đề xuất ngân sách & nội dung thông minh"
                     ]
                 }
             ],
@@ -180,6 +180,113 @@ export const vi = {
                 { q: "Những nút mạng xã hội nào được hỗ trợ?", a: "TikTok, Meta (FB/IG) và X hiện đang hoạt động." },
                 { q: "Có hợp đồng dài hạn không?", a: "Không. Tất cả các giao thức đều theo tháng theo mặc định." }
             ]
+        },
+        subscription: {
+            currentPlan: "Gói hiện tại",
+            annualBilling: "Thanh toán theo năm",
+            monthlyBilling: "Thanh toán theo tháng",
+            nextBillingDate: "Ngày thanh toán tiếp theo",
+            daysRemaining: "ngày còn lại trong chu kỳ",
+            cancelAtPeriodEnd: "Gói dịch vụ của bạn sẽ bị hủy vào cuối chu kỳ hiện tại",
+            usageThisMonth: "Mức độ sử dụng trong tháng",
+            postsPerMonth: "Số bài đăng mỗi tháng",
+            aiContentDaily: "Nội dung AI hàng ngày",
+            aiImagesDaily: "Hình ảnh AI hàng ngày",
+            connectedPlatforms: "Nền tảng đã kết nối",
+            socialAccounts: "Tài khoản mạng xã hội",
+            changePlan: "Đổi gói",
+            billing: "Thanh toán",
+            unableToLoad: "Không thể tải thông tin gói dịch vụ",
+            management: "Quản lý gói dịch vụ",
+            managementDesc: "Quản lý gói dịch vụ, thanh toán và cài đặt gói của bạn",
+            status: "Trạng thái gói dịch vụ",
+            planLabel: "Gói",
+            endDate: "Ngày kết thúc",
+            startDate: "Ngày bắt đầu",
+            quickActions: "Thao tác nhanh",
+            manageDesc: "Quản lý gói dịch vụ của bạn",
+            cancelPlan: "Hủy gói dịch vụ",
+            keepPlan: "Giữ gói dịch vụ",
+            confirmCancel: "Có, hủy gói dịch vụ",
+            cancelTitle: "Hủy gói dịch vụ?",
+            cancelWarning: "Bạn có chắc chắn muốn hủy gói dịch vụ không? Hành động này không thể hoàn tác.",
+            whatHappens: "Điều gì sẽ xảy ra:",
+            losePremium: "Bạn sẽ mất quyền truy cập vào các tính năng cao cấp ngay lập tức",
+            cancelAtEnd: "Gói dịch vụ của bạn sẽ bị hủy vào cuối chu kỳ thanh toán hiện tại",
+            moveToFree: "Bạn sẽ tự động được chuyển sang gói Miễn phí",
+            dataPreserved: "Dữ liệu của bạn sẽ được giữ lại, nhưng bạn sẽ không thể tạo nội dung cao cấp mới",
+            comparison: {
+                title: "So sánh tính năng",
+                features: "Tính năng",
+                popular: "Phổ biến",
+                current: "Hiện tại",
+                perMonth: "mỗi tháng",
+                getStarted: "Bắt đầu ngay",
+                choosePlan: "Chọn gói",
+                currentPlan: "Gói hiện tại",
+                processing: "Đang xử lý...",
+                trialNotice: "Tất cả các gói đều có 14 ngày dùng thử miễn phí. Không yêu cầu thẻ tín dụng cho gói Miễn phí.",
+                needHelp: "Cần trợ giúp lựa chọn?",
+                contactSales: "Liên hệ đội ngũ bán hàng",
+                categories: {
+                    core: "Tính năng cốt lõi",
+                    analytics: "Phân tích & Báo cáo",
+                    support: "Hỗ trợ & Quản lý"
+                },
+                featureNames: {
+                    posts: "Bài đăng mỗi tháng",
+                    aiContent: "Nội dung AI hàng ngày",
+                    aiImages: "Hình ảnh AI hàng ngày",
+                    platforms: "Nền tảng kết nối",
+                    accounts: "Tài khoản mạng xã hội",
+                    campaigns: "Chiến dịch quảng cáo",
+                    storage: "Dung lượng lưu trữ",
+                    apiCalls: "Lượt gọi API/tháng",
+                    basicAnalytics: "Phân tích cơ bản",
+                    advancedAnalytics: "Phân tích chuyên sâu",
+                    customReports: "Báo cáo tùy chỉnh",
+                    exportData: "Xuất dữ liệu",
+                    emailSupport: "Hỗ trợ qua Email",
+                    prioritySupport: "Hỗ trợ ưu tiên",
+                    dedicatedSupport: "Hỗ trợ chuyên biệt",
+                    teamManagement: "Quản lý đội ngũ",
+                    customIntegrations: "Tích hợp tùy chỉnh",
+                    whiteLabel: "Nhãn trắng (White Label)"
+                }
+            },
+            creatives: {
+                title: "Tài sản sáng tạo",
+                description: "Quản lý và tối ưu hóa các tài sản hình ảnh và video của bạn.",
+                createCreative: "Thêm tài sản",
+                noCreatives: "Chưa có tài sản",
+                searchPlaceholder: "Tìm kiếm tài sản...",
+                preview: "Xem trước",
+                edit: "Chỉnh sửa",
+                delete: "Xóa",
+                name: "Tên tài sản",
+                type: "Loại tài sản",
+                status: "Trạng thái",
+                createdAt: "Ngày tạo",
+                tags: "Thẻ",
+                metrics: "Chỉ số",
+                impressions: "Lượt hiển thị",
+                clicks: "Lượt nhấp",
+                ctr: "CTR",
+                types: {
+                    image: "Hình ảnh",
+                    video: "Video",
+                    text: "Văn bản",
+                    gif: "GIF",
+                    carousel: "Carousel",
+                    story: "Story"
+                },
+                statuses: {
+                    active: "Hoạt động",
+                    paused: "Tạm dừng",
+                    draft: "Bản nháp",
+                    deleted: "Đã xóa"
+                }
+            }
         },
         docs: {
             badge: "Hướng dẫn người dùng",
@@ -489,8 +596,8 @@ export const vi = {
             billing: "Thanh toán",
             profileType: {
                 free: "Miễn phí",
-                basic: "Cơ bản",
-                pro: "Chuyên nghiệp"
+                basic: "Plus",
+                pro: "Premium"
             }
         },
 

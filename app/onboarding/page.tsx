@@ -3,12 +3,12 @@
 import React, { useState } from "react"
 import { useRouter } from "next/navigation"
 import { UserTypeSelection } from "@/components/onboarding/user-type-selection"
-import { api } from "@/lib/api"
-import { endpoints } from "@/lib/api"
+import { api, endpoints } from "@/lib/api"
 import { useAuth } from "@/lib/contexts/auth-context"
 import { useProfile } from "@/lib/contexts/profile-context"
 import { toast } from "sonner"
 import { ProfileTypeEnum } from "@/lib/utils/profile-utils"
+import { Profile } from "@/lib/types/omniadly-types"
 
 export default function OnboardingPage() {
     const router = useRouter()
@@ -39,8 +39,7 @@ export default function OnboardingPage() {
                 fd.append('Bio', 'My personal creative workspace')
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const response = await api.postForm<any>(endpoints.createProfile(session.user.id), fd)
+            const response = await api.postForm<Profile>(endpoints.createProfile(session.user.id), fd)
 
             if (response.success && response.data) {
                 const newProfile = response.data
@@ -48,11 +47,12 @@ export default function OnboardingPage() {
                 // Update context
                 setActiveProfile(newProfile.id, {
                     id: newProfile.id,
-                    name: newProfile.name || newProfile.companyName || 'Profile',
-                    type: (newProfile.profileType as ProfileTypeEnum) || ProfileTypeEnum.Free,
+                    name: newProfile.name || newProfile.company_name || 'Personal Profile',
+                    type: (newProfile.profileType as unknown as ProfileTypeEnum) || ProfileTypeEnum.Free,
                     avatarUrl: newProfile.avatarUrl,
-                    companyName: newProfile.companyName,
-                    isOwner: true
+                    companyName: newProfile.company_name,
+                    isOwner: true,
+                    status: newProfile.status ?? 1
                 })
 
                 toast.success("Personal workspace configured! Redirecting to dashboard...")

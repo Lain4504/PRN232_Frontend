@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { Eye, EyeOff, Lock, CheckCircle, AlertCircle, ShieldCheck } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Eye, EyeOff, Lock, AlertCircle, ShieldCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { api, endpoints } from "@/lib/api"
 import { useRouter } from "next/navigation"
@@ -21,7 +20,6 @@ export function PasswordChangeSection() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
   const router = useRouter()
 
   const getPasswordStrength = (password: string) => {
@@ -53,7 +51,6 @@ export function PasswordChangeSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-    setSuccess(false)
 
     if (!currentPassword || !newPassword || !confirmPassword) {
       setError("Vui lòng nhập đầy đủ các thông tin.")
@@ -75,7 +72,6 @@ export function PasswordChangeSection() {
       })
 
       if (response.success) {
-        setSuccess(true)
         setCurrentPassword("")
         setNewPassword("")
         setConfirmPassword("")
@@ -92,10 +88,11 @@ export function PasswordChangeSection() {
         setError(response.message || "Đã có lỗi xảy ra. Vui lòng thử lại sau.")
         toast.error("Cập nhật mật khẩu thất bại")
       }
-    } catch (err: any) {
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "Đã có lỗi xảy ra. Vui lòng thử lại sau."
       console.error("Change password error:", err)
-      setError(err.message || "Đã có lỗi xảy ra. Vui lòng thử lại sau.")
-      toast.error(err.message || "Cập nhật mật khẩu thất bại")
+      setError(errorMsg)
+      toast.error(errorMsg)
     } finally {
       setIsLoading(false)
     }

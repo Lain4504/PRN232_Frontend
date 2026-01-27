@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, Suspense, useEffect } from "react"
+import React, { useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { api, endpoints } from "@/lib/api"
 import { useAuth } from "@/lib/contexts/auth-context"
@@ -14,10 +14,8 @@ import { createPayOSCheckoutLink } from "@/lib/api/subscription"
 import { SubscriptionPlanEnum } from "@/lib/types/subscription"
 
 function PaymentForm() {
-    const router = useRouter()
     const searchParams = useSearchParams()
     const { session } = useAuth()
-    const { setActiveProfile } = useProfile()
 
     const [isProcessing, setIsProcessing] = useState(false)
     const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlanEnum>(SubscriptionPlanEnum.Basic)
@@ -86,7 +84,7 @@ function PaymentForm() {
                 fd.append('CompanyName', profileData.companyName)
                 fd.append('Bio', `Agency Workspace (${selectedPlan === SubscriptionPlanEnum.Basic ? 'PLUS' : 'PREMIUM'} Plan)`)
 
-                const profileResponse = await api.postForm<any>(endpoints.createProfile(session.user.id), fd)
+                const profileResponse = await api.postForm<{ id: string }>(endpoints.createProfile(session.user.id), fd)
 
                 if (!profileResponse.success || !profileResponse.data) {
                     throw new Error(profileResponse.message || "Không thể khởi tạo hồ sơ")

@@ -20,6 +20,7 @@ import {
 import type { AdCreativeResponse, CreativeType } from "@/lib/types/creatives";
 import { getCreativeStatus, getCreativeStatusColor, getCreativeTypeColor, CREATIVE_TYPES } from "@/lib/types/creatives";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 interface CreativeCardProps {
   creative: AdCreativeResponse;
@@ -30,19 +31,42 @@ interface CreativeCardProps {
   compact?: boolean;
 }
 
-export function CreativeCard({ 
-  creative, 
-  onEdit, 
-  onDelete, 
+export function CreativeCard({
+  creative,
+  onEdit,
+  onDelete,
   onPreview,
   showActions = true,
   compact = false
 }: CreativeCardProps) {
+  const { t } = useTranslation();
   const status = getCreativeStatus(creative);
   const statusColor = getCreativeStatusColor(status);
   const safeType = (creative.type ?? 'IMAGE') as CreativeType;
   const typeColor = getCreativeTypeColor(safeType);
   const typeInfo = CREATIVE_TYPES.find(t => t.value === safeType);
+
+  const getTranslatedStatus = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'active': return t('common.creatives.statuses.active');
+      case 'paused': return t('common.creatives.statuses.paused');
+      case 'draft': return t('common.creatives.statuses.draft');
+      case 'deleted': return t('common.creatives.statuses.deleted');
+      default: return status;
+    }
+  };
+
+  const getTranslatedType = (type: string) => {
+    switch (type) {
+      case 'IMAGE': return t('common.creatives.types.image');
+      case 'VIDEO': return t('common.creatives.types.video');
+      case 'TEXT': return t('common.creatives.types.text');
+      case 'GIF': return t('common.creatives.types.gif');
+      case 'CAROUSEL': return t('common.creatives.types.carousel');
+      case 'STORY': return t('common.creatives.types.story');
+      default: return typeInfo?.label || type;
+    }
+  };
 
   const getCreativeIcon = (type: string) => {
     switch (type) {
@@ -79,12 +103,12 @@ export function CreativeCard({
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-medium text-sm truncate">{creative.name}</h3>
                 <Badge variant="secondary" className={`${statusColor} text-xs`}>
-                  {status}
+                  {getTranslatedStatus(status)}
                 </Badge>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Badge variant="outline" className={`${typeColor} text-xs`}>
-                  {typeInfo?.label}
+                  {getTranslatedType(safeType)}
                 </Badge>
                 <span>{format(new Date(creative.createdAt), 'MMM d')}</span>
               </div>
@@ -149,7 +173,7 @@ export function CreativeCard({
               <CreativeIcon className="h-12 w-12 text-muted-foreground" />
             </div>
           )}
-          
+
           {/* Overlay Actions */}
           {showActions && (
             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -186,14 +210,14 @@ export function CreativeCard({
           {/* Type Badge */}
           <div className="absolute top-2 left-2">
             <Badge variant="outline" className={typeColor}>
-              {typeInfo?.label}
+              {getTranslatedType(safeType)}
             </Badge>
           </div>
 
           {/* Status Badge */}
           <div className="absolute top-2 right-2">
             <Badge variant="secondary" className={statusColor}>
-              {status}
+              {getTranslatedStatus(status)}
             </Badge>
           </div>
         </div>
@@ -247,7 +271,7 @@ export function CreativeCard({
                   onClick={() => onPreview(creative)}
                 >
                   <Eye className="h-3 w-3 mr-1" />
-                  Preview
+                  {t('common.creatives.preview')}
                 </Button>
               )}
               {onEdit && (
@@ -258,7 +282,7 @@ export function CreativeCard({
                   onClick={() => onEdit(creative)}
                 >
                   <Edit className="h-3 w-3 mr-1" />
-                  Edit
+                  {t('common.creatives.edit')}
                 </Button>
               )}
             </div>

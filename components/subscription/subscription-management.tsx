@@ -15,9 +15,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { 
-  Settings, 
-  AlertTriangle, 
+import {
+  Settings,
+  AlertTriangle,
   CheckCircle,
   XCircle,
   Clock
@@ -29,6 +29,7 @@ import { toast } from 'sonner'
 import type { SubscriptionPlan, Subscription } from '@/lib/types/subscription'
 import { useProfile } from '@/lib/contexts/profile-context'
 import { SubscriptionPlanEnum } from '@/lib/types/subscription'
+import { useTranslation } from 'react-i18next'
 
 interface SubscriptionManagementProps {
   className?: string
@@ -58,20 +59,21 @@ const createFallbackSubscription = (
     cancelAtPeriodEnd: false,
     features: [],
     limits: {
-      campaigns: profileType === 2 ? -1 : profileType === 1 ? 15 : 3,
-      adSets: profileType === 2 ? -1 : profileType === 1 ? 50 : 10,
-      ads: profileType === 2 ? -1 : profileType === 1 ? 200 : 50,
-      teamMembers: profileType === 2 ? 20 : profileType === 1 ? 5 : 1,
-      storage: profileType === 2 ? '100' : profileType === 1 ? '25' : '1',
-      apiCalls: profileType === 2 ? -1 : profileType === 1 ? 5000 : 1000
+      postsPerMonth: profileType === 2 ? -1 : profileType === 1 ? 1000 : 100,
+      aiContentPerDay: profileType === 2 ? -1 : profileType === 1 ? 50 : 10,
+      aiImagesPerDay: profileType === 2 ? -1 : profileType === 1 ? 20 : 5,
+      platforms: profileType === 2 ? -1 : profileType === 1 ? 5 : 2,
+      accounts: profileType === 2 ? -1 : profileType === 1 ? 20 : 5,
+      analysisLevel: profileType === 2 ? 3 : profileType === 1 ? 2 : 1,
+      adBudgetMonthly: profileType === 2 ? -1 : profileType === 1 ? 50000000 : 5000000,
+      adCampaigns: profileType === 2 ? -1 : profileType === 1 ? 15 : 3
     },
     usage: {
-      campaigns: 0,
-      adSets: 0,
-      ads: 0,
-      teamMembers: 0,
-      storage: 0,
-      apiCalls: 0
+      postsThisMonth: 0,
+      aiContentToday: 0,
+      aiImagesToday: 0,
+      platforms: 0,
+      accounts: 0
     }
   }
 }
@@ -81,6 +83,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const { activeProfileId, profileType } = useProfile()
+  const { t } = useTranslation()
   // Use prop profileId if provided, otherwise use activeProfileId from context
   const effectiveProfileId = profileId || activeProfileId || undefined
   const { data: subscription, isLoading } = useSubscription(effectiveProfileId)
@@ -161,9 +164,9 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
   if (!effectiveSubscription) {
     return (
       <div className={`text-center py-12 ${className}`}>
-        <h2 className="text-2xl font-semibold">Unable to load subscription</h2>
+        <h2 className="text-2xl font-semibold">{t('common.subscription.unableToLoad')}</h2>
         <p className="text-muted-foreground mt-2">
-          Please try refreshing the page or contact support.
+          {t('common.subscription.unableToLoad')}
         </p>
       </div>
     )
@@ -174,9 +177,9 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
     <div className={`space-y-6 ${className}`}>
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Subscription Management</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t('common.subscription.management')}</h1>
         <p className="text-muted-foreground mt-2">
-          Manage your subscription, billing, and plan settings
+          {t('common.subscription.managementDesc')}
         </p>
       </div>
 
@@ -187,25 +190,29 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               {getStatusIcon(effectiveSubscription.status)}
-              <span>Subscription Status</span>
+              <span>{t('common.subscription.status')}</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Status</span>
+              <span className="text-sm font-medium">{t('common.subscription.status')}</span>
               <Badge className={getStatusColor(effectiveSubscription.status)}>
-                {effectiveSubscription.status.charAt(0).toUpperCase() + effectiveSubscription.status.slice(1)}
+                {effectiveSubscription.status === 'active' ? t('common.subscription.active') :
+                  effectiveSubscription.status === 'cancelled' ? t('common.subscription.cancelled') :
+                    effectiveSubscription.status === 'past_due' ? t('common.subscription.pastDue') :
+                      effectiveSubscription.status === 'trialing' ? t('common.subscription.trial') :
+                        effectiveSubscription.status}
               </Badge>
             </div>
-            
+
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Plan</span>
+              <span className="text-sm font-medium">{t('common.subscription.planLabel')}</span>
               <span className="font-medium">{effectiveSubscription.planName}</span>
             </div>
 
             {effectiveSubscription.currentPeriodEnd && (
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">End Date</span>
+                <span className="text-sm font-medium">{t('common.subscription.endDate')}</span>
                 <span className="font-medium">
                   {new Date(effectiveSubscription.currentPeriodEnd).toLocaleDateString()}
                 </span>
@@ -214,7 +221,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
 
             {effectiveSubscription.currentPeriodStart && (
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Start Date</span>
+                <span className="text-sm font-medium">{t('common.subscription.startDate')}</span>
                 <span className="font-medium">
                   {new Date(effectiveSubscription.currentPeriodStart).toLocaleDateString()}
                 </span>
@@ -226,13 +233,13 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
         {/* Quick Actions */}
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle>{t('common.subscription.quickActions')}</CardTitle>
             <CardDescription>
-              Manage your subscription
+              {t('common.subscription.manageDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button 
+            <Button
               onClick={() => {
                 const plan = getPlanById('pro')
                 if (plan) {
@@ -245,18 +252,18 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
               variant="outline"
             >
               <Settings className="h-4 w-4 mr-2" />
-              Change Plan
+              {t('common.subscription.changePlan')}
             </Button>
-            
+
             {effectiveSubscription.tier !== 'free' && (
-              <Button 
+              <Button
                 onClick={handleCancelClick}
                 className="w-full justify-start text-red-600 hover:text-red-700"
                 variant="outline"
                 disabled={cancelSubscriptionMutation.isPending}
               >
                 <XCircle className="h-4 w-4 mr-2" />
-                {cancelSubscriptionMutation.isPending ? 'Cancelling...' : 'Cancel Subscription'}
+                {cancelSubscriptionMutation.isPending ? t('common.saving') : t('common.subscription.cancelPlan')}
               </Button>
             )}
           </CardContent>
@@ -279,31 +286,31 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-red-500" />
-              Cancel Subscription?
+              {t('common.subscription.cancelTitle')}
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-3">
               <p>
-                Are you sure you want to cancel your subscription? This action cannot be undone.
+                {t('common.subscription.cancelWarning')}
               </p>
               <div className="bg-muted p-3 rounded-md space-y-2 text-sm">
-                <p className="font-medium">What will happen:</p>
+                <p className="font-medium">{t('common.subscription.whatHappens')}</p>
                 <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                  <li>You will lose access to premium features immediately</li>
-                  <li>Your subscription will be cancelled at the end of the current billing period</li>
-                  <li>You&apos;ll be moved to the Free plan automatically</li>
-                  <li>Your data will be preserved, but you won&apos;t be able to create new premium content</li>
+                  <li>{t('common.subscription.losePremium')}</li>
+                  <li>{t('common.subscription.cancelAtEnd')}</li>
+                  <li>{t('common.subscription.moveToFree')}</li>
+                  <li>{t('common.subscription.dataPreserved')}</li>
                 </ul>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.subscription.keepPlan')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancelSubscription}
               disabled={cancelSubscriptionMutation.isPending}
               className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
             >
-              {cancelSubscriptionMutation.isPending ? 'Cancelling...' : 'Yes, Cancel Subscription'}
+              {cancelSubscriptionMutation.isPending ? t('common.saving') : t('common.subscription.confirmCancel')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

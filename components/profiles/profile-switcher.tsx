@@ -32,7 +32,8 @@ export function ProfileSwitcher() {
       avatarUrl: profile.avatarUrl,
       companyName: profile.company_name,
       isOwner: profile.isOwner ?? false,
-      memberRole: profile.memberRole
+      memberRole: profile.memberRole,
+      status: profile.status as number
     })
   }
 
@@ -109,7 +110,7 @@ export function ProfileSwitcher() {
                         {profile.name || profile.company_name || "Hồ sơ không tên"}
                       </div>
                       <div className={cn("text-[9px] font-bold uppercase tracking-widest mt-0.5", isActive ? "text-slate-400" : "text-slate-400")}>
-                        {PROFILE_TYPE_LABELS[profile.profileType]} Tier
+                        {PROFILE_TYPE_LABELS[profile.profileType as keyof typeof PROFILE_TYPE_LABELS]} Tier
                       </div>
                     </div>
                   </div>

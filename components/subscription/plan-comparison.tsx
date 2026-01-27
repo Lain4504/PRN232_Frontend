@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Check, X, Zap, Crown, Building2 } from 'lucide-react'
@@ -11,6 +12,7 @@ import { useSubscription } from '@/hooks/use-subscription'
 import { formatPrice } from '@/lib/constants/subscription-plans'
 import { toast } from 'sonner'
 import type { SubscriptionPlan } from '@/lib/types/subscription'
+import { useTranslation } from 'react-i18next'
 
 interface PlanComparisonProps {
   onPlanSelect?: (plan: SubscriptionPlan) => void
@@ -18,14 +20,15 @@ interface PlanComparisonProps {
   showLimits?: boolean
 }
 
-export function PlanComparison({ 
-  onPlanSelect, 
+export function PlanComparison({
+  onPlanSelect,
   showPricing = true,
-  showLimits = true 
+  showLimits = true
 }: PlanComparisonProps) {
   const { data: plans, isLoading } = useSubscriptionPlans()
   const { data: currentSubscription } = useSubscription()
   const changePlanMutation = useChangePlan()
+  const { t } = useTranslation()
 
   const handlePlanSelect = async (plan: SubscriptionPlan) => {
     if (onPlanSelect) {
@@ -34,7 +37,7 @@ export function PlanComparison({
     }
 
     if (currentSubscription?.plan.toString() === plan.id) {
-      toast.info('You are already on this plan')
+      toast.info(t('common.notifications.featureComingSoon')) // Or a better key if I had one
       return
     }
 
@@ -73,7 +76,7 @@ export function PlanComparison({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Plan Comparison</CardTitle>
+          <CardTitle>{t('common.subscription.comparison.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="animate-pulse">
@@ -93,7 +96,7 @@ export function PlanComparison({
     return (
       <Card>
         <CardContent className="text-center py-8">
-          <p className="text-muted-foreground">Unable to load plan comparison</p>
+          <p className="text-muted-foreground">{t('common.subscription.comparison.unableToLoad')}</p>
         </CardContent>
       </Card>
     )
@@ -102,34 +105,34 @@ export function PlanComparison({
   // Define comparison features
   const comparisonFeatures = [
     {
-      category: 'Core Features',
+      category: t('common.subscription.comparison.categories.core'),
       features: [
-        { name: 'Campaigns', key: 'campaigns' },
-        { name: 'Ad Sets', key: 'adSets' },
-        { name: 'Ads', key: 'ads' },
-        { name: 'Team Members', key: 'teamMembers' },
-        { name: 'Storage', key: 'storage' },
-        { name: 'API Calls/Month', key: 'apiCalls' },
+        { name: t('common.subscription.comparison.featureNames.posts'), key: 'postsPerMonth' },
+        { name: t('common.subscription.comparison.featureNames.aiContent'), key: 'aiContentPerDay' },
+        { name: t('common.subscription.comparison.featureNames.aiImages'), key: 'aiImagesPerDay' },
+        { name: t('common.subscription.comparison.featureNames.platforms'), key: 'platforms' },
+        { name: t('common.subscription.comparison.featureNames.accounts'), key: 'accounts' },
+        { name: t('common.subscription.comparison.featureNames.campaigns'), key: 'adCampaigns' },
       ]
     },
     {
-      category: 'Analytics & Reporting',
+      category: t('common.subscription.comparison.categories.analytics'),
       features: [
-        { name: 'Basic Analytics', key: 'basic_analytics' },
-        { name: 'Advanced Analytics', key: 'advanced_analytics' },
-        { name: 'Custom Reports', key: 'custom_reports' },
-        { name: 'Export Data', key: 'export_data' },
+        { name: t('common.subscription.comparison.featureNames.basicAnalytics'), key: 'basic_analytics' },
+        { name: t('common.subscription.comparison.featureNames.advancedAnalytics'), key: 'advanced_analytics' },
+        { name: t('common.subscription.comparison.featureNames.customReports'), key: 'custom_reports' },
+        { name: t('common.subscription.comparison.featureNames.exportData'), key: 'export_data' },
       ]
     },
     {
-      category: 'Support & Management',
+      category: t('common.subscription.comparison.categories.support'),
       features: [
-        { name: 'Email Support', key: 'email_support' },
-        { name: 'Priority Support', key: 'priority_support' },
-        { name: 'Dedicated Support', key: 'dedicated_support' },
-        { name: 'Team Management', key: 'team_management' },
-        { name: 'Custom Integrations', key: 'custom_integrations' },
-        { name: 'White Label', key: 'white_label' },
+        { name: t('common.subscription.comparison.featureNames.emailSupport'), key: 'email_support' },
+        { name: t('common.subscription.comparison.featureNames.prioritySupport'), key: 'priority_support' },
+        { name: t('common.subscription.comparison.featureNames.dedicatedSupport'), key: 'dedicated_support' },
+        { name: t('common.subscription.comparison.featureNames.teamManagement'), key: 'team_management' },
+        { name: t('common.subscription.comparison.featureNames.customIntegrations'), key: 'custom_integrations' },
+        { name: t('common.subscription.comparison.featureNames.whiteLabel'), key: 'white_label' },
       ]
     }
   ]
@@ -137,28 +140,28 @@ export function PlanComparison({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-center">Plan Comparison</CardTitle>
+        <CardTitle className="text-center">{t('common.subscription.comparison.title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[200px]">Features</TableHead>
+                <TableHead className="w-[200px]">{t('common.subscription.comparison.features')}</TableHead>
                 {plans.map((plan) => (
                   <TableHead key={plan.id} className="text-center min-w-[150px]">
                     <div className="flex flex-col items-center space-y-2">
                       <div className="flex items-center space-x-2">
                         {getPlanIcon(plan.tier)}
-                        <span className="font-semibold">{plan.name}</span>
+                        {plan.name}
                         {plan.isPopular && (
                           <Badge variant="secondary" className="text-xs">
-                            Popular
+                            {t('common.subscription.comparison.popular')}
                           </Badge>
                         )}
                         {currentSubscription?.plan.toString() === plan.id && (
                           <Badge variant="outline" className="text-xs">
-                            Current
+                            {t('common.subscription.comparison.current')}
                           </Badge>
                         )}
                       </div>
@@ -168,7 +171,7 @@ export function PlanComparison({
                             {formatPrice(plan.price.monthly)}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            per month
+                            {t('common.subscription.comparison.perMonth')}
                           </div>
                         </div>
                       )}
@@ -191,13 +194,13 @@ export function PlanComparison({
                         {feature.name}
                       </TableCell>
                       {plans.map((plan) => {
-                        const hasFeature = plan.features.some(f => 
+                        const hasFeature = plan.features.some(f =>
                           f.toLowerCase().includes(feature.name.toLowerCase()) ||
                           f.toLowerCase().includes(feature.key.toLowerCase())
                         )
-                        
+
                         // For limits, show the actual value
-                        if (showLimits && ['campaigns', 'adSets', 'ads', 'teamMembers', 'storage', 'apiCalls'].includes(feature.key)) {
+                        if (showLimits && ['postsPerMonth', 'aiContentPerDay', 'aiImagesPerDay', 'platforms', 'accounts', 'adCampaigns'].includes(feature.key)) {
                           const limit = plan.limits[feature.key as keyof typeof plan.limits]
                           return (
                             <TableCell key={plan.id} className="text-center">
@@ -230,7 +233,7 @@ export function PlanComparison({
         <div className="flex justify-center space-x-4 mt-6">
           {plans.map((plan) => {
             const isCurrentPlan = currentSubscription?.plan.toString() === plan.id
-            
+
             return (
               <Button
                 key={plan.id}
@@ -240,13 +243,13 @@ export function PlanComparison({
                 className="min-w-[120px]"
               >
                 {changePlanMutation.isPending ? (
-                  'Processing...'
+                  t('common.subscription.comparison.processing')
                 ) : isCurrentPlan ? (
-                  'Current Plan'
+                  t('common.subscription.comparison.currentPlan')
                 ) : plan.price.monthly === 0 ? (
-                  'Get Started'
+                  t('common.subscription.comparison.getStarted')
                 ) : (
-                  'Choose Plan'
+                  t('common.subscription.comparison.choosePlan')
                 )}
               </Button>
             )
@@ -256,10 +259,13 @@ export function PlanComparison({
         {/* Additional Information */}
         <div className="text-center text-sm text-muted-foreground mt-6">
           <p>
-            All plans include a 14-day free trial. No credit card required for the Free plan.
+            {t('common.subscription.comparison.trialNotice')}
           </p>
           <p className="mt-1">
-            Need help choosing? <a href="#" className="text-primary hover:underline">Contact our sales team</a>
+            {t('common.subscription.comparison.needHelp')}{' '}
+            <Link href="/contact" className="text-primary hover:underline">
+              {t('common.subscription.comparison.contactSales')}
+            </Link>
           </p>
         </div>
       </CardContent>
