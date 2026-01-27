@@ -20,7 +20,7 @@ import {
 import type { AdCreativeResponse, CreativeType } from "@/lib/types/creatives";
 import { getCreativeStatus, getCreativeStatusColor, getCreativeTypeColor, CREATIVE_TYPES } from "@/lib/types/creatives";
 import { format } from "date-fns";
-import { useTranslation } from "react-i18next";
+
 
 interface CreativeCardProps {
   creative: AdCreativeResponse;
@@ -39,7 +39,7 @@ export function CreativeCard({
   showActions = true,
   compact = false
 }: CreativeCardProps) {
-  const { t } = useTranslation();
+
   const status = getCreativeStatus(creative);
   const statusColor = getCreativeStatusColor(status);
   const safeType = (creative.type ?? 'IMAGE') as CreativeType;
@@ -48,22 +48,22 @@ export function CreativeCard({
 
   const getTranslatedStatus = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'active': return t('common.creatives.statuses.active');
-      case 'paused': return t('common.creatives.statuses.paused');
-      case 'draft': return t('common.creatives.statuses.draft');
-      case 'deleted': return t('common.creatives.statuses.deleted');
+      case 'active': return "Hoạt động";
+      case 'paused': return "Tạm dừng";
+      case 'draft': return "Nháp";
+      case 'deleted': return "Đã xóa";
       default: return status;
     }
   };
 
   const getTranslatedType = (type: string) => {
     switch (type) {
-      case 'IMAGE': return t('common.creatives.types.image');
-      case 'VIDEO': return t('common.creatives.types.video');
-      case 'TEXT': return t('common.creatives.types.text');
-      case 'GIF': return t('common.creatives.types.gif');
-      case 'CAROUSEL': return t('common.creatives.types.carousel');
-      case 'STORY': return t('common.creatives.types.story');
+      case 'IMAGE': return "Hình ảnh";
+      case 'VIDEO': return "Video";
+      case 'TEXT': return "Văn bản";
+      case 'GIF': return "GIF";
+      case 'CAROUSEL': return "Băng chuyền";
+      case 'STORY': return "Tin";
       default: return typeInfo?.label || type;
     }
   };
@@ -270,8 +270,8 @@ export function CreativeCard({
                   className="flex-1"
                   onClick={() => onPreview(creative)}
                 >
-                  <Eye className="h-3 w-3 mr-1" />
-                  {t('common.creatives.preview')}
+                  {/* <Eye className="h-3 w-3 mr-1" /> */}
+                  Xem trước
                 </Button>
               )}
               {onEdit && (
@@ -281,8 +281,8 @@ export function CreativeCard({
                   className="flex-1"
                   onClick={() => onEdit(creative)}
                 >
-                  <Edit className="h-3 w-3 mr-1" />
-                  {t('common.creatives.edit')}
+                  {/* <Edit className="h-3 w-3 mr-1" /> */}
+                  Chỉnh sửa
                 </Button>
               )}
             </div>

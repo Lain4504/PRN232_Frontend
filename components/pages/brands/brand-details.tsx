@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useTranslation } from "react-i18next";
+
 import {
   Target,
   ArrowLeft,
@@ -28,16 +28,16 @@ interface BrandDetailsProps {
 }
 
 export function BrandDetails({ brandId }: BrandDetailsProps) {
-  const { t } = useTranslation("common");
+
   const router = useRouter();
   const { data: brand, isLoading: loading, error } = useBrand(brandId);
 
   useEffect(() => {
     if (error) {
-      toast.error(t("brands.noResults"));
+      toast.error("Không tìm thấy thương hiệu");
       router.push("/dashboard/brands");
     }
-  }, [error, router, t]);
+  }, [error, router]);
 
   if (loading) {
     return (
@@ -66,17 +66,17 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
             className="h-9 w-9 p-0 rounded-full"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span className="sr-only">{t("brands.back")}</span>
+            <span className="sr-only">Quay lại</span>
           </Button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">{brand.name}</h1>
-            <p className="text-sm text-muted-foreground">{t("brands.details")}</p>
+            <p className="text-sm text-muted-foreground">Chi tiết thương hiệu</p>
           </div>
         </div>
         <BrandModal mode="edit" brand={brand} onSuccess={() => window.location.reload()}>
           <Button variant="outline" size="sm">
             <Settings className="mr-2 h-4 w-4" />
-            {t("brands.configure")}
+            Thiết lập
           </Button>
         </BrandModal>
       </div>
@@ -98,7 +98,7 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    <span>{t("brands.created")}: {format(new Date(brand.createdAt || new Date()), 'dd/MM/yyyy')}</span>
+                    <span>Ngày tạo: {format(new Date(brand.createdAt || new Date()), 'dd/MM/yyyy')}</span>
                   </div>
                 </div>
               </div>
@@ -106,7 +106,7 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
             <CardContent className="space-y-6 pt-2">
               {brand.description && (
                 <div className="space-y-2">
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground/70">{t("brands.brandDescription")}</h3>
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground/70">Mô tả</h3>
                   <p className="text-foreground leading-relaxed">{brand.description}</p>
                 </div>
               )}
@@ -115,7 +115,7 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
                 <div className="p-4 bg-muted/40 rounded-lg border border-dashed">
                   <h3 className="text-xs font-bold flex items-center gap-2 text-primary mb-2 uppercase tracking-widest">
                     <Lightbulb className="h-3 w-3" />
-                    {t("brands.slogan")}
+                    Slogan
                   </h3>
                   <p className="italic text-foreground/80">&ldquo;{brand.slogan}&rdquo;</p>
                 </div>
@@ -129,20 +129,20 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
               <CardHeader className="pb-3 text-sm font-bold uppercase tracking-wider text-muted-foreground/70">
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4" />
-                  {t("brands.strategy")}
+                  Chiến lược
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 {brand.usp && (
                   <div className="space-y-2">
-                    <h3 className="text-sm font-semibold">{t("brands.usp")}</h3>
+                    <h3 className="text-sm font-semibold">Điểm bán hàng độc nhất (USP)</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{brand.usp}</p>
                   </div>
                 )}
 
                 {brand.target_audience && (
                   <div className="space-y-2">
-                    <h3 className="text-sm font-semibold">{t("brands.targetAudience")}</h3>
+                    <h3 className="text-sm font-semibold">Khách hàng mục tiêu</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{brand.target_audience}</p>
                   </div>
                 )}
@@ -155,7 +155,7 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
           {/* Quick Actions */}
           <Card className="border shadow-sm">
             <CardHeader className="pb-4">
-              <CardTitle className="text-lg">{t("brands.quickActions")}</CardTitle>
+              <CardTitle className="text-lg">Thao tác nhanh</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3">
               <Button variant="outline" asChild className="h-auto p-4 justify-start text-left hover:bg-primary/5 hover:border-primary/20 transition-all">
@@ -165,8 +165,8 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
                       <Package className="h-4 w-4" />
                     </div>
                     <div className="grid gap-0.5">
-                      <span className="font-semibold text-sm">{t("brands.manageProducts")}</span>
-                      <span className="text-xs text-muted-foreground">{t("products.description")}</span>
+                      <span className="font-semibold text-sm">Sản phẩm</span>
+                      <span className="text-xs text-muted-foreground">Quản lý danh sách sản phẩm và tư liệu hình ảnh</span>
                     </div>
                   </div>
                 </Link>
@@ -179,8 +179,8 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
                       <FileText className="h-4 w-4" />
                     </div>
                     <div className="grid gap-0.5">
-                      <span className="font-semibold text-sm">{t("brands.manageContents")}</span>
-                      <span className="text-xs text-muted-foreground">{t("contents.description")}</span>
+                      <span className="font-semibold text-sm">Nội dung</span>
+                      <span className="text-xs text-muted-foreground">Xem và quản lý các bài nội dung đã tạo</span>
                     </div>
                   </div>
                 </Link>

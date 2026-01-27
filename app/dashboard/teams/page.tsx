@@ -20,7 +20,7 @@ import { ColumnDef } from '@tanstack/react-table'
 import type { TeamResponse } from '@/lib/types/omniadly-types'
 import { Input } from "@/components/ui/input"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb"
-import { useTranslation } from 'react-i18next'
+
 import { cn } from "@/lib/utils"
 
 function TeamsPageContent() {
@@ -28,7 +28,7 @@ function TeamsPageContent() {
   const { activeProfileId, profileType, activeProfile } = useProfile()
   const router = useRouter()
   const { data, isLoading, isError } = useTeamsByVendor(activeProfileId || undefined)
-  const { t, i18n } = useTranslation("common")
+
 
   React.useEffect(() => {
     // If we have profile data, check if the user has management rights
@@ -65,7 +65,7 @@ function TeamsPageContent() {
   const columns: ColumnDef<TeamResponse>[] = useMemo(() => [
     {
       accessorKey: "name",
-      header: t('teams.teamName'),
+      header: "Tên đội nhóm",
       cell: ({ row }) => (
         <div className="flex items-center gap-6 py-4">
           <div className="size-14 rounded-2xl bg-slate-900 flex items-center justify-center text-white shrink-0 shadow-lg shadow-slate-200 group-hover:scale-110 transition-transform">
@@ -82,7 +82,7 @@ function TeamsPageContent() {
     },
     {
       accessorKey: "status",
-      header: t('teams.status'),
+      header: "Trạng thái",
       cell: ({ row }) => {
         const status = row.original.status
         return (
@@ -96,7 +96,7 @@ function TeamsPageContent() {
     },
     {
       accessorKey: "membersCount",
-      header: t('teams.teamMembers'),
+      header: "Thành viên",
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
           <div className="flex -space-x-3">
@@ -119,10 +119,10 @@ function TeamsPageContent() {
     },
     {
       accessorKey: "createdAt",
-      header: t('teams.createdDate'),
+      header: "Ngày tạo",
       cell: ({ row }) => (
         <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-          {new Date(row.getValue("createdAt")).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US').replace(/\//g, '.')}
+          {new Date(row.getValue("createdAt")).toLocaleDateString('vi-VN').replace(/\//g, '.')}
         </div>
       ),
     },
@@ -156,7 +156,7 @@ function TeamsPageContent() {
         )
       },
     },
-  ], [t, i18n.language])
+  ], [])
 
   if (isLoading || userLoading) return (
     <div className="space-y-12 animate-pulse">
@@ -177,7 +177,7 @@ function TeamsPageContent() {
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Phối hợp & Cộng tác</span>
           </div>
           <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-none">
-            {t('teams.title')}
+            Quản lý đội ngũ
           </h1>
           <p className="text-lg text-slate-500 font-medium max-w-xl leading-relaxed">
             Thiết lập các nút cộng tác và phân quyền nhân sự cho các chiến dịch quy mô lớn.
@@ -211,7 +211,7 @@ function TeamsPageContent() {
         <div className="relative flex-1 group w-full lg:max-w-[400px]">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
           <Input
-            placeholder={t('teams.searchPlaceholder')}
+            placeholder="TÌM KIẾM TÊN ĐỘI NHÓM..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-12 h-12 bg-white border-slate-100 rounded-2xl shadow-sm focus-visible:ring-slate-100 font-medium transition-all"
@@ -231,15 +231,15 @@ function TeamsPageContent() {
         {isError ? (
           <div className="flex flex-col items-center justify-center py-32 text-center bg-rose-50/50 rounded-[3rem] border border-dashed border-rose-200">
             <AlertCircle className="size-16 text-rose-500 mb-6" />
-            <h3 className="text-2xl font-black uppercase tracking-widest text-slate-900">{t('teams.systemError')}</h3>
-            <p className="text-slate-500 font-medium max-w-sm mt-3">{t('teams.failedToRetrieve')}</p>
+            <h3 className="text-2xl font-black uppercase tracking-widest text-slate-900">Lỗi hệ thống</h3>
+            <p className="text-slate-500 font-medium max-w-sm mt-3">Không thể lấy dữ liệu đội nhóm. Vui lòng thử lại sau.</p>
           </div>
         ) : !checkFeatureAccess(profileType, 'teams') ? (
           <div className="flex flex-col items-center justify-center py-32 text-center bg-slate-50/50 rounded-[3rem] border border-dashed border-slate-200">
             <Shield className="size-16 text-slate-300 mb-8" />
             <h3 className="text-3xl font-black uppercase tracking-tight mb-3 text-slate-900 leading-none">Quyền truy cập hạn chế</h3>
-            <p className="text-slate-500 font-medium max-w-sm mx-auto mb-10 leading-relaxed italic border-l-4 border-slate-100 pl-6">{t('teams.restrictedDesc')}</p>
-            <Button variant="outline" className="h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] border-slate-200 bg-white hover:bg-slate-50">{t('teams.viewPlans')}</Button>
+            <p className="text-slate-500 font-medium max-w-sm mx-auto mb-10 leading-relaxed italic border-l-4 border-slate-100 pl-6">Quản lý đội nhóm nâng cao yêu cầu cấp độ quyền hạn cao hơn. Vui lòng nâng cấp gói dịch vụ để sử dụng tính năng này.</p>
+            <Button variant="outline" className="h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] border-slate-200 bg-white hover:bg-slate-50">Xem bảng giá</Button>
           </div>
         ) : rows.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-[3rem] bg-slate-50/50">
@@ -247,12 +247,12 @@ function TeamsPageContent() {
               <Users className="size-10 text-slate-200" />
             </div>
             <h3 className="text-2xl font-black text-slate-900 mb-3 uppercase tracking-widest">
-              {searchTerm ? "Không có kết quả" : t('teams.noTeams')}
+              {searchTerm ? "Không có kết quả" : "Chưa có đội nhóm"}
             </h3>
             <p className="text-slate-500 font-medium max-w-sm mb-10 leading-relaxed uppercase tracking-tighter text-xs">
               {searchTerm
                 ? "Thử điều chỉnh từ khóa tìm kiếm của bạn để quét lại mạng lưới."
-                : t('teams.noTeamsDescription')}
+                : "Bắt đầu bằng cách tạo đội nhóm đầu tiên để cộng tác."}
             </p>
             {!searchTerm && (
               <Button

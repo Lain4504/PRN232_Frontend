@@ -4,7 +4,7 @@ import { Header } from "@/components/layout/header";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Clock, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTranslation } from "react-i18next";
+
 
 export default function BlogContent() {
     interface BlogPost {
@@ -16,9 +16,40 @@ export default function BlogContent() {
         author: string;
     }
 
-    const { t } = useTranslation("common");
-    const featured = t("blog.featured", { returnObjects: true }) as BlogPost;
-    const posts = t("blog.posts", { returnObjects: true }) as BlogPost[];
+    const featured: BlogPost = {
+        image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2665&auto=format&fit=crop",
+        tag: "TÍNH NĂNG MỚI",
+        title: "GIỚI THIỆU PHIÊN BẢN OMNIADLY 2.4",
+        desc: "Khám phá sức mạnh của Neural Engine thế hệ tiếp theo với khả năng xử lý ngôn ngữ tự nhiên được nâng cấp và tích hợp đa nền tảng.",
+        date: "27 THÁNG 1, 2026",
+        author: "OMNIADLY TEAM"
+    };
+    const posts: BlogPost[] = [
+        {
+            image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
+            tag: "HƯỚNG DẪN",
+            title: "TỐI ƯU HÓA CHIẾN DỊCH VỚI AI",
+            desc: "Tìm hiểu cách sử dụng công cụ phân tích AI để tăng tỷ lệ chuyển đổi cho các chiến dịch quảng cáo của bạn.",
+            date: "20 THÁNG 1, 2026",
+            author: "ALEX NGUYEN"
+        },
+        {
+            image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670&auto=format&fit=crop",
+            tag: "CASE STUDY",
+            title: "CÁCH STARTUP X TĂNG TRƯỞNG 300%",
+            desc: "Câu chuyện thành công của Startup X khi áp dụng tự động hóa marketing với omniadly.",
+            date: "15 THÁNG 1, 2026",
+            author: "SARAH TRAN"
+        },
+        {
+            image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2670&auto=format&fit=crop",
+            tag: "PHÂN TÍCH",
+            title: "XU HƯỚNG MARKETING 2026",
+            desc: "Những dự đoán về xu hướng digital marketing trong năm nay và cách chuẩn bị.",
+            date: "10 THÁNG 1, 2026",
+            author: "DAVID LEE"
+        }
+    ];
 
     return (
         <div className="min-h-screen bg-background font-fira-sans">
@@ -29,13 +60,13 @@ export default function BlogContent() {
 
                     <section className="text-center space-y-6 max-w-3xl mx-auto">
                         <Badge variant="outline" className="px-6 py-2 rounded-full border-primary/20 bg-primary/5 text-primary font-black uppercase tracking-[0.3em] text-[10px]">
-                            {t("blog.badge")}
+                            BLOG
                         </Badge>
                         <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight uppercase leading-none">
-                            {t("blog.title")} & <span className="text-primary italic">{t("blog.accent")}</span>
+                            INSIGHTS & <span className="text-primary italic">CẬP NHẬT</span>
                         </h1>
                         <p className="text-lg text-muted-foreground font-medium">
-                            {t("blog.description")}
+                            Nơi chia sẻ kiến thức, kinh nghiệm và những cập nhật mới nhất từ đội ngũ phát triển.
                         </p>
                     </section>
 
@@ -93,7 +124,7 @@ export default function BlogContent() {
 
             <footer className="py-20 px-6 border-t border-border/40 text-center">
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/40">
-                    {t("blog.footer")}
+                    © 2026 omniadly Blog. All rights reserved.
                 </p>
             </footer>
         </div>

@@ -24,7 +24,7 @@ import { User, DashboardStats } from "@/lib/types/omniadly-types"
 import { api, endpoints } from "@/lib/api"
 import { QuickActionsPanel } from "./quick-actions-panel"
 import { cn } from "@/lib/utils"
-import { useTranslation } from "react-i18next"
+
 import { useProfile } from "@/lib/contexts/profile-context"
 import { useTeamsByVendor } from "@/hooks/use-teams"
 import { getActiveTeamId, setActiveTeamId, clearActiveTeamId } from "@/lib/utils/profile-utils"
@@ -36,47 +36,47 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const getStatsData = (stats: DashboardStats, t: (key: string) => string) => [
+const getStatsData = (stats: DashboardStats) => [
   {
-    title: t("dashboard.stats.globalTeams"),
+    title: "Đội nhóm toàn cầu",
     value: stats.total_teams?.toString() || "0",
     icon: Users,
     color: "text-blue-600",
     bgColor: "bg-blue-50",
-    description: t("dashboard.stats.connectedWorkspaces"),
+    description: "Không gian làm việc đã kết nối",
     href: "/overview/teams"
   },
   {
-    title: t("dashboard.stats.activeIdentities"),
+    title: "Danh tính hoạt động",
     value: stats.total_brands.toString(),
     icon: Target,
     color: "text-emerald-600",
     bgColor: "bg-emerald-50",
-    description: t("dashboard.stats.brandProfilesManaged"),
+    description: "Hồ sơ thương hiệu được quản lý",
     href: "/dashboard/brands"
   },
   {
-    title: t("dashboard.stats.forgeVault"),
+    title: "Kho rèn",
     value: stats.total_contents.toString(),
     icon: Sparkles,
     color: "text-purple-600",
     bgColor: "bg-purple-50",
-    description: t("dashboard.stats.aiAssetsGenerated"),
+    description: "Tài sản AI đã tạo",
     href: "/dashboard/contents"
   },
   {
-    title: t("dashboard.stats.distribution"),
+    title: "Phân phối",
     value: stats.total_posts.toString(),
     icon: Send,
     color: "text-slate-900",
     bgColor: "bg-slate-100",
-    description: t("dashboard.stats.synchronizedPosts"),
+    description: "Bài đăng đã đồng bộ",
     href: "/dashboard/posts"
   },
 ]
 
 const DashboardContent = () => {
-  const { t } = useTranslation("common")
+
   const { activeProfileId } = useProfile()
   const [selectedTeamId, setSelectedTeamId] = useState<string>(() => getActiveTeamId() || "all")
   const [user, setUser] = useState<User | null>(null)
@@ -151,7 +151,7 @@ const DashboardContent = () => {
             </span>
           </div>
           <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-none">
-            {t("dashboard.title")} <span className="text-slate-400">{t("dashboard.accent")}</span>
+            Trung tâm <span className="text-slate-400">Điều khiển</span>
           </h1>
           <p className="text-lg text-slate-500 font-medium max-w-xl leading-relaxed">
             Chào mừng, <span className="text-slate-900 font-bold">{user?.first_name || user?.email?.split('@')[0]}</span>. Không gian làm việc AI của bạn đã được tối ưu hóa.
@@ -188,7 +188,7 @@ const DashboardContent = () => {
 
       {/* Primary Metrics Grid */}
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-        {stats && getStatsData(stats, t).map((stat, i) => (
+        {stats && getStatsData(stats).map((stat, i) => (
           <Link href={stat.href} key={i}>
             <Card className="group relative overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white hover:bg-slate-50/50 transition-all duration-300 shadow-sm hover:shadow-2xl hover:shadow-slate-200/50 hover:-translate-y-1">
               <CardContent className="p-8">

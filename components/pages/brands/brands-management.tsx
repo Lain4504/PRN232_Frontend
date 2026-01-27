@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useTranslation } from "react-i18next"
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,7 +56,7 @@ import { enUS } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 
 export function BrandsManagement() {
-  const { t, i18n } = useTranslation("common")
+
   const [searchTerm, setSearchTerm] = useState("")
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -122,7 +122,7 @@ export function BrandsManagement() {
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Quản trị danh tính</span>
           </div>
           <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-none">
-            {t("brands.title")}
+            Quản lý Thương hiệu
           </h1>
           <p className="text-lg text-slate-500 font-medium max-w-xl">
             Thiết lập và quản lý hệ sinh thái thương hiệu của bạn tại một nơi duy nhất.
@@ -132,7 +132,7 @@ export function BrandsManagement() {
         <BrandModal mode="create" onSuccess={refetchBrands}>
           <Button className="h-14 px-8 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 transition-all hover:-translate-y-1">
             <Plus className="mr-3 h-4 w-4" />
-            {t("brands.createBrand")}
+            Thêm thương hiệu
           </Button>
         </BrandModal>
       </div>
@@ -142,7 +142,7 @@ export function BrandsManagement() {
         <div className="relative flex-1 group w-full">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
           <Input
-            placeholder={t("brands.searchPlaceholder")}
+            placeholder="Tìm kiếm thương hiệu..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-12 h-12 bg-white border-slate-100 rounded-2xl shadow-sm focus-visible:ring-slate-100 font-medium transition-all"
@@ -156,10 +156,10 @@ export function BrandsManagement() {
             </div>
             <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
               <SelectTrigger className="w-[180px] border-none focus:ring-0 font-bold text-xs uppercase tracking-widest h-8">
-                <SelectValue placeholder={t("brands.allTeams")} />
+                <SelectValue placeholder="Tất cả đội nhóm" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1">
-                <SelectItem value="all" className="rounded-xl">{t("brands.allTeams")}</SelectItem>
+                <SelectItem value="all" className="rounded-xl">Tất cả đội nhóm</SelectItem>
                 {teams.map(team => (
                   <SelectItem key={team.id} value={team.id} className="rounded-xl">
                     {team.name}
@@ -252,7 +252,7 @@ export function BrandsManagement() {
             <div className="size-20 rounded-[2rem] bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
               <Building2 className="h-10 w-10 text-slate-200" />
             </div>
-            <h3 className="text-2xl font-black text-slate-900 mb-3 uppercase tracking-widest">{t("brands.noBrands")}</h3>
+            <h3 className="text-2xl font-black text-slate-900 mb-3 uppercase tracking-widest">Chưa có thương hiệu</h3>
             <p className="text-slate-500 font-medium max-w-sm mb-10 leading-relaxed">
               {searchTerm ? "Không tìm thấy kết quả phù hợp với từ khóa của bạn." : "Bắt đầu bằng hành động khởi tạo thương hiệu đầu tiên trong ma trận hồ sơ của bạn."}
             </p>
@@ -273,13 +273,13 @@ export function BrandsManagement() {
       <AlertDialog open={!!deleteBrandId} onOpenChange={() => setDeleteBrandId(null)}>
         <AlertDialogContent className="rounded-3xl p-10 border-slate-100">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl font-black text-slate-900 uppercase tracking-widest">{t("brands.deleteTitle")}</AlertDialogTitle>
+            <AlertDialogTitle className="text-2xl font-black text-slate-900 uppercase tracking-widest">Xóa thương hiệu?</AlertDialogTitle>
             <AlertDialogDescription className="text-slate-500 font-medium leading-relaxed pt-2">
-              {t("brands.deleteDesc")}
+              Bạn có chắc chắn muốn xóa thương hiệu này? Hành động này không thể hoàn tác và tất cả dữ liệu liên quan sẽ bị mất.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-8 gap-4">
-            <AlertDialogCancel className="h-12 rounded-xl font-bold uppercase tracking-widest text-xs border-slate-100">{t("brands.cancel")}</AlertDialogCancel>
+            <AlertDialogCancel className="h-12 rounded-xl font-bold uppercase tracking-widest text-xs border-slate-100">Hủy bỏ</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteBrand}
               className="h-12 rounded-xl font-bold uppercase tracking-widest text-xs bg-rose-500 hover:bg-rose-600 text-white"

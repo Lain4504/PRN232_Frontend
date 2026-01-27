@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Book, Code, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useTranslation } from "react-i18next";
+
 
 export default function DocsContent() {
     interface DocSection {
@@ -18,9 +18,30 @@ export default function DocsContent() {
         description: string;
     }
 
-    const { t } = useTranslation("common");
-    const sections = t("docs.sections", { returnObjects: true }) as DocSection[];
-    const cards = t("docs.cards", { returnObjects: true }) as DocCard[];
+    const sections: DocSection[] = [
+        {
+            title: "BẮT ĐẦU",
+            items: ["Giới thiệu", "Bắt đầu nhanh", "Cài đặt & Thiết lập", "Xác thực"]
+        },
+        {
+            title: "TÍNH NĂNG CỐT LÕI",
+            items: ["Chiến dịch Neural", "Quản lý Tài sản", "Phân tích Theo thời gian thực", "Công cụ Đội nhóm"]
+        },
+        {
+            title: "TÍCH HỢP",
+            items: ["Social Media APIs", "CRM Connectors", "Webhooks", "SDKs"]
+        }
+    ];
+    const cards: DocCard[] = [
+        {
+            title: "TÀI LIỆU SẢN PHẨM",
+            description: "Khám phá hướng dẫn sử dụng, tutorials, và best practices để tối ưu hóa nền tảng."
+        },
+        {
+            title: "THAM KHẢO API",
+            description: "Dành cho nhà phát triển hệ thống với đầy đủ endpoints và SDK."
+        }
+    ];
 
     return (
         <div className="min-h-screen bg-background font-fira-sans">
@@ -51,15 +72,15 @@ export default function DocsContent() {
                             <div className="flex items-center justify-between">
                                 <div className="space-y-4">
                                     <Badge variant="outline" className="px-4 py-1 rounded-full border-primary/20 bg-primary/5 text-primary font-black uppercase tracking-[0.3em] text-[10px]">
-                                        {t("docs.badge")}
+                                        TÀI LIỆU
                                     </Badge>
                                     <h1 className="text-5xl md:text-7xl font-black tracking-tight uppercase leading-none">
-                                        {t("docs.title")} <span className="text-primary italic">{t("docs.accent")}</span>
+                                        TRUNG TÂM <span className="text-primary italic">TRI THỨC</span>
                                     </h1>
                                 </div>
                                 <div className="hidden sm:block relative w-64 group">
                                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
-                                    <Input placeholder={t("docs.searchPlaceholder").toUpperCase()} className="pl-10 h-12 rounded-xl bg-muted/20 border-border/40 font-fira-mono text-[10px] tracking-widest focus:bg-background" />
+                                    <Input placeholder="TÌM KIẾM TÀI LIỆU..." className="pl-10 h-12 rounded-xl bg-muted/20 border-border/40 font-fira-mono text-[10px] tracking-widest focus:bg-background" />
                                 </div>
                             </div>
 
@@ -83,13 +104,13 @@ export default function DocsContent() {
 
                         <section className="prose prose-invert max-w-none space-y-12">
                             <div className="p-8 rounded-2xl bg-muted/20 border border-border/10 space-y-4">
-                                <h2 className="text-2xl font-black uppercase tracking-tight text-foreground m-0">{t("docs.overviewTitle")}</h2>
+                                <h2 className="text-2xl font-black uppercase tracking-tight text-foreground m-0">TỔNG QUAN HỆ THỐNG</h2>
                                 <p className="text-muted-foreground font-medium text-base leading-relaxed">
-                                    {t("docs.overviewBody")}
+                                    Nền tảng omniadly cung cấp bộ công cụ mạnh mẽ để tự động hóa và tối ưu hóa các chiến dịch tiếp thị đa kênh bằng trí tuệ nhân tạo. Tài liệu này sẽ hướng dẫn bạn qua từng module chức năng của hệ thống.
                                 </p>
                                 <div className="h-[2px] w-20 bg-primary/40 rounded-full" />
                                 <p className="text-xs text-muted-foreground/60 italic font-medium">
-                                    {t("docs.overviewFootnote")}
+                                    Cập nhật lần cuối: 27/01/2026 - v2.4.0 (Stable)
                                 </p>
                             </div>
                         </section>

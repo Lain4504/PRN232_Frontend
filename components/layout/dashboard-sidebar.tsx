@@ -6,7 +6,7 @@ import Link from "next/link"
 import { useProfile } from '@/lib/contexts/profile-context'
 import { ProfileTypeEnum } from '@/lib/utils/profile-utils'
 import { usePendingApprovalsCount } from '@/hooks/use-approvals'
-import { useTranslation } from 'react-i18next'
+
 import {
   Calendar,
   Target,
@@ -45,7 +45,7 @@ interface NavItem {
 }
 
 export function DashboardSidebar() {
-  const { t } = useTranslation("common")
+
   const pathname = usePathname()
   const { hasFeatureAccess, profileType, activeProfile } = useProfile()
   const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free
@@ -53,23 +53,23 @@ export function DashboardSidebar() {
   const { data: approvalCount = 0 } = usePendingApprovalsCount()
 
   const mainNavItems: NavItem[] = [
-    { title: t("sidebar.commandCenter"), url: "/dashboard", icon: LayoutGrid },
-    { title: t("sidebar.identityMatrix"), url: "/dashboard/brands", icon: Target },
-    { title: t("sidebar.activeSignals"), url: "/dashboard/campaigns", icon: Megaphone },
-    { title: t("sidebar.neuralForge"), url: "/dashboard/contents/new", icon: Sparkles },
-    { title: t("sidebar.connectors"), url: "/dashboard/social-accounts", icon: Share2 },
-    { title: t("sidebar.temporalGrid"), url: "/dashboard/calendar", icon: Calendar },
-    { title: t("sidebar.broadcasts"), url: "/dashboard/posts", icon: Mail },
+    { title: "Bảng điều khiển", url: "/dashboard", icon: LayoutGrid },
+    { title: "Hồ sơ thương hiệu", url: "/dashboard/brands", icon: Target },
+    { title: "Chiến dịch quảng cáo", url: "/dashboard/campaigns", icon: Megaphone },
+    { title: "Sáng tạo nội dung AI", url: "/dashboard/contents/new", icon: Sparkles },
+    { title: "Liên kết mạng xã hội", url: "/dashboard/social-accounts", icon: Share2 },
+    { title: "Lịch bài viết", url: "/dashboard/calendar", icon: Calendar },
+    { title: "Quản lý bài đăng", url: "/dashboard/posts", icon: Mail },
   ]
 
   const workflowNavItems: NavItem[] = [
     {
-      title: t("sidebar.governance"),
+      title: "Phê duyệt nội dung",
       url: "/dashboard/approvals",
       icon: CheckCircle,
       badge: approvalCount > 0 ? approvalCount.toString() : undefined,
     },
-    { title: t("sidebar.operatives"), url: "/dashboard/teams", icon: Users },
+    { title: "Quản lý đội ngũ", url: "/dashboard/teams", icon: Users },
   ]
 
   return (

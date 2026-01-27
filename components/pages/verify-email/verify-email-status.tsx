@@ -10,7 +10,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { CheckCircle, AlertCircle, Loader2, Mail, RefreshCw, ArrowLeft, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { useTranslation } from "react-i18next";
+
 
 type VerificationStatus = 'loading' | 'verified' | 'pending' | 'error' | 'expired';
 
@@ -22,7 +22,7 @@ export function VerifyEmailStatus({
   className,
   ...props
 }: VerifyEmailStatusProps & React.ComponentPropsWithoutRef<"div">) {
-  const { t } = useTranslation("auth");
+
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const [status, setStatus] = useState<VerificationStatus>('loading');
@@ -40,22 +40,22 @@ export function VerifyEmailStatus({
       const response = await api.get(endpoints.verifyEmail(tokenValue), { requireAuth: false });
       if (response.success) {
         setStatus('verified');
-        toast.success(t("emailVerified"));
+        toast.success("Email đã được xác thực");
         // Force refresh session to update verified status
         await refreshSession();
       } else {
         setStatus('error');
-        setError(response.message || t("authErrorMessage"));
+        setError(response.message || "Đã có lỗi xác thực xảy ra");
         // Reset ref on failure so user can retry if it was a temporary issue
         hasVerifiedRef.current = false;
       }
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : t("authErrorMessage");
+      const errorMsg = err instanceof Error ? err.message : "Đã có lỗi xác thực xảy ra";
       setStatus('error');
       setError(errorMsg);
       hasVerifiedRef.current = false;
     }
-  }, [refreshSession, t]);
+  }, [refreshSession]);
 
   const checkVerificationStatus = useCallback(async () => {
     if (token) {
@@ -70,7 +70,7 @@ export function VerifyEmailStatus({
       const timer = setTimeout(() => {
         if (!user && !token) {
           setStatus('error');
-          setError(t("authErrorMessage"));
+          setError("Đã có lỗi xác thực xảy ra");
         }
       }, 2000);
       return () => clearTimeout(timer);
@@ -83,7 +83,7 @@ export function VerifyEmailStatus({
       // Try to refresh session once to check if verified recently
       await refreshSession();
     }
-  }, [user, refreshSession, t, token, handleVerifyWithToken, status]);
+  }, [user, refreshSession, token, handleVerifyWithToken, status]);
 
   useEffect(() => {
     checkVerificationStatus();
@@ -104,9 +104,9 @@ export function VerifyEmailStatus({
         throw new Error(response.message || 'Failed to resend verification');
       }
 
-      toast.success(t("recoveryEmailSent"));
+      toast.success("Email xác thực đã được gửi lại");
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : t("authErrorMessage");
+      const errorMessage = error instanceof Error ? error.message : "Đã có lỗi xác thực xảy ra";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -146,7 +146,7 @@ export function VerifyEmailStatus({
       case 'loading':
         return renderStatusCard(
           <Loader2 className="h-12 w-12 text-primary animate-spin" />,
-          t('verifyingEmail'),
+          "Đang xác thực...",
           "Syncing connection with security grid...",
           null,
           "Encryption Engine"
@@ -155,18 +155,18 @@ export function VerifyEmailStatus({
       case 'verified':
         return renderStatusCard(
           <CheckCircle className="h-12 w-12 text-emerald-500 stroke-[2.5]" />,
-          t('emailVerified'),
-          t('emailVerifiedMessage'),
+          "Email đã được xác thực",
+          "Tài khoản của bạn đã được xác minh thành công. Bạn có thể đăng nhập ngay bây giờ.",
           <div className="space-y-4">
             <Button asChild className="w-full h-11 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-[10px] shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98]">
               <Link href="/dashboard">
-                {t('proceedToLogin')}
+                TIẾP TỤC ĐĂNG NHẬP
               </Link>
             </Button>
             <Button variant="ghost" asChild className="w-full text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 hover:text-primary transition-all">
               <Link href="/auth/login" className="flex items-center justify-center gap-2">
                 <ArrowLeft className="w-4 h-4 stroke-[3]" />
-                {t('backToLogin')}
+                QUAY LẠI ĐĂNG NHẬP
               </Link>
             </Button>
           </div>,
@@ -176,8 +176,8 @@ export function VerifyEmailStatus({
       case 'pending':
         return renderStatusCard(
           <Mail className="h-12 w-12 text-amber-500 stroke-[2.5]" />,
-          t('verifyEmail'),
-          t('registrationSuccessMessage'),
+          "Xác thực Email",
+          "Vui lòng kiểm tra email của bạn để xác thực tài khoản.",
           <div className="space-y-4">
             <Button
               onClick={handleResendVerification}
@@ -187,12 +187,12 @@ export function VerifyEmailStatus({
               {isResending ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-3 animate-spin" />
-                  {t('sendingEmail')}
+                  ĐANG GỬI...
                 </>
               ) : (
                 <>
                   <RefreshCw className="w-4 h-4 mr-3 stroke-[2.5]" />
-                  {t('sendRecoveryEmail')}
+                  GỬI LẠI EMAIL
                 </>
               )}
             </Button>
@@ -206,7 +206,7 @@ export function VerifyEmailStatus({
                 REFRESH
               </Button>
               <Button variant="ghost" asChild className="h-12 font-black text-[9px] uppercase tracking-widest text-muted-foreground/60">
-                <Link href="/auth/login">{t('backToLogin')}</Link>
+                <Link href="/auth/login">QUAY LẠI ĐĂNG NHẬP</Link>
               </Button>
             </div>
           </div>,
@@ -216,20 +216,20 @@ export function VerifyEmailStatus({
       case 'error':
         return renderStatusCard(
           <AlertCircle className="h-12 w-12 text-rose-500 stroke-[2.5]" />,
-          t('authError'),
-          error || t('authErrorMessage'),
+          "Lỗi xác thực",
+          error || "Đã có lỗi xác thực xảy ra",
           <div className="space-y-4">
             <Button
               onClick={checkVerificationStatus}
               className="w-full h-11 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-[10px] shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <RefreshCw className="w-4 h-4 mr-3 stroke-[2.5]" />
-              {t('tryAgain')}
+              THỬ LẠI
             </Button>
             <Button variant="ghost" asChild className="w-full text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 hover:text-rose-500 transition-all">
               <Link href="/auth/login" className="flex items-center justify-center gap-2">
                 <ArrowLeft className="w-4 h-4 stroke-[3]" />
-                {t('backToLogin')}
+                QUAY LẠI ĐĂNG NHẬP
               </Link>
             </Button>
           </div>,

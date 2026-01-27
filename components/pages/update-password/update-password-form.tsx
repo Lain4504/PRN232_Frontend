@@ -10,13 +10,13 @@ import { Lock, AlertCircle, Loader2, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
+
 
 export function UpdatePasswordForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const { t } = useTranslation("auth");
+
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +27,7 @@ export function UpdatePasswordForm({
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) {
-      setError(t("authError"));
+      setError("Đã có lỗi xảy ra. Vui lòng thử lại.");
       return;
     }
 
@@ -44,10 +44,10 @@ export function UpdatePasswordForm({
         throw new Error(response.message || "Failed to update password");
       }
 
-      toast.success(t("passwordUpdated"));
+      toast.success("Mật khẩu đã được cập nhật thành công");
       router.push("/auth/login");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : t("authError"));
+      setError(error instanceof Error ? error.message : "Đã có lỗi xảy ra. Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +59,7 @@ export function UpdatePasswordForm({
         <div className="space-y-6">
           <div className="space-y-3">
             <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 italic">
-              {t('newPassword')}
+              Mật khẩu mới
             </Label>
             <div className="relative group">
               <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 h-4 w-4 group-focus-within:text-primary transition-colors" />
@@ -73,7 +73,7 @@ export function UpdatePasswordForm({
               />
             </div>
             <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 leading-none px-1">
-              {t('passwordHint')}
+              Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số.
             </div>
           </div>
         </div>
@@ -95,12 +95,12 @@ export function UpdatePasswordForm({
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 mr-3 animate-spin" />
-              {t('updatingPassword')}
+              ĐANG CẬP NHẬT...
             </>
           ) : (
             <>
               <ShieldCheck className="w-4 h-4 mr-3 stroke-[2.5]" />
-              {t('updatePasswordButton')}
+              CẬP NHẬT MẬT KHẨU
             </>
           )}
         </Button>

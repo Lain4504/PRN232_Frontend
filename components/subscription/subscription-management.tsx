@@ -29,7 +29,7 @@ import { toast } from 'sonner'
 import type { SubscriptionPlan, Subscription } from '@/lib/types/subscription'
 import { useProfile } from '@/lib/contexts/profile-context'
 import { SubscriptionPlanEnum } from '@/lib/types/subscription'
-import { useTranslation } from 'react-i18next'
+
 
 interface SubscriptionManagementProps {
   className?: string
@@ -83,7 +83,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const { activeProfileId, profileType } = useProfile()
-  const { t } = useTranslation()
+
   // Use prop profileId if provided, otherwise use activeProfileId from context
   const effectiveProfileId = profileId || activeProfileId || undefined
   const { data: subscription, isLoading } = useSubscription(effectiveProfileId)
@@ -164,9 +164,9 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
   if (!effectiveSubscription) {
     return (
       <div className={`text-center py-12 ${className}`}>
-        <h2 className="text-2xl font-semibold">{t('common.subscription.unableToLoad')}</h2>
+        <h2 className="text-2xl font-semibold">Không thể tải thông tin gói dịch vụ</h2>
         <p className="text-muted-foreground mt-2">
-          {t('common.subscription.unableToLoad')}
+          Không thể tải thông tin gói dịch vụ
         </p>
       </div>
     )
@@ -177,9 +177,9 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
     <div className={`space-y-6 ${className}`}>
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t('common.subscription.management')}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Quản lý gói dịch vụ</h1>
         <p className="text-muted-foreground mt-2">
-          {t('common.subscription.managementDesc')}
+          Quản lý gói dịch vụ, thanh toán và cài đặt gói của bạn
         </p>
       </div>
 
@@ -190,29 +190,29 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               {getStatusIcon(effectiveSubscription.status)}
-              <span>{t('common.subscription.status')}</span>
+              <span>Trạng thái gói dịch vụ</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{t('common.subscription.status')}</span>
+              <span className="text-sm font-medium">Trạng thái gói dịch vụ</span>
               <Badge className={getStatusColor(effectiveSubscription.status)}>
-                {effectiveSubscription.status === 'active' ? t('common.subscription.active') :
-                  effectiveSubscription.status === 'cancelled' ? t('common.subscription.cancelled') :
-                    effectiveSubscription.status === 'past_due' ? t('common.subscription.pastDue') :
-                      effectiveSubscription.status === 'trialing' ? t('common.subscription.trial') :
+                {effectiveSubscription.status === 'active' ? "Đang hoạt động" :
+                  effectiveSubscription.status === 'cancelled' ? "Đã hủy" :
+                    effectiveSubscription.status === 'past_due' ? "Quá hạn" :
+                      effectiveSubscription.status === 'trialing' ? "Dùng thử" :
                         effectiveSubscription.status}
               </Badge>
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{t('common.subscription.planLabel')}</span>
+              <span className="text-sm font-medium">Gói</span>
               <span className="font-medium">{effectiveSubscription.planName}</span>
             </div>
 
             {effectiveSubscription.currentPeriodEnd && (
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">{t('common.subscription.endDate')}</span>
+                <span className="text-sm font-medium">Ngày kết thúc</span>
                 <span className="font-medium">
                   {new Date(effectiveSubscription.currentPeriodEnd).toLocaleDateString()}
                 </span>
@@ -221,7 +221,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
 
             {effectiveSubscription.currentPeriodStart && (
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">{t('common.subscription.startDate')}</span>
+                <span className="text-sm font-medium">Ngày bắt đầu</span>
                 <span className="font-medium">
                   {new Date(effectiveSubscription.currentPeriodStart).toLocaleDateString()}
                 </span>
@@ -233,9 +233,9 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
         {/* Quick Actions */}
         <Card>
           <CardHeader>
-            <CardTitle>{t('common.subscription.quickActions')}</CardTitle>
+            <CardTitle>Thao tác nhanh</CardTitle>
             <CardDescription>
-              {t('common.subscription.manageDesc')}
+              Quản lý gói dịch vụ của bạn
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -252,7 +252,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
               variant="outline"
             >
               <Settings className="h-4 w-4 mr-2" />
-              {t('common.subscription.changePlan')}
+              Đổi gói
             </Button>
 
             {effectiveSubscription.tier !== 'free' && (
@@ -263,7 +263,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
                 disabled={cancelSubscriptionMutation.isPending}
               >
                 <XCircle className="h-4 w-4 mr-2" />
-                {cancelSubscriptionMutation.isPending ? t('common.saving') : t('common.subscription.cancelPlan')}
+                {cancelSubscriptionMutation.isPending ? "Đang lưu..." : "Hủy gói dịch vụ"}
               </Button>
             )}
           </CardContent>
@@ -286,31 +286,31 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-red-500" />
-              {t('common.subscription.cancelTitle')}
+              Hủy gói dịch vụ?
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-3">
               <p>
-                {t('common.subscription.cancelWarning')}
+                Bạn có chắc chắn muốn hủy gói dịch vụ không? Hành động này không thể hoàn tác.
               </p>
               <div className="bg-muted p-3 rounded-md space-y-2 text-sm">
-                <p className="font-medium">{t('common.subscription.whatHappens')}</p>
+                <p className="font-medium">Điều gì sẽ xảy ra:</p>
                 <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                  <li>{t('common.subscription.losePremium')}</li>
-                  <li>{t('common.subscription.cancelAtEnd')}</li>
-                  <li>{t('common.subscription.moveToFree')}</li>
-                  <li>{t('common.subscription.dataPreserved')}</li>
+                  <li>Bạn sẽ mất quyền truy cập vào các tính năng cao cấp ngay lập tức</li>
+                  <li>Gói dịch vụ của bạn sẽ bị hủy vào cuối chu kỳ thanh toán hiện tại</li>
+                  <li>Bạn sẽ tự động được chuyển sang gói Miễn phí</li>
+                  <li>Dữ liệu của bạn sẽ được giữ lại, nhưng bạn sẽ không thể tạo nội dung cao cấp mới</li>
                 </ul>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.subscription.keepPlan')}</AlertDialogCancel>
+            <AlertDialogCancel>Giữ gói dịch vụ</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancelSubscription}
               disabled={cancelSubscriptionMutation.isPending}
               className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
             >
-              {cancelSubscriptionMutation.isPending ? t('common.saving') : t('common.subscription.confirmCancel')}
+              {cancelSubscriptionMutation.isPending ? "Đang lưu..." : "Có, hủy gói dịch vụ"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

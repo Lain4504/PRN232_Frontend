@@ -23,7 +23,7 @@ import {
   Sparkles,
   X
 } from "lucide-react"
-import { useTranslation } from "react-i18next"
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -80,13 +80,11 @@ const createColumns = (
   handleChangeStatus: (content: ContentResponseDto) => void,
   brands: { id: string; name: string }[] = [],
   isProcessing: boolean,
-  canUseTeamFeatures: boolean,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: any
+  canUseTeamFeatures: boolean
 ): ColumnDef<ContentResponseDto>[] => [
     {
       accessorKey: "title",
-      header: t("contents.contentTitle"),
+      header: "Tiêu đề nội dung",
       cell: ({ row }) => {
         const content = row.original
         const status = content.status
@@ -105,7 +103,11 @@ const createColumns = (
                       status === ContentStatusEnum.PendingApproval ? "bg-amber-50 text-amber-600" :
                         "bg-slate-100 text-slate-500"
                 )}>
-                  {t(`contents.status.${status.toLowerCase()}`, status)}
+                  {status === ContentStatusEnum.Published ? "Đã xuất bản" :
+                    status === ContentStatusEnum.Approved ? "Đã phê duyệt" :
+                      status === ContentStatusEnum.PendingApproval ? "Chờ phê duyệt" :
+                        status === ContentStatusEnum.Draft ? "Nháp" :
+                          status === ContentStatusEnum.Rejected ? "Từ chối" : status}
                 </Badge>
               </div>
             </div>
@@ -115,21 +117,21 @@ const createColumns = (
     },
     {
       accessorKey: "adType",
-      header: t("contents.format"),
+      header: "Định dạng",
       cell: ({ row }) => {
         const value = row.getValue("adType") as unknown as AdTypeEnum
         const label = (() => {
           if (typeof value === 'string') {
             const v = String(value).toLowerCase()
-            if (v === 'textonly' || v === 'text_only') return t("contents.adType.textOnly")
-            if (v === 'imagetext' || v === 'image_text') return t("contents.adType.imageText")
-            if (v === 'videotext' || v === 'video_text') return t("contents.adType.videoText")
+            if (v === 'textonly' || v === 'text_only') return "Chỉ văn bản"
+            if (v === 'imagetext' || v === 'image_text') return "Ảnh & Chuỗi văn bản"
+            if (v === 'videotext' || v === 'video_text') return "Video & Văn bản"
             return value
           }
-          if (value === AdTypeEnum.TextOnly) return t("contents.adType.textOnly")
-          if (value === AdTypeEnum.ImageText) return t("contents.adType.imageText")
-          if (value === AdTypeEnum.VideoText) return t("contents.adType.videoText")
-          return t("contents.adType.unknown")
+          if (value === AdTypeEnum.TextOnly) return "Chỉ văn bản"
+          if (value === AdTypeEnum.ImageText) return "Ảnh & Chuỗi văn bản"
+          if (value === AdTypeEnum.VideoText) return "Video & Văn bản"
+          return "Không xác định"
         })()
         return (
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</span>
@@ -138,7 +140,7 @@ const createColumns = (
     },
     {
       accessorKey: "brandId",
-      header: t("brands.title"),
+      header: "Thương hiệu",
       cell: ({ row }) => {
         const brandId = row.getValue("brandId") as string
         const brand = brands.find(b => b.id === brandId)
@@ -151,7 +153,7 @@ const createColumns = (
     },
     {
       accessorKey: "createdAt",
-      header: t("contents.registry"),
+      header: "Đăng ký",
       cell: ({ row }) => {
         const createdAt = row.getValue("createdAt") as string
         return (
@@ -229,7 +231,7 @@ interface ContentsManagementProps {
 }
 
 export function ContentsManagement({ initialBrandId, teamId }: ContentsManagementProps = {}) {
-  const { t } = useTranslation("common")
+
   const { profileType } = useProfile()
   const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free
 
@@ -356,10 +358,10 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Thư viện tài sản</span>
           </div>
           <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-none">
-            {t("contents.title")}
+            Thư viện tài sản
           </h1>
           <p className="text-lg text-slate-500 font-medium max-w-xl leading-relaxed">
-            {t("contents.description")}
+            Quản lý, chỉnh sửa và triển khai nội dung quảng cáo thông minh.
           </p>
         </div>
 
@@ -370,7 +372,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
           </Button>
           <Button onClick={() => window.location.href = `/dashboard/brands/${initialBrandId || 'all'}/contents/new`} className="h-14 px-8 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 transition-all hover:-translate-y-1">
             <Brain className="mr-3 h-4 w-4" />
-            {t("contents.aiGenerate")}
+            Khởi tạo Neural AI
           </Button>
         </div>
       </div>
@@ -380,7 +382,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
         <div className="relative flex-1 group w-full lg:max-w-[400px]">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
           <Input
-            placeholder={t("contents.searchPlaceholder")}
+            placeholder="TÌM KIẾM TÀI SẢN NỘI DUNG..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-12 h-12 bg-white border-slate-100 rounded-2xl shadow-sm focus-visible:ring-slate-100 font-medium transition-all"
@@ -399,7 +401,11 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
               <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1">
                 <SelectItem value="all" className="rounded-xl">Tất cả bài</SelectItem>
                 {Object.values(ContentStatusEnum).map(s => (
-                  <SelectItem key={s} value={s} className="rounded-xl">{t(`contents.status.${s.toLowerCase()}`, s)}</SelectItem>
+                  <SelectItem key={s} value={s} className="rounded-xl">{s === ContentStatusEnum.Published ? "Đã xuất bản" :
+                    s === ContentStatusEnum.Approved ? "Đã phê duyệt" :
+                      s === ContentStatusEnum.PendingApproval ? "Chờ phê duyệt" :
+                        s === ContentStatusEnum.Draft ? "Nháp" :
+                          s === ContentStatusEnum.Rejected ? "Từ chối" : s}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -415,16 +421,16 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1">
                 <SelectItem value="all" className="rounded-xl">Mọi định dạng</SelectItem>
-                <SelectItem value={AdTypeEnum.TextOnly.toString()} className="rounded-xl">{t("contents.adType.textOnly")}</SelectItem>
-                <SelectItem value={AdTypeEnum.ImageText.toString()} className="rounded-xl">{t("contents.adType.imageText")}</SelectItem>
-                <SelectItem value={AdTypeEnum.VideoText.toString()} className="rounded-xl">{t("contents.adType.videoText")}</SelectItem>
+                <SelectItem value={AdTypeEnum.TextOnly.toString()} className="rounded-xl">Chỉ văn bản</SelectItem>
+                <SelectItem value={AdTypeEnum.ImageText.toString()} className="rounded-xl">Ảnh & Chuỗi văn bản</SelectItem>
+                <SelectItem value={AdTypeEnum.VideoText.toString()} className="rounded-xl">Video & Văn bản</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-2xl border border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">
             <div className="size-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-            {contents.length} {t("contents.activeAssets")}
+            {contents.length} Tài sản hoạt động
           </div>
 
           {(searchTerm || statusFilter !== "all" || adTypeFilter !== "all") && (
@@ -446,7 +452,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
             <Sparkles className="size-40 text-slate-900" />
           </div>
           <CustomTable
-            columns={createColumns(handleEditContent, handleViewContent, handleDeleteContent, handleSubmitContent, handleCloneContent, handleChangeStatus, brands, false, canUseTeamFeatures, t)}
+            columns={createColumns(handleEditContent, handleViewContent, handleDeleteContent, handleSubmitContent, handleCloneContent, handleChangeStatus, brands, false, canUseTeamFeatures)}
             data={filteredContents}
             pageSize={10}
             className="border-0 shadow-none bg-transparent"
@@ -479,9 +485,9 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
           <Settings className="size-7" />
         </div>
         <div className="space-y-3">
-          <h4 className="text-xl font-black text-slate-900 tracking-tight uppercase leading-none">{t("contents.governance")}</h4>
+          <h4 className="text-xl font-black text-slate-900 tracking-tight uppercase leading-none">Quản trị nội dung & Tuân thủ</h4>
           <p className="text-sm font-medium text-slate-500 leading-relaxed max-w-2xl italic">
-            {t("contents.governanceDesc")} Đảm bảo quá trình kiểm duyệt luôn được thực hiện nghiêm túc để bảo vệ giá trị cốt lõi của thương hiệu trong mắt công chúng.
+            Tất cả tài sản nội dung đều phải thông qua quy trình phê duyệt nghiêm ngặt trước khi được phép xuất bản lên các kênh truyền thông chính thức. Đảm bảo quá trình kiểm duyệt luôn được thực hiện nghiêm túc để bảo vệ giá trị cốt lõi của thương hiệu trong mắt công chúng.
           </p>
         </div>
       </Card>

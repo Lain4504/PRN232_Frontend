@@ -11,7 +11,7 @@ import { formatPrice } from '@/lib/constants/subscription-plans'
 import { getSubscriptionStatusColor, getSubscriptionStatusText, getDaysUntilBilling } from '@/lib/utils/subscription'
 import { SubscriptionPlanEnum, SubscriptionTier, Subscription } from '@/lib/types/subscription'
 import Link from 'next/link'
-import { useTranslation } from 'react-i18next'
+
 
 // Helper function to create fallback subscription from profile type
 const createFallbackSubscription = (
@@ -68,7 +68,7 @@ export function CurrentPlanCard({
 }: CurrentPlanCardProps) {
   const { data: subscription, isLoading, error } = useSubscription()
   const { profileType, activeProfileId } = useProfile()
-  const { t } = useTranslation()
+
 
   // Create fallback subscription if API returns null but we have profile type
   const effectiveSubscription = subscription || createFallbackSubscription(profileType, activeProfileId || undefined)
@@ -133,7 +133,7 @@ export function CurrentPlanCard({
     return (
       <Card className={className}>
         <CardContent className="text-center py-8">
-          <p className="text-muted-foreground">{t('common.subscription.unableToLoad')}</p>
+          <p className="text-muted-foreground">Không thể tải thông tin gói.</p>
         </CardContent>
       </Card>
     )
@@ -152,7 +152,7 @@ export function CurrentPlanCard({
             <div>
               <CardTitle className="text-lg">{effectiveSubscription.planName}</CardTitle>
               <CardDescription>
-                {effectiveSubscription.billingCycle === 'yearly' ? t('common.subscription.annualBilling') : t('common.subscription.monthlyBilling')}
+                {effectiveSubscription.billingCycle === 'yearly' ? 'Thanh toán hàng năm' : 'Thanh toán hàng tháng'}
               </CardDescription>
             </div>
           </div>
@@ -175,7 +175,7 @@ export function CurrentPlanCard({
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span>{t('common.subscription.nextBillingDate')}</span>
+              <span>Ngày thanh toán tiếp theo</span>
             </div>
             <span className="font-medium">
               {new Date(effectiveSubscription.currentPeriodEnd).toLocaleDateString()}
@@ -184,13 +184,13 @@ export function CurrentPlanCard({
 
           {daysUntilBilling > 0 && (
             <div className="text-sm text-muted-foreground">
-              {daysUntilBilling} {t('common.subscription.daysRemaining')}
+              {daysUntilBilling} ngày còn lại
             </div>
           )}
 
           {effectiveSubscription.cancelAtPeriodEnd && (
             <div className="text-sm text-orange-600 bg-orange-50 p-2 rounded">
-              {t('common.subscription.cancelAtPeriodEnd')}
+              Gói sẽ tự động hủy vào cuối chu kỳ
             </div>
           )}
         </div>
@@ -198,7 +198,7 @@ export function CurrentPlanCard({
         {/* Usage Statistics */}
         {showUsage && (
           <div className="space-y-4">
-            <h4 className="font-medium text-sm">{t('common.subscription.usageThisMonth')}</h4>
+            <h4 className="font-medium text-sm">Sử dụng tháng này</h4>
 
             <div className="space-y-3">
               {/* Posts */}
@@ -206,7 +206,7 @@ export function CurrentPlanCard({
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center space-x-2">
                     <Activity className="h-4 w-4 text-muted-foreground" />
-                    <span>{t('common.subscription.postsPerMonth')}</span>
+                    <span>Bài đăng / tháng</span>
                   </div>
                   <span className="font-mono text-sm">
                     {formatUsage(effectiveSubscription.usage.postsThisMonth, effectiveSubscription.limits.postsPerMonth)}
@@ -223,7 +223,7 @@ export function CurrentPlanCard({
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center space-x-2">
                     <Activity className="h-4 w-4 text-muted-foreground" />
-                    <span>{t('common.subscription.aiContentDaily')}</span>
+                    <span>Nội dung AI / ngày</span>
                   </div>
                   <span className="font-mono text-sm">
                     {formatUsage(effectiveSubscription.usage.aiContentToday, effectiveSubscription.limits.aiContentPerDay)}
@@ -240,7 +240,7 @@ export function CurrentPlanCard({
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center space-x-2">
                     <Activity className="h-4 w-4 text-muted-foreground" />
-                    <span>{t('common.subscription.aiImagesDaily')}</span>
+                    <span>Hình ảnh AI / ngày</span>
                   </div>
                   <span className="font-mono text-sm">
                     {formatUsage(effectiveSubscription.usage.aiImagesToday, effectiveSubscription.limits.aiImagesPerDay)}
@@ -257,7 +257,7 @@ export function CurrentPlanCard({
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center space-x-2">
                     <Activity className="h-4 w-4 text-muted-foreground" />
-                    <span>{t('common.subscription.connectedPlatforms')}</span>
+                    <span>Nền tảng kết nối</span>
                   </div>
                   <span className="font-mono text-sm">
                     {formatUsage(effectiveSubscription.usage.platforms, effectiveSubscription.limits.platforms)}
@@ -274,7 +274,7 @@ export function CurrentPlanCard({
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center space-x-2">
                     <Activity className="h-4 w-4 text-muted-foreground" />
-                    <span>{t('common.subscription.socialAccounts')}</span>
+                    <span>Tài khoản MXH</span>
                   </div>
                   <span className="font-mono text-sm">
                     {formatUsage(effectiveSubscription.usage.accounts, effectiveSubscription.limits.accounts)}
@@ -294,13 +294,13 @@ export function CurrentPlanCard({
           <div className="flex space-x-2 pt-4 border-t">
             <Button asChild variant="outline" size="sm" className="flex-1">
               <Link href="/subscription/plans">
-                {t('common.subscription.changePlan')}
+                Thay đổi gói
               </Link>
             </Button>
             <Button asChild variant="outline" size="sm" className="flex-1">
               <Link href="/subscription/billing">
                 <CreditCard className="h-4 w-4 mr-2" />
-                {t('common.subscription.billing')}
+                Thanh toán
               </Link>
             </Button>
           </div>

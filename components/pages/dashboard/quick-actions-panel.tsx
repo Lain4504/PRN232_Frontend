@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { useTranslation } from "react-i18next"
+
 import {
   Target,
   FileText,
@@ -31,11 +31,11 @@ interface QuickAction {
 }
 
 export function QuickActionsPanel({ className }: { className?: string }) {
-  const { t } = useTranslation("common")
+
 
   const quickActions: QuickAction[] = [
     {
-      title: t("dashboard.quickActions.createBrand"),
+      title: "Tạo thương hiệu",
       description: "Thiết lập hồ sơ thương hiệu mới",
       icon: Target,
       href: "/dashboard/brands/new",
@@ -53,7 +53,7 @@ export function QuickActionsPanel({ className }: { className?: string }) {
       textColor: "text-purple-600"
     },
     {
-      title: t("dashboard.quickActions.schedulePost"),
+      title: "Lên lịch bài đăng",
       description: "Lên lịch đăng bài tự động",
       icon: Calendar,
       href: "/dashboard/calendar",

@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { useTranslation } from "react-i18next"
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -54,10 +54,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { TFunction } from "i18next"
+
 
 const createColumns = (
-  t: TFunction,
   handleEditCampaign: (campaign: AdCampaignResponse) => void,
   handleDeleteCampaign: (campaignId: string) => void,
   brands: { id: string; name: string }[] = [],
@@ -66,7 +65,7 @@ const createColumns = (
 ): ColumnDef<AdCampaignResponse>[] => [
     {
       accessorKey: "name",
-      header: t("campaigns.table.directive"),
+      header: "Tên chiến dịch",
       cell: ({ row }) => {
         const campaign = row.original
         const status = getCampaignStatus(campaign)
@@ -91,7 +90,7 @@ const createColumns = (
     },
     {
       accessorKey: "objective",
-      header: t("campaigns.table.strategy"),
+      header: "Mục tiêu",
       cell: ({ row }) => {
         const objective = row.getValue("objective") as string
         const brandId = row.original.brandId
@@ -111,7 +110,7 @@ const createColumns = (
     },
     {
       accessorKey: "budget",
-      header: t("campaigns.table.capital"),
+      header: "Ngân sách (VNĐ)",
       cell: ({ row }) => {
         const budget = row.getValue("budget") as number
         return (
@@ -126,7 +125,7 @@ const createColumns = (
     },
     {
       accessorKey: "metrics",
-      header: t("campaigns.table.velocity"),
+      header: "Hiệu suất",
       cell: ({ row }) => {
         const metrics = row.original.metrics
         if (!metrics) return <span className="text-[10px] font-black text-slate-200 uppercase tracking-widest">Chờ đồng bộ</span>
@@ -191,7 +190,7 @@ interface CampaignsManagementProps {
 }
 
 export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: CampaignsManagementProps = {}) {
-  const { t } = useTranslation("common")
+
   const { activeProfileId } = useProfile()
   const [selectedTeamId, setSelectedTeamId] = useState<string>(() => getActiveTeamId() || "all")
 
@@ -270,7 +269,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Hành lang chiến lược</span>
           </div>
           <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-none">
-            {t("campaigns.title")}
+            CHIẾN DỊCH
           </h1>
           <p className="text-lg text-slate-500 font-medium max-w-xl leading-relaxed">
             Quản lý và theo dõi hiệu suất toàn bộ chiến dịch marketing đa kênh của bạn.
@@ -280,7 +279,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
         <CampaignModal mode="create" onSuccess={refetchCampaigns}>
           <Button className="h-14 px-8 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 transition-all hover:-translate-y-1">
             <Plus className="mr-3 h-4 w-4" />
-            {t("campaigns.createCampaign")}
+            Tạo chiến dịch mới
           </Button>
         </CampaignModal>
       </div>
@@ -288,7 +287,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
       {/* Highlights Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {[
-          { label: t("campaigns.stats.active"), value: activeCount, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
+          { label: "Đang hoạt động", value: activeCount, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
           { label: "Tổng ngân sách", value: `₫${totalBudget.toLocaleString('vi-VN')}`, icon: DollarSign, color: "text-blue-600", bg: "bg-blue-50" },
           { label: "Số lượng chiến dịch", value: campaigns.length, icon: Target, color: "text-slate-900", bg: "bg-slate-100" },
           { label: "Hiệu số AI", value: "92/100", icon: Sparkles, color: "text-purple-600", bg: "bg-purple-50" },
@@ -313,7 +312,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
         <div className="relative flex-1 group w-full lg:max-w-[400px]">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
           <Input
-            placeholder={t("campaigns.searchPlaceholder")}
+            placeholder="TÌM KIẾM CHIẾN DỊCH..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-12 h-12 bg-white border-slate-100 rounded-2xl shadow-sm focus-visible:ring-slate-100 font-medium transition-all"
@@ -374,7 +373,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
             <Zap className="size-40 text-slate-900" />
           </div>
           <CustomTable
-            columns={createColumns(t, handleEditCampaign, setDeleteCampaignId, safeBrands, deleteCampaignMutation.isPending, basePath)}
+            columns={createColumns(handleEditCampaign, setDeleteCampaignId, safeBrands, deleteCampaignMutation.isPending, basePath)}
             data={filteredCampaigns}
             pageSize={10}
             className="border-0 shadow-none bg-transparent"
@@ -436,7 +435,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-12 grid grid-cols-2 gap-4">
-            <AlertDialogCancel className="rounded-xl h-12 font-black uppercase tracking-widest text-[10px] bg-slate-50 border-none">{t("campaigns.deleteDialog.cancel")}</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-xl h-12 font-black uppercase tracking-widest text-[10px] bg-slate-50 border-none">Hủy bỏ</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteCampaign}
               className="bg-rose-500 text-white hover:bg-rose-600 rounded-xl h-12 font-black uppercase tracking-widest text-[10px] border-none shadow-lg shadow-rose-100"

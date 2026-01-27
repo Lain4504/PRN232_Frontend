@@ -52,7 +52,7 @@ import {
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
-import { useTranslation } from "react-i18next"
+
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
@@ -60,12 +60,11 @@ const createColumns = (
   handleViewProduct: (product: Product) => void,
   handleEditProduct: (product: Product) => void,
   handleDeleteRequest: (productId: string) => void,
-  brands: Brand[],
-  t: (key: string) => string
+  brands: Brand[]
 ): ColumnDef<Product>[] => [
     {
       accessorKey: "name",
-      header: t("products.productName"),
+      header: "Tên sản phẩm",
       cell: ({ row }) => (
         <div className="flex items-center gap-6 py-4">
           <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center overflow-hidden shrink-0 border border-slate-200 shadow-sm group-hover:bg-slate-900 group-hover:text-white transition-all">
@@ -86,7 +85,7 @@ const createColumns = (
     },
     {
       accessorKey: "price",
-      header: t("products.productPrice"),
+      header: "Giá niêm yết",
       cell: ({ row }) => {
         const price = row.getValue("price") as number
         return (
@@ -101,7 +100,7 @@ const createColumns = (
     },
     {
       accessorKey: "brandId",
-      header: t("products.productBrand"),
+      header: "Thương hiệu",
       cell: ({ row }) => {
         const brandId = row.getValue("brandId") as string
         const brand = brands.find(b => b.id === brandId)
@@ -150,7 +149,7 @@ interface ProductsManagementProps {
 }
 
 export function ProductsManagement({ initialBrandId, teamId }: ProductsManagementProps = {}) {
-  const { t } = useTranslation("common")
+
   const params = useParams()
   const [searchTerm, setSearchTerm] = useState("")
   const [viewingProduct, setViewingProduct] = useState<Product | null>(null)
@@ -268,7 +267,7 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Hệ thống quản trị tài sản</span>
           </div>
           <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-none">
-            {currentBrand?.name || (teamId ? 'Team' : 'Brand')} • {t("products.title")}
+            {currentBrand?.name || (teamId ? 'Team' : 'Brand')} • Quản lý sản phẩm
           </h1>
           <p className="text-lg text-slate-500 font-medium max-w-xl leading-relaxed">
             Số hóa danh mục sản phẩm của bạn để AI có thể trích xuất dữ liệu sáng tạo nội dung quảng cáo.
@@ -322,7 +321,7 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
         <div className="relative flex-1 group w-full lg:max-w-[400px]">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
           <Input
-            placeholder={t("products.searchPlaceholder")}
+            placeholder="TÌM KIẾM SẢN PHẨM TRONG KHO..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-12 h-12 bg-white border-slate-100 rounded-2xl shadow-sm focus-visible:ring-slate-100 font-medium transition-all"
@@ -362,7 +361,7 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
             <Package className="size-40 text-slate-900" />
           </div>
           <CustomTable
-            columns={createColumns(handleViewProduct, handleEditProduct, setDeleteProductId, safeBrands, t)}
+            columns={createColumns(handleViewProduct, handleEditProduct, setDeleteProductId, safeBrands)}
             data={filteredProducts}
             pageSize={pageSize}
             className="border-0 shadow-none bg-transparent"

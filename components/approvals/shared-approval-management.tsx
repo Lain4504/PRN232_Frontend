@@ -41,7 +41,7 @@ import { ApprovalModal } from "@/components/approvals/approval-modal"
 import { ChangeApproverDialog } from "@/components/approvals/change-approver-dialog"
 import { toast } from "sonner"
 import { useProfile } from "@/lib/contexts/profile-context"
-import { useTranslation } from "react-i18next"
+
 import { ProfileTypeEnum } from "@/lib/utils/profile-utils"
 import { cn } from "@/lib/utils"
 
@@ -58,13 +58,11 @@ const createColumns = (
   handleDelete: (approval: ApprovalResponseDto) => void,
   handleChangeApprover: (approval: ApprovalResponseDto) => void,
   isProcessing: boolean,
-  canUseTeamFeatures: boolean,
-  t: (key: string) => string,
-  i18n: { language: string }
+  canUseTeamFeatures: boolean
 ): ColumnDef<ApprovalResponseDto>[] => [
     {
       accessorKey: "contentTitle",
-      header: t('approvals.contentTitle'),
+      header: "Tiêu đề nội dung",
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-6 py-4">
@@ -83,7 +81,7 @@ const createColumns = (
     },
     {
       accessorKey: "status",
-      header: t('approvals.status'),
+      header: "Trạng thái",
       cell: ({ row }) => {
         const status = row.getValue("status") as ContentStatusEnum
         return (
@@ -93,14 +91,14 @@ const createColumns = (
                 status === ContentStatusEnum.Rejected ? "bg-rose-50 text-rose-500" :
                   "bg-slate-100 text-slate-500"
           )}>
-            {status ? t(`contents.status.${status.charAt(0).toLowerCase() + status.slice(1)}`) : "Unknown"}
+            {status ? (status === ContentStatusEnum.Approved ? "Đã duyệt" : status === ContentStatusEnum.PendingApproval ? "Chờ duyệt" : status === ContentStatusEnum.Rejected ? "Đã từ chối" : status) : "Unknown"}
           </Badge>
         )
       },
     },
     {
       accessorKey: "brandName",
-      header: t('approvals.brand'),
+      header: "Thương hiệu",
       cell: ({ row }) => {
         const brandName = row.getValue("brandName") as string
         return (
@@ -116,7 +114,7 @@ const createColumns = (
     },
     {
       accessorKey: "approverEmail",
-      header: t('approvals.approver'),
+      header: "Người duyệt",
       cell: ({ row }) => {
         const approverEmail = row.getValue("approverEmail") as string
         return (
@@ -131,12 +129,12 @@ const createColumns = (
     },
     {
       accessorKey: "createdAt",
-      header: t('approvals.created'),
+      header: "Ngày tạo",
       cell: ({ row }) => {
         const createdAt = row.getValue("createdAt") as string
         return (
           <div className="space-y-0.5">
-            <div className="text-[10px] font-black text-slate-900">{createdAt ? new Date(createdAt).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US') : "-"}</div>
+            <div className="text-[10px] font-black text-slate-900">{createdAt ? new Date(createdAt).toLocaleDateString('vi-VN') : "-"}</div>
             <div className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{createdAt ? new Date(createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}</div>
           </div>
         )
@@ -189,7 +187,7 @@ export function SharedApprovalManagement({
   title,
   description
 }: SharedApprovalManagementProps) {
-  const { t, i18n } = useTranslation("common")
+
   const { profileType } = useProfile()
   const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free
 
@@ -301,7 +299,7 @@ export function SharedApprovalManagement({
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Hệ thống kiểm soát chất lượng</span>
           </div>
           <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-none">
-            {title || t('approvals.title')}
+            {title || "Hệ thống phê duyệt"}
           </h1>
           <p className="text-lg text-slate-500 font-medium max-w-xl leading-relaxed">
             {description || "Giám sát và phê duyệt các tài sản truyền thông trước khi phân phối lên các kênh social."}
@@ -341,7 +339,7 @@ export function SharedApprovalManagement({
         <div className="relative flex-1 group w-full lg:max-w-[400px]">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
           <Input
-            placeholder={t('approvals.searchPlaceholder')}
+            placeholder="TÌM KIẾM YÊU CẦU PHÊ DUYỆT..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-12 h-12 bg-white border-slate-100 rounded-2xl shadow-sm focus-visible:ring-slate-100 font-medium transition-all"
@@ -385,9 +383,7 @@ export function SharedApprovalManagement({
               handleDelete,
               handleChangeApprover,
               approveApprovalMutation.isPending || rejectApprovalMutation.isPending,
-              canUseTeamFeatures,
-              t,
-              i18n
+              canUseTeamFeatures
             )}
             data={filteredApprovals}
             pageSize={10}

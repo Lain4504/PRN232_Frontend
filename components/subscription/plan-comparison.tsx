@@ -12,7 +12,7 @@ import { useSubscription } from '@/hooks/use-subscription'
 import { formatPrice } from '@/lib/constants/subscription-plans'
 import { toast } from 'sonner'
 import type { SubscriptionPlan } from '@/lib/types/subscription'
-import { useTranslation } from 'react-i18next'
+
 
 interface PlanComparisonProps {
   onPlanSelect?: (plan: SubscriptionPlan) => void
@@ -28,7 +28,7 @@ export function PlanComparison({
   const { data: plans, isLoading } = useSubscriptionPlans()
   const { data: currentSubscription } = useSubscription()
   const changePlanMutation = useChangePlan()
-  const { t } = useTranslation()
+
 
   const handlePlanSelect = async (plan: SubscriptionPlan) => {
     if (onPlanSelect) {
@@ -37,7 +37,7 @@ export function PlanComparison({
     }
 
     if (currentSubscription?.plan.toString() === plan.id) {
-      toast.info(t('common.notifications.featureComingSoon')) // Or a better key if I had one
+      toast.info('Tính năng này sẽ sớm ra mắt')
       return
     }
 
@@ -76,7 +76,7 @@ export function PlanComparison({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('common.subscription.comparison.title')}</CardTitle>
+          <CardTitle>So sánh các gói dịch vụ</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="animate-pulse">
@@ -96,7 +96,7 @@ export function PlanComparison({
     return (
       <Card>
         <CardContent className="text-center py-8">
-          <p className="text-muted-foreground">{t('common.subscription.comparison.unableToLoad')}</p>
+          <p className="text-muted-foreground">Không thể tải thông tin so sánh gói.</p>
         </CardContent>
       </Card>
     )
@@ -105,34 +105,34 @@ export function PlanComparison({
   // Define comparison features
   const comparisonFeatures = [
     {
-      category: t('common.subscription.comparison.categories.core'),
+      category: 'Tính năng cốt lõi',
       features: [
-        { name: t('common.subscription.comparison.featureNames.posts'), key: 'postsPerMonth' },
-        { name: t('common.subscription.comparison.featureNames.aiContent'), key: 'aiContentPerDay' },
-        { name: t('common.subscription.comparison.featureNames.aiImages'), key: 'aiImagesPerDay' },
-        { name: t('common.subscription.comparison.featureNames.platforms'), key: 'platforms' },
-        { name: t('common.subscription.comparison.featureNames.accounts'), key: 'accounts' },
-        { name: t('common.subscription.comparison.featureNames.campaigns'), key: 'adCampaigns' },
+        { name: 'Bài đăng mỗi tháng', key: 'postsPerMonth' },
+        { name: 'Nội dung AI mỗi ngày', key: 'aiContentPerDay' },
+        { name: 'Hình ảnh AI mỗi ngày', key: 'aiImagesPerDay' },
+        { name: 'Nền tảng kết nối', key: 'platforms' },
+        { name: 'Tài khoản mạng xã hội', key: 'accounts' },
+        { name: 'Chiến dịch quảng cáo', key: 'adCampaigns' },
       ]
     },
     {
-      category: t('common.subscription.comparison.categories.analytics'),
+      category: 'Phân tích & Báo cáo',
       features: [
-        { name: t('common.subscription.comparison.featureNames.basicAnalytics'), key: 'basic_analytics' },
-        { name: t('common.subscription.comparison.featureNames.advancedAnalytics'), key: 'advanced_analytics' },
-        { name: t('common.subscription.comparison.featureNames.customReports'), key: 'custom_reports' },
-        { name: t('common.subscription.comparison.featureNames.exportData'), key: 'export_data' },
+        { name: 'Phân tích cơ bản', key: 'basic_analytics' },
+        { name: 'Phân tích nâng cao', key: 'advanced_analytics' },
+        { name: 'Báo cáo tùy chỉnh', key: 'custom_reports' },
+        { name: 'Xuất dữ liệu', key: 'export_data' },
       ]
     },
     {
-      category: t('common.subscription.comparison.categories.support'),
+      category: 'Hỗ trợ & Mở rộng',
       features: [
-        { name: t('common.subscription.comparison.featureNames.emailSupport'), key: 'email_support' },
-        { name: t('common.subscription.comparison.featureNames.prioritySupport'), key: 'priority_support' },
-        { name: t('common.subscription.comparison.featureNames.dedicatedSupport'), key: 'dedicated_support' },
-        { name: t('common.subscription.comparison.featureNames.teamManagement'), key: 'team_management' },
-        { name: t('common.subscription.comparison.featureNames.customIntegrations'), key: 'custom_integrations' },
-        { name: t('common.subscription.comparison.featureNames.whiteLabel'), key: 'white_label' },
+        { name: 'Hỗ trợ qua Email', key: 'email_support' },
+        { name: 'Hỗ trợ ưu tiên', key: 'priority_support' },
+        { name: 'Hỗ trợ chuyên biệt', key: 'dedicated_support' },
+        { name: 'Quản lý đội nhóm', key: 'team_management' },
+        { name: 'Tích hợp tùy chỉnh', key: 'custom_integrations' },
+        { name: 'White-label', key: 'white_label' },
       ]
     }
   ]
@@ -140,14 +140,14 @@ export function PlanComparison({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-center">{t('common.subscription.comparison.title')}</CardTitle>
+        <CardTitle className="text-center">So sánh chi tiết các gói</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[200px]">{t('common.subscription.comparison.features')}</TableHead>
+                <TableHead className="w-[200px]">Tính năng</TableHead>
                 {plans.map((plan) => (
                   <TableHead key={plan.id} className="text-center min-w-[150px]">
                     <div className="flex flex-col items-center space-y-2">
@@ -156,12 +156,12 @@ export function PlanComparison({
                         {plan.name}
                         {plan.isPopular && (
                           <Badge variant="secondary" className="text-xs">
-                            {t('common.subscription.comparison.popular')}
+                            PHỔ BIẾN
                           </Badge>
                         )}
                         {currentSubscription?.plan.toString() === plan.id && (
                           <Badge variant="outline" className="text-xs">
-                            {t('common.subscription.comparison.current')}
+                            HIỆN TẠI
                           </Badge>
                         )}
                       </div>
@@ -171,7 +171,7 @@ export function PlanComparison({
                             {formatPrice(plan.price.monthly)}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {t('common.subscription.comparison.perMonth')}
+                            / tháng
                           </div>
                         </div>
                       )}
@@ -243,13 +243,13 @@ export function PlanComparison({
                 className="min-w-[120px]"
               >
                 {changePlanMutation.isPending ? (
-                  t('common.subscription.comparison.processing')
+                  'Đang xử lý...'
                 ) : isCurrentPlan ? (
-                  t('common.subscription.comparison.currentPlan')
+                  'Gói hiện tại'
                 ) : plan.price.monthly === 0 ? (
-                  t('common.subscription.comparison.getStarted')
+                  'Bắt đầu ngay'
                 ) : (
-                  t('common.subscription.comparison.choosePlan')
+                  'Chọn gói này'
                 )}
               </Button>
             )
@@ -259,12 +259,12 @@ export function PlanComparison({
         {/* Additional Information */}
         <div className="text-center text-sm text-muted-foreground mt-6">
           <p>
-            {t('common.subscription.comparison.trialNotice')}
+            Thời gian dùng thử 14 ngày cho tất cả các gói trả phí. Không cần thẻ tín dụng.
           </p>
           <p className="mt-1">
-            {t('common.subscription.comparison.needHelp')}{' '}
+            Cần hỗ trợ?{' '}
             <Link href="/contact" className="text-primary hover:underline">
-              {t('common.subscription.comparison.contactSales')}
+              Liên hệ bộ phận kinh doanh
             </Link>
           </p>
         </div>
