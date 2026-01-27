@@ -217,7 +217,7 @@ export function CreativePreview({ creative, fullScreen = false }: CreativePrevie
             );
           })}
         </div>
-        
+
         <div className="flex gap-2">
           {devices.map((device) => {
             const Icon = device.icon;
@@ -242,13 +242,13 @@ export function CreativePreview({ creative, fullScreen = false }: CreativePrevie
           <div
             className="border-2 border-gray-300 rounded-lg overflow-hidden shadow-lg"
             style={{
-              width: Math.min(dimensions.width, 400),
-              height: Math.min(dimensions.height, 600),
+              width: Math.min(dimensions.width, 800),
+              height: Math.min(dimensions.height, 800),
             }}
           >
             {renderCreativeContent()}
           </div>
-          
+
           {/* Preview Info */}
           <div className="absolute -bottom-8 left-0 right-0 text-center">
             <p className="text-xs text-gray-500">

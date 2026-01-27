@@ -63,8 +63,8 @@ export function useBrand(brandId?: string) {
   return useQuery({
     queryKey: brandId ? brandKeys.detail(brandId) : brandKeys.details(),
     queryFn: async (): Promise<Brand> => {
-      const resp = await api.get<{ data: Brand }>(endpoints.brandById(brandId!))
-      return resp.data.data
+      const resp = await api.get<Brand>(endpoints.brandById(brandId!))
+      return resp.data
     },
     enabled: !!brandId,
     retry: (count, err) => {
@@ -103,8 +103,8 @@ export function useCreateBrand() {
         ProfileId: payload.profile_id || undefined,
       }
 
-      const resp = await api.post<{ data: Brand }>(endpoints.brands(), requestBody)
-      return resp.data.data
+      const resp = await api.post<Brand>(endpoints.brands(), requestBody)
+      return resp.data
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: brandKeys.lists() })
@@ -140,8 +140,8 @@ export function useUpdateBrand(brandId: string) {
         ProfileId: payload.profile_id || undefined,
       }
 
-      const resp = await api.put<{ data: Brand }>(endpoints.brandById(brandId), requestBody)
-      return resp.data.data
+      const resp = await api.put<Brand>(endpoints.brandById(brandId), requestBody)
+      return resp.data
     },
     onSuccess: (updated) => {
       qc.invalidateQueries({ queryKey: brandKeys.detail(brandId) })

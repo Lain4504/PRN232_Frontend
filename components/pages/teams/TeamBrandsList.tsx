@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -42,6 +42,7 @@ import { useUnassignBrand } from '@/hooks/use-teams'
 import { toast } from 'sonner'
 import { Brand } from '@/lib/types/omniadly-types'
 import { cn } from "@/lib/utils"
+import { useRouter } from 'next/navigation'
 
 interface TeamBrandsListProps {
   teamId: string
@@ -49,17 +50,25 @@ interface TeamBrandsListProps {
   onAddBrand?: () => void
 }
 
-const createColumns = (
-  handleUnassignBrand: (brand: Brand) => void,
-  canManage: boolean,
-  isUnassigning: boolean
-): ColumnDef<Brand>[] => [
+export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBrandsListProps) {
+  const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [unassigningBrand, setUnassigningBrand] = useState<Brand | null>(null);
+
+  const { data: brands = [], isLoading } = useBrandsByTeam(teamId);
+  const { mutateAsync: unassignBrand, isPending: unassigning } = useUnassignBrand(teamId);
+
+  const columns = useMemo<ColumnDef<Brand>[]>(() => [
     {
       accessorKey: "name",
       header: "Thương hiệu",
       cell: ({ row }) => (
-        <div className="flex items-center gap-6 py-4">
-          <Avatar className="size-14 rounded-2xl border border-slate-200 shadow-sm ring-4 ring-slate-50 overflow-hidden">
+        <div
+          className="flex items-center gap-6 py-4 cursor-pointer group/item"
+          onClick={() => router.push(`/dashboard/brands/${row.original.id}`)}
+        >
+          <Avatar className="size-14 rounded-2xl border border-slate-200 shadow-sm ring-4 ring-slate-50 overflow-hidden transition-transform group-hover/item:scale-105">
             {row.original.logo_url ? (
               <AvatarImage src={row.original.logo_url} alt={row.getValue("name")} className="object-cover" />
             ) : (
@@ -69,27 +78,13 @@ const createColumns = (
             )}
           </Avatar>
           <div className="space-y-1">
-            <div className="font-black text-slate-900 text-lg leading-none truncate max-w-[250px]">{row.getValue("name")}</div>
+            <div className="font-black text-slate-900 text-lg leading-none truncate max-w-[250px] group-hover/item:text-primary transition-colors">{row.getValue("name")}</div>
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="bg-slate-50 text-slate-400 border-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg">ID: {row.original.id.slice(0, 8)}</Badge>
             </div>
           </div>
         </div>
       ),
-    },
-    {
-      accessorKey: "status",
-      header: "Trạng thái",
-      cell: ({ row }) => {
-        const status = row.getValue("status") as string;
-        return (
-          <Badge variant="secondary" className={cn("text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border-none",
-            status === 'Active' ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"
-          )}>
-            {status === 'Active' ? "Hoạt động" : "Tạm dừng"}
-          </Badge>
-        )
-      },
     },
     {
       accessorKey: "createdAt",
@@ -111,7 +106,7 @@ const createColumns = (
           {
             label: "Xem chi tiết Brand",
             icon: <ExternalLink className="size-4" />,
-            onClick: () => window.location.href = `/dashboard/brands/${row.original.id}`,
+            onClick: () => router.push(`/dashboard/brands/${row.original.id}`),
           },
         ];
 
@@ -121,26 +116,18 @@ const createColumns = (
             icon: <Trash2 className="size-4" />,
             onClick: () => handleUnassignBrand(row.original),
             variant: "destructive" as const,
-            disabled: isUnassigning,
+            disabled: unassigning,
           });
         }
 
         return (
           <div className="flex justify-end">
-            <ActionsDropdown actions={actions} disabled={isUnassigning} />
+            <ActionsDropdown actions={actions} disabled={unassigning} />
           </div>
         )
       },
     },
-  ];
-
-export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBrandsListProps) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [pageSize, setPageSize] = useState(10);
-  const [unassigningBrand, setUnassigningBrand] = useState<Brand | null>(null);
-
-  const { data: brands = [], isLoading } = useBrandsByTeam(teamId);
-  const { mutateAsync: unassignBrand, isPending: unassigning } = useUnassignBrand(teamId);
+  ], [canManage, unassigning, router]);
 
   const filteredBrands = brands.filter(brand =>
     brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -211,11 +198,7 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
       {/* Table Section */}
       {filteredBrands.length > 0 ? (
         <CustomTable
-          columns={createColumns(
-            handleUnassignBrand,
-            canManage,
-            unassigning
-          )}
+          columns={columns}
           data={filteredBrands}
           pageSize={pageSize}
           className="border-0 shadow-none bg-transparent"

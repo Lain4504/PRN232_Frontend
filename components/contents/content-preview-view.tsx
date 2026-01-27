@@ -92,7 +92,7 @@ export function ContentPreviewView({
   const adType = parseAdType(content.adType);
 
   const FacebookPreview = () => (
-    <div className="max-w-[500px] mx-auto bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden font-sans animation-in fade-in duration-500">
+    <div className="max-w-[680px] mx-auto bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden font-sans animation-in fade-in duration-500">
       {/* FB Header */}
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-2">

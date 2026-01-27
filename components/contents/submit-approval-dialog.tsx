@@ -22,7 +22,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ContentResponseDto, CreateApprovalRequest } from "@/lib/types/omniadly-types";
-import { Send } from "lucide-react";
+import { Send, ShieldCheck, MessageSquare, ChevronRight, X, UserCheck, LayoutDashboard } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface SubmitApprovalDialogProps {
   content: ContentResponseDto | null;
@@ -33,17 +36,20 @@ interface SubmitApprovalDialogProps {
   approvers?: Array<{ id: string; name?: string; email: string; canApproveContent?: boolean }>;
 }
 
-function SubmitApprovalForm({ 
-  content, 
-  onSubmit, 
-  onClose, 
+export function SubmitApprovalDialog({
+  content,
+  isOpen,
+  onClose,
+  onSubmit,
   isSubmitting = false,
   approvers = []
-}: Omit<SubmitApprovalDialogProps, 'isOpen'>) {
+}: SubmitApprovalDialogProps) {
   const [selectedApproverId, setSelectedApproverId] = useState("");
   const [notes, setNotes] = useState("");
+  const isMobile = useIsMobile();
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!content || !selectedApproverId) return;
 
     const approvalData: CreateApprovalRequest = {
@@ -52,34 +58,55 @@ function SubmitApprovalForm({
       notes: notes || undefined,
     };
 
-    await onSubmit(approvalData);
-    setSelectedApproverId("");
-    setNotes("");
+    try {
+      await onSubmit(approvalData);
+      setSelectedApproverId("");
+      setNotes("");
+      onClose();
+    } catch (error) {
+      // Error handling is usually done by parent or toast
+    }
   };
 
-  if (!content) return null;
+  const renderFormContent = (onCancel: () => void) => (
+    <form onSubmit={handleSubmit} className="space-y-10">
+      {/* Content Info Preview */}
+      {content && (
+        <div className="p-6 rounded-3xl bg-slate-50 border-2 border-slate-100 flex items-center gap-6 group hover:border-slate-200 transition-all">
+          <div className="size-12 rounded-2xl bg-slate-900 flex items-center justify-center text-white shadow-xl shadow-slate-200 group-hover:scale-110 transition-transform">
+            <LayoutDashboard className="size-5" />
+          </div>
+          <div className="space-y-1">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nội dung đệ trình</span>
+            <div className="font-black text-slate-900 text-lg leading-none truncate max-w-[200px] sm:max-w-[400px]">
+              {content.title}
+            </div>
+          </div>
+        </div>
+      )}
 
-  return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <h3 className="font-semibold">{content.title}</h3>
-        <p className="text-sm text-muted-foreground">{content.brandName}</p>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="approver">Select Approver</Label>
+      {/* Approver Selection */}
+      <div className="space-y-4">
+        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Chỉ định Người phê duyệt</label>
         <Select value={selectedApproverId} onValueChange={setSelectedApproverId}>
-          <SelectTrigger>
-            <SelectValue placeholder="Choose an approver" />
+          <SelectTrigger className="h-14 rounded-2xl border-2 border-slate-100 bg-white px-6 focus:ring-0 shadow-sm font-black text-slate-900 uppercase tracking-tight">
+            <SelectValue placeholder="Chọn vai trò phê duyệt cao cấp" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1 max-h-[300px]">
             {approvers.map((approver) => (
-              <SelectItem key={approver.id} value={approver.id}>
-                <div className="flex items-center gap-2">
-                  <span>{approver.email}</span>
-                  {approver.canApproveContent && (
-                    <Badge variant="secondary" className="ml-auto">Can approve</Badge>
-                  )}
+              <SelectItem key={approver.id} value={approver.id} className="rounded-xl h-14 focus:bg-slate-50 px-4">
+                <div className="flex items-center gap-4">
+                  <Avatar className="size-8 rounded-lg border border-slate-200">
+                    <AvatarFallback className="bg-slate-900 text-white font-black text-[10px]">
+                      {approver.name?.[0].toUpperCase() || approver.email[0].toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="font-black text-slate-900 text-xs">{approver.name || approver.email}</span>
+                    {approver.canApproveContent && (
+                      <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest">Authorized Core Approver</span>
+                    )}
+                  </div>
                 </div>
               </SelectItem>
             ))}
@@ -87,71 +114,84 @@ function SubmitApprovalForm({
         </Select>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="notes">Notes (Optional)</Label>
+      {/* Notes Area */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Ghi chú vận hành (Không bắt buộc)</label>
+          <MessageSquare className="size-4 text-slate-200" />
+        </div>
         <Textarea
-          id="notes"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="Add any notes for the approver..."
-          rows={3}
+          placeholder="Cung cấp ngữ cảnh chiến lược cho người phê duyệt..."
+          className="bg-slate-50 border-2 border-slate-100 hover:border-slate-200 transition-all rounded-[2rem] min-h-[120px] font-medium text-sm p-6 leading-relaxed tracking-tight focus-visible:ring-slate-100"
         />
       </div>
 
-      <div className="flex flex-col gap-2 pt-4">
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-4 pt-6">
         <Button
-          onClick={handleSubmit}
-          disabled={isSubmitting || !selectedApproverId}
-          className="w-full"
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isSubmitting}
+          className="h-14 rounded-2xl border-slate-100 bg-slate-50 text-slate-400 hover:bg-slate-100 font-black uppercase tracking-widest text-[10px] order-2 sm:order-1 flex-1 sm:flex-none sm:px-10"
         >
-          <Send className="mr-2 h-4 w-4" />
-          {isSubmitting ? "Submitting..." : "Submit for Approval"}
+          Hủy bỏ
         </Button>
         <Button
-          variant="outline"
-          onClick={onClose}
-          disabled={isSubmitting}
-          className="w-full"
+          type="submit"
+          disabled={isSubmitting || !selectedApproverId}
+          className="h-14 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 transition-all hover:-translate-y-1 order-1 sm:order-2 flex-1 sm:flex-none sm:px-10"
         >
-          Cancel
+          {isSubmitting ? (
+            <>
+              <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              Đang xác thực...
+            </>
+          ) : (
+            <>
+              Gửi Phê duyệt <ChevronRight className="ml-2 size-4" />
+            </>
+          )}
         </Button>
       </div>
-    </div>
-  );
-}
+    </form>
+  )
 
-export function SubmitApprovalDialog(props: SubmitApprovalDialogProps) {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-
-  if (isDesktop) {
+  if (isMobile) {
     return (
-      <Dialog open={props.isOpen} onOpenChange={props.onClose}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Submit for Approval</DialogTitle>
-            <DialogDescription>
-              Choose an approver and submit this content for review.
-            </DialogDescription>
-          </DialogHeader>
-          <SubmitApprovalForm {...props} />
-        </DialogContent>
-      </Dialog>
-    );
+      <Drawer open={isOpen} onOpenChange={onClose}>
+        <DrawerContent className="max-h-[90vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white">
+          <DrawerHeader className="flex-shrink-0 text-left p-10 pb-4">
+            <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200">
+              <ShieldCheck className="size-6" />
+            </div>
+            <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">Phê duyệt Nội dung</DrawerTitle>
+            <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">Chuyển trạng thái nội dung sang quy trình đánh giá chiến lược.</DrawerDescription>
+          </DrawerHeader>
+          <div className="px-10 overflow-y-auto flex-1 pb-10">
+            {renderFormContent(onClose)}
+          </div>
+        </DrawerContent>
+      </Drawer>
+    )
   }
 
   return (
-    <Drawer open={props.isOpen} onOpenChange={props.onClose}>
-      <DrawerContent>
-        <DrawerHeader className="text-left">
-          <DrawerTitle>Submit for Approval</DrawerTitle>
-          <DrawerDescription>
-            Choose an approver and submit this content for review.
-          </DrawerDescription>
-        </DrawerHeader>
-        <div className="px-4">
-          <SubmitApprovalForm {...props} />
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-[3rem] border-none p-0 shadow-2xl bg-white">
+        <DialogHeader className="flex-shrink-0 p-12 pb-8">
+          <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-8 border border-slate-200 shadow-sm">
+            <ShieldCheck className="size-8" />
+          </div>
+          <DialogTitle className="text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">Phê duyệt Nội dung</DialogTitle>
+          <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic">Chuyển trạng thái nội dung sang quy trình đánh giá và xác thực chiến lược.</DialogDescription>
+        </DialogHeader>
+        <div className="overflow-y-auto flex-1 px-12 pb-12">
+          {renderFormContent(onClose)}
         </div>
-      </DrawerContent>
-    </Drawer>
+      </DialogContent>
+    </Dialog>
   );
 }

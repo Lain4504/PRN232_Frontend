@@ -103,14 +103,14 @@ export function DashboardSidebar() {
                       isActive={isActive}
                       tooltip={item.title}
                       className={cn(
-                        "h-11 rounded-xl transition-all duration-200 group px-3",
+                        "h-11 rounded-xl transition-all duration-200 group px-3 group-data-[collapsible=icon]:px-0",
                         isActive
                           ? "bg-slate-900 text-white hover:bg-slate-800 hover:text-white"
                           : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                       )}
                     >
-                      <Link href={item.url} className="flex items-center gap-3">
-                        <item.icon className={cn("size-4.5 shrink-0 transition-transform", isActive ? "text-white" : "group-hover:scale-110")} />
+                      <Link href={item.url} className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0">
+                        <item.icon className={cn("size-5 shrink-0 transition-transform", isActive ? "text-white" : "group-hover:scale-110")} />
                         <span className="font-bold text-xs uppercase tracking-widest truncate group-data-[collapsible=icon]:hidden">
                           {item.title}
                         </span>
@@ -141,14 +141,14 @@ export function DashboardSidebar() {
                         isActive={isActive}
                         tooltip={item.title}
                         className={cn(
-                          "h-11 rounded-xl transition-all duration-200 group px-3",
+                          "h-11 rounded-xl transition-all duration-200 group px-3 group-data-[collapsible=icon]:px-0",
                           isActive
                             ? "bg-slate-900 text-white hover:bg-slate-800 hover:text-white"
                             : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                         )}
                       >
-                        <Link href={item.url} className="flex items-center gap-3">
-                          <item.icon className={cn("size-4.5 shrink-0 transition-transform", isActive ? "text-white" : "group-hover:scale-110")} />
+                        <Link href={item.url} className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0">
+                          <item.icon className={cn("size-5 shrink-0 transition-transform", isActive ? "text-white" : "group-hover:scale-110")} />
                           <span className="font-bold text-xs uppercase tracking-widest truncate group-data-[collapsible=icon]:hidden">
                             {item.title}
                           </span>
