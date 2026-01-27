@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Building2, Edit, Trash2, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
+import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 
 export function ProfileDetail() {
   const params = useParams<{ id: string }>()
@@ -117,8 +118,9 @@ export function ProfileDetail() {
             </Avatar>
             <div>
               <div className="flex items-center gap-3">
-                <Badge variant={profile.profileType === 'Pro' || profile.profileType === 'Basic' ? 'default' : 'secondary'}>
-                  {profile.profileType}
+                <Badge variant={profile.profileType === ProfileTypeEnum.Pro || profile.profileType === ProfileTypeEnum.Basic ? 'default' : 'secondary'}>
+                  {profile.profileType === ProfileTypeEnum.Pro ? "PRO" :
+                    profile.profileType === ProfileTypeEnum.Basic ? "BASIC" : "FREE"}
                 </Badge>
                 {profile.company_name && (
                   <h3 className="font-semibold text-lg">{profile.company_name}</h3>

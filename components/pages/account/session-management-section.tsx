@@ -192,13 +192,11 @@ export function SessionManagementSection() {
         ))}
       </div>
 
-      <Alert className="rounded-[2rem] border-slate-100 bg-slate-50 border-none p-6">
-        <div className="flex gap-4">
-          <Shield className="h-5 w-5 text-slate-900 mt-0.5" />
-          <AlertDescription className="text-sm font-medium text-slate-600 leading-relaxed">
-            Nếu bạn nhận thấy bất kỳ hoạt động bất thường nào hoặc phiên đăng nhập lạ, hãy đăng xuất chúng ngay lập tức và cân nhắc việc đổi mật khẩu để bảo vệ tài khoản.
-          </AlertDescription>
-        </div>
+      <Alert className="rounded-[2rem] border-slate-100 bg-slate-50 border-none p-6 flex flex-row items-start gap-4 h-auto">
+        <Shield className="h-5 w-5 text-slate-900 shrink-0" />
+        <AlertDescription className="text-sm font-medium text-slate-600 leading-relaxed pt-0.5">
+          Nếu bạn nhận thấy bất kỳ hoạt động bất thường nào hoặc phiên đăng nhập lạ, hãy đăng xuất chúng ngay lập tức và cân nhắc việc đổi mật khẩu để bảo vệ tài khoản.
+        </AlertDescription>
       </Alert>
     </div>
   )

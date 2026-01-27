@@ -37,7 +37,8 @@ export default function OverviewPage() {
       avatarUrl: profile.avatarUrl,
       companyName: profile.company_name,
       isOwner: profile.isOwner ?? false,
-      memberRole: profile.memberRole
+      memberRole: profile.memberRole,
+      status: profile.status as number
     })
     router.push('/dashboard')
   }
@@ -57,7 +58,8 @@ export default function OverviewPage() {
           avatarUrl: profile.avatarUrl,
           companyName: profile.company_name,
           isOwner: profile.isOwner ?? false,
-          memberRole: profile.memberRole
+          memberRole: profile.memberRole,
+          status: profile.status as number
         });
         router.push('/dashboard');
       }
@@ -180,8 +182,23 @@ export default function OverviewPage() {
 }
 
 function ProfileCard({ profile, onSelect }: { profile: Profile; onSelect: (p: Profile) => void }) {
-  const isAgency = profile.profileType !== 'Free'
+  const isAgency = profile.profileType !== ProfileTypeEnum.Free
   const isOwner = profile.isOwner
+
+  const getStatusBadge = (status?: number) => {
+    switch (status) {
+      case 1: // Active
+        return <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 rounded-lg px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">Hoạt động</Badge>
+      case 0: // Pending
+        return <Badge className="bg-amber-50 text-amber-600 border-amber-100 rounded-lg px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">Đang chờ</Badge>
+      case 2: // Suspended
+        return <Badge className="bg-rose-50 text-rose-600 border-rose-100 rounded-lg px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">Tạm ngưng</Badge>
+      case 3: // Cancelled
+        return <Badge className="bg-slate-50 text-slate-500 border-slate-100 rounded-lg px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">Đã hủy</Badge>
+      default:
+        return null
+    }
+  }
 
   return (
     <Card
@@ -204,16 +221,19 @@ function ProfileCard({ profile, onSelect }: { profile: Profile; onSelect: (p: Pr
               isAgency ? <Building2 className="h-7 w-7" /> : <User className="h-7 w-7" />
             )}
           </div>
-          <Badge
-            variant="secondary"
-            className={cn(
-              "rounded-full text-[10px] font-black uppercase tracking-widest px-3 py-1",
-              profile.profileType === 'Pro' ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500"
-            )}
-          >
-            {profile.profileType === 'Pro' ? "PRO" :
-              profile.profileType === 'Basic' ? "BASIC" : "FREE"}
-          </Badge>
+          <div className="flex flex-col items-end gap-2">
+            <Badge
+              variant="secondary"
+              className={cn(
+                "rounded-full text-[10px] font-black uppercase tracking-widest px-3 py-1",
+                profile.profileType === ProfileTypeEnum.Pro ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500"
+              )}
+            >
+              {profile.profileType === ProfileTypeEnum.Pro ? "PRO" :
+                profile.profileType === ProfileTypeEnum.Basic ? "BASIC" : "FREE"}
+            </Badge>
+            {getStatusBadge(profile.status as number)}
+          </div>
         </div>
 
         <div className="space-y-2 mb-8">

@@ -53,6 +53,8 @@ import { useAuth } from "@/lib/contexts/auth-context";
 import { useGetProfiles, useGetProfile, useCreateProfile, useUpdateProfile, useDeleteProfile, useRestoreProfile } from "@/hooks/use-profiles";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
+import { Profile } from "@/lib/types/omniadly-types";
 
 
 export function ProfileManagement() {
@@ -94,9 +96,9 @@ export function ProfileManagement() {
     })
   }
 
-  const handleEditProfile = (profile: { id: string; profileType: 'Free' | 'Basic' | 'Pro'; company_name?: string; bio?: string; avatarUrl?: string }) => {
+  const handleEditProfile = (profile: Profile) => {
     setEditingProfileId(profile.id)
-    const profileType = profile.profileType === 'Free' ? 'personal' : 'business';
+    const profileType = profile.profileType === ProfileTypeEnum.Free ? 'personal' : 'business';
     setFormData({
       profile_type: profileType,
       company_name: profile.company_name || '',
@@ -194,8 +196,8 @@ export function ProfileManagement() {
   }
 
   const totalProfiles = profiles.length;
-  const businessProfiles = profiles.filter(p => p.profileType === 'Pro' || p.profileType === 'Basic').length;
-  const personalProfiles = profiles.filter(p => p.profileType === 'Free').length;
+  const businessProfiles = profiles.filter(p => p.profileType === ProfileTypeEnum.Pro || p.profileType === ProfileTypeEnum.Basic).length;
+  const personalProfiles = profiles.filter(p => p.profileType === ProfileTypeEnum.Free).length;
 
   return (
     <div className="max-w-[1440px] mx-auto font-fira-sans">
@@ -303,7 +305,7 @@ export function ProfileManagement() {
             {profiles.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
                 {profiles.map((profile) => {
-                  const profileType = profile.profileType === 'Free' ? 'personal' : 'business';
+                  const profileType = profile.profileType === ProfileTypeEnum.Free ? 'personal' : 'business';
                   return (
                     <Card key={profile.id} className="group relative bg-card/40 backdrop-blur-xl border-border/40 hover:border-primary/50 rounded-2xl transition-all duration-300 shadow-xl shadow-black/5 overflow-hidden">
                       <CardContent className="p-8">
@@ -499,7 +501,7 @@ function ViewProfileContent({ profileId }: { profileId: string }) {
   }
 
   const profileData = profile
-  const profileType = profileData.profileType === 'Free' ? 'personal' : 'business'
+  const profileType = profileData.profileType === ProfileTypeEnum.Free ? 'personal' : 'business'
 
   return (
     <div className="space-y-10">

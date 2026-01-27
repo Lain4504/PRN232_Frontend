@@ -124,7 +124,7 @@ export function ForgotPasswordForm({
                 ) : (
                   <>
                     <Send className="w-4 h-4 mr-3" />
-                    Gửi kướn dẫn khôi phục
+                    Gửi hướng dẫn khôi phục
                   </>
                 )}
               </Button>

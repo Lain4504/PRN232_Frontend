@@ -12,14 +12,23 @@ export interface User {
   updated_at: string;
 }
 
+export enum ProfileStatusEnum {
+  Pending = 0,
+  Active = 1,
+  Suspended = 2,
+  Cancelled = 3
+}
+
 export interface Profile {
   id: string;
   userId: string;
   name: string;
-  profileType: 'Free' | 'Basic' | 'Pro';
+  profileType: number; // 0=Free, 1=Basic, 2=Pro
+  subscriptionId?: string | null;
   company_name?: string;
   bio?: string;
   avatarUrl?: string;
+  status: number | ProfileStatusEnum;
   createdAt: string;
   updatedAt: string;
   isOwner?: boolean;

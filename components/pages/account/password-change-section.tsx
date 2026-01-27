@@ -9,6 +9,8 @@ import { toast } from "sonner"
 import { Eye, EyeOff, Lock, CheckCircle, AlertCircle, ShieldCheck } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { cn } from "@/lib/utils"
+import { api, endpoints } from "@/lib/api"
+import { useRouter } from "next/navigation"
 
 export function PasswordChangeSection() {
   const [currentPassword, setCurrentPassword] = useState("")
@@ -20,6 +22,7 @@ export function PasswordChangeSection() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const router = useRouter()
 
   const getPasswordStrength = (password: string) => {
     let strength = 0
@@ -65,15 +68,34 @@ export function PasswordChangeSection() {
     setIsLoading(true)
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      setSuccess(true)
-      setCurrentPassword("")
-      setNewPassword("")
-      setConfirmPassword("")
-      toast.success("Cập nhật mật khẩu thành công!")
-    } catch (err: unknown) {
-      setError("Đã có lỗi xảy ra. Vui lòng thử lại sau.")
-      toast.error("Cập nhật mật khẩu thất bại")
+      const response = await api.post(endpoints.changePassword, {
+        currentPassword,
+        newPassword,
+        confirmPassword
+      })
+
+      if (response.success) {
+        setSuccess(true)
+        setCurrentPassword("")
+        setNewPassword("")
+        setConfirmPassword("")
+        toast.success("Cập nhật mật khẩu thành công! Vui lòng đăng nhập lại.")
+
+        // Clear session and redirect to login after a short delay
+        setTimeout(() => {
+          localStorage.removeItem("auth_session")
+          document.cookie = "auth_token=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax"
+          document.cookie = "refresh_token=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax"
+          router.push("/auth/login")
+        }, 2000)
+      } else {
+        setError(response.message || "Đã có lỗi xảy ra. Vui lòng thử lại sau.")
+        toast.error("Cập nhật mật khẩu thất bại")
+      }
+    } catch (err: any) {
+      console.error("Change password error:", err)
+      setError(err.message || "Đã có lỗi xảy ra. Vui lòng thử lại sau.")
+      toast.error(err.message || "Cập nhật mật khẩu thất bại")
     } finally {
       setIsLoading(false)
     }

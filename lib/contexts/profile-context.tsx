@@ -12,17 +12,20 @@ interface Profile {
   type: ProfileTypeEnum
   avatarUrl?: string
   companyName?: string
+  status: number
   isOwner: boolean
   memberRole?: string
 }
 
 interface ProfileApiResponse {
   id: string
+  userId: string
   name?: string
   company_name?: string
   profileType?: ProfileTypeEnum
   avatarUrl?: string
   companyName?: string
+  status?: number
   isOwner?: boolean
   memberRole?: string
 }
@@ -88,6 +91,7 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
           type: (typeof p.profileType !== 'undefined' ? p.profileType : ProfileTypeEnum.Free) as ProfileTypeEnum,
           avatarUrl: p.avatarUrl,
           companyName: p.company_name || p.companyName,
+          status: p.status ?? 0,
           isOwner: p.isOwner ?? false,
           memberRole: p.memberRole
         }))
@@ -164,6 +168,7 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
           type: (typeof p.profileType !== 'undefined' ? p.profileType : profileType) as ProfileTypeEnum,
           avatarUrl: p.avatarUrl,
           companyName: p.company_name || p.companyName,
+          status: p.status ?? (activeProfile?.status ?? 0),
           isOwner: p.isOwner ?? (activeProfile?.isOwner ?? false),
           memberRole: p.memberRole ?? activeProfile?.memberRole
         }

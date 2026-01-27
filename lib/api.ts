@@ -415,6 +415,7 @@ export const endpoints = {
 
   // User endpoints
   userProfile: "/auth/me",
+  changePassword: "/auth/change-password",
   forgotPassword: "/auth/forgot-password",
   resetPassword: "/auth/change-password-with-token",
   resendVerification: "/auth/verify-email/resend",

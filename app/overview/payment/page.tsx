@@ -17,7 +17,7 @@ import { formatCurrency } from '@/lib/stripe'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import type { PaymentResponseDto } from '@/lib/types/subscription'
+import { PaymentResponseDto, PaymentStatusEnum } from '@/lib/types/subscription'
 import {
   CreditCard,
   CheckCircle,
@@ -64,6 +64,20 @@ export default function PaymentHistoryPage() {
   }
 
   const getStatusBadge = (status: string | number | null | undefined) => {
+    if (typeof status === 'number') {
+      switch (status) {
+        case PaymentStatusEnum.Success:
+          return <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 rounded-lg px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">Thành công</Badge>
+        case PaymentStatusEnum.Failed:
+          return <Badge className="bg-rose-50 text-rose-600 border-rose-100 rounded-lg px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">Thất bại</Badge>
+        case PaymentStatusEnum.Refunded:
+          return <Badge className="bg-amber-50 text-amber-600 border-amber-100 rounded-lg px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">Hoàn tiền</Badge>
+        case PaymentStatusEnum.Pending:
+        default:
+          return <Badge className="bg-slate-50 text-slate-500 border-slate-100 rounded-lg px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">Đang xử lý</Badge>
+      }
+    }
+
     const s = String(status || '').toLowerCase()
     switch (s) {
       case 'succeeded':
@@ -167,7 +181,10 @@ export default function PaymentHistoryPage() {
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Thành công</p>
                 <p className="text-xl font-black text-slate-900">
-                  {payments.filter(p => ['succeeded', 'success', 'paid'].includes(String(p.status).toLowerCase())).length}
+                  {payments.filter(p =>
+                    p.status === PaymentStatusEnum.Success ||
+                    ['succeeded', 'success', 'paid'].includes(String(p.status).toLowerCase())
+                  ).length}
                 </p>
               </div>
             </Card>

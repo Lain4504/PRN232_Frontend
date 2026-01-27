@@ -7,6 +7,13 @@ export enum SubscriptionPlanEnum {
   Pro = 2
 }
 
+export enum PaymentStatusEnum {
+  Pending = 0,
+  Success = 1,
+  Failed = 2,
+  Refunded = 3
+}
+
 // Subscription plan types
 export type SubscriptionTier = 'free' | 'basic' | 'pro' | 'enterprise'
 export type BillingCycle = 'monthly' | 'yearly'
@@ -89,10 +96,11 @@ export interface CreatePaymentIntentResponse {
 export interface PaymentResponseDto {
   id: string
   userId: string
+  userEmail?: string
   subscriptionId?: string
   amount: number
   currency: string
-  status: string
+  status: string | number
   transactionId?: string
   paymentMethod?: string
   invoiceUrl?: string

@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { useDebounceValue } from '@/hooks/use-debounce-value'
 import { Search, UserPlus, Shield, ChevronRight, X, UserSearch, Target, LayoutDashboard, Key, Loader2 } from 'lucide-react'
 import { getPermissionsForRole, getPermissionInfo } from '@/lib/constants/team-roles'
 import { cn } from "@/lib/utils"
@@ -41,9 +42,11 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
         setPermissions(rolePermissions)
     }, [role])
 
-    // Search users when query changes
+    const [debouncedSearchQuery] = useDebounceValue(searchQuery, 500)
+
+    // Search users when debounced query changes
     useEffect(() => {
-        if (!searchQuery.trim() || searchQuery.length < 2) {
+        if (!debouncedSearchQuery.trim() || debouncedSearchQuery.length < 2) {
             setUsers([])
             return
         }
@@ -51,7 +54,7 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
         const searchUsers = async () => {
             setLoading(true)
             try {
-                const url = `${endpoints.userSearch}?searchTerm=${encodeURIComponent(searchQuery)}&page=1&pageSize=10`
+                const url = `${endpoints.userSearch}?searchTerm=${encodeURIComponent(debouncedSearchQuery)}&page=1&pageSize=10`
                 const response = await api.get<PaginatedResponse<User>>(url)
                 if (response.data && Array.isArray(response.data.data)) {
                     setUsers(response.data.data)
@@ -65,9 +68,8 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
             }
         }
 
-        const debounceTimer = setTimeout(searchUsers, 300)
-        return () => clearTimeout(debounceTimer)
-    }, [searchQuery])
+        searchUsers()
+    }, [debouncedSearchQuery])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -115,7 +117,7 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
 
     const isMobile = useIsMobile()
 
-    const AddMemberFormContent = ({ onCancel }: { onCancel: () => void }) => (
+    const renderFormContent = (onCancel: () => void) => (
         <form onSubmit={handleSubmit} className="space-y-10">
             {/* User Search & Selection */}
             <div className="space-y-4">
@@ -270,7 +272,7 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
                         <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">Chỉ định thành viên mới và thiết lập ma trận phân quyền.</DrawerDescription>
                     </DrawerHeader>
                     <div className="px-10 overflow-y-auto flex-1 pb-10">
-                        <AddMemberFormContent onCancel={() => onOpenChange(false)} />
+                        {renderFormContent(() => onOpenChange(false))}
                     </div>
                 </DrawerContent>
             </Drawer>
@@ -288,7 +290,7 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
                     <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic">Tích hợp thành viên mới vào luồng vận hành sản xuất nội dung của Đội ngũ.</DialogDescription>
                 </DialogHeader>
                 <div className="overflow-y-auto flex-1 px-12 pb-12">
-                    <AddMemberFormContent onCancel={() => onOpenChange(false)} />
+                    {renderFormContent(() => onOpenChange(false))}
                 </div>
             </DialogContent>
         </Dialog>

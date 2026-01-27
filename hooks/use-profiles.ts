@@ -38,7 +38,8 @@ export function useCreateProfile(userId: string) {
     mutationFn: async (data: CreateProfileForm): Promise<Profile> => {
       const fd = new FormData()
       fd.append('Name', data.name)
-      fd.append('ProfileType', data.profile_type === 'Free' ? '0' : '1')
+      const typeMap = { 'Free': '0', 'Basic': '1', 'Pro': '2' }
+      fd.append('ProfileType', typeMap[data.profile_type] || '0')
       if (data.company_name) fd.append('CompanyName', data.company_name)
       if (data.bio) fd.append('Bio', data.bio)
       if (data.avatar) fd.append('AvatarFile', data.avatar)
@@ -57,7 +58,10 @@ export function useUpdateProfile(id: string) {
   return useMutation({
     mutationFn: async (data: Partial<CreateProfileForm>): Promise<Profile> => {
       const fd = new FormData()
-      if (data.profile_type) fd.append('ProfileType', data.profile_type === 'Free' ? '0' : '1')
+      if (data.profile_type) {
+        const typeMap = { 'Free': '0', 'Basic': '1', 'Pro': '2' }
+        fd.append('ProfileType', typeMap[data.profile_type] || '0')
+      }
       if (data.company_name !== undefined) fd.append('CompanyName', data.company_name ?? '')
       if (data.bio !== undefined) fd.append('Bio', data.bio ?? '')
       if (data.avatar) fd.append('AvatarFile', data.avatar)
