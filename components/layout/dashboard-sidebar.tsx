@@ -47,7 +47,7 @@ interface NavItem {
 export function DashboardSidebar() {
   const { t } = useTranslation("common")
   const pathname = usePathname()
-  const { hasFeatureAccess, profileType } = useProfile()
+  const { hasFeatureAccess, profileType, activeProfile } = useProfile()
   const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free
 
   const { data: approvalCount = 0 } = usePendingApprovalsCount()
@@ -131,7 +131,18 @@ export function DashboardSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="gap-1">
               {workflowNavItems
-                .filter(item => item.title !== "Operatives" || hasFeatureAccess('teams'))
+                .filter(item => {
+                  // Both Teams and Approvals require at least Basic/Pro plan
+                  if (!canUseTeamFeatures) return false;
+
+                  // Only owners and specific manager roles can manage teams
+                  if (item.url === "/dashboard/teams") {
+                    const managementRoles = ['Vendor', 'TeamLeader'];
+                    return activeProfile?.isOwner || (activeProfile?.memberRole && managementRoles.includes(activeProfile.memberRole));
+                  }
+
+                  return true;
+                })
                 .map((item) => {
                   const isActive = pathname.startsWith(item.url)
                   return (

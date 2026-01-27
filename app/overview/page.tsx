@@ -29,6 +29,9 @@ export default function OverviewPage() {
   const userLoading = userStatus === 'pending'
   const profilesLoading = profilesStatus === 'pending'
 
+  const ownedProfiles = Array.isArray(profiles) ? profiles.filter(p => p.isOwner) : []
+  const sharedProfiles = Array.isArray(profiles) ? profiles.filter(p => !p.isOwner) : []
+
   const handleProfileSelect = (profile: Profile) => {
     setActiveProfile(profile.id, {
       id: profile.id,
@@ -49,8 +52,11 @@ export default function OverviewPage() {
         router.replace('/onboarding');
         return;
       }
-      if (profiles.length === 1 && !activeProfileId && !searchQuery) {
-        const profile = profiles[0];
+
+      // Remove auto-redirect to teams page to allow manual profile creation
+
+      if (ownedProfiles.length === 1 && !activeProfileId && !searchQuery) {
+        const profile = ownedProfiles[0];
         setActiveProfile(profile.id, {
           id: profile.id,
           name: profile.name || profile.company_name || `${profile.profileType} Profile`,
@@ -64,7 +70,7 @@ export default function OverviewPage() {
         router.push('/dashboard');
       }
     }
-  }, [userStatus, profilesStatus, profiles, router, setActiveProfile, activeProfileId, isProfileLoading, searchQuery]);
+  }, [userStatus, profilesStatus, profiles, router, setActiveProfile, activeProfileId, isProfileLoading, searchQuery, ownedProfiles, sharedProfiles]);
 
   if (userLoading || profilesLoading) {
     return (
@@ -81,10 +87,10 @@ export default function OverviewPage() {
     )
   }
 
-  const filteredProfiles = Array.isArray(profiles) ? profiles.filter(profile => {
+  const filteredProfiles = ownedProfiles.filter(profile => {
     const name = profile.name || profile.company_name || `${profile.profileType} Profile`
     return name.toLowerCase().includes(searchQuery.toLowerCase())
-  }) : []
+  })
 
   return (
     <div className="max-w-6xl mx-auto py-12 px-6 lg:px-8 space-y-12">
@@ -129,51 +135,44 @@ export default function OverviewPage() {
               <p className="text-slate-500 font-medium max-w-sm mx-auto">
                 {searchQuery ? "Thử tìm kiếm với từ khóa khác xem sao." : "Bắt đầu bằng cách tạo hồ sơ làm việc đầu tiên của bạn."}
               </p>
+              {sharedProfiles.length > 0 && !searchQuery && (
+                <p className="text-slate-400 text-sm mt-4">
+                  Bạn có <b>{sharedProfiles.length}</b> hồ sơ đội nhóm chia sẻ. <Link href="/overview/teams" className="text-slate-900 underline font-bold">Xem tại đây</Link>
+                </p>
+              )}
             </div>
             {!searchQuery && (
-              <Link href="/overview/profile/new">
-                <Button variant="outline" className="h-11 px-8 rounded-xl font-bold border-slate-200 hover:bg-white hover:border-slate-300">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Bắt đầu ngay
-                </Button>
-              </Link>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/overview/profile/new">
+                  <Button className="h-11 px-8 rounded-xl font-bold bg-slate-900 text-white">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Tạo hồ sơ mới
+                  </Button>
+                </Link>
+                {sharedProfiles.length > 0 && (
+                  <Link href="/overview/teams">
+                    <Button variant="outline" className="h-11 px-8 rounded-xl font-bold">
+                      <Users className="h-4 w-4 mr-2" />
+                      Xem nhóm của tôi
+                    </Button>
+                  </Link>
+                )}
+              </div>
             )}
           </div>
         ) : (
-          <div className="grid gap-8">
-            {/* My Workspaces */}
-            {filteredProfiles.some(p => p.isOwner) && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-                    <User className="h-4 w-4" />
-                  </div>
-                  <h2 className="text-lg font-bold text-slate-900 uppercase tracking-widest">Hồ sơ của tôi</h2>
-                </div>
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {filteredProfiles.filter(p => p.isOwner).map((profile) => (
-                    <ProfileCard key={profile.id} profile={profile} onSelect={handleProfileSelect} />
-                  ))}
-                </div>
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                <User className="h-4 w-4" />
               </div>
-            )}
-
-            {/* Shared Workspaces */}
-            {filteredProfiles.some(p => !p.isOwner) && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 pt-8">
-                  <div className="size-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
-                    <Users className="h-4 w-4" />
-                  </div>
-                  <h2 className="text-lg font-bold text-slate-900 uppercase tracking-widest">Đội nhóm chia sẻ</h2>
-                </div>
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {filteredProfiles.filter(p => !p.isOwner).map((profile) => (
-                    <ProfileCard key={profile.id} profile={profile} onSelect={handleProfileSelect} />
-                  ))}
-                </div>
-              </div>
-            )}
+              <h2 className="text-lg font-bold text-slate-900 uppercase tracking-widest">Hồ sơ của tôi</h2>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredProfiles.map((profile) => (
+                <ProfileCard key={profile.id} profile={profile} onSelect={handleProfileSelect} />
+              ))}
+            </div>
           </div>
         )}
       </div>

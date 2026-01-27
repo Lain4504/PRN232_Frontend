@@ -10,7 +10,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Users, Building2, Search, Filter, AlertCircle, Shield, ArrowLeft, MoreVertical, ExternalLink } from 'lucide-react'
+import { Users, Building2, Search, Filter, AlertCircle, Shield, ArrowLeft, MoreVertical, ExternalLink, User } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
@@ -18,7 +18,7 @@ interface Team {
   id: string
   name: string
   description?: string
-  userRole: 'Owner' | 'Admin' | 'Member'
+  userRole: 'Owner' | 'Admin' | 'Member' | 'Vendor'
   membersCount: number
   createdAt: string
   avatarUrl?: string
@@ -78,6 +78,9 @@ export default function TeamsPage() {
   }
 
   const filteredTeams = teams.filter(team => {
+    // Exclude teams that belong to user's personal profiles (Role Vendor/Owner)
+    if (team.userRole === 'Vendor' || team.userRole === 'Owner') return false;
+
     const matchesSearch = team.name.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesStatus = statusFilter === 'all' || team.status === statusFilter || (!team.status && statusFilter === 'Active')
     return matchesSearch && matchesStatus
@@ -165,11 +168,21 @@ export default function TeamsPage() {
             <div className="size-16 rounded-2xl bg-white flex items-center justify-center mb-6 shadow-sm border border-slate-100">
               <Shield className="h-8 w-8 text-slate-200" />
             </div>
-            <div className="space-y-2 text-center">
+            <div className="space-y-4 text-center">
               <h3 className="text-xl font-bold text-slate-900">Không tìm thấy nhóm nào</h3>
               <p className="text-slate-400 font-medium max-w-md">
-                {searchQuery || statusFilter !== 'all' ? 'Dường như không có nhóm nào khớp với bộ lọc của bạn.' : 'Bạn chưa tham gia vào bất kỳ đội nhóm nào.'}
+                {searchQuery || statusFilter !== 'all' ? 'Dường như không có nhóm nào khớp với bộ lọc của bạn.' : 'Bạn chưa tham gia vào bất kỳ đội nhóm nào từ hồ sơ khác.'}
               </p>
+              {!searchQuery && statusFilter === 'all' && (
+                <div className="pt-4">
+                  <Link href="/overview">
+                    <Button variant="outline" className="rounded-xl font-bold border-slate-200">
+                      <User className="h-4 w-4 mr-2" />
+                      Xem hồ sơ cá nhân của tôi
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
             {(searchQuery || statusFilter !== 'all') && (
               <Button onClick={() => { setSearchQuery(''); setStatusFilter('all'); }} variant="ghost" className="mt-8 font-bold text-slate-900 hover:bg-white transition-all">

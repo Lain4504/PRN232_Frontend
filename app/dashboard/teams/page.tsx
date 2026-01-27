@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useMemo, useState, Suspense } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useTeamsByVendor } from '@/hooks/use-teams'
 import { useUser } from '@/hooks/use-user'
 import { useProfile } from '@/lib/contexts/profile-context'
@@ -25,9 +25,23 @@ import { cn } from "@/lib/utils"
 
 function TeamsPageContent() {
   const { data: user, isLoading: userLoading } = useUser()
-  const { activeProfileId, profileType } = useProfile()
+  const { activeProfileId, profileType, activeProfile } = useProfile()
+  const router = useRouter()
   const { data, isLoading, isError } = useTeamsByVendor(activeProfileId || undefined)
   const { t, i18n } = useTranslation("common")
+
+  React.useEffect(() => {
+    // If we have profile data, check if the user has management rights
+    if (activeProfile) {
+      const isManager = activeProfile.isOwner ||
+        activeProfile.memberRole === 'Vendor' ||
+        activeProfile.memberRole === 'TeamLeader';
+
+      if (!isManager) {
+        router.replace('/dashboard')
+      }
+    }
+  }, [activeProfile, router])
   const [openCreate, setOpenCreate] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [editDialog, setEditDialog] = useState<{ open: boolean; team: TeamResponse | null }>({
