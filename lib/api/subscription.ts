@@ -1,60 +1,29 @@
 import { api } from '../api'
-import type { 
-  SubscriptionResponseDto, 
-  CreateSubscriptionRequest, 
-  CreatePaymentIntentRequest, 
-  CreatePaymentIntentResponse,
-  PaymentResponseDto 
-} from '@/lib/types/subscription'
 import type {
-  Stripe,
-  StripeCardElement,
-  StripeCardNumberElement,
-  PaymentMethodCreateParams,
-} from '@stripe/stripe-js'
+  SubscriptionResponseDto,
+  CreateSubscriptionRequest,
+  CreatePaymentIntentRequest,
+  PayOSCheckoutResponse,
+  PaymentResponseDto
+} from '@/lib/types/subscription'
 
-// Payment Method API - This should be called from within Stripe Elements context
-export const createPaymentMethod = async (
-  stripe: Stripe | null,
-  cardElement: StripeCardElement | StripeCardNumberElement,
-  billingDetails: PaymentMethodCreateParams.BillingDetails
-) => {
-  if (!stripe) {
-    throw new Error('Stripe not initialized')
-  }
-
-  const { error, paymentMethod } = await stripe.createPaymentMethod({
-    type: 'card',
-    card: cardElement,
-    billing_details: billingDetails,
-  })
-
-  if (error) {
-    throw new Error(error.message || 'Failed to create payment method')
-  }
-
-  return paymentMethod
-}
-
-// Payment Intent API (kept for backward compatibility)
-export const createPaymentIntent = async (
-  profileId: string, 
-  planId: number, 
-  amount: number
-): Promise<CreatePaymentIntentResponse> => {
+// PayOS Checkout API
+export const createPayOSCheckoutLink = async (
+  planId: number,
+): Promise<PayOSCheckoutResponse> => {
   const request: CreatePaymentIntentRequest = {
-    amount,
-    currency: 'USD',
+    amount: 0, // Backend will calculate based on plan
+    currency: 'VND',
     subscriptionPlanId: planId,
     description: `Subscription payment for plan ${planId}`
   }
-  
-  const response = await api.post<CreatePaymentIntentResponse>('/payment/create-payment-intent', request)
+
+  const response = await api.post<PayOSCheckoutResponse>('/payment/create-checkout-link', request)
   return response.data!
 }
 
-export const confirmPayment = async (paymentIntentId: string): Promise<PaymentResponseDto> => {
-  const response = await api.post<PaymentResponseDto>(`/payment/confirm/${paymentIntentId}`)
+export const confirmPayOSPayment = async (orderCode: number): Promise<PaymentResponseDto> => {
+  const response = await api.post<PaymentResponseDto>(`/payment/confirm/${orderCode}`)
   return response.data!
 }
 
@@ -97,13 +66,12 @@ export const changeSubscriptionPlan = async (
   // Map plan ID string to enum value
   const planMap: Record<string, number> = {
     'free': 0,
-    'basic': 1,
-    'pro': 2,
-    'enterprise': 2 // Enterprise maps to Pro for now
+    'plus': 1,
+    'premium': 2
   }
-  
-  const planEnum = planMap[planId] ?? 1
-  
+
+  const planEnum = planMap[planId] ?? 0
+
   const response = await api.put<SubscriptionResponseDto>('/payment/subscription/change-plan', {
     planId: planEnum,
     billingCycle,
@@ -126,7 +94,7 @@ export const getActiveSubscription = async (profileId: string): Promise<Subscrip
     if (active && active.profileId === profileId) {
       return active
     }
-    
+
     // Fallback: get all subscriptions and filter
     const subscriptions = await getUserSubscriptions()
     return subscriptions.find(sub => sub.profileId === profileId && sub.isActive) || null
@@ -138,9 +106,9 @@ export const getActiveSubscription = async (profileId: string): Promise<Subscrip
 
 export const getPlanPricing = (plan: number) => {
   const pricing = {
-    0: { price: 0, period: 'forever', name: 'Free' },
-    1: { price: 29, period: 'month', name: 'Basic' },
-    2: { price: 99, period: 'month', name: 'Pro' }
+    0: { price: 0, period: 'vĩnh viễn', name: 'Free' },
+    1: { price: 359000, period: 'tháng', name: 'Plus' },
+    2: { price: 559000, period: 'tháng', name: 'Premium' }
   }
   return pricing[plan as keyof typeof pricing] || pricing[0]
 }
@@ -148,25 +116,22 @@ export const getPlanPricing = (plan: number) => {
 export const getPlanFeatures = (plan: number) => {
   const features = {
     0: {
-      posts: 100,
-      storage: 5,
-      campaigns: 5,
-      teamMembers: 1,
-      features: ['Basic content creation', 'Facebook posting', 'Basic analytics']
+      posts: 5,
+      platforms: 1,
+      accounts: 1,
+      features: ['Lên lịch đăng tự động', 'Phân tích độ tuổi, giới tính']
     },
     1: {
-      posts: 300,
-      storage: 25,
-      campaigns: 15,
-      teamMembers: 5,
-      features: ['All Free features', 'AI content generation', 'Advanced analytics', 'Team collaboration']
+      posts: 30,
+      platforms: 2,
+      accounts: 3,
+      features: ['AI content (2 bài/ngày)', 'AI image (7 hình/ngày)', 'Phân tích hiệu quả quảng cáo']
     },
     2: {
       posts: -1, // unlimited
-      storage: 100,
-      campaigns: -1, // unlimited
-      teamMembers: 20,
-      features: ['All Basic features', 'Unlimited posts', 'Priority support', 'Advanced reporting', 'API access']
+      platforms: 3,
+      accounts: 5,
+      features: ['AI content (4 bài/ngày)', 'AI image (10 hình/ngày)', 'Đề xuất ngân sách & nội dung']
     }
   }
   return features[plan as keyof typeof features] || features[0]

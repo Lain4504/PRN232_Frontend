@@ -5,11 +5,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Check, Zap, Crown, Building2 } from 'lucide-react'
-import { getPlanPricing, getPlanFeatures, getPlanDisplayName, getPlanColor } from '@/lib/stripe'
-import { formatCurrency } from '@/lib/stripe'
+import { getPlanPricing, getPlanFeatures } from '@/lib/api/subscription'
 import { SubscriptionPlanEnum } from '@/lib/types/subscription'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { formatCurrency } from '@/lib/utils'
 
 interface SubscriptionPlansPageProps {
   onPlanSelect?: (plan: { id: number; name: string; price: number }) => void
@@ -17,6 +17,8 @@ interface SubscriptionPlansPageProps {
   profileId?: string
   isLoading?: boolean
 }
+
+
 
 export function SubscriptionPlansPage({
   onPlanSelect,
@@ -32,24 +34,24 @@ export function SubscriptionPlansPage({
     {
       id: SubscriptionPlanEnum.Free,
       name: 'Free',
-      description: 'Perfect for getting started',
+      description: 'Dùng thử các tính năng cơ bản',
       price: 0,
-      period: 'forever'
+      period: 'vĩnh viễn'
     },
     {
       id: SubscriptionPlanEnum.Basic,
-      name: 'Basic',
-      description: 'Great for small businesses',
-      price: 29,
-      period: 'month',
+      name: 'Plus',
+      description: 'Nâng cấp với AI hỗ trợ',
+      price: 359000,
+      period: 'tháng',
       isPopular: true
     },
     {
       id: SubscriptionPlanEnum.Pro,
-      name: 'Pro',
-      description: 'For growing businesses',
-      price: 99,
-      period: 'month'
+      name: 'Premium',
+      description: 'Giải pháp tối ưu cho doanh nghiệp',
+      price: 559000,
+      period: 'tháng'
     }
   ]
 
@@ -92,26 +94,13 @@ export function SubscriptionPlansPage({
     }
   }
 
-  const getPlanBorderColor = (planId: number) => {
-    switch (planId) {
-      case SubscriptionPlanEnum.Free:
-        return 'border-blue-200 hover:border-blue-300'
-      case SubscriptionPlanEnum.Basic:
-        return 'border-purple-200 hover:border-purple-300'
-      case SubscriptionPlanEnum.Pro:
-        return 'border-orange-200 hover:border-orange-300'
-      default:
-        return 'border-gray-200 hover:border-gray-300'
-    }
-  }
-
   return (
     <div className="space-y-12">
       {/* Header */}
       <div className="text-center space-y-3">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Choose Your Plan</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Chọn Gói Dịch Vụ Của Bạn</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Scale your AI marketing with a plan that fits your growth stage. Change or cancel anytime.
+          Tối ưu hóa chiến lược marketing của bạn với sự hỗ trợ từ AI. Chuyển đổi hoặc hủy bất kỳ lúc nào.
         </p>
       </div>
 
@@ -132,7 +121,7 @@ export function SubscriptionPlansPage({
               {plan.isPopular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <Badge className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                    Most Popular
+                    Phổ Biến Nhất
                   </Badge>
                 </div>
               )}
@@ -154,7 +143,7 @@ export function SubscriptionPlansPage({
                 <div className="text-center mb-8">
                   <div className="flex items-baseline justify-center gap-1">
                     <span className="text-4xl font-bold tracking-tight">
-                      {plan.price === 0 ? 'Free' : formatCurrency(plan.price)}
+                      {plan.price === 0 ? 'Miễn Phí' : formatCurrency(plan.price)}
                     </span>
                     {plan.price > 0 && (
                       <span className="text-muted-foreground font-medium">/{plan.period}</span>
@@ -168,7 +157,7 @@ export function SubscriptionPlansPage({
                       <Check className="h-3.5 w-3.5 text-emerald-600" />
                     </div>
                     <span className="text-sm font-medium text-foreground">
-                      {features.posts === -1 ? 'Unlimited' : features.posts} posts per month
+                      {features.posts === -1 ? 'Không giới hạn' : `${features.posts} bài đăng`} / tháng
                     </span>
                   </li>
                   <li className="flex items-start gap-3">
@@ -176,15 +165,7 @@ export function SubscriptionPlansPage({
                       <Check className="h-3.5 w-3.5 text-emerald-600" />
                     </div>
                     <span className="text-sm font-medium text-foreground">
-                      {features.storage}GB secure storage
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="mt-1 bg-emerald-50 rounded-full p-0.5">
-                      <Check className="h-3.5 w-3.5 text-emerald-600" />
-                    </div>
-                    <span className="text-sm font-medium text-foreground">
-                      {features.campaigns === -1 ? 'Unlimited' : features.campaigns} AI campaigns
+                      Tối đa {features.platforms} nền tảng & {features.accounts} tài khoản
                     </span>
                   </li>
                   {features.features.map((feature: string, index: number) => (
@@ -207,7 +188,7 @@ export function SubscriptionPlansPage({
                     }`}
                   onClick={() => handlePlanSelect(plan)}
                 >
-                  {isLoading ? 'Processing...' : (plan.price === 0 ? 'Start Free' : 'Choose Plan')}
+                  {isLoading ? 'Đang xử lý...' : (plan.price === 0 ? 'Bắt đầu ngay' : 'Chọn gói')}
                 </Button>
               </CardFooter>
             </Card>
@@ -218,11 +199,11 @@ export function SubscriptionPlansPage({
       {/* Footer Info */}
       <div className="max-w-2xl mx-auto text-center space-y-4 pt-8">
         <p className="text-sm text-muted-foreground font-medium">
-          No credit card required for the Free plan. All paid tiers include a 14-day full free trial with premium assets enabled.
+          Không yêu cầu thẻ tín dụng cho gói Miễn Phí. Tất cả các gói trả phí đều đi kèm với sự hỗ trợ tận tâm từ đội ngũ kỹ thuật.
         </p>
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted/30 rounded-full text-xs font-semibold text-muted-foreground">
           <Building2 className="h-3.5 w-3.5" />
-          Need a custom solution? <Link href="/contact" className="text-primary hover:underline">Contact Enterprise Sales</Link>
+          Cần giải pháp tùy chỉnh? <Link href="/contact" className="text-primary hover:underline">Liên hệ bộ phận doanh nghiệp</Link>
         </div>
       </div>
     </div>

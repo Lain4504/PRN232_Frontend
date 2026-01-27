@@ -19,7 +19,7 @@ export function useSubscription(profileId?: string) {
     try {
       setIsLoading(true)
       setError(null)
-      
+
       // If profileId is provided, get active subscription directly for that profile
       // Backend uses active profile from context, so this will get the subscription
       // for the currently active profile
@@ -33,7 +33,7 @@ export function useSubscription(profileId?: string) {
           // If API fails (e.g., no active subscription), set to null
           setActiveSubscription(null)
         }
-        
+
         // Also get all subscriptions for reference
         try {
           const data = await getUserSubscriptions()
@@ -68,19 +68,24 @@ export function useSubscription(profileId?: string) {
     const tier = tierMap[dto.plan]
     const planInfo = getPlanPricing(dto.plan)
 
-    const limits = (() => {
-      switch (dto.plan) {
-        case SubscriptionPlanEnum.Free:
-          return { campaigns: 3, adSets: 10, ads: 50, teamMembers: 1, storage: '1', apiCalls: 1000 }
-        case SubscriptionPlanEnum.Basic:
-          return { campaigns: 15, adSets: 50, ads: 200, teamMembers: 5, storage: '25', apiCalls: 5000 }
-        case SubscriptionPlanEnum.Pro:
-        default:
-          return { campaigns: -1, adSets: -1, ads: -1, teamMembers: 20, storage: '100', apiCalls: -1 }
-      }
-    })()
+    const limits = {
+      postsPerMonth: dto.quotaPostsPerMonth,
+      aiContentPerDay: dto.quotaAIContentPerDay,
+      aiImagesPerDay: dto.quotaAIImagesPerDay,
+      platforms: dto.quotaPlatforms,
+      accounts: dto.quotaAccounts,
+      analysisLevel: dto.analysisLevel,
+      adBudgetMonthly: dto.quotaAdBudgetMonthly,
+      adCampaigns: dto.quotaAdCampaigns,
+    }
 
-    const usage = { campaigns: 0, adSets: 0, ads: 0, teamMembers: 0, storage: 0, apiCalls: 0 }
+    const usage = {
+      postsThisMonth: 0,
+      aiContentToday: 0,
+      aiImagesToday: 0,
+      platforms: 0,
+      accounts: 0
+    }
 
     const status = dto.isActive ? 'active' : 'cancelled'
 
@@ -98,8 +103,8 @@ export function useSubscription(profileId?: string) {
       features: [],
       limits,
       usage,
-      stripeSubscriptionId: dto.stripeSubscriptionId,
-      stripeCustomerId: dto.stripeCustomerId,
+      payOSOrderCode: dto.payOSOrderCode,
+      payOSPaymentLinkId: dto.payOSPaymentLinkId,
     }
     return ui
   }
@@ -134,7 +139,7 @@ export function useActiveSubscription(profileId: string) {
     try {
       setIsLoading(true)
       setError(null)
-      
+
       const data = await getActiveSubscription(profileId)
       setSubscription(data)
     } catch (err) {
@@ -182,7 +187,7 @@ export function usePlanComparison(targetPlanId: string) {
     queryFn: async () => {
       // Mock plan comparison logic
       await new Promise(resolve => setTimeout(resolve, 500))
-      
+
       // In a real implementation, this would analyze the plan differences
       return {
         isUpgrade: true,
@@ -205,7 +210,7 @@ export function useSubscriptionPlans() {
     queryFn: async () => {
       // Mock subscription plans data
       await new Promise(resolve => setTimeout(resolve, 500))
-      
+
       // In a real implementation, this would fetch from your API
       return [
         {

@@ -1,51 +1,26 @@
 "use client"
 
-import React, { useState, Suspense } from "react"
+import React, { useState, Suspense, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js"
-import { getStripe, stripeOptions } from "@/lib/stripe"
 import { api, endpoints } from "@/lib/api"
 import { useAuth } from "@/lib/contexts/auth-context"
 import { useProfile } from "@/lib/contexts/profile-context"
-import { ProfileTypeEnum } from "@/lib/utils/profile-utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Check, ShieldCheck, Zap, Building2, ArrowRight, Sparkles, CreditCard, Lock, AlertCircle } from "lucide-react"
+import { Check, ShieldCheck, Crown, Building2, ArrowRight, Sparkles, CreditCard, Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { createSubscription } from "@/lib/api/subscription"
+import { createPayOSCheckoutLink } from "@/lib/api/subscription"
 import { SubscriptionPlanEnum } from "@/lib/types/subscription"
-
-const CARD_ELEMENT_OPTIONS = {
-    style: {
-        base: {
-            color: "#1f2937", // foreground
-            fontFamily: '"Fira Sans", sans-serif',
-            fontSmoothing: "antialiased",
-            fontSize: "16px",
-            "::placeholder": {
-                color: "#a1a1aa", // muted-foreground
-            },
-        },
-        invalid: {
-            color: "#ef4444", // destructve
-            iconColor: "#ef4444",
-        },
-    },
-    hidePostalCode: true,
-}
 
 function PaymentForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const stripe = useStripe()
-    const elements = useElements()
     const { session } = useAuth()
     const { setActiveProfile } = useProfile()
 
     const [isProcessing, setIsProcessing] = useState(false)
-    const [selectedPlan, setSelectedPlan] = useState<'basic' | 'pro'>('basic')
-    const [cardError, setCardError] = useState<string | null>(null)
+    const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlanEnum>(SubscriptionPlanEnum.Basic)
     const [pendingProfileId, setPendingProfileId] = useState<string | null>(null)
 
     const profileData = {
@@ -56,55 +31,48 @@ function PaymentForm() {
 
     const plans = [
         {
-            id: 'basic',
-            name: 'Agency Basic',
-            price: '$29',
-            period: '/month',
-            description: 'Essential tools for growing agencies.',
+            id: SubscriptionPlanEnum.Basic,
+            name: 'Plus',
+            price: '359.000',
+            period: '/tháng',
+            description: 'Công cụ thiết yếu cho các agency đang phát triển.',
             features: [
-                'Up to 5 Brands',
-                '5 Team Members',
-                'Core AI Generation',
-                'Standard Analytics'
+                'AI tạo nội dung (2 bài/ngày)',
+                'AI tạo hình ảnh (7 hình/ngày)',
+                'Lên lịch đăng (30 bài/tháng)',
+                'Phân tích hiệu quả quảng cáo',
+                'Tối đa 2 nền tảng & 3 tài khoản'
             ],
             icon: Building2,
             color: 'text-blue-500',
             bg: 'bg-blue-500/10',
-            planEnum: SubscriptionPlanEnum.Basic
         },
         {
-            id: 'pro',
-            name: 'Agency Pro',
-            price: '$99',
-            period: '/month',
-            description: 'Advanced features for scaling operations.',
+            id: SubscriptionPlanEnum.Pro,
+            name: 'Premium',
+            price: '559.000',
+            period: '/tháng',
+            description: 'Tính năng nâng cao cho quy mô lớn.',
             features: [
-                'Unlimited Brands',
-                '20 Team Members',
-                'Advanced AI Models',
-                'Custom Analytics Dashboards',
-                'Priority Support'
+                'AI tạo nội dung (4 bài/ngày)',
+                'AI tạo hình ảnh (10 hình/ngày)',
+                'Lên lịch đăng không giới hạn',
+                'Phân tích chiến lược chuyên sâu',
+                'Tối đa 3 nền tảng & 5 tài khoản'
             ],
-            icon: Zap,
+            icon: Crown,
             color: 'text-purple-500',
             bg: 'bg-purple-500/10',
             popular: true,
-            planEnum: SubscriptionPlanEnum.Pro
         }
     ]
 
     const handleCheckout = async () => {
         if (!session?.user?.id) {
-            toast.error("Session expired. Please log in.")
+            toast.error("Phiên làm việc hết hạn. Vui lòng đăng nhập lại.")
             return
         }
 
-        if (!stripe || !elements) {
-            toast.error("Stripe is not initialized.")
-            return
-        }
-
-        setCardError(null)
         setIsProcessing(true)
 
         try {
@@ -114,76 +82,37 @@ function PaymentForm() {
             if (!profileId) {
                 const fd = new FormData()
                 fd.append('Name', profileData.name)
-                const selectedPlanObj = plans.find(p => p.id === selectedPlan)!
-                fd.append('ProfileType', selectedPlanObj.planEnum.toString())
+                fd.append('ProfileType', selectedPlan.toString())
                 fd.append('CompanyName', profileData.companyName)
-                fd.append('Bio', `Agency Workspace (${selectedPlan.toUpperCase()} Plan)`)
+                fd.append('Bio', `Agency Workspace (${selectedPlan === SubscriptionPlanEnum.Basic ? 'PLUS' : 'PREMIUM'} Plan)`)
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const profileResponse = await api.postForm<any>(endpoints.createProfile(session.user.id), fd)
 
                 if (!profileResponse.success || !profileResponse.data) {
-                    throw new Error(profileResponse.message || "Failed to initialize profile")
+                    throw new Error(profileResponse.message || "Không thể khởi tạo hồ sơ")
                 }
 
                 profileId = profileResponse.data.id
-                setPendingProfileId(profileId) // Store for retry
+                setPendingProfileId(profileId)
             }
 
-            // 2. Create Payment Method via Stripe
-            const cardElement = elements.getElement(CardElement)
-            if (!cardElement) throw new Error("Card element not found")
+            // 2. Create PayOS Checkout Link
+            // Note: In a real implementation, we might need to pass the profileId 
+            // to the checkout link creation if the backend needs to associate it immediately.
+            // Currently, our API uses the active profile from context.
+            // We should ensure the profile is active or pass it.
 
-            // Re-fetch selected plan object for usage below
-            const selectedPlanObj = plans.find(p => p.id === selectedPlan)!
+            const checkoutData = await createPayOSCheckoutLink(selectedPlan)
 
-            // Ensure we have a valid billing name, fallback to empty string if missing
-            const billingName = session.user.fullName || profileData.companyName || ''
-
-            const { error: stripeError, paymentMethod } = await stripe.createPaymentMethod({
-                type: 'card',
-                card: cardElement,
-                billing_details: {
-                    name: billingName,
-                    email: session.user.email
-                }
-            })
-
-            if (stripeError) {
-                setCardError(stripeError.message || "Payment method creation failed")
-                setIsProcessing(false)
-                return
+            if (checkoutData?.checkoutUrl) {
+                window.location.href = checkoutData.checkoutUrl
+            } else {
+                throw new Error("Không thể tạo liên kết thanh toán PayOS")
             }
-
-            if (!profileId) throw new Error("Profile ID is missing")
-
-            // 3. Create Subscription on Backend
-            await createSubscription({
-                profileId: profileId,
-                plan: selectedPlanObj.planEnum,
-                paymentMethodId: paymentMethod.id,
-                isRecurring: true
-            })
-
-            // 4. Success -> Update Context & Redirect
-            setActiveProfile(profileId, {
-                id: profileId,
-                name: profileData.name,
-                type: (selectedPlanObj.planEnum as unknown as ProfileTypeEnum),
-                avatarUrl: undefined, // New profile has no avatar
-                companyName: profileData.companyName,
-                isOwner: true
-            })
-
-            toast.success(`Welcome to Agency ${selectedPlanObj.name}! Workspace activated.`)
-
-            setTimeout(() => {
-                router.push("/dashboard")
-            }, 1000)
 
         } catch (error: unknown) {
             console.error("Checkout error:", error)
-            toast.error((error as Error).message || "An error occurred during checkout.")
+            toast.error((error as Error).message || "Đã xảy ra lỗi trong quá trình thanh toán.")
             setIsProcessing(false)
         }
     }
@@ -195,13 +124,13 @@ function PaymentForm() {
                 <div className="text-center space-y-4">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest">
                         <Lock className="size-3" />
-                        Secure Checkout
+                        Thanh toán an toàn
                     </div>
                     <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground uppercase italic leading-none">
-                        Elevate Your <span className="text-primary">Agency</span>
+                        Nâng tầm <span className="text-primary">Agency</span> của bạn
                     </h1>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-medium italic">
-                        Configure <span className="text-foreground font-bold">{profileData.companyName}</span> with a professional plan.
+                        Cấu hình <span className="text-foreground font-bold">{profileData.companyName}</span> với gói dịch vụ chuyên nghiệp.
                     </p>
                 </div>
 
@@ -213,15 +142,15 @@ function PaymentForm() {
                             className={cn(
                                 "group relative overflow-hidden rounded-[32px] border-2 transition-all duration-500 cursor-pointer",
                                 selectedPlan === plan.id
-                                    ? cn("bg-card shadow-2xl scale-105", plan.id === 'pro' ? "border-purple-500/50 shadow-purple-500/10" : "border-blue-500/50 shadow-blue-500/10")
+                                    ? cn("bg-card shadow-2xl scale-105", plan.id === SubscriptionPlanEnum.Pro ? "border-purple-500/50 shadow-purple-500/10" : "border-blue-500/50 shadow-blue-500/10")
                                     : "border-border/50 bg-muted/20 hover:border-primary/30"
                             )}
-                            onClick={() => setSelectedPlan(plan.id as 'basic' | 'pro')}
+                            onClick={() => setSelectedPlan(plan.id)}
                         >
                             {plan.popular && (
                                 <div className="absolute top-0 right-0">
                                     <div className="bg-purple-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-bl-xl">
-                                        Most Popular
+                                        Phổ biến nhất
                                     </div>
                                 </div>
                             )}
@@ -243,7 +172,7 @@ function PaymentForm() {
 
                             <CardContent className="p-8 md:p-10 space-y-8">
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-black">{plan.price}</span>
+                                    <span className="text-4xl font-black">{plan.price}đ</span>
                                     <span className="text-muted-foreground font-bold uppercase text-xs tracking-widest">
                                         {plan.period}
                                     </span>
@@ -273,38 +202,18 @@ function PaymentForm() {
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-2">
                                     <CreditCard className="size-5 text-primary" />
-                                    <span className="font-black uppercase tracking-widest text-sm italic">Payment Details</span>
-                                </div>
-                                <div className="flex gap-2 opacity-50">
-                                    {/* Card brand icons placeholder */}
-                                    <div className="h-6 w-10 bg-muted rounded border border-border/50" />
-                                    <div className="h-6 w-10 bg-muted rounded border border-border/50" />
+                                    <span className="font-black uppercase tracking-widest text-sm italic">Chi tiết thanh toán</span>
                                 </div>
                             </div>
 
                             <div className="space-y-6">
                                 <div className="p-4 rounded-2xl bg-background border border-border/50 flex items-center justify-between">
-                                    <span className="font-bold text-sm tracking-tight">Plan Selected: <span className="text-primary italic">{selectedPlan.toUpperCase()}</span></span>
-                                    <span className="font-black">{plans.find(p => p.id === selectedPlan)?.price}</span>
+                                    <span className="font-bold text-sm tracking-tight">Gói đã chọn: <span className="text-primary italic">{selectedPlan === SubscriptionPlanEnum.Basic ? 'PLUS' : 'PREMIUM'}</span></span>
+                                    <span className="font-black">{plans.find(p => p.id === selectedPlan)?.price}đ</span>
                                 </div>
-
-                                {/* Stripe Card Element */}
-                                <div className="p-4 rounded-2xl bg-white border border-input shadow-sm">
-                                    <CardElement
-                                        options={CARD_ELEMENT_OPTIONS}
-                                        onChange={(e) => setCardError(e.error ? e.error.message : null)}
-                                    />
-                                </div>
-
-                                {cardError && (
-                                    <div className="flex items-center gap-2 text-destructive text-sm font-medium bg-destructive/10 p-3 rounded-lg">
-                                        <AlertCircle className="size-4" />
-                                        {cardError}
-                                    </div>
-                                )}
 
                                 <p className="text-[10px] text-muted-foreground text-center font-medium uppercase tracking-widest px-8">
-                                    Stripe secure transaction. You will be billed effectively immediately.
+                                    Thanh toán an toàn qua PayOS. Bạn sẽ được chuyển hướng để hoàn tất giao dịch.
                                 </p>
                             </div>
 
@@ -312,16 +221,16 @@ function PaymentForm() {
                                 className="w-full h-16 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                                 size="lg"
                                 onClick={handleCheckout}
-                                disabled={isProcessing || !stripe || !elements}
+                                disabled={isProcessing}
                             >
                                 {isProcessing ? (
                                     <div className="flex items-center gap-3">
                                         <div className="size-5 border-3 border-white/20 border-t-white rounded-full animate-spin" />
-                                        Processing...
+                                        Đang xử lý...
                                     </div>
                                 ) : (
                                     <div className="flex items-center gap-2">
-                                        Pay & Activate
+                                        Thanh toán & Kích hoạt
                                         <ArrowRight className="size-5 ml-2" />
                                     </div>
                                 )}
@@ -330,12 +239,12 @@ function PaymentForm() {
                         <CardFooter className="bg-muted/30 p-4 flex items-center justify-center gap-4">
                             <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                 <ShieldCheck className="size-3.5 text-emerald-500" />
-                                SSL Encrypted
+                                Mã hóa SSL
                             </div>
                             <div className="h-3 w-px bg-border/50" />
                             <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                 <Sparkles className="size-3.5 text-primary" />
-                                Powered by Stripe
+                                Tuyệt vời cùng PayOS
                             </div>
                         </CardFooter>
                     </Card>
@@ -352,17 +261,7 @@ export default function PaymentPage() {
                 <div className="size-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
             </div>
         }>
-            <Elements stripe={getStripe()} options={{
-                appearance: {
-                    theme: 'stripe',
-                    variables: {
-                        colorPrimary: '#2563eb',
-                        fontFamily: '"Fira Sans", sans-serif',
-                    }
-                }
-            }}>
-                <PaymentForm />
-            </Elements>
+            <PaymentForm />
         </Suspense>
     )
 }

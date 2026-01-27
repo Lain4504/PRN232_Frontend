@@ -13,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { getUserPaymentHistory } from '@/lib/api/subscription'
-import { formatCurrency } from '@/lib/stripe'
+import { formatCurrency, cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -37,7 +37,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { cn } from '@/lib/utils'
+
 
 export default function PaymentHistoryPage() {
   const [payments, setPayments] = useState<PaymentResponseDto[]>([])
@@ -246,7 +246,7 @@ export default function PaymentHistoryPage() {
                       <TableCell className="py-6 px-8">
                         <div className="text-xs font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
                           <CreditCard className="size-3 opacity-40" />
-                          {payment.paymentMethod || 'Stripe'}
+                          {payment.paymentMethod || 'PayOS'}
                         </div>
                       </TableCell>
                       <TableCell className="py-6 px-8 text-right">

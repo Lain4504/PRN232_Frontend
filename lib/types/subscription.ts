@@ -40,12 +40,14 @@ export interface SubscriptionPlan {
   }
   features: string[]
   limits: {
-    campaigns: number
-    adSets: number
-    ads: number
-    teamMembers: number
-    storage: string
-    apiCalls: number
+    postsPerMonth: number
+    aiContentPerDay: number
+    aiImagesPerDay: number
+    platforms: number
+    accounts: number
+    analysisLevel: number
+    adBudgetMonthly: number
+    adCampaigns: number
   }
   billingCycle: BillingCycle
   isPopular?: boolean
@@ -58,20 +60,33 @@ export interface SubscriptionResponseDto {
   profileId: string
   plan: SubscriptionPlanEnum
   quotaPostsPerMonth: number
-  quotaStorageGb: number
+  quotaAIContentPerDay: number
+  quotaAIImagesPerDay: number
+  quotaPlatforms: number
+  quotaAccounts: number
+  analysisLevel: number
+  quotaAdBudgetMonthly: number
+  quotaAdCampaigns: number
   startDate: string
   endDate?: string
   isActive: boolean
   createdAt: string
-  stripeSubscriptionId?: string
-  stripeCustomerId?: string
+  payOSOrderCode?: string
+  payOSPaymentLinkId?: string
+}
+
+export interface PayOSCheckoutResponse {
+  checkoutUrl: string
+  paymentLinkId: string
+  orderCode: number
+  amount: number
+  status: string
 }
 
 // Create subscription request
 export interface CreateSubscriptionRequest {
   profileId: string
   plan: SubscriptionPlanEnum
-  paymentMethodId?: string
   isRecurring: boolean
 }
 
@@ -120,24 +135,16 @@ export interface Subscription {
   currentPeriodEnd: string
   cancelAtPeriodEnd: boolean
   features: string[]
-  limits: {
-    campaigns: number
-    adSets: number
-    ads: number
-    teamMembers: number
-    storage: string
-    apiCalls: number
-  }
+  limits: SubscriptionPlan['limits']
   usage: {
-    campaigns: number
-    adSets: number
-    ads: number
-    teamMembers: number
-    storage: number
-    apiCalls: number
+    postsThisMonth: number
+    aiContentToday: number
+    aiImagesToday: number
+    platforms: number
+    accounts: number
   }
-  stripeSubscriptionId?: string
-  stripeCustomerId?: string
+  payOSOrderCode?: string
+  payOSPaymentLinkId?: string
 }
 
 // Billing information interface

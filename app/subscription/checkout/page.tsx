@@ -1,15 +1,11 @@
 'use client'
 
-import { useEffect, Suspense } from 'react'
+import { useEffect, Suspense, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Elements } from '@stripe/react-stripe-js'
-import { getStripe } from '@/lib/stripe'
-import { PaymentForm } from '@/components/subscription/payment-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Check, Zap, Crown, Building2 } from 'lucide-react'
-import { getPlanFeatures, formatCurrency } from '@/lib/stripe'
+import { getPlanFeatures, createSubscription, createPayOSCheckoutLink } from '@/lib/api/subscription'
 import { SubscriptionPlanEnum } from '@/lib/types/subscription'
 import Link from 'next/link'
 import { useGetProfile } from '@/hooks/use-profiles'
@@ -18,8 +14,10 @@ import { toast } from 'sonner'
 function CheckoutContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const [isProcessing, setIsProcessing] = useState(false)
 
-  const planId = parseInt(searchParams.get('planId') || '0')
+  const planIdStr = searchParams.get('planId') || '0'
+  const planId = parseInt(planIdStr)
   const planName = searchParams.get('planName') || 'Free'
   const price = parseFloat(searchParams.get('price') || '0')
   const profileId = searchParams.get('profileId') || ''
@@ -27,22 +25,21 @@ function CheckoutContent() {
   const { data: profile, isLoading } = useGetProfile(profileId)
 
   useEffect(() => {
-    // Validate required parameters
-    if (!planId || !profileId) {
+    if (!profileId) {
       router.push('/overview/profile/new')
       return
     }
-  }, [planId, profileId, router])
+  }, [profileId, router])
 
   useEffect(() => {
     if (!isLoading && !profile) {
-      toast.error('Profile not found')
+      toast.error('Không tìm thấy thông tin hồ sơ')
       router.push('/overview/profile/new')
     }
   }, [profile, isLoading, router])
 
-  const getPlanIcon = (planId: number) => {
-    switch (planId) {
+  const getPlanIcon = (pId: number) => {
+    switch (pId) {
       case SubscriptionPlanEnum.Free:
         return <Zap className="h-6 w-6 text-blue-500" />
       case SubscriptionPlanEnum.Basic:
@@ -54,12 +51,37 @@ function CheckoutContent() {
     }
   }
 
-  const handlePaymentSuccess = (subscriptionId: string) => {
-    router.push(`/subscription/success?subscriptionId=${subscriptionId}`)
+  const handleCreateFreeProfile = async () => {
+    try {
+      setIsProcessing(true)
+      await createSubscription({
+        profileId,
+        plan: SubscriptionPlanEnum.Free,
+        isRecurring: false
+      })
+      toast.success('Hồ sơ miễn phí đã được tạo thành công!')
+      router.push(`/subscription/success?plan=free&profileId=${profileId}`)
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi tạo hồ sơ. Vui lòng thử lại.')
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
-  const handlePaymentError = (error: string) => {
-    console.error('Payment error:', error)
+  const handlePayOSCheckout = async () => {
+    try {
+      setIsProcessing(true)
+      const checkoutData = await createPayOSCheckoutLink(planId)
+      if (checkoutData?.checkoutUrl) {
+        window.location.href = checkoutData.checkoutUrl
+      } else {
+        toast.error('Không thể tạo liên kết thanh toán.')
+      }
+    } catch (error) {
+      toast.error('Lỗi khi khởi tạo thanh toán PayOS.')
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   if (isLoading) {
@@ -70,152 +92,97 @@ function CheckoutContent() {
     )
   }
 
-  if (!planId || !profileId) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold">Invalid checkout session</h2>
-          <p className="text-muted-foreground mt-2">
-            Please select a plan to continue.
-          </p>
-          <Link href="/overview/profile/new">
-            <Button className="mt-4">Go Back</Button>
-          </Link>
-        </div>
-      </div>
-    )
-  }
-
-  const features = getPlanFeatures(planId)
+  const planFeatures = getPlanFeatures(planId)
 
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Header */}
         <div className="mb-6 space-y-2">
           <Link href="/overview/profile/new">
             <Button variant="ghost" size="sm" className="p-0 h-auto">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Profile Creation
+              Quay lại tạo hồ sơ
             </Button>
           </Link>
-          <h1 className="text-xl font-bold tracking-tight text-foreground">Complete Your Subscription</h1>
-          <p className="text-xs text-muted-foreground">You&apos;re almost ready to get started with your new profile.</p>
+          <h1 className="text-xl font-bold tracking-tight text-foreground">Hoàn tất đăng ký gói dịch vụ</h1>
+          <p className="text-xs text-muted-foreground">Bạn chỉ còn một bước nữa để bắt đầu sử dụng hồ sơ mới của mình.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Plan Summary */}
-            <div className="space-y-4">
-              <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    {getPlanIcon(planId)}
-                    {planName} Plan
-                  </CardTitle>
-                  <CardDescription className="text-xs">
-                    {price === 0 ? 'Free forever' : 'Billed monthly'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Monthly Price</span>
-                    <span className="text-xl font-bold">{price === 0 ? 'Free' : formatCurrency(price)}</span>
+          <div className="space-y-4">
+            <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center gap-2">
+                  {getPlanIcon(planId)}
+                  Gói {planName}
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  {price === 0 ? 'Miễn phí vĩnh viễn' : 'Thanh toán hàng tháng'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Giá gói</span>
+                  <span className="text-xl font-bold">{price === 0 ? 'Miễn phí' : new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)}</span>
+                </div>
+                {price > 0 && (
+                  <div className="mt-3 text-xs text-muted-foreground">
+                    <p>• Thanh toán qua PayOS an toàn</p>
+                    <p>• Hỗ trợ kỹ thuật 24/7</p>
+                    <p>• Kích hoạt ngay sau khi thanh toán</p>
                   </div>
-                  {price > 0 && (
-                    <div className="mt-3 text-xs text-muted-foreground">
-                      <p>• Cancel anytime</p>
-                      <p>• 14-day free trial</p>
-                      <p>• Secure payment processing</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                )}
+              </CardContent>
+            </Card>
 
-              {/* Features */}
-              <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">What&apos;s Included</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-2">
-                  <ul className="space-y-2">
-                    <li className="flex items-center gap-2">
+            <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">Các tính năng bao gồm</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-2">
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-green-500" />
+                    <span className="text-sm">{planFeatures.posts === -1 ? 'Không giới hạn' : `${planFeatures.posts} bài đăng`} / tháng</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-green-500" />
+                    <span className="text-sm">Tối đa {planFeatures.platforms} nền tảng & {planFeatures.accounts} tài khoản</span>
+                  </li>
+                  {planFeatures.features.map((feature, index) => (
+                    <li key={index} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-green-500" />
-                      <span className="text-sm">{features.posts === -1 ? 'Unlimited' : features.posts} posts per month</span>
+                      <span className="text-sm">{feature}</span>
                     </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-500" />
-                      <span className="text-sm">{features.storage}GB storage</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-500" />
-                      <span className="text-sm">{features.campaigns === -1 ? 'Unlimited' : features.campaigns} ad campaigns</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-500" />
-                      <span className="text-sm">{features.teamMembers} team members</span>
-                    </li>
-                    {features.features.map((feature, index) => (
-                      <li key={index} className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-green-500" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Payment Form */}
-            <div>
-              {price === 0 ? (
-                <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base">Free Plan</CardTitle>
-                    <CardDescription className="text-xs">No payment required for the Free plan</CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-2">
-                    <Button className="w-full" onClick={() => handlePaymentSuccess('free')}>
-                      Create Free Profile
-                    </Button>
-                  </CardContent>
-                </Card>
-              ) : (
-                <Elements
-                  stripe={getStripe()}
-                  options={{
-                    mode: 'payment',
-                    currency: 'usd',
-                    amount: Math.round(price * 100), // Convert to cents
-                    appearance: {
-                      theme: 'stripe',
-                      variables: {
-                        colorPrimary: '#2563eb',
-                        colorBackground: '#ffffff',
-                        colorText: '#1f2937',
-                        colorDanger: '#dc2626',
-                        fontFamily: 'Inter, system-ui, sans-serif',
-                        spacingUnit: '4px',
-                        borderRadius: '8px',
-                      },
-                    },
-                  }}
-                >
-                  <PaymentForm
-                    planId={planId}
-                    planName={planName}
-                    price={price}
-                    profileId={profileId}
-                    onSuccess={handlePaymentSuccess}
-                    onError={handlePaymentError}
-                  />
-                </Elements>
-              )}
-            </div>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
           </div>
 
-        {/* Security Notice */}
+          <div>
+            <Card className="shadow-none border border-neutral-200/60 dark:border-neutral-800/60 rounded-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">{price === 0 ? 'Kích hoạt gói Miễn Phí' : 'Thanh toán qua PayOS'}</CardTitle>
+                <CardDescription className="text-xs">
+                  {price === 0 ? 'Không yêu cầu thanh toán cho gói này' : 'Bạn sẽ được chuyển hướng đến cổng thanh toán PayOS'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-2">
+                <Button
+                  className="w-full"
+                  onClick={price === 0 ? handleCreateFreeProfile : handlePayOSCheckout}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? 'Đang xử lý...' : price === 0 ? 'Tạo hồ sơ miễn phí' : 'Thanh toán ngay'}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
         <div className="mt-6 text-center text-xs text-muted-foreground">
-          <p>Your payment information is secure and encrypted. We use Stripe for secure payment processing.</p>
+          <p>Thông tin thanh toán của bạn được bảo mật và mã hóa. Chúng tôi sử dụng PayOS để xử lý thanh toán an toàn.</p>
         </div>
       </div>
     </div>

@@ -6,16 +6,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  AlertTriangle, 
-  Calendar, 
-  CreditCard, 
+import {
+  AlertTriangle,
+  Calendar,
+  CreditCard,
   ArrowLeft,
   CheckCircle,
   XCircle
 } from 'lucide-react'
 import { getSubscription, cancelSubscription } from '@/lib/api/subscription'
-import { formatCurrency } from '@/lib/stripe'
+import { formatCurrency } from '@/lib/utils'
 import { SubscriptionPlanEnum } from '@/lib/types/subscription'
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -70,9 +70,9 @@ function CancelSubscriptionContent() {
       case SubscriptionPlanEnum.Free:
         return 'Free'
       case SubscriptionPlanEnum.Basic:
-        return 'Basic'
+        return 'Plus'
       case SubscriptionPlanEnum.Pro:
-        return 'Pro'
+        return 'Premium'
       default:
         return 'Unknown'
     }
@@ -136,7 +136,7 @@ function CancelSubscriptionContent() {
                     {getPlanName(subscription.plan)} Plan
                   </Badge>
                 </div>
-                
+
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Profile ID</span>
                   <span className="text-muted-foreground font-mono text-sm">
@@ -174,7 +174,7 @@ function CancelSubscriptionContent() {
           <Alert className="mb-8">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              <strong>Warning:</strong> Cancelling your subscription will immediately stop your access to premium features. 
+              <strong>Warning:</strong> Cancelling your subscription will immediately stop your access to premium features.
               You will be moved to the Free plan and lose access to advanced features.
             </AlertDescription>
           </Alert>
@@ -195,7 +195,7 @@ function CancelSubscriptionContent() {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-3">
                   <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
                   <div>
@@ -240,7 +240,7 @@ function CancelSubscriptionContent() {
             >
               {isCancelling ? 'Cancelling...' : 'Yes, Cancel Subscription'}
             </Button>
-            
+
             <Link href="/dashboard/subscription" className="flex-1">
               <Button variant="outline" size="lg" className="w-full">
                 Keep Subscription

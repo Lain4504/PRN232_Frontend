@@ -47,9 +47,9 @@ function SuccessContent() {
       case SubscriptionPlanEnum.Free:
         return 'Free'
       case SubscriptionPlanEnum.Basic:
-        return 'Basic'
+        return 'Plus'
       case SubscriptionPlanEnum.Pro:
-        return 'Pro'
+        return 'Premium'
       default:
         return 'Unknown'
     }
