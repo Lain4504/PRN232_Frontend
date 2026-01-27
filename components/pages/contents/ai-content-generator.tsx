@@ -466,30 +466,59 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
 
   const handleSaveToLibrary = async (generation: AIContentGeneration) => {
     try {
+      // AdTypeEnum: TextOnly = 0, ImageText = 1, VideoText = 2
+      const adTypeValue = generation.generated_image_url ? 1 : 0;
+
       const response = await api.post(endpoints.contents(), {
-        prompt: generation.prompt,
-        brand_id: generation.brand_id,
-        product_id: generation.product_id,
-        style_context: generation.style_context,
-        ad_type: 'text_only',
-        generated_content: generation.generated_content,
-        image_url: undefined,
+        brandId: generation.brand_id,
+        productId: generation.product_id,
+        styleDescription: generation.style_context,
+        adType: adTypeValue,
+        textContent: generation.generated_image_url ? "" : generation.generated_content,
+        imageUrl: generation.generated_image_url,
       });
 
       if (response.success) {
-        toast.success('Content saved to library successfully!');
+        toast.success('Đã lưu vào kho nội dung!');
       } else {
         toast.error(response.message);
       }
     } catch (error) {
       console.error('Failed to save content:', error);
-      toast.error('Failed to save content');
+      toast.error('Lưu thất bại');
     }
   };
 
-  const handleCopyContent = (content: string) => {
-    navigator.clipboard.writeText(content);
-    toast.success('Content copied to clipboard!');
+  const handleCopyContent = async (content: string) => {
+    // Check if content is an image URL
+    if (content.startsWith('http') && (content.match(/\.(jpeg|jpg|gif|png)$/) || content.includes('image.pollinations.ai'))) {
+      try {
+        const response = await fetch(content);
+        const blob = await response.blob();
+
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            [blob.type]: blob
+          })
+        ]);
+        toast.success('Đã sao chép ảnh vào bộ nhớ tạm!');
+        return;
+      } catch (error) {
+        console.error('Failed to copy image:', error);
+        // Fallback to copying URL if image copy fails
+        navigator.clipboard.writeText(content);
+        toast.info('Không thể sao chép ảnh trực tiếp. Đã sao chép đường dẫn ảnh!');
+        return;
+      }
+    }
+
+    // Default text copy behavior
+    try {
+      await navigator.clipboard.writeText(content);
+      toast.success('Đã sao chép nội dung!');
+    } catch (error) {
+      toast.error('Không thể sao chép nội dung');
+    }
   };
 
   if (loading) {
@@ -509,7 +538,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
       <aside className="hidden lg:flex lg:w-72 border-r border-border/40 flex-col bg-muted/20 backdrop-blur-xl">
         <div className="p-6 border-b border-border/40 space-y-4">
           <Badge variant="outline" className="px-3 py-0.5 text-[9px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/10">
-            Content Engine
+            Máy chủ nội dung
           </Badge>
           <Button
             onClick={createNewChatSession}
@@ -517,13 +546,13 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
             size="lg"
           >
             <Plus className="mr-2 h-5 w-5" />
-            New Context
+            Hội thoại mới
           </Button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-3 space-y-2">
           <div className="px-3 py-2 text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
-            Recent Sessions
+            Phiên gần đây
           </div>
           {conversations.map((conversation) => (
             <div
@@ -544,7 +573,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                     {conversation.brandName || conversation.title}
                   </div>
                   <div className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5 font-medium">
-                    {conversation.lastMessage || `${conversation.messageCount} interactions`}
+                    {conversation.lastMessage || `${conversation.messageCount} tương tác`}
                   </div>
                 </div>
               </div>
@@ -567,9 +596,9 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
               <div className="w-16 h-16 bg-muted/50 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <MessageSquare className="h-8 w-8 text-muted-foreground/40" />
               </div>
-              <h3 className="text-sm font-bold text-foreground mb-2">History is empty</h3>
+              <h3 className="text-sm font-bold text-foreground mb-2">Lịch sử trống</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Your AI content generation history will appear here once you start a new session.
+                Lịch sử tạo nội dung AI của bạn sẽ xuất hiện ở đây sau khi bạn bắt đầu một phiên mới.
               </p>
             </div>
           )}
@@ -595,7 +624,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                 <div className="h-full flex flex-col pt-4">
                   <div className="p-4">
                     <Button onClick={createNewChatSession} className="w-full rounded-2xl h-11 font-bold">
-                      <Plus className="mr-2 h-4 w-4" /> New Chat
+                      <Plus className="mr-2 h-4 w-4" /> Chat mới
                     </Button>
                   </div>
                   <div className="flex-1 overflow-y-auto px-2">
@@ -619,26 +648,26 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-muted/50 border border-border/40 rounded-full">
               <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">System Active</span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Hệ thống hoạt động</span>
             </div>
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="rounded-xl border-border/50 hover:bg-muted/50 transition-all font-bold">
                   <Settings className="h-4 w-4 mr-2" />
-                  Context
+                  Bối cảnh
                 </Button>
               </DialogTrigger>
               <DialogContent className="rounded-3xl border-border/40 bg-background/95 backdrop-blur-xl">
                 <DialogHeader className="pt-4">
-                  <DialogTitle className="text-2xl font-bold">Model Context</DialogTitle>
-                  <DialogDescription>Optimize outputs by specifying brand and product data.</DialogDescription>
+                  <DialogTitle className="text-2xl font-bold">Bối cảnh mô hình</DialogTitle>
+                  <DialogDescription>Tối ưu hóa đầu ra bằng cách chỉ định dữ liệu thương hiệu và sản phẩm.</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-6 py-8">
                   <div className="space-y-3">
-                    <Label className="font-bold text-xs uppercase tracking-widest text-muted-foreground px-1">Brand Identity</Label>
+                    <Label className="font-bold text-xs uppercase tracking-widest text-muted-foreground px-1">Thương hiệu</Label>
                     <Select value={form.brand_id} onValueChange={handleChatBrandChange}>
                       <SelectTrigger className="rounded-2xl h-12 focus:ring-primary/20 bg-muted/30 border-none">
-                        <SelectValue placeholder="Select Identity..." />
+                        <SelectValue placeholder="Chọn thương hiệu..." />
                       </SelectTrigger>
                       <SelectContent className="rounded-2xl border-border/40">
                         {brands.map((brand) => (
@@ -649,13 +678,13 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                   </div>
 
                   <div className="space-y-3">
-                    <Label className="font-bold text-xs uppercase tracking-widest text-muted-foreground px-1">Target Product</Label>
+                    <Label className="font-bold text-xs uppercase tracking-widest text-muted-foreground px-1">Sản phẩm mục tiêu</Label>
                     <Select value={form.product_id} onValueChange={handleChatProductChange}>
                       <SelectTrigger className="rounded-2xl h-12 focus:ring-primary/20 bg-muted/30 border-none">
-                        <SelectValue placeholder="Global Perspective..." />
+                        <SelectValue placeholder="Toàn cầu..." />
                       </SelectTrigger>
                       <SelectContent className="rounded-2xl border-border/40">
-                        <SelectItem value="none" className="rounded-xl italic">No specific product</SelectItem>
+                        <SelectItem value="none" className="rounded-xl italic">Không chọn sản phẩm</SelectItem>
                         {products.map((product) => (
                           <SelectItem key={product.id} value={product.id} className="rounded-xl">{product.name}</SelectItem>
                         ))}
@@ -678,31 +707,31 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                     <Sparkles className="h-12 w-12 text-primary-foreground fill-current" />
                   </div>
                   <h2 className="text-4xl md:text-5xl font-black tracking-tight text-foreground leading-[1.1]">
-                    What can we <br /><span className="text-primary italic">create</span> today?
+                    Hôm nay chúng ta sẽ <br /><span className="text-primary italic">sáng tạo</span> gì?
                   </h2>
                   <p className="text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
-                    Collaborate with omniadly Intelligence to architect multi-channel campaigns,
-                    creative copies, or market strategies.
+                    Hợp tác với omniadly Intelligence để thiết kế các chiến dịch đa kênh,
+                    bản sao sáng tạo hoặc chiến lược thị trường.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto">
-                  <Button variant="outline" className="h-auto p-4 rounded-2xl border-border/50 bg-card/50 hover:bg-muted justify-start group" onClick={() => { setChatInput("Write 5 high-converting headlines for my brand"); createNewChatSession(); }}>
+                  <Button variant="outline" className="h-auto p-4 rounded-2xl border-border/50 bg-card/50 hover:bg-muted justify-start group" onClick={() => { setChatInput("Viết 5 tiêu đề chuyển đổi cao cho thương hiệu của tôi"); createNewChatSession(); }}>
                     <div className="text-left space-y-1">
-                      <p className="font-bold text-sm">Headlines</p>
-                      <p className="text-[10px] text-muted-foreground uppercase font-black">Conversion Focus</p>
+                      <p className="font-bold text-sm">Tiêu đề</p>
+                      <p className="text-[10px] text-muted-foreground uppercase font-black">Tập trung chuyển đổi</p>
                     </div>
                   </Button>
-                  <Button variant="outline" className="h-auto p-4 rounded-2xl border-border/50 bg-card/50 hover:bg-muted justify-start group" onClick={() => { setChatInput("Create a social media strategy for my new product"); createNewChatSession(); }}>
+                  <Button variant="outline" className="h-auto p-4 rounded-2xl border-border/50 bg-card/50 hover:bg-muted justify-start group" onClick={() => { setChatInput("Tạo chiến lược mạng xã hội cho sản phẩm mới"); createNewChatSession(); }}>
                     <div className="text-left space-y-1">
-                      <p className="font-bold text-sm">Strategy</p>
-                      <p className="text-[10px] text-muted-foreground uppercase font-black">Strategic Roadmap</p>
+                      <p className="font-bold text-sm">Chiến lược</p>
+                      <p className="text-[10px] text-muted-foreground uppercase font-black">Lộ trình chiến lược</p>
                     </div>
                   </Button>
                 </div>
 
                 <Button onClick={createNewChatSession} size="lg" className="rounded-full px-12 h-14 text-lg font-bold shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
-                  Initiate Architect
+                  Bắt đầu sáng tạo
                 </Button>
               </div>
             </div>
@@ -736,9 +765,9 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                               <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:rotate-12 transition-transform">
                                 <Sparkles className="h-4 w-4" />
                               </div>
-                              <span className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60">AI Blueprint Intelligence</span>
+                              <span className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60">Trí tuệ nhân tạo AI</span>
                             </div>
-                            <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 uppercase font-bold text-[9px] px-2">Ready</Badge>
+                            <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 uppercase font-bold text-[9px] px-2">Sẵn sàng</Badge>
                           </div>
 
                           <div className="p-8 rounded-2xl bg-muted/30 border border-border/30 font-serif italic text-lg lg:text-2xl leading-relaxed text-foreground/90 selection:bg-primary/10">
@@ -754,7 +783,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end p-6">
                                 <Button variant="secondary" size="sm" className="rounded-xl font-bold backdrop-blur-md bg-white/10 border-white/20 text-white" onClick={() => window.open(message.generation!.generated_image_url, '_blank')}>
-                                  <Maximize2 className="h-4 w-4 mr-2" /> View Full Resolution
+                                  <Maximize2 className="h-4 w-4 mr-2" /> Xem ảnh gốc
                                 </Button>
                               </div>
                             </div>
@@ -764,11 +793,17 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                             <Button
                               variant="outline"
                               size="lg"
-                              onClick={() => handleCopyContent(message.generation!.generated_content)}
+                              onClick={() => {
+                                if (message.generation?.generated_image_url) {
+                                  handleCopyContent(message.generation.generated_image_url);
+                                } else {
+                                  handleCopyContent(message.generation!.generated_content);
+                                }
+                              }}
                               className="flex-1 rounded-2xl h-12 font-bold border-border/40 hover:bg-muted hover:text-foreground transition-all"
                             >
                               <Copy className="h-4 w-4 mr-2" />
-                              Copy Asset
+                              Sao chép tài nguyên
                             </Button>
                             <Button
                               variant="default"
@@ -777,7 +812,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                               className="flex-1 rounded-2xl h-12 font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]"
                             >
                               <Save className="h-4 w-4 mr-2" />
-                              Sync to Vault
+                              Lưu vào kho dữ liệu
                             </Button>
                           </div>
                         </CardContent>
@@ -788,7 +823,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                       {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       {message.role === 'assistant' && (
                         <span className="flex items-center gap-1 text-primary">
-                          <div className="h-1 w-1 rounded-full bg-primary" /> Multi-Prompt Optimized
+                          <div className="h-1 w-1 rounded-full bg-primary" /> Được tối ưu hóa
                         </span>
                       )}
                     </span>

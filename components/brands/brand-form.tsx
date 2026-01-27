@@ -130,7 +130,7 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
                 <Input
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="Vị dụ: Nike, Apple, Omniadly..."
+                  placeholder="Vị dụ: Nike, Apple, OmniAdly..."
                   className="h-14 rounded-2xl border-2 border-slate-100 bg-white px-6 focus-visible:ring-slate-100 font-black text-slate-900 uppercase tracking-tight shadow-sm"
                   required
                 />

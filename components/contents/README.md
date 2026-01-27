@@ -1,6 +1,6 @@
 # Content System Components
 
-This directory contains all the components related to the content management system in the AISAM application.
+This directory contains all the components related to the content management system in the OmniAdly application.
 
 ## Components
 

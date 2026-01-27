@@ -6,7 +6,7 @@
 
 ---
 
-**Project:** Omniadly
+**Project:** OmniAdly
 **Generated:** 2026-01-25 23:26:48
 **Category:** Social Media App
 
