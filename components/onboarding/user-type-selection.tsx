@@ -49,10 +49,10 @@ export function UserTypeSelection({ onSelect, isLoading }: UserTypeSelectionProp
             <div className="text-center space-y-4 mb-12">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest">
                     <Sparkles className="size-3" />
-                    Welcome to omniadly
+                    Welcome to OmniAdly
                 </div>
                 <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground uppercase italic leading-none">
-                    How will you use <span className="text-primary">omniadly</span>?
+                    How will you use <span className="text-primary">OmniAdly</span>?
                 </h1>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-medium italic">
                     Select the path that best fits your workflow. You can always change this later.

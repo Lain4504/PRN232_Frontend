@@ -50,7 +50,7 @@ export function HomeContent() {
             </h1>
 
             <p className="max-w-2xl mx-auto text-lg md:text-xl text-slate-500 dark:text-slate-400 font-medium leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-              omniadly giúp bạn sáng tạo nội dung, quản lý chiến dịch và tối ưu hóa hiệu quả quảng cáo trên TikTok, Facebook, Instagram bằng trí tuệ nhân tạo.
+              OmniAdly giúp bạn sáng tạo nội dung, quản lý chiến dịch và tối ưu hóa hiệu quả quảng cáo trên TikTok, Facebook, Instagram bằng trí tuệ nhân tạo.
             </p>
           </div>
 
@@ -75,7 +75,7 @@ export function HomeContent() {
               <div className="relative rounded-xl overflow-hidden border border-slate-100/50 dark:border-slate-800 bg-slate-50/20 dark:bg-slate-950/20 aspect-[21/9]">
                 <Image
                   src="/images/hero_mockup.png"
-                  alt="omniadly Dashboard"
+                  alt="OmniAdly Dashboard"
                   fill
                   className="object-cover object-top transition-all duration-1000"
                   priority
@@ -226,7 +226,7 @@ export function HomeContent() {
                 <span className="text-blue-600 italic font-serif">dựa trên AI Insights</span>
               </h2>
               <p className="text-lg text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
-                Đừng chỉ dừng lại ở việc xem dữ liệu. AI của omniadly cung cấp các gợi ý hành động cụ thể để tối ưu hóa ngân sách và tăng tỷ lệ chuyển đổi ngay lập tức.
+                Đừng chỉ dừng lại ở việc xem dữ liệu. AI của OmniAdly cung cấp các gợi ý hành động cụ thể để tối ưu hóa ngân sách và tăng tỷ lệ chuyển đổi ngay lập tức.
               </p>
               <ul className="space-y-4">
                 {[
@@ -328,7 +328,7 @@ export function HomeContent() {
               Sẵn sàng để <br /> <span className="text-primary italic font-serif">bứt phá doanh thu?</span>
             </h2>
             <p className="text-lg md:text-xl text-slate-400 dark:text-slate-500 font-medium">
-              Gia nhập cộng đồng hơn 5.000+ Nhà sáng tạo và Doanh nghiệp đã tối ưu hóa quảng cáo cùng omniadly.
+              Gia nhập cộng đồng hơn 5.000+ Nhà sáng tạo và Doanh nghiệp đã tối ưu hóa quảng cáo cùng OmniAdly.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button asChild size="lg" className="h-16 px-12 rounded-2xl font-black uppercase tracking-widest text-sm bg-primary text-white hover:bg-primary/90 shadow-xl shadow-primary/20">
@@ -357,7 +357,7 @@ export function HomeContent() {
                 <div className="size-9 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
                   <Zap className="size-5 text-white fill-current" />
                 </div>
-                <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">omniadly</span>
+                <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">OmniAdly</span>
               </Link>
               <p className="text-slate-500 dark:text-slate-400 font-medium text-sm leading-relaxed max-w-xs">
                 Nền tảng quản lý quảng cáo được vận hành bởi AI, giúp bạn tối ưu hóa sự hiện diện của thương hiệu trên mọi nền tảng số.
@@ -384,7 +384,7 @@ export function HomeContent() {
 
           <div className="pt-10 border-t border-slate-50 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
             <p className="text-xs font-bold text-slate-300 dark:text-slate-600 uppercase tracking-widest">
-              © 2026 omniadly inc. All rights reserved.
+              © 2026 OmniAdly inc. All rights reserved.
             </p>
             <div className="flex items-center gap-8 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.2em]">
               <Link href="/terms" className="hover:text-primary transition-colors">Điều khoản</Link>

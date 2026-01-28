@@ -9,7 +9,7 @@ export function AuthSplitLayout({
   children,
   title,
   subtitle,
-  quote = "omniadly đã thay đổi hoàn toàn cách chúng tôi quản lý quảng cáo. Chúng tôi tiết kiệm được 70% thời gian và hiệu quả tăng gấp 3 lần.",
+  quote = "OmniAdly đã thay đổi hoàn toàn cách chúng tôi quản lý quảng cáo. Chúng tôi tiết kiệm được 70% thời gian và hiệu quả tăng gấp 3 lần.",
   author = "Minh Trần, Giám đốc Marketing",
 }: {
   children: React.ReactNode;
@@ -35,7 +35,7 @@ export function AuthSplitLayout({
               <div className="size-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 transition-transform group-hover:scale-105 font-black">
                 <Zap className="size-6 text-white fill-current" />
               </div>
-              <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-sans">omniadly</span>
+              <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-sans">OmniAdly</span>
             </Link>
 
             <div className="space-y-4">
@@ -73,7 +73,7 @@ export function AuthSplitLayout({
                     Tối ưu quảng cáo <br /> <span className="text-primary italic font-serif">chưa bao giờ dễ dàng</span> đến thế.
                   </h3>
                   <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
-                    omniadly mang đến quy trình làm việc tinh gọn, giúp bạn tập trung vào những chiến lược quan trọng nhất.
+                    OmniAdly mang đến quy trình làm việc tinh gọn, giúp bạn tập trung vào những chiến lược quan trọng nhất.
                   </p>
                 </div>
 

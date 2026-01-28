@@ -31,7 +31,7 @@ export function AppearanceSection() {
     setSidebarBehavior(value);
     // Save to localStorage
     localStorage.setItem('sidebarMode', value);
-    
+
     // Dispatch custom event to notify dashboard sidebar
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('sidebar-mode-change', { detail: value }));
@@ -50,12 +50,12 @@ export function AppearanceSection() {
           <div>
             <h3 className="text-lg font-medium">Theme mode</h3>
             <p className="text-sm text-muted-foreground">
-              Choose how omniadly looks to you. Select a single theme, or sync with your system.
+              Choose how OmniAdly looks to you. Select a single theme, or sync with your system.
             </p>
           </div>
-          
+
           <p className="text-sm text-muted-foreground">
-            omniadly will use your selected theme
+            OmniAdly will use your selected theme
           </p>
 
           <RadioGroup value={theme} onValueChange={handleThemeChange} className="grid grid-cols-1 sm:grid-cols-3 gap-4">

@@ -168,9 +168,7 @@ export default function PricingContent() {
             </main>
 
             <footer className="py-20 px-6 border-t border-border/40 text-center">
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/40">
-                    © 2026 omniadly Intelligence Core. Pricing Protocols Active.
-                </p>
+                © 2026 OmniAdly Intelligence Core. Pricing Protocols Active.
             </footer>
         </div>
     );

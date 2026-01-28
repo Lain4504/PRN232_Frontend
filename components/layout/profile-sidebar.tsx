@@ -124,7 +124,7 @@ export function ProfileSidebar() {
             <Zap className="size-4 text-white fill-current" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="font-bold text-lg tracking-tight text-slate-900 dark:text-white leading-none">omniadly</span>
+            <span className="font-bold text-lg tracking-tight text-slate-900 dark:text-white leading-none">OmniAdly</span>
             <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">Console</span>
           </div>
         </Link>

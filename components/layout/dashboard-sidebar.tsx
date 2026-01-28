@@ -80,7 +80,7 @@ export function DashboardSidebar() {
             <Zap className="size-4 text-white fill-current" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="font-black text-lg tracking-tighter text-slate-900 dark:text-white leading-none">omniadly</span>
+            <span className="font-black text-lg tracking-tighter text-slate-900 dark:text-white leading-none">OmniAdly</span>
             <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mt-1">Bảng điều khiển</span>
           </div>
         </Link>

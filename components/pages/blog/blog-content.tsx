@@ -22,7 +22,7 @@ export default function BlogContent() {
         title: "GIỚI THIỆU PHIÊN BẢN OMNIADLY 2.4",
         desc: "Khám phá sức mạnh của Neural Engine thế hệ tiếp theo với khả năng xử lý ngôn ngữ tự nhiên được nâng cấp và tích hợp đa nền tảng.",
         date: "27 THÁNG 1, 2026",
-        author: "OMNIADLY TEAM"
+        author: "OmniAdly TEAM"
     };
     const posts: BlogPost[] = [
         {
@@ -37,7 +37,7 @@ export default function BlogContent() {
             image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670&auto=format&fit=crop",
             tag: "CASE STUDY",
             title: "CÁCH STARTUP X TĂNG TRƯỞNG 300%",
-            desc: "Câu chuyện thành công của Startup X khi áp dụng tự động hóa marketing với omniadly.",
+            desc: "Câu chuyện thành công của Startup X khi áp dụng tự động hóa marketing với OmniAdly.",
             date: "15 THÁNG 1, 2026",
             author: "SARAH TRAN"
         },
@@ -123,9 +123,7 @@ export default function BlogContent() {
             </main>
 
             <footer className="py-20 px-6 border-t border-border/40 text-center">
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/40">
-                    © 2026 omniadly Blog. All rights reserved.
-                </p>
+                © 2026 OmniAdly Blog. All rights reserved.
             </footer>
         </div>
     );
