@@ -18,10 +18,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ContentStatusEnum, ContentResponseDto } from "@/lib/types/omniadly-types";
+import { ContentStatusEnum, ContentResponseDto, UpdateContentRequest } from "@/lib/types/omniadly-types";
 import { toast } from "sonner";
 import { api, endpoints, ApiResponse } from "@/lib/api";
-import { UpdateContentRequest } from "@/lib/types/omniadly-types";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface ChangeStatusModalProps {
@@ -38,7 +37,7 @@ export function ChangeStatusModal({
   onSuccess,
 }: ChangeStatusModalProps) {
   const [selectedStatus, setSelectedStatus] = useState<ContentStatusEnum>(
-    content?.status || ContentStatusEnum.Draft
+    (content?.status as unknown as ContentStatusEnum) || ContentStatusEnum.Draft
   );
   const [isProcessing, setIsProcessing] = useState(false);
   const queryClient = useQueryClient();
@@ -46,18 +45,18 @@ export function ChangeStatusModal({
   // Update selected status when content changes
   React.useEffect(() => {
     if (content) {
-      setSelectedStatus(content.status);
+      setSelectedStatus(content.status as unknown as ContentStatusEnum);
     }
   }, [content]);
 
   const handleChangeStatus = async () => {
     if (!content) {
-      toast.error("Content not found");
+      toast.error("Không tìm thấy nội dung");
       return;
     }
 
-    if (selectedStatus === content.status) {
-      toast.info("Status is already set to this value");
+    if (selectedStatus === (content.status as unknown as ContentStatusEnum)) {
+      toast.info("Trạng thái hiện tại đã là giá trị này");
       onClose();
       return;
     }
@@ -71,8 +70,7 @@ export function ChangeStatusModal({
         } as UpdateContentRequest
       );
 
-      if (resp.data?.data) {
-        // Invalidate queries to refresh data
+      if (resp.data?.success) {
         queryClient.invalidateQueries({ queryKey: ["contents"] });
         queryClient.invalidateQueries({
           queryKey: ["contents", "detail", content.id],
@@ -82,112 +80,77 @@ export function ChangeStatusModal({
             queryKey: ["contents", "brand", resp.data.data.brandId],
           });
         }
-        toast.success(`Content status changed to ${selectedStatus}`);
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+
+        toast.success(`Cập nhật trạng thái thành công`);
         onSuccess?.();
         onClose();
       }
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Failed to change content status:", error);
-      const errorMessage =
-        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-        (error as { message?: string })?.message ||
-        "Failed to change content status";
+      let errorMessage = "Lỗi khi cập nhật trạng thái";
+      if (error instanceof Error) {
+        errorMessage = error.message || errorMessage;
+      }
       toast.error(errorMessage);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const getStatusLabel = (status: ContentStatusEnum) => {
-    switch (status) {
-      case ContentStatusEnum.Draft:
-        return "Draft";
-      case ContentStatusEnum.PendingApproval:
-        return "Pending Approval";
-      case ContentStatusEnum.Approved:
-        return "Approved";
-      case ContentStatusEnum.Rejected:
-        return "Rejected";
-      case ContentStatusEnum.Published:
-        return "Published";
-      default:
-        return status;
-    }
-  };
-
-  if (!content) {
-    return null;
-  }
+  if (!content) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Change Content Status</DialogTitle>
+          <DialogTitle>Cập nhật trạng thái</DialogTitle>
           <DialogDescription>
-            Update the status for this content. Current status:{" "}
-            <span className="font-semibold">
-              {getStatusLabel(content.status)}
-            </span>
+            Thay đổi trạng thái cho bài viết: <span className="font-semibold text-slate-900">{content.title}</span>
           </DialogDescription>
         </DialogHeader>
+
         <div className="grid gap-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="status">New Status</Label>
+          <div className="grid gap-2">
+            <Label htmlFor="status">Trạng thái mới</Label>
             <Select
               value={selectedStatus}
-              onValueChange={(value) =>
-                setSelectedStatus(value as ContentStatusEnum)
-              }
+              onValueChange={(value) => setSelectedStatus(value as ContentStatusEnum)}
               disabled={isProcessing}
             >
-              <SelectTrigger id="status" className="w-full">
-                <SelectValue placeholder="Select status" />
+              <SelectTrigger id="status">
+                <SelectValue placeholder="Chọn trạng thái" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={ContentStatusEnum.Draft}>Draft</SelectItem>
-                <SelectItem value={ContentStatusEnum.Approved}>
-                  Approved
-                </SelectItem>
-                <SelectItem value={ContentStatusEnum.Rejected}>
-                  Rejected
-                </SelectItem>
-                <SelectItem value={ContentStatusEnum.Published}>
-                  Published
-                </SelectItem>
+                <SelectItem value={ContentStatusEnum.Draft}>Bản nháp</SelectItem>
+                <SelectItem value={ContentStatusEnum.PendingApproval}>Chờ phê duyệt</SelectItem>
+                <SelectItem value={ContentStatusEnum.Approved}>Đã phê duyệt</SelectItem>
+                <SelectItem value={ContentStatusEnum.Rejected}>Từ chối</SelectItem>
+                <SelectItem value={ContentStatusEnum.Published}>Đã xuất bản</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground">
-              Note: Free profiles can change content status directly without
-              approval workflow.
+            <p className="text-[12px] text-slate-500 mt-1">
+              Lưu ý: Chuyển sang &quot;Đã xuất bản&quot; sẽ tự động tạo một bài viết tương ứng.
             </p>
           </div>
-          {content.title && (
-            <div className="p-3 bg-muted rounded-md">
-              <p className="text-sm font-medium">{content.title}</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Content ID: {content.id.substring(0, 8)}...
-              </p>
-            </div>
-          )}
         </div>
+
         <DialogFooter>
           <Button
             variant="outline"
             onClick={onClose}
             disabled={isProcessing}
           >
-            Cancel
+            Hủy
           </Button>
           <Button
             onClick={handleChangeStatus}
-            disabled={isProcessing || selectedStatus === content.status}
+            disabled={isProcessing || selectedStatus === (content.status as unknown as ContentStatusEnum)}
           >
-            {isProcessing ? "Changing..." : "Change Status"}
+            {isProcessing ? "Đang lưu..." : "Lưu thay đổi"}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-

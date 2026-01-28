@@ -10,12 +10,6 @@ import {
   Upload,
   Plus,
   Loader2,
-  Landmark,
-  Target,
-  Users,
-  Sparkles,
-  ChevronRight,
-  Fingerprint
 } from "lucide-react";
 import { Brand, CreateBrandForm as CreateBrandFormType } from "@/lib/types/omniadly-types";
 import { toast } from "sonner";
@@ -34,7 +28,6 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
     name: '',
     description: '',
     slogan: '',
-    usp: '',
     target_audience: '',
   });
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -48,7 +41,6 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
         name: brand.name,
         description: brand.description || '',
         slogan: brand.slogan || '',
-        usp: brand.usp || '',
         target_audience: brand.target_audience || '',
       });
       const existingLogo = brand.logo_url || brand.logoUrl || null;
@@ -78,7 +70,7 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
       setSubmitting(true);
       if (mode === 'create') await createBrandMutation.mutateAsync(formData);
       else await updateBrandMutation.mutateAsync(formData);
-      toast.success("Thao tác thành công!");
+      toast.success("Đã lưu thông tin thương hiệu");
       onSuccess?.();
     } catch {
       toast.error("Đã xảy ra lỗi khi lưu dữ liệu");
@@ -88,133 +80,89 @@ export function BrandForm({ mode, brand, onSuccess, onCancel }: BrandFormProps) 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-12 animate-in fade-in duration-500 pb-4">
-      <div className="space-y-12">
-        {/* Identity Cluster */}
-        <section className="space-y-8">
-          <div className="flex items-center gap-3 px-1 text-slate-400 dark:text-slate-500">
-            <Fingerprint className="size-4" />
-            <Label className="text-[10px] font-black uppercase tracking-[0.2em]">Định danh Cốt lõi</Label>
-          </div>
+    <form onSubmit={handleSubmit} className="space-y-6 pb-4">
+      <div className="flex flex-col md:flex-row items-start gap-6">
+        <div className="relative group">
+          <Avatar className="size-24 rounded-lg border overflow-hidden cursor-pointer" onClick={() => document.getElementById('logo-upload')?.click()}>
+            {logoPreview ? (
+              <AvatarImage src={logoPreview} className="object-cover" />
+            ) : (
+              <AvatarFallback className="flex flex-col items-center justify-center bg-slate-50 text-slate-400">
+                <Upload className="size-5 mb-1" />
+                <span className="text-[10px]">Logo</span>
+              </AvatarFallback>
+            )}
+          </Avatar>
+          <input type="file" id="logo-upload" accept="image/*" onChange={handleLogoChange} className="hidden" />
+          <Button
+            type="button"
+            size="icon"
+            variant="secondary"
+            className="absolute -bottom-2 -right-2 size-8 rounded-full shadow-sm"
+            onClick={() => document.getElementById('logo-upload')?.click()}
+          >
+            <Plus className="size-4" />
+          </Button>
+        </div>
 
-          <div className="flex flex-col md:flex-row items-center gap-10 p-8 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 relative overflow-hidden group transition-all duration-300">
-            <div className="absolute top-0 right-0 p-10 opacity-[0.03] dark:opacity-[0.05] -rotate-12 group-hover:rotate-0 transition-transform pointer-events-none">
-              <Landmark className="size-32 text-slate-900 dark:text-white" />
-            </div>
-
-            <div className="relative shrink-0">
-              <Avatar className="size-32 rounded-2xl border-4 border-white dark:border-slate-800 shadow-2xl ring-4 ring-slate-100 dark:ring-slate-800/20 overflow-hidden cursor-pointer group/avatar transition-transform hover:scale-105 duration-500" onClick={() => document.getElementById('logo-upload')?.click()}>
-                {logoPreview ? (
-                  <AvatarImage src={logoPreview} className="object-cover" />
-                ) : (
-                  <AvatarFallback className="bg-white dark:bg-slate-900 flex flex-col items-center justify-center gap-2">
-                    <Upload className="size-6 text-slate-200 dark:text-slate-700" />
-                    <span className="text-[8px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest text-center px-4">Tải Logo</span>
-                  </AvatarFallback>
-                )}
-              </Avatar>
-              <input type="file" id="logo-upload" accept="image/*" onChange={handleLogoChange} className="hidden" />
-              <Button
-                type="button"
-                size="icon"
-                className="absolute -bottom-2 -right-2 size-10 rounded-xl shadow-[0_8px_20px_rgba(0,0,0,0.1)] border-4 border-white dark:border-slate-800 bg-slate-900 dark:bg-primary text-white hover:bg-slate-800 dark:hover:bg-primary/90 transition-all active:scale-95"
-                onClick={() => document.getElementById('logo-upload')?.click()}
-              >
-                <Plus className="size-5" />
-              </Button>
-            </div>
-
-            <div className="flex-1 space-y-6 w-full relative z-10">
-              <div className="space-y-3">
-                <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 px-1">Tên Thương hiệu</Label>
-                <Input
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="Ví dụ: Nike, Apple, OmniAdly..."
-                  className="h-14 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 focus-visible:ring-slate-100 dark:focus-visible:ring-slate-800 font-black text-slate-900 dark:text-white uppercase tracking-tight shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-700 transition-all"
-                  required
-                />
-              </div>
-              <div className="space-y-3">
-                <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 px-1">Slogan / Khẩu hiệu</Label>
-                <Input
-                  value={formData.slogan}
-                  onChange={(e) => handleInputChange('slogan', e.target.value)}
-                  placeholder="Just Do It, Think Different..."
-                  className="h-14 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 focus-visible:ring-slate-100 dark:focus-visible:ring-slate-800 font-bold text-slate-600 dark:text-slate-400 shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-700 transition-all"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Narrative & Strategy Section */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <div className="md:col-span-2 space-y-4">
-            <div className="flex items-center gap-3 px-1 text-slate-400 dark:text-slate-500">
-              <Sparkles className="size-4" />
-              <Label className="text-[10px] font-black uppercase tracking-[0.2em]">Sứ mệnh & Câu chuyện</Label>
-            </div>
-            <Textarea
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              placeholder="Mô tả tầm nhìn, sứ mệnh và hành trình của thương hiệu..."
-              className="min-h-[140px] rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 focus-visible:ring-slate-100 dark:focus-visible:ring-slate-800 font-medium text-slate-900 dark:text-white shadow-sm leading-relaxed placeholder:text-slate-300 dark:placeholder:text-slate-700 transition-all"
+        <div className="flex-1 space-y-4 w-full">
+          <div className="space-y-2">
+            <Label>Tên thương hiệu</Label>
+            <Input
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              placeholder="Nhập tên thương hiệu..."
+              required
             />
           </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 px-1 text-slate-400 dark:text-slate-500">
-              <Target className="size-4" />
-              <Label className="text-[10px] font-black uppercase tracking-[0.2em]">Giá trị Độc bản (USP)</Label>
-            </div>
-            <Textarea
-              value={formData.usp}
-              onChange={(e) => handleInputChange('usp', e.target.value)}
-              placeholder="Điều gì khiến thương hiệu của bạn khác biệt?"
-              className="min-h-[160px] rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 p-6 focus-visible:ring-slate-100 dark:focus-visible:ring-slate-800 font-medium text-slate-900 dark:text-white shadow-sm text-sm placeholder:text-slate-300 dark:placeholder:text-slate-700 transition-all"
+          <div className="space-y-2">
+            <Label>Slogan / Khẩu hiệu</Label>
+            <Input
+              value={formData.slogan}
+              onChange={(e) => handleInputChange('slogan', e.target.value)}
+              placeholder="Nhập khẩu hiệu..."
             />
           </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 px-1 text-slate-400 dark:text-slate-500">
-              <Users className="size-4" />
-              <Label className="text-[10px] font-black uppercase tracking-[0.2em]">Chân dung Khách hàng</Label>
-            </div>
-            <Textarea
-              value={formData.target_audience}
-              onChange={(e) => handleInputChange('target_audience', e.target.value)}
-              placeholder="Ai là người sẽ yêu thích và tin dùng thương hiệu này?"
-              className="min-h-[160px] rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 p-6 focus-visible:ring-slate-100 dark:focus-visible:ring-slate-800 font-medium text-slate-900 dark:text-white shadow-sm text-sm placeholder:text-slate-300 dark:placeholder:text-slate-700 transition-all"
-            />
-          </div>
-        </section>
+        </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center gap-4 pt-8 border-t border-slate-100 dark:border-slate-800 transition-all duration-300">
+      <div className="space-y-2">
+        <Label>Mô tả thương hiệu</Label>
+        <Textarea
+          value={formData.description}
+          onChange={(e) => handleInputChange('description', e.target.value)}
+          placeholder="Giới thiệu ngắn gọn về thương hiệu..."
+          rows={3}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Khách hàng mục tiêu</Label>
+        <Textarea
+          value={formData.target_audience}
+          onChange={(e) => handleInputChange('target_audience', e.target.value)}
+          placeholder="Ai là đối tượng chính của bạn?"
+          rows={4}
+        />
+      </div>
+
+      <div className="flex items-center justify-end gap-3 pt-4 border-t">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
           disabled={submitting}
-          className="h-16 rounded-2xl border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 font-black uppercase tracking-widest text-[11px] order-2 sm:order-1 flex-1 sm:flex-none sm:px-12"
         >
-          Hủy bỏ
+          Hủy
         </Button>
-        <Button
-          type="submit"
-          disabled={submitting}
-          className="h-16 rounded-2xl bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-slate-200 dark:shadow-primary/20 transition-all hover:-translate-y-1 order-1 sm:order-2 flex-1 sm:w-full"
-        >
+        <Button type="submit" disabled={submitting}>
           {submitting ? (
             <>
-              <Loader2 className="mr-3 size-5 animate-spin" />
-              Đang lưu dữ liệu...
+              <Loader2 className="mr-2 size-4 animate-spin" />
+              Đang lưu...
             </>
           ) : (
-            <>
-              {mode === 'create' ? 'Xác nhận Khởi tạo' : 'Cập nhật Thay đổi'} <ChevronRight className="ml-2 size-5" />
-            </>
+            mode === 'create' ? 'Tạo thương hiệu' : 'Lưu thay đổi'
           )}
         </Button>
       </div>

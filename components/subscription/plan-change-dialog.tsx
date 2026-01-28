@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
-import { Check, X, AlertTriangle, Info, Crown, Building2, Zap } from 'lucide-react'
+import { Check, Info, Crown, Building2, Zap, AlertTriangle, Loader2 } from 'lucide-react'
 import { useChangePlan, usePlanComparison } from '@/hooks/use-subscription'
 import { formatPrice } from '@/lib/constants/subscription-plans'
 import { analyzePlanChangeImpact } from '@/lib/utils/subscription'
@@ -35,7 +35,6 @@ export function PlanChangeDialog({
   const changePlanMutation = useChangePlan()
   const comparison = usePlanComparison(targetPlan.id)
 
-  // Detect mobile viewport
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.matchMedia('(max-width: 768px)').matches)
@@ -53,274 +52,189 @@ export function PlanChangeDialog({
         immediate,
       })
       onOpenChange(false)
-      toast.success('Plan changed successfully!')
+      toast.success('Đã thay đổi gói dịch vụ thành công')
     } catch (error) {
-      console.error('Plan change error:', error)
-      toast.error('Failed to change plan. Please try again.')
+      toast.error('Lỗi khi thay đổi gói dịch vụ')
     }
   }
 
   const getPlanIcon = (tier: string) => {
     switch (tier) {
-      case 'free':
-        return <Zap className="h-5 w-5 text-blue-500" />
-      case 'pro':
-        return <Crown className="h-5 w-5 text-purple-500" />
-      case 'enterprise':
-        return <Building2 className="h-5 w-5 text-orange-500" />
-      default:
-        return <Zap className="h-5 w-5 text-gray-500" />
+      case 'pro': return <Crown className="size-4 text-purple-500" />
+      case 'enterprise': return <Building2 className="size-4 text-orange-500" />
+      default: return <Zap className="size-4 text-blue-500" />
     }
   }
 
   const getImpactAnalysis = () => {
     if (!currentSubscription) return null
-    
-    const currentPlan = {
-      id: currentSubscription.plan.toString(),
-      name: currentSubscription.planName,
-      tier: currentSubscription.tier,
-      price: { monthly: 0, yearly: 0 },
-      features: currentSubscription.features,
-      limits: currentSubscription.limits,
-      billingCycle: 'monthly' as const,
-      description: ''
-    }
-
     return analyzePlanChangeImpact(currentSubscription, targetPlan)
   }
 
-  // Guard against undefined targetPlan
-  if (!targetPlan) {
-    return null
-  }
+  if (!targetPlan) return null
 
   const impactAnalysis = getImpactAnalysis()
   const price = billingCycle === 'yearly' ? targetPlan.price.yearly : targetPlan.price.monthly
 
-  // Shared content component
   const renderContent = () => (
     <div className="space-y-6">
-          {/* Plan Details */}
-          <div className={cn("grid gap-4", isMobile ? "grid-cols-1" : "grid-cols-2")}>
-            <div className="space-y-2">
-              <h4 className="font-medium">Current Plan</h4>
-              <div className="p-3 border rounded-lg">
-                <div className="flex items-center space-x-2 mb-2">
-                  {getPlanIcon(currentSubscription?.tier || 'free')}
-                  <span className="font-medium">{currentSubscription?.planName || 'Free'}</span>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {formatPrice(0)}/month
-                </div>
-              </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-1">
+          <Label className="text-xs text-slate-500">Gói hiện tại</Label>
+          <div className="p-3 rounded-md border bg-slate-50/50">
+            <div className="flex items-center gap-2 mb-1">
+              {getPlanIcon(currentSubscription?.tier || 'free')}
+              <span className="text-sm font-semibold">{currentSubscription?.planName || 'Miễn phí'}</span>
             </div>
-
-            <div className="space-y-2">
-              <h4 className="font-medium">New Plan</h4>
-              <div className="p-3 border rounded-lg bg-muted/50">
-                <div className="flex items-center space-x-2 mb-2">
-                  {getPlanIcon(targetPlan.tier)}
-                  <span className="font-medium">{targetPlan.name}</span>
-                  {targetPlan.isPopular && (
-                    <Badge variant="secondary" className="text-xs">Popular</Badge>
-                  )}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {formatPrice(price)}/{billingCycle === 'yearly' ? 'year' : 'month'}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Billing Cycle Selection */}
-          <div className="space-y-3">
-            <Label className="text-base font-medium">Billing Cycle</Label>
-            <RadioGroup value={billingCycle} onValueChange={(value) => setBillingCycle(value as BillingCycle)}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="monthly" id="monthly" />
-                <Label htmlFor="monthly" className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span>Monthly</span>
-                    <span className="font-medium">{formatPrice(targetPlan.price.monthly)}/month</span>
-                  </div>
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="yearly" id="yearly" />
-                <Label htmlFor="yearly" className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span>Yearly</span>
-                    <div className="flex items-center space-x-2">
-                      <span className="font-medium">{formatPrice(targetPlan.price.yearly)}/year</span>
-                      <Badge variant="secondary" className="text-xs">Save 17%</Badge>
-                    </div>
-                  </div>
-                </Label>
-              </div>
-            </RadioGroup>
-          </div>
-
-          {/* Change Timing */}
-          <div className="space-y-3">
-            <Label className="text-base font-medium">When to Apply Changes</Label>
-            <RadioGroup value={immediate ? 'immediate' : 'end-of-period'} onValueChange={(value) => setImmediate(value === 'immediate')}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="immediate" id="immediate" />
-                <Label htmlFor="immediate" className="flex-1">
-                  <div>
-                    <div className="font-medium">Apply immediately</div>
-                    <div className="text-sm text-muted-foreground">
-                      Changes take effect right away. You&apos;ll be charged the prorated amount.
-                    </div>
-                  </div>
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="end-of-period" id="end-of-period" />
-                <Label htmlFor="end-of-period" className="flex-1">
-                  <div>
-                    <div className="font-medium">Apply at end of billing period</div>
-                    <div className="text-sm text-muted-foreground">
-                      Changes take effect on your next billing date.
-                    </div>
-                  </div>
-                </Label>
-              </div>
-            </RadioGroup>
-          </div>
-
-          {/* Impact Analysis */}
-          {impactAnalysis && (
-            <div className="space-y-3">
-              <h4 className="font-medium">Impact of This Change</h4>
-              
-              {impactAnalysis.immediateChanges.length > 0 && (
-                <Alert>
-                  <Info className="h-4 w-4" />
-                  <AlertDescription>
-                    <div className="font-medium mb-1">Immediate Changes:</div>
-                    <ul className="list-disc list-inside space-y-1">
-                      {impactAnalysis.immediateChanges.map((change, index) => (
-                        <li key={index} className="text-sm">{change}</li>
-                      ))}
-                    </ul>
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              {impactAnalysis.endOfPeriodChanges.length > 0 && (
-                <Alert>
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
-                    <div className="font-medium mb-1">End of Period Changes:</div>
-                    <ul className="list-disc list-inside space-y-1">
-                      {impactAnalysis.endOfPeriodChanges.map((change, index) => (
-                        <li key={index} className="text-sm">{change}</li>
-                      ))}
-                    </ul>
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              {impactAnalysis.warnings.length > 0 && (
-                <Alert variant="destructive">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
-                    <div className="font-medium mb-1">Important Warnings:</div>
-                    <ul className="list-disc list-inside space-y-1">
-                      {impactAnalysis.warnings.map((warning, index) => (
-                        <li key={index} className="text-sm">{warning}</li>
-                      ))}
-                    </ul>
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
-          )}
-
-          {/* Feature Comparison */}
-          <div className="space-y-3">
-            <h4 className="font-medium">What&apos;s Included</h4>
-            <div className="grid grid-cols-1 gap-2">
-              {targetPlan.features.map((feature, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">{feature}</span>
-                </div>
-              ))}
-            </div>
+            <p className="text-xs text-slate-500">{formatPrice(0)}/tháng</p>
           </div>
         </div>
+
+        <div className="space-y-1">
+          <Label className="text-xs text-slate-500">Gói mới chọn</Label>
+          <div className="p-3 rounded-md border border-slate-900 bg-white">
+            <div className="flex items-center gap-2 mb-1">
+              {getPlanIcon(targetPlan.tier)}
+              <span className="text-sm font-semibold">{targetPlan.name}</span>
+            </div>
+            <p className="text-xs text-slate-500">{formatPrice(price)}/{billingCycle === 'yearly' ? 'năm' : 'tháng'}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Chu kỳ thanh toán</Label>
+        <RadioGroup value={billingCycle} onValueChange={(value) => setBillingCycle(value as BillingCycle)} className="grid gap-2">
+          <div className="flex items-center space-x-2 rounded-md border p-3 cursor-pointer hover:bg-slate-50">
+            <RadioGroupItem value="monthly" id="monthly" />
+            <Label htmlFor="monthly" className="flex-1 cursor-pointer">
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Thanh toán hàng tháng</span>
+                <span className="text-sm font-medium">{formatPrice(targetPlan.price.monthly)}</span>
+              </div>
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2 rounded-md border p-3 cursor-pointer hover:bg-slate-50">
+            <RadioGroupItem value="yearly" id="yearly" />
+            <Label htmlFor="yearly" className="flex-1 cursor-pointer">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-sm">Thanh toán hàng năm</span>
+                  <Badge variant="secondary" className="ml-2 text-[10px] bg-emerald-50 text-emerald-600 border-none">Tiết kiệm 17%</Badge>
+                </div>
+                <span className="text-sm font-medium">{formatPrice(targetPlan.price.yearly)}</span>
+              </div>
+            </Label>
+          </div>
+        </RadioGroup>
+      </div>
+
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Thời điểm áp dụng</Label>
+        <RadioGroup value={immediate ? 'immediate' : 'end-of-period'} onValueChange={(value) => setImmediate(value === 'immediate')} className="grid gap-2">
+          <div className="flex items-start space-x-2 rounded-md border p-3 cursor-pointer hover:bg-slate-50">
+            <RadioGroupItem value="immediate" id="immediate" className="mt-1" />
+            <Label htmlFor="immediate" className="flex-1 cursor-pointer">
+              <div className="font-semibold text-sm">Áp dụng ngay lập tức</div>
+              <p className="text-xs text-slate-500 mt-0.5">Bạn sẽ được trải nghiệm các tính năng mới ngay sau khi thanh toán phần chênh lệch.</p>
+            </Label>
+          </div>
+          <div className="flex items-start space-x-2 rounded-md border p-3 cursor-pointer hover:bg-slate-50">
+            <RadioGroupItem value="end-of-period" id="end-of-period" className="mt-1" />
+            <Label htmlFor="end-of-period" className="flex-1 cursor-pointer">
+              <div className="font-semibold text-sm">Áp dụng sau khi hết chu kỳ cũ</div>
+              <p className="text-xs text-slate-500 mt-0.5">Sẽ thay đổi gói ở chu kỳ thanh toán tiếp theo.</p>
+            </Label>
+          </div>
+        </RadioGroup>
+      </div>
+
+      {impactAnalysis && (impactAnalysis.warnings.length > 0 || impactAnalysis.immediateChanges.length > 0) && (
+        <div className="space-y-2">
+          <Label className="text-sm font-semibold">Ảnh hưởng của thay đổi</Label>
+          {impactAnalysis.warnings.map((warning, i) => (
+            <Alert key={i} variant="destructive" className="py-2">
+              <AlertTriangle className="size-4" />
+              <AlertDescription className="text-xs">{warning}</AlertDescription>
+            </Alert>
+          ))}
+          {impactAnalysis.immediateChanges.map((change, i) => (
+            <Alert key={i} className="py-2">
+              <Info className="size-4" />
+              <AlertDescription className="text-xs">{change}</AlertDescription>
+            </Alert>
+          ))}
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <Label className="text-sm font-semibold">Các tính năng chính</Label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {targetPlan.features.slice(0, 6).map((f, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Check className="size-3 text-emerald-500" />
+              <span className="text-xs text-slate-600">{f}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   )
 
-  // Shared footer component
-  const renderFooter = () => (
-    <div className={cn("flex-col space-y-2 sm:flex-row sm:space-y-0", isMobile ? "flex" : "flex")}>
-      <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
-        Cancel
+  const footerActions = (
+    <div className="flex items-center justify-end gap-3 w-full">
+      <Button variant="outline" onClick={() => onOpenChange(false)} disabled={changePlanMutation.isPending}>
+        Hủy
       </Button>
-      <Button 
+      <Button
         onClick={handleConfirm}
         disabled={changePlanMutation.isPending}
-        className="w-full sm:w-auto"
       >
         {changePlanMutation.isPending ? (
-          'Processing...'
+          <>
+            <Loader2 className="mr-2 size-4 animate-spin" />
+            Đang xử lý...
+          </>
         ) : (
-          `Confirm ${comparison?.data?.isUpgrade ? 'Upgrade' : 'Change'}`
+          `Xác nhận ${comparison?.data?.isUpgrade ? 'Nâng cấp' : 'Thay đổi'}`
         )}
       </Button>
     </div>
   )
 
-  // Render drawer for mobile
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[90vh]">
-          <DrawerHeader className="border-b">
-            <DrawerTitle className="flex items-center space-x-2">
-              {getPlanIcon(targetPlan.tier)}
-              <span>Change to {targetPlan.name} Plan</span>
-            </DrawerTitle>
-            <DrawerDescription>
-              Review the changes and confirm your plan upgrade
-            </DrawerDescription>
+        <DrawerContent className="max-h-[95vh] flex flex-col">
+          <DrawerHeader className="border-b text-left">
+            <DrawerTitle>Thay đổi gói dịch vụ</DrawerTitle>
+            <DrawerDescription>Xem lại các thay đổi trước khi xác nhận nâng cấp.</DrawerDescription>
           </DrawerHeader>
-          
-          <div className="overflow-y-auto flex-1 px-4 pb-4">
+          <div className="overflow-y-auto flex-1 p-4">
             {renderContent()}
           </div>
-
-          <DrawerFooter className="border-t">
-            {renderFooter()}
+          <DrawerFooter className="border-t p-4">
+            {footerActions}
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
     )
   }
 
-  // Render dialog for desktop
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
-            {getPlanIcon(targetPlan.tier)}
-            <span>Change to {targetPlan.name} Plan</span>
-          </DialogTitle>
-          <DialogDescription>
-            Review the changes and confirm your plan upgrade
-          </DialogDescription>
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
+        <DialogHeader className="p-6 border-b">
+          <DialogTitle>Thay đổi gói dịch vụ</DialogTitle>
+          <DialogDescription>Xem lại các thay đổi và xác nhận gói dịch vụ mới của bạn.</DialogDescription>
         </DialogHeader>
 
-        <div className="overflow-y-auto flex-1 min-h-0 px-6">
+        <div className="overflow-y-auto flex-1 p-6 scrollbar-hide">
           {renderContent()}
         </div>
 
-        <DialogFooter className="flex-shrink-0 flex-col sm:flex-row space-y-2 sm:space-y-0 border-t pt-4 mt-4">
-          {renderFooter()}
+        <DialogFooter className="p-6 border-t mt-0">
+          {footerActions}
         </DialogFooter>
       </DialogContent>
     </Dialog>

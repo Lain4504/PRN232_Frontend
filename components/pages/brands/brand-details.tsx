@@ -124,7 +124,7 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
           </Card>
 
           {/* Brand Strategy */}
-          {(brand.usp || brand.target_audience) && (
+          {brand.target_audience && (
             <Card className="border shadow-sm">
               <CardHeader className="pb-3 text-sm font-bold uppercase tracking-wider text-muted-foreground/70">
                 <div className="flex items-center gap-2">
@@ -133,12 +133,6 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                {brand.usp && (
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-semibold">Điểm bán hàng độc nhất (USP)</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{brand.usp}</p>
-                  </div>
-                )}
 
                 {brand.target_audience && (
                   <div className="space-y-2">

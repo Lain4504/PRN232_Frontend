@@ -236,7 +236,7 @@ function ProfileCard({ profile, onSelect }: { profile: Profile; onSelect: (p: Pr
               {profile.profileType === ProfileTypeEnum.Pro ? "PRO" :
                 profile.profileType === ProfileTypeEnum.Basic ? "PLUS" : "FREE"}
             </Badge>
-            {getStatusBadge(profile.status as number)}
+            {profile.profileType !== ProfileTypeEnum.Free && getStatusBadge(profile.status as number)}
           </div>
         </div>
 

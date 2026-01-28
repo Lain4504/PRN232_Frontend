@@ -25,6 +25,12 @@ function CheckoutContent() {
   const { data: profile, isLoading } = useGetProfile(profileId)
 
   useEffect(() => {
+    if (profileId) {
+      localStorage.setItem('activeProfileId', profileId)
+    }
+  }, [profileId])
+
+  useEffect(() => {
     if (!profileId) {
       router.push('/overview/profile/new')
       return

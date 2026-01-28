@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { 
+import {
   Edit,
   Trash2,
   Send,
@@ -37,11 +37,11 @@ interface ContentCardProps {
   showActions?: boolean;
 }
 
-export function ContentCard({ 
-  content, 
-  onEdit, 
-  onDelete, 
-  onSubmit, 
+export function ContentCard({
+  content,
+  onEdit,
+  onDelete,
+  onSubmit,
   isProcessing = false,
   showActions = true
 }: ContentCardProps) {
@@ -49,167 +49,120 @@ export function ContentCard({
   const getStatusBadge = (status: ContentStatusEnum) => {
     switch (status) {
       case ContentStatusEnum.Draft:
-        return <Badge variant="secondary">Draft</Badge>;
+        return <Badge variant="secondary">Bản nháp</Badge>;
       case ContentStatusEnum.PendingApproval:
-        return <Badge variant="outline" className="border-chart-4 text-chart-4">Pending Approval</Badge>;
+        return <Badge variant="outline" className="border-amber-500 text-amber-600">Chờ phê duyệt</Badge>;
       case ContentStatusEnum.Approved:
-        return <Badge variant="default" className="bg-chart-2">Approved</Badge>;
+        return <Badge className="bg-emerald-500">Đã phê duyệt</Badge>;
       case ContentStatusEnum.Rejected:
-        return <Badge variant="destructive">Rejected</Badge>;
+        return <Badge variant="destructive">Bị từ chối</Badge>;
       case ContentStatusEnum.Published:
-        return <Badge variant="default" className="bg-green-600">Published</Badge>;
+        return <Badge className="bg-blue-600">Đã đăng</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
-  // Helper function to normalize adType to AdTypeEnum
   const normalizeAdType = (adType: string | AdTypeEnum): AdTypeEnum => {
-    if (typeof adType === 'number') {
-      return adType as AdTypeEnum;
-    }
+    if (typeof adType === 'number') return adType as AdTypeEnum;
     if (typeof adType === 'string') {
       const normalized = adType.toLowerCase().replace(/_/g, '');
       if (normalized === 'textonly') return AdTypeEnum.TextOnly;
       if (normalized === 'imagetext' || normalized === 'image+text') return AdTypeEnum.ImageText;
       if (normalized === 'videotext' || normalized === 'video+text') return AdTypeEnum.VideoText;
     }
-    return AdTypeEnum.TextOnly; // Default fallback
+    return AdTypeEnum.TextOnly;
   };
 
   const getAdTypeIcon = (adType: AdTypeEnum) => {
     switch (adType) {
-      case AdTypeEnum.TextOnly:
-        return <FileText className="h-4 w-4" />;
-      case AdTypeEnum.ImageText:
-        return <Image className="h-4 w-4" />;
-      case AdTypeEnum.VideoText:
-        return <Video className="h-4 w-4" />;
-      default:
-        return <FileText className="h-4 w-4" />;
+      case AdTypeEnum.TextOnly: return <FileText className="h-3 w-3" />;
+      case AdTypeEnum.ImageText: return <Image className="h-3 w-3" />;
+      case AdTypeEnum.VideoText: return <Video className="h-3 w-3" />;
+      default: return <FileText className="h-3 w-3" />;
     }
   };
 
   const getAdTypeLabel = (adType: AdTypeEnum) => {
     switch (adType) {
-      case AdTypeEnum.TextOnly:
-        return "Text Only";
-      case AdTypeEnum.ImageText:
-        return "Image + Text";
-      case AdTypeEnum.VideoText:
-        return "Video + Text";
-      default:
-        return `Type ${adType}`;
+      case AdTypeEnum.TextOnly: return "Văn bản";
+      case AdTypeEnum.ImageText: return "Hình ảnh";
+      case AdTypeEnum.VideoText: return "Video";
+      default: return "Khác";
     }
   };
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 hover:scale-[1.02] hover:-translate-y-1">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-3">
+    <Card className="group hover:shadow-md transition-all duration-300">
+      <CardHeader className="p-4 pb-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="space-y-2 flex-1">
+            <div className="flex items-center gap-2">
               {getStatusBadge(content.status)}
-              <Badge variant="outline" className="flex items-center gap-1 text-xs">
+              <Badge variant="outline" className="flex items-center gap-1 text-[10px] font-normal">
                 {getAdTypeIcon(normalizeAdType(content.adType))}
                 {getAdTypeLabel(normalizeAdType(content.adType))}
               </Badge>
             </div>
-            <CardTitle className="text-base font-bold mb-1 group-hover:text-primary transition-colors">
+            <CardTitle className="text-sm font-bold line-clamp-1">
               {content.title}
             </CardTitle>
-            <CardDescription className="text-xs">
-              {content.brandName || 'Unknown Brand'} • {new Date(content.createdAt).toLocaleDateString()}
-            </CardDescription>
           </div>
-          
         </div>
       </CardHeader>
-      
-      <CardContent className="pt-0">
-        {content.description && (
-          <p className="text-xs text-muted-foreground mb-3 line-clamp-2 leading-relaxed">
-            {content.description}
+
+      <CardContent className="p-4 pt-0 space-y-3">
+        {(content.description || content.textContent) && (
+          <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+            {content.description || content.textContent}
           </p>
         )}
 
-        {content.textContent && (
-          <p className="text-xs text-muted-foreground mb-4 line-clamp-3 leading-relaxed">
-            {content.textContent}
-          </p>
-        )}
-        
-        <div className="space-y-3">
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              <span>Created {new Date(content.createdAt).toLocaleDateString()}</span>
-            </div>
-            {content.productName && (
-              <div className="flex items-center gap-1">
-                <span>• {content.productName}</span>
-              </div>
-            )}
+        <div className="flex items-center justify-between gap-2 pt-2 border-t mt-auto">
+          <div className="flex items-center gap-1 text-[10px] text-slate-400">
+            <Clock className="size-3" />
+            <span>{new Date(content.createdAt).toLocaleDateString('vi-VN')}</span>
           </div>
-          
+
           {showActions && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-1">
               {content.status === ContentStatusEnum.Draft && onEdit && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => onEdit(content)}
-                  disabled={isProcessing}
-                  className="h-7 text-xs"
-                >
-                  <Edit className="mr-1 h-3 w-3" />
-                  Edit
+                <Button size="icon" variant="ghost" onClick={() => onEdit(content)} disabled={isProcessing} className="size-7">
+                  <Edit className="size-3.5" />
                 </Button>
               )}
-              
+
               {(content.status === ContentStatusEnum.Draft || content.status === ContentStatusEnum.Rejected) && onSubmit && (
-                <Button
-                  size="sm"
-                  onClick={() => onSubmit(content.id)}
-                  disabled={isProcessing}
-                  className="bg-blue-600 hover:bg-blue-700 h-7 text-xs"
-                >
-                  <Send className="mr-1 h-3 w-3" />
-                  Submit for Approval
+                <Button size="sm" onClick={() => onSubmit(content.id)} disabled={isProcessing} className="h-7 text-[10px] px-2">
+                  Gửi duyệt
                 </Button>
               )}
-              
+
               {content.status === ContentStatusEnum.Approved && (
                 <ContentScheduleActions content={content} />
               )}
-              
+
               {(content.status === ContentStatusEnum.Draft || content.status === ContentStatusEnum.Rejected) && onDelete && (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      disabled={isProcessing}
-                      className="h-7 text-xs"
-                    >
-                      <Trash2 className="mr-1 h-3 w-3" />
-                      Delete
+                    <Button size="icon" variant="ghost" disabled={isProcessing} className="size-7 text-rose-500 hover:text-rose-600 hover:bg-rose-50">
+                      <Trash2 className="size-3.5" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Content</AlertDialogTitle>
+                      <AlertDialogTitle>Xóa nội dung</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to delete &ldquo;{content.title}&rdquo;? This action cannot be undone.
+                        Bạn có chắc chắn muốn xóa bài viết &ldquo;{content.title}&rdquo;? Hành động này không thể hoàn tác.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel>Hủy</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => onDelete(content.id)}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       >
-                        Delete
+                        Xác nhận xóa
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>

@@ -34,22 +34,20 @@ export function DeleteApprovalDialog({
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Approval</AlertDialogTitle>
+          <AlertDialogTitle>Xóa yêu cầu phê duyệt</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete this approval for &ldquo;{approval.contentTitle}&rdquo;?
-            <br />
-            <br />
-            This action cannot be undone. The approval will be permanently removed from the system.
+            Bạn có chắc chắn muốn xóa yêu cầu phê duyệt cho nội dung &ldquo;{approval.contentTitle}&rdquo;?
+            Hành động này không thể hoàn tác.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>Hủy</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => onConfirm(approval.id)}
             disabled={isDeleting}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isDeleting ? "Deleting..." : "Delete Approval"}
+            {isDeleting ? "Đang xóa..." : "Xác nhận xóa"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

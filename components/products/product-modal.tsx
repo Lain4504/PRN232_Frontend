@@ -3,13 +3,12 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { Plus, Edit, Package, X, Boxes } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { ProductForm } from '@/components/products/product-form'
 import { TeamProductForm } from '@/components/products/product-form-team'
 import { Product, Brand } from '@/lib/types/omniadly-types'
-import { cn } from "@/lib/utils"
 
 interface ProductModalProps {
   children?: React.ReactNode
@@ -34,35 +33,30 @@ export function ProductModal({ children, mode, product, defaultBrandId, brands, 
     onSuccess?.()
   }
 
+  const title = mode === 'create' ? 'Tạo sản phẩm' : 'Chỉnh sửa sản phẩm';
+  const description = mode === 'create'
+    ? 'Nhập thông tin để thêm sản phẩm mới vào thương hiệu.'
+    : 'Cập nhật thông tin chi tiết của sản phẩm.';
+
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         {mode === 'create' && (
           <DrawerTrigger asChild>
             {children || (
-              <Button className="rounded-xl h-12">
+              <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
                 Thêm sản phẩm
               </Button>
             )}
           </DrawerTrigger>
         )}
-        <DrawerContent className="max-h-[90vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white">
-          <DrawerHeader className="flex-shrink-0 text-left p-6 overflow-hidden">
-            <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-4 border border-slate-200">
-              <Package className="size-6" />
-            </div>
-            <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">
-              {mode === 'create' ? 'Tạo Sản phẩm Mới' : 'Hiệu chỉnh Sản phẩm'}
-            </DrawerTitle>
-            <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">
-              {mode === 'create'
-                ? 'Thiết lập thông số cho thực thể sản phẩm mới trong kho hàng.'
-                : 'Cập nhật các thuộc tính và dữ liệu định danh của sản phẩm.'
-              }
-            </DrawerDescription>
+        <DrawerContent className="max-h-[95vh] flex flex-col">
+          <DrawerHeader className="text-left border-b">
+            <DrawerTitle>{title}</DrawerTitle>
+            <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
-          <div className="px-6 overflow-y-auto flex-1 pb-8 scrollbar-hide">
+          <div className="p-4 overflow-y-auto flex-1">
             {teamId ? (
               <TeamProductForm
                 mode={mode}
@@ -93,36 +87,19 @@ export function ProductModal({ children, mode, product, defaultBrandId, brands, 
       {mode === 'create' && (
         <DialogTrigger asChild>
           {children || (
-            <Button className="rounded-xl h-12 shadow-md">
+            <Button size="sm">
               <Plus className="mr-2 h-4 w-4" />
               Thêm sản phẩm
             </Button>
           )}
         </DialogTrigger>
       )}
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl border-none p-0 shadow-2xl bg-white">
-        <DialogHeader className="flex-shrink-0 p-8 pb-4">
-          <div className="flex items-center justify-between">
-            <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-0 border border-slate-200 shadow-sm">
-              <Boxes className="size-8" />
-            </div>
-            <Button onClick={() => setOpen(false)} variant="ghost" className="size-10 rounded-xl bg-slate-50 hover:bg-slate-100 p-0 text-slate-400">
-              <X className="size-5" />
-            </Button>
-          </div>
-          <div className="mt-8">
-            <DialogTitle className="text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">
-              {mode === 'create' ? 'Tạo Sản phẩm Mới' : 'Hiệu chỉnh Sản phẩm'}
-            </DialogTitle>
-            <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic">
-              {mode === 'create'
-                ? 'Khai báo thông tin kỹ thuật và giá trị thị trường cho sản phẩm.'
-                : 'Đồng bộ hóa các thay đổi mới nhất về sản phẩm vào hệ thống kho.'
-              }
-            </DialogDescription>
-          </div>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
+        <DialogHeader className="p-6 border-b">
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="overflow-y-auto flex-1 px-8 pb-8 scrollbar-hide">
+        <div className="overflow-y-auto flex-1 p-6">
           {teamId ? (
             <TeamProductForm
               mode={mode}

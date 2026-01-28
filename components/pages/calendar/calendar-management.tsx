@@ -5,13 +5,12 @@ import { UnifiedContentCalendar } from "@/components/content-calendar/unified-co
 import { ScheduleContentModal } from "@/components/content-calendar/schedule-content-modal";
 import { ScheduleDetailModal } from "@/components/content-calendar/schedule-detail-modal";
 import type { ContentCalendar } from "@/lib/types/omniadly-types";
-import { Plus, Clock } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { getActiveTeamId } from "@/lib/utils/profile-utils";
 
 export function CalendarManagement() {
-
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<ContentCalendar | null>(null);
   const teamId = getActiveTeamId() || undefined;
@@ -25,72 +24,57 @@ export function CalendarManagement() {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto font-fira-sans">
-      <div className="space-y-8 p-6 lg:p-10 min-h-screen bg-background text-foreground">
+    <div className="max-w-[1400px] mx-auto">
+      <div className="space-y-6 p-4 lg:p-8 min-h-screen bg-background text-foreground">
 
         {/* Breadcrumb */}
-        <Breadcrumb className="mb-6">
+        <Breadcrumb className="mb-4">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard" className="text-[10px] uppercase font-bold tracking-widest opacity-60 hover:opacity-100 transition-opacity">TRUNG TÂM ĐIỀU KHIỂN</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard" className="text-xs font-medium text-slate-500 hover:text-slate-900">Tổng quan</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator className="opacity-40" />
+            <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-[10px] uppercase font-bold tracking-widest text-primary">LỊCH</BreadcrumbPage>
+              <BreadcrumbPage className="text-xs font-semibold">Lịch nội dung</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="size-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-[0_0_20px_-5px_rgba(var(--primary),0.3)]">
-                <Clock className="size-6 text-primary animate-pulse-slow" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-black tracking-tighter text-foreground italic uppercase">
-                  LỊCH NỘI DUNG
-                </h1>
-              </div>
-            </div>
-            <p className="text-muted-foreground font-medium text-lg max-w-2xl pl-1">
-              Lên kế hoạch và theo dõi lịch trình đăng bài của bạn.
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Lịch nội dung</h1>
+            <p className="text-sm text-slate-500">
+              Quản lý và lập lịch đăng bài cho các kênh mạng xã hội của bạn.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Button
-              onClick={() => setShowScheduleModal(true)}
-              className="rounded-xl h-12 px-8 font-black uppercase tracking-widest text-[10px] bg-primary hover:bg-primary/90 shadow-[0_0_25px_-5px_rgba(var(--primary),0.4)] hover:scale-105 transition-all border border-white/10"
-            >
-              <Plus className="mr-2 size-4" />
-              Tạo lịch trình mới
-            </Button>
-          </div>
+          <Button
+            onClick={() => setShowScheduleModal(true)}
+            size="sm"
+            className="w-full sm:w-auto"
+          >
+            <Plus className="mr-2 size-4" />
+            Lên lịch đăng bài
+          </Button>
         </div>
 
-        {/* Main Content Area with faint background glow */}
-        <div className="relative">
-          <div className="absolute -top-20 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
-
-          <div className="relative z-10">
-            <UnifiedContentCalendar
-              teamId={teamId}
-              onEventClick={handleEventClick}
-              onCreateSchedule={handleScheduleClick}
-            />
-          </div>
+        {/* Main Content */}
+        <div className="mt-6">
+          <UnifiedContentCalendar
+            teamId={teamId}
+            onEventClick={handleEventClick}
+            onCreateSchedule={handleScheduleClick}
+          />
         </div>
 
-        {/* Schedule Modal */}
+        {/* Modals */}
         <ScheduleContentModal
           isOpen={showScheduleModal}
           onClose={() => setShowScheduleModal(false)}
           teamId={teamId}
         />
 
-        {/* Schedule Detail Modal */}
         <ScheduleDetailModal
           schedule={selectedSchedule}
           isOpen={!!selectedSchedule}

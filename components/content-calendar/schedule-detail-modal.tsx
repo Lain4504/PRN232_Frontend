@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,19 +12,11 @@ import type { ContentCalendar } from "@/lib/types/omniadly-types";
 import {
   Calendar,
   Clock,
-  FileText,
   Building2,
   Globe,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  X,
-  Smartphone,
   CheckCircle2,
-  Info
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 
 interface ScheduleDetailModalProps {
   schedule: ContentCalendar | null;
@@ -60,7 +52,6 @@ function ScheduleDetailContent({ schedule }: { schedule: ContentCalendar | null 
         time: date.toLocaleTimeString('vi-VN', {
           hour: '2-digit',
           minute: '2-digit',
-          second: '2-digit',
           hour12: false
         })
       };
@@ -72,80 +63,68 @@ function ScheduleDetailContent({ schedule }: { schedule: ContentCalendar | null 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'published':
-        return <Badge className="bg-emerald-100 text-emerald-600 border-none font-black text-[9px] uppercase tracking-widest px-3 py-1">Đã phát hành</Badge>;
+        return <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-50">Đã đăng</Badge>;
       case 'failed':
-        return <Badge className="bg-rose-100 text-rose-600 border-none font-black text-[9px] uppercase tracking-widest px-3 py-1">Thất bại</Badge>;
+        return <Badge className="bg-rose-50 text-rose-600 border-rose-100 hover:bg-rose-50">Thất bại</Badge>;
       case 'cancelled':
-        return <Badge className="bg-slate-100 text-slate-400 border-none font-black text-[9px] uppercase tracking-widest px-3 py-1">Đã hủy</Badge>;
+        return <Badge variant="outline">Đã hủy</Badge>;
       default:
-        return <Badge className="bg-blue-100 text-blue-600 border-none font-black text-[9px] uppercase tracking-widest px-3 py-1">Đang chờ</Badge>;
+        return <Badge className="bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-50">Đang chờ</Badge>;
     }
   };
 
   const { date, time } = formatDate(schedule.scheduledDate);
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-500">
-      {/* Content Identity */}
-      <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 space-y-6">
-        <div className="flex items-start justify-between">
-          <div className="space-y-3 flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <FileText className="size-4 text-slate-400" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Thực thể Nội dung</span>
-            </div>
-            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-tight line-clamp-2">
+    <div className="space-y-6">
+      <div className="p-5 rounded-lg border bg-slate-50/50 space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1 flex-1 min-w-0">
+            <h3 className="text-lg font-bold text-slate-900 leading-snug">
               {schedule.contentTitle || 'Nội dung không tên'}
             </h3>
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+              <Building2 className="size-3.5" />
+              <span>{schedule.brandName || 'Thương hiệu chưa xác định'}</span>
+            </div>
           </div>
           {getStatusBadge(schedule.status)}
         </div>
-
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-slate-400" />
-            <span className="text-xs font-black text-emerald-600 uppercase tracking-tight">{schedule.brandName || 'Thương hiệu chưa xác định'}</span>
-          </div>
-        </div>
       </div>
 
-      {/* Deployment Specs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Clock className="size-4 text-slate-400" />
-            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Thời điểm Phân phối</Label>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <Clock className="size-3.5" />
+            <span>Thời điểm đăng bài</span>
           </div>
-          <div className="p-6 rounded-2xl border-2 border-slate-100 bg-white shadow-sm space-y-1">
-            <p className="text-base font-black text-slate-900 uppercase tracking-tight">{date}</p>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{time} {schedule.timezone && `(${schedule.timezone})`}</p>
+          <div className="p-4 rounded-lg border bg-white space-y-1">
+            <p className="text-sm font-semibold text-slate-900">{date}</p>
+            <p className="text-xs text-slate-500">{time} {schedule.timezone && `(${schedule.timezone})`}</p>
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Globe className="size-4 text-slate-400" />
-            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Kênh truyền thông ({platforms.length})</Label>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <Globe className="size-3.5" />
+            <span>Kênh đăng bài ({platforms.length})</span>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {platforms.map((target) => (
-              <div key={target.id} className="flex items-center gap-4 p-4 rounded-xl border border-slate-100 bg-slate-50/50">
-                <Avatar className="size-10 rounded-xl border-2 border-white shadow-sm">
+              <div key={target.id} className="flex items-center gap-3 p-3 rounded-lg border bg-white">
+                <Avatar className="size-8 rounded border">
                   <AvatarImage src={target.profilePictureUrl} />
-                  <AvatarFallback className="bg-slate-900 text-white font-black text-xs">{target.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="bg-slate-100 text-slate-500 text-[10px]">{target.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{target.name}</p>
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{target.provider}</p>
+                  <p className="text-xs font-semibold text-slate-900 truncate">{target.name}</p>
+                  <p className="text-[10px] text-slate-500 uppercase">{target.provider}</p>
                 </div>
                 <CheckCircle2 className="size-4 text-emerald-500" />
               </div>
             ))}
             {platforms.length === 0 && (
-              <div className="p-4 rounded-xl bg-orange-50 text-orange-600 border border-orange-100 flex items-center gap-3">
-                <Info className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Không có dữ liệu kênh</span>
-              </div>
+              <p className="text-xs text-slate-400 italic">Không có dữ liệu kênh đăng bài.</p>
             )}
           </div>
         </div>
@@ -156,21 +135,18 @@ function ScheduleDetailContent({ schedule }: { schedule: ContentCalendar | null 
 
 export function ScheduleDetailModal({ schedule, isOpen, onClose }: ScheduleDetailModalProps) {
   const isMobile = useIsMobile();
-  const title = "Chi tiết Lịch trình";
-  const description = "Thông tin thực thi và trạng thái phân phối của nội dung đã lập lịch.";
+  const title = "Chi tiết lịch đăng";
+  const description = "Thông tin chi tiết về thời gian và trạng thái của bài viết.";
 
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={onClose}>
-        <DrawerContent className="max-h-[95vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white">
-          <DrawerHeader className="flex-shrink-0 text-left p-10 pb-4">
-            <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200">
-              <Smartphone className="size-6" />
-            </div>
-            <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">{title}</DrawerTitle>
-            <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">{description}</DrawerDescription>
+        <DrawerContent className="max-h-[95vh] flex flex-col">
+          <DrawerHeader className="text-left border-b">
+            <DrawerTitle>{title}</DrawerTitle>
+            <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
-          <div className="px-10 overflow-y-auto flex-1 pb-10 scrollbar-hide">
+          <div className="p-4 overflow-y-auto flex-1">
             <ScheduleDetailContent schedule={schedule} />
           </div>
         </DrawerContent>
@@ -180,22 +156,12 @@ export function ScheduleDetailModal({ schedule, isOpen, onClose }: ScheduleDetai
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl border-none p-0 shadow-2xl bg-white focus:outline-none">
-        <DialogHeader className="flex-shrink-0 p-12 pb-8">
-          <div className="flex items-center justify-between">
-            <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-0 border border-slate-200 shadow-sm">
-              <Calendar className="size-8" />
-            </div>
-            <Button onClick={onClose} variant="ghost" className="size-10 rounded-xl bg-slate-50 hover:bg-slate-100 p-0 text-slate-400">
-              <X className="size-5" />
-            </Button>
-          </div>
-          <div className="mt-8">
-            <DialogTitle className="text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">{title}</DialogTitle>
-            <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic">{description}</DialogDescription>
-          </div>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
+        <DialogHeader className="p-6 border-b">
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="overflow-y-auto flex-1 px-12 pb-12 scrollbar-hide">
+        <div className="overflow-y-auto flex-1 p-6 scrollbar-hide">
           <ScheduleDetailContent schedule={schedule} />
         </div>
       </DialogContent>

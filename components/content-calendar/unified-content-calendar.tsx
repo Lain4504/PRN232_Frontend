@@ -22,7 +22,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { cn } from "@/lib/utils";
 
 interface UnifiedContentCalendarProps {
-  teamId?: string; // Optional: undefined for profile context, string for team context
+  teamId?: string;
   onEventClick?: (event: ContentCalendar) => void;
   onCreateSchedule?: () => void;
 }
@@ -36,7 +36,6 @@ export function UnifiedContentCalendar({
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
 
-  // Use the new hook to manage data fetching and brand filtering
   const {
     schedules,
     isLoading,
@@ -60,7 +59,6 @@ export function UnifiedContentCalendar({
   };
 
   const handleBrandFilterChange = (brandId: string) => {
-    console.log('[Calendar] Brand filter changed to:', brandId);
     setBrandFilter(brandId === "all" ? undefined : brandId);
   };
 
@@ -72,94 +70,82 @@ export function UnifiedContentCalendar({
 
   if (error) {
     return (
-      <Card className="shadow-lg border-destructive/20 bg-destructive/5 backdrop-blur-sm">
-        <CardContent className="text-center py-12 text-destructive">
-          <div className="size-12 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
-            <X className="size-6" />
+      <Card className="border-rose-200 bg-rose-50/50">
+        <CardContent className="text-center py-12 text-rose-500">
+          <div className="size-10 rounded-full bg-rose-100 flex items-center justify-center mx-auto mb-4">
+            <X className="size-5" />
           </div>
-          <h3 className="text-xl font-bold mb-2 uppercase tracking-wide">Error Loading Calendar</h3>
-          <p className="text-muted-foreground font-medium">Failed to synchronize content matrix. Please retry connection.</p>
+          <h3 className="text-lg font-bold mb-1">Lỗi tải dữ liệu lịch</h3>
+          <p className="text-sm text-slate-500">Không thể đồng bộ nội dung từ máy chủ. Vui lòng thử lại sau.</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className="relative font-fira-sans">
+    <div className="relative">
       <div className="grid gap-6 lg:grid-cols-4">
-        {/* Calendar */}
-        <div className="lg:col-span-3">
-          <div className="space-y-6">
-            {/* Header with Brand Filter */}
-            <Card className="rounded-2xl border border-white/5 bg-background/40 backdrop-blur-xl shadow-2xl relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent opacity-50" />
-              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                <Calendar className="size-32 -rotate-12 text-primary" />
-              </div>
-
-              <CardHeader className="border-b border-white/5 p-6 relative z-10">
-                <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
-                  <div className="flex items-center gap-4 flex-wrap">
-                    <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-[0_0_15px_-3px_rgba(var(--primary),0.3)]">
-                      <Calendar className="size-6 text-primary" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-2xl font-black uppercase tracking-tight leading-none mb-1">
-                        Content Schedule
-                      </CardTitle>
-                      <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">
-                        {teamContext ? `${teamContext.teamName} Schedule` : 'Master Schedule'}
-                      </p>
-                    </div>
+        {/* Calendar Main */}
+        <div className="lg:col-span-3 space-y-4">
+          <Card className="rounded-xl border shadow-sm">
+            <CardHeader className="p-4 sm:p-6 border-b">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-md bg-slate-100 flex items-center justify-center text-slate-600 border">
+                    <Calendar className="size-5" />
                   </div>
-
-                  <div className="flex items-center gap-3 flex-wrap">
-                    {/* Brand Filter */}
-                    <div className="flex items-center gap-2 bg-background/50 rounded-xl p-1 border border-white/5">
-                      <div className="px-2 text-muted-foreground">
-                        <Filter className="size-4" />
-                      </div>
-                      <Select value={brandFilter || "all"} onValueChange={handleBrandFilterChange}>
-                        <SelectTrigger className="w-[180px] h-9 border-none bg-transparent shadow-none focus:ring-0 text-xs font-bold uppercase tracking-wide">
-                          <SelectValue placeholder="Filter Brand" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-white/10 bg-background/95 backdrop-blur-xl">
-                          <SelectItem value="all" className="text-xs font-bold uppercase">All Brands</SelectItem>
-                          {availableBrands.map(brand => (
-                            <SelectItem key={brand.id} value={brand.id} className="text-xs font-medium">
-                              {brand.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <Button
-                      className="lg:hidden h-11 w-11 p-0 rounded-xl border-white/10"
-                      variant="outline"
-                      onClick={() => setShowSidebar(!showSidebar)}
-                    >
-                      {showSidebar ? <X className="size-5" /> : <Menu className="size-5" />}
-                    </Button>
-
-                    {onCreateSchedule && (
-                      <Button
-                        size="sm"
-                        onClick={onCreateSchedule}
-                        className="h-11 px-6 rounded-xl bg-primary hover:bg-primary/90 shadow-[0_4px_12px_rgba(var(--primary),0.25)] font-black uppercase tracking-widest text-[10px] transition-all hover:scale-105 active:scale-95 border border-white/10"
-                      >
-                        <Plus className="mr-2 size-4" />
-                        <span className="hidden sm:inline">New Schedule</span>
-                        <span className="sm:hidden">New</span>
-                      </Button>
-                    )}
+                  <div>
+                    <CardTitle className="text-lg font-bold">
+                      Kế hoạch đăng bài
+                    </CardTitle>
+                    <p className="text-[11px] font-medium text-slate-500">
+                      {teamContext ? `Lịch của nhóm: ${teamContext.teamName}` : 'Lịch cá nhân'}
+                    </p>
                   </div>
                 </div>
-              </CardHeader>
-            </Card>
 
-            {/* Calendar Grid */}
-            <div className="rounded-2xl border border-white/5 bg-background/20 backdrop-blur-md shadow-xl overflow-hidden p-1">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 px-2 py-1 rounded-md border bg-slate-50/50">
+                    <Filter className="size-3.5 text-slate-400" />
+                    <Select value={brandFilter || "all"} onValueChange={handleBrandFilterChange}>
+                      <SelectTrigger className="w-[140px] h-8 border-none bg-transparent shadow-none focus:ring-0 text-xs font-semibold">
+                        <SelectValue placeholder="Lọc thương hiệu" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all" className="text-xs">Tất cả thương hiệu</SelectItem>
+                        {availableBrands.map(brand => (
+                          <SelectItem key={brand.id} value={brand.id} className="text-xs">
+                            {brand.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="lg:hidden h-8 w-8"
+                    onClick={() => setShowSidebar(!showSidebar)}
+                  >
+                    <Menu className="size-4" />
+                  </Button>
+
+                  {onCreateSchedule && (
+                    <Button
+                      size="sm"
+                      onClick={onCreateSchedule}
+                      className="h-8 px-4"
+                    >
+                      <Plus className="mr-1.5 size-4" />
+                      <span className="hidden sm:inline">Lập lịch mới</span>
+                      <span className="sm:hidden">Lập lịch</span>
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-2">
               <CalendarGrid
                 currentDate={currentDate}
                 onMonthChange={navigateMonth}
@@ -169,103 +155,86 @@ export function UnifiedContentCalendar({
                 selectedDate={selectedDate}
                 isLoading={isLoading}
               />
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Desktop Sidebar */}
+        {/* Sidebar */}
         <div className="hidden lg:block">
-          <div className="sticky top-6">
-            <UpcomingSchedulesList
-              schedules={schedules}
-              limit={10}
-              onScheduleClick={onEventClick}
-            />
-          </div>
+          <UpcomingSchedulesList
+            schedules={schedules}
+            limit={10}
+            onScheduleClick={onEventClick}
+          />
         </div>
       </div>
 
-      {/* Mobile Sidebar Overlay */}
+      {/* Mobile Sidebar */}
       {showSidebar && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-background/80 backdrop-blur-md transition-all duration-300">
-          <div className="fixed right-0 top-0 h-full w-full sm:w-96 bg-background border-l border-white/10 shadow-2xl overflow-y-auto">
-            <div className="p-6 font-fira-sans">
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-3">
-                  <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Clock className="size-4 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-black uppercase tracking-tight">Timeline</h3>
+        <div className="lg:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowSidebar(false)} />
+          <div className="absolute right-0 top-0 h-full w-full max-w-xs bg-white shadow-xl animate-in slide-in-from-right duration-300">
+            <div className="h-full flex flex-col p-4">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2">
+                  <Clock className="size-4 text-slate-500" />
+                  <span className="font-bold text-sm">Sắp tới</span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full hover:bg-muted"
-                  onClick={() => setShowSidebar(false)}
-                >
-                  <X className="size-5" />
+                <Button variant="ghost" size="icon" className="size-8" onClick={() => setShowSidebar(false)}>
+                  <X className="size-4" />
                 </Button>
               </div>
-              <UpcomingSchedulesList
-                schedules={schedules}
-                limit={10}
-                onScheduleClick={(event) => {
-                  onEventClick?.(event);
-                  setShowSidebar(false);
-                }}
-              />
+              <div className="flex-1 overflow-y-auto">
+                <UpcomingSchedulesList
+                  schedules={schedules}
+                  limit={10}
+                  onScheduleClick={(e) => {
+                    onEventClick?.(e);
+                    setShowSidebar(false);
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Day Schedules Modal */}
+      {/* Day Events Modal */}
       <Dialog open={!!selectedDate} onOpenChange={(open) => !open && setSelectedDate(null)}>
-        <DialogContent className="max-w-md rounded-2xl bg-background/95 backdrop-blur-2xl border border-white/10 p-0 overflow-hidden font-fira-sans shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)]">
-          <DialogHeader className="p-6 pb-2 border-b border-white/5 bg-muted/20">
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+          <DialogHeader className="p-4 border-b bg-slate-50/50">
             <DialogTitle className="flex items-center gap-3">
-              <div className="size-10 rounded-xl bg-background border border-white/10 flex flex-col items-center justify-center shadow-sm">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase leading-none">{selectedDate?.toLocaleDateString('en-US', { month: 'short' })}</span>
-                <span className="text-lg font-black text-foreground leading-none">{selectedDate?.getDate()}</span>
+              <div className="size-10 rounded border bg-white flex flex-col items-center justify-center">
+                <span className="text-[10px] font-bold text-slate-400 uppercase leading-none">{selectedDate?.toLocaleDateString('vi-VN', { month: 'short' })}</span>
+                <span className="text-base font-bold text-slate-900 leading-none">{selectedDate?.getDate()}</span>
               </div>
-              <span className="text-xl font-bold tracking-tight">Daily Schedule</span>
+              <span className="text-lg font-bold">Lịch trình ngày</span>
             </DialogTitle>
           </DialogHeader>
 
-          <div className="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
+          <div className="p-4 max-h-[50vh] overflow-y-auto">
             {schedulesForSelectedDate.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center opacity-50">
-                <Layers className="size-12 text-muted-foreground mb-3" />
-                <p className="text-sm font-bold uppercase tracking-wide text-muted-foreground">No content scheduled</p>
+              <div className="text-center py-10 opacity-50">
+                <Layers className="size-8 text-slate-300 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-slate-500">Chưa có nội dung lên lịch</p>
               </div>
             ) : (
-              <div className="space-y-3">
-                {schedulesForSelectedDate.map((event, idx) => {
-                  const eventTime = event.scheduledTime
-                    ? new Date(`${event.scheduledDate}T${event.scheduledTime}`).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
-                    : new Date(event.scheduledDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-
+              <div className="space-y-2">
+                {schedulesForSelectedDate.map((event) => {
+                  const eventTime = event.scheduledTime ? event.scheduledTime.substring(0, 5) : "--:--";
                   return (
                     <button
                       key={event.id}
-                      className="w-full text-left p-4 rounded-xl border border-white/5 bg-card/50 hover:bg-muted/50 transition-all flex items-start gap-4 group hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5"
+                      className="w-full text-left p-3 rounded-lg border bg-white hover:bg-slate-50 transition-colors flex items-start gap-4"
                       onClick={() => {
                         onEventClick?.(event);
                         setSelectedDate(null);
                       }}
                     >
-                      <div className="flex flex-col items-center justify-center min-w-[60px] pt-1">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded-md mb-1">{eventTime}</span>
-                        <div className={`h-full w-0.5 bg-gradient-to-b from-primary/50 to-transparent rounded-full min-h-[20px]`} />
-                      </div>
-
+                      <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded shrink-0">{eventTime}</span>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-sm truncate group-hover:text-primary transition-colors">{event.contentTitle || 'Untitled Content'}</h4>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-white/10 bg-black/20 text-muted-foreground uppercase tracking-wider">
-                            {event.brandName || 'Unknown Brand'}
-                          </Badge>
-                        </div>
+                        <p className="font-bold text-xs truncate text-slate-900">{event.contentTitle || 'Không tiêu đề'}</p>
+                        <p className="text-[10px] text-slate-500 mt-0.5">{event.brandName || 'Thương hiệu chưa xác định'}</p>
                       </div>
                     </button>
                   )
@@ -274,9 +243,9 @@ export function UnifiedContentCalendar({
             )}
           </div>
 
-          <div className="p-4 border-t border-white/5 bg-muted/20 flex justify-end">
-            <Button variant="ghost" size="sm" onClick={() => setSelectedDate(null)} className="font-bold text-xs uppercase tracking-wide text-muted-foreground hover:text-foreground">
-              Close
+          <div className="p-3 border-t bg-slate-50/50 flex justify-end">
+            <Button variant="ghost" size="sm" onClick={() => setSelectedDate(null)}>
+              Đóng
             </Button>
           </div>
         </DialogContent>

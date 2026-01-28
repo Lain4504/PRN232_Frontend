@@ -9,19 +9,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   Save,
   Send,
-  Binary,
-  Target,
   FileText,
-  Sparkles,
-  Zap,
-  Tag,
-  Rocket,
   Upload,
   Image as ImageIcon,
   Video,
   Check,
-  Package,
-  ChevronRight
+  ChevronRight,
+  Loader2
 } from "lucide-react";
 import {
   ContentResponseDto,
@@ -123,22 +117,21 @@ export function ContentFormShared({
   const filteredProducts = products.filter(p => p.brandId === formData.brandId);
 
   return (
-    <div className={cn("space-y-10 animate-in fade-in duration-500", className)}>
-      {/* Context Cluster */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-3">
-          <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">Sở hữu bởi Thương hiệu</Label>
+    <div className={cn("space-y-6", className)}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Thương hiệu</Label>
           <Select
             value={formData.brandId}
             onValueChange={(value) => setFormData({ ...formData, brandId: value, productId: undefined })}
             disabled={!isEditing && !isCreateMode}
           >
-            <SelectTrigger className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 px-6 focus:ring-0 shadow-sm font-black text-slate-900 uppercase tracking-tight">
-              <SelectValue placeholder="Chọn brand chủ quản..." />
+            <SelectTrigger>
+              <SelectValue placeholder="Chọn thương hiệu" />
             </SelectTrigger>
-            <SelectContent className="rounded-2xl p-1 shadow-2xl">
+            <SelectContent>
               {brands.map((brand) => (
-                <SelectItem key={brand.id} value={brand.id} className="rounded-xl h-11 uppercase font-black text-[10px]">
+                <SelectItem key={brand.id} value={brand.id}>
                   {brand.name}
                 </SelectItem>
               ))}
@@ -146,20 +139,20 @@ export function ContentFormShared({
           </Select>
         </div>
 
-        <div className="space-y-3">
-          <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">Gán vào Sản phẩm (Tùy chọn)</Label>
+        <div className="space-y-2">
+          <Label>Sản phẩm (Tùy chọn)</Label>
           <Select
             value={formData.productId || 'none'}
             onValueChange={(value) => setFormData({ ...formData, productId: value === 'none' ? undefined : value })}
             disabled={!isEditing && !isCreateMode}
           >
-            <SelectTrigger className="h-14 rounded-2xl border-2 border-slate-100 bg-white px-6 focus:ring-0 shadow-sm font-black text-slate-900 uppercase tracking-tight">
-              <SelectValue placeholder="Gán sản phẩm..." />
+            <SelectTrigger>
+              <SelectValue placeholder="Chọn sản phẩm" />
             </SelectTrigger>
-            <SelectContent className="rounded-2xl p-1 shadow-2xl">
-              <SelectItem value="none" className="rounded-xl h-11 uppercase font-black text-[10px]">Không gán sản phẩm</SelectItem>
+            <SelectContent>
+              <SelectItem value="none">Không có</SelectItem>
               {filteredProducts.map((product) => (
-                <SelectItem key={product.id} value={product.id} className="rounded-xl h-11 uppercase font-black text-[10px]">
+                <SelectItem key={product.id} value={product.id}>
                   {product.name}
                 </SelectItem>
               ))}
@@ -168,98 +161,59 @@ export function ContentFormShared({
         </div>
       </div>
 
-      <div className="space-y-3">
-        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">Tiêu đề Nội dung</Label>
-        <div className="relative group">
-          <Input
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            disabled={!isEditing && !isCreateMode}
-            placeholder="Ví dụ: Campaign Launch - Ultra Tech..."
-            className="h-14 rounded-2xl border-2 border-slate-100 bg-white px-6 focus-visible:ring-slate-100 font-black text-slate-900 uppercase tracking-tight shadow-sm"
-          />
-        </div>
+      <div className="space-y-2">
+        <Label>Tiêu đề</Label>
+        <Input
+          value={formData.title}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          disabled={!isEditing && !isCreateMode}
+          placeholder="Nhập tiêu đề nội dung..."
+        />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-3">
-          <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">Phong cách Persona</Label>
-          <Textarea
-            value={formData.styleDescription || ''}
-            onChange={(e) => setFormData({ ...formData, styleDescription: e.target.value })}
-            disabled={!isEditing && !isCreateMode}
-            placeholder="Hài hước, chuyên nghiệp, phá cách..."
-            rows={2}
-            className="rounded-2xl border-2 border-slate-100 bg-white p-4 focus-visible:ring-slate-100 font-medium text-slate-900 text-sm shadow-sm"
-          />
-        </div>
-
-        <div className="space-y-3">
-          <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">Bối cảnh xuất bản</Label>
-          <Textarea
-            value={formData.contextDescription || ''}
-            onChange={(e) => setFormData({ ...formData, contextDescription: e.target.value })}
-            disabled={!isEditing && !isCreateMode}
-            placeholder="Mô tả bối cảnh hoặc chiến dịch liên quan..."
-            rows={2}
-            className="rounded-2xl border-2 border-slate-100 bg-white p-4 focus-visible:ring-slate-100 font-medium text-slate-900 text-sm shadow-sm"
-          />
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">Loại hình truyền thông</Label>
-        <div className="flex flex-wrap gap-3">
+      <div className="space-y-2">
+        <Label>Loại bài viết</Label>
+        <div className="flex flex-wrap gap-2">
           {[
-            { id: AdTypeEnum.TextOnly, label: 'Text Only', icon: FileText },
-            { id: AdTypeEnum.ImageText, label: 'Image + Text', icon: ImageIcon },
-            { id: AdTypeEnum.VideoText, label: 'Video + Text', icon: Video }
+            { id: AdTypeEnum.TextOnly, label: 'Văn bản', icon: FileText },
+            { id: AdTypeEnum.ImageText, label: 'Ảnh + Văn bản', icon: ImageIcon },
+            { id: AdTypeEnum.VideoText, label: 'Video + Văn bản', icon: Video }
           ].map(item => (
-            <button
+            <Button
               key={item.id}
               type="button"
+              variant={formData.adType === item.id ? "default" : "outline"}
               onClick={() => setFormData({ ...formData, adType: item.id })}
               disabled={!isEditing && !isCreateMode}
-              className={cn(
-                "flex-1 min-w-[140px] px-6 py-4 rounded-2xl border-2 transition-all flex items-center justify-center gap-3",
-                formData.adType === item.id
-                  ? "border-slate-900 bg-slate-900 text-white shadow-lg"
-                  : "border-slate-100 bg-slate-50 text-slate-400 hover:border-slate-200"
-              )}
+              className="flex-1 min-w-[120px]"
             >
-              <item.icon className="size-4" />
-              <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
-            </button>
+              <item.icon className="mr-2 size-4" />
+              {item.label}
+            </Button>
           ))}
         </div>
       </div>
 
-      <div className="space-y-3">
-        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">Nội dung Copywriting</Label>
-        <div className="relative group">
-          <div className="absolute top-4 right-4 p-2 opacity-10">
-            <Zap className="size-10 text-slate-900" />
-          </div>
-          <Textarea
-            value={formData.textContent || ''}
-            onChange={(e) => setFormData({ ...formData, textContent: e.target.value })}
-            disabled={!isEditing && !isCreateMode}
-            placeholder="Nhập nội dung văn bản sẽ hiển thị trên bài viết..."
-            rows={8}
-            className="rounded-2xl border-2 border-slate-100 bg-white p-8 focus-visible:ring-slate-100 font-medium text-slate-900 text-base shadow-sm leading-relaxed"
-          />
-        </div>
+      <div className="space-y-2">
+        <Label>Nội dung bài viết</Label>
+        <Textarea
+          value={formData.textContent || ''}
+          onChange={(e) => setFormData({ ...formData, textContent: e.target.value })}
+          disabled={!isEditing && !isCreateMode}
+          placeholder="Nhập nội dung chi tiết bài viết..."
+          rows={6}
+          className="resize-none"
+        />
       </div>
 
-      {/* Media Asset Pool */}
       {(formData.adType === AdTypeEnum.ImageText || formData.adType === AdTypeEnum.VideoText) && (
-        <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 space-y-6">
-          <div className="flex items-center gap-3">
-            <Upload className="size-4 text-slate-400" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Tài sản truyền thông đa phương tiện</span>
+        <div className="p-4 rounded-lg border bg-slate-50/50 space-y-4">
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
+            <Upload className="size-4" />
+            <span>Tệp đính kèm</span>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             <input
               type="file"
               id="content-media"
@@ -271,29 +225,26 @@ export function ContentFormShared({
             <Button
               type="button"
               variant="outline"
+              size="sm"
               onClick={() => document.getElementById('content-media')?.click()}
               disabled={!isEditing && !isCreateMode}
-              className="h-14 px-8 rounded-2xl border-slate-200 bg-white text-slate-900 font-black uppercase tracking-widest text-[10px] shadow-sm hover:bg-slate-50 transition-all active:scale-95"
             >
-              {formData.adType === AdTypeEnum.ImageText ? <ImageIcon className="mr-3 size-4" /> : <Video className="mr-3 size-4" />}
-              {formData.adType === AdTypeEnum.ImageText ? 'Tải lên Hình ảnh' : 'Tải lên Video'}
+              <Upload className="mr-2 size-4" />
+              Tải lên {formData.adType === AdTypeEnum.ImageText ? 'ảnh' : 'video'}
             </Button>
 
             {formData.adType === AdTypeEnum.ImageText && displayImageUrls.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                 {displayImageUrls.map((src: string, i: number) => (
-                  <div key={i} className="aspect-square relative rounded-xl overflow-hidden border-2 border-white shadow-md group/img">
-                    <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform group-hover/img:scale-110 duration-500" />
-                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
-                      <Check className="size-6 text-white" />
-                    </div>
+                  <div key={i} className="aspect-square relative rounded-md overflow-hidden border bg-white">
+                    <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover" />
                   </div>
                 ))}
               </div>
             )}
 
             {formData.adType === AdTypeEnum.VideoText && displayVideoUrl && (
-              <div className="max-w-md rounded-2xl overflow-hidden border-4 border-white shadow-2xl bg-black">
+              <div className="max-w-xs rounded-md overflow-hidden border bg-black">
                 <video className="w-full aspect-video" controls src={displayVideoUrl} />
               </div>
             )}
@@ -301,37 +252,27 @@ export function ContentFormShared({
         </div>
       )}
 
-      <div className="space-y-3">
-        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">Nhân vật đại diện (Brand Character)</Label>
-        <Input
-          value={formData.representativeCharacter || ''}
-          onChange={(e) => setFormData({ ...formData, representativeCharacter: e.target.value })}
-          disabled={!isEditing && !isCreateMode}
-          placeholder="Tên nhân vật AI hoặc người đại diện..."
-          className="h-14 rounded-2xl border-2 border-slate-100 bg-white px-6 focus-visible:ring-slate-100 font-black text-slate-900 uppercase tracking-tight shadow-sm"
-        />
-      </div>
-
       {showButtons && (
-        <div className="flex flex-col sm:flex-row gap-4 pt-10 border-t border-slate-100">
+        <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
           {(isEditing || isCreateMode) && (
             <Button
               onClick={handleSave}
               disabled={isProcessing || !formData.brandId}
-              className="h-16 flex-[2] rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-slate-200 transition-all hover:-translate-y-1"
+              className="flex-1"
             >
-              {isProcessing ? <Loader2 className="mr-3 size-5 animate-spin" /> : <Save className="mr-3 size-4" />}
-              {isCreateMode ? 'Kiến tạo Nội dung' : 'Lưu Thay đổi'} <ChevronRight className="ml-2 size-5" />
+              {isProcessing && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {isCreateMode ? 'Tạo nội dung' : 'Lưu thay đổi'}
             </Button>
           )}
 
           {content && content.status === ContentStatusEnum.Draft && onSubmit && !isEditing && canUseTeamFeatures && (
             <Button
+              variant="outline"
               onClick={handleSubmit}
               disabled={isProcessing}
-              className="h-16 flex-1 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black uppercase tracking-widest text-[11px] shadow-xl group"
+              className="flex-1"
             >
-              <Send className="mr-3 size-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              <Send className="mr-2 size-4" />
               Gửi phê duyệt
             </Button>
           )}
@@ -340,10 +281,3 @@ export function ContentFormShared({
     </div>
   );
 }
-
-const Loader2 = ({ className }: { className?: string }) => (
-  <svg className={cn("animate-spin", className)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-  </svg>
-);

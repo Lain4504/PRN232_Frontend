@@ -633,6 +633,7 @@ export interface UpdateContentRequest {
   styleDescription?: string;
   contextDescription?: string;
   representativeCharacter?: string;
+  status?: ContentStatusEnum;
 }
 
 export interface PublishResultDto {

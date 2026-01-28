@@ -7,12 +7,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import {
-  Save,
-  Send,
-  Sparkles,
   X,
   Plus,
-  Rocket,
   ChevronRight
 } from "lucide-react";
 import {
@@ -72,9 +68,6 @@ export function ContentModal({
     textContent: '',
     imageUrl: undefined,
     videoUrl: undefined,
-    styleDescription: undefined,
-    contextDescription: undefined,
-    representativeCharacter: undefined,
     publishImmediately: false,
     integrationId: undefined,
   });
@@ -128,9 +121,6 @@ export function ContentModal({
         textContent: content.textContent || '',
         imageUrl: content.imageUrl || undefined,
         videoUrl: content.videoUrl || undefined,
-        styleDescription: content.styleDescription || undefined,
-        contextDescription: content.contextDescription || undefined,
-        representativeCharacter: content.representativeCharacter || undefined,
         publishImmediately: false,
         integrationId: undefined,
       });
@@ -147,9 +137,6 @@ export function ContentModal({
         textContent: '',
         imageUrl: undefined,
         videoUrl: undefined,
-        styleDescription: undefined,
-        contextDescription: undefined,
-        representativeCharacter: undefined,
         publishImmediately: false,
         integrationId: undefined,
       });
@@ -213,9 +200,6 @@ export function ContentModal({
         productId: formData.productId,
         imageUrl: formData.imageUrl,
         videoUrl: formData.videoUrl,
-        styleDescription: formData.styleDescription,
-        contextDescription: formData.contextDescription,
-        representativeCharacter: formData.representativeCharacter,
       };
       if (imageFiles.length > 0) {
         const urls = await Promise.all(imageFiles.map(uploadToPublic));
@@ -248,44 +232,41 @@ export function ContentModal({
     reader.readAsDataURL(file);
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'Draft': return 'Nháp';
+      case 'PendingApproval': return 'Chờ phê duyệt';
+      case 'Approved': return 'Đã phê duyệt';
+      case 'Published': return 'Đã xuất bản';
+      case 'Rejected': return 'Bị từ chối';
+      default: return status;
+    }
+  };
+
   const statusBadge = content ? (
-    <Badge className={cn(
-      "text-[9px] font-black uppercase tracking-widest px-3 py-1",
-      content.status === 'Draft' ? "bg-slate-100 text-slate-400" :
-        content.status === 'PendingApproval' ? "bg-amber-100 text-amber-600" :
-          content.status === 'Approved' ? "bg-emerald-100 text-emerald-600" :
-            "bg-slate-900 text-white"
-    )}>
-      {content.status}
+    <Badge variant="outline" className="font-medium">
+      {getStatusLabel(content.status)}
     </Badge>
   ) : null;
 
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-5xl w-[90vw] max-h-[95vh] flex flex-col rounded-3xl border-none p-0 shadow-2xl bg-white overflow-hidden font-sans">
-          <DialogHeader className="flex-shrink-0 p-8 pb-4">
-            <div className="flex items-center justify-between">
-              <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-0 border border-slate-200 shadow-sm">
-                <Sparkles className="size-8" />
-              </div>
-              <div className="flex items-center gap-4">
-                {statusBadge}
-                <Button onClick={() => onOpenChange(false)} variant="ghost" className="size-10 rounded-xl bg-slate-50 hover:bg-slate-100 p-0 text-slate-400">
-                  <X className="size-5" />
-                </Button>
-              </div>
-            </div>
-            <div className="mt-8">
-              <DialogTitle className="text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">
-                {isCreateMode ? 'Sáng tạo Nội dung' : 'Hiệu chỉnh Tài sản'}
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] flex flex-col p-0">
+          <DialogHeader className="p-6 border-b flex-row items-center justify-between space-y-0">
+            <div>
+              <DialogTitle className="text-xl font-bold">
+                {isCreateMode ? 'Tạo nội dung mới' : 'Chỉnh sửa nội dung'}
               </DialogTitle>
-              <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic whitespace-normal">
-                {isCreateMode ? 'Kiến tạo các chiến dịch truyền thông đa phương tiện với sức mạnh AI.' : 'Tối ưu hóa và điều chỉnh thông số chiến dịch truyền thông.'}
+              <DialogDescription>
+                {isCreateMode ? 'Khởi tạo nội dung quảng cáo cho thương hiệu của bạn.' : 'Cập nhật thông tin chi tiết của nội dung.'}
               </DialogDescription>
             </div>
+            <div className="flex items-center gap-3">
+              {statusBadge}
+            </div>
           </DialogHeader>
-          <div className="flex-1 overflow-y-auto px-8 pb-8 scrollbar-hide">
+          <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
             {teamId ? (
               <TeamContentForm
                 formData={formData}
@@ -334,22 +315,19 @@ export function ContentModal({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[95vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white font-sans">
-        <DrawerHeader className="flex-shrink-0 text-left p-6 pb-2">
-          <div className="flex items-center justify-between mb-6">
-            <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200">
-              <Sparkles className="size-6" />
-            </div>
+      <DrawerContent className="max-h-[95vh] flex flex-col">
+        <DrawerHeader className="text-left border-b">
+          <div className="flex items-center justify-between mb-2">
+            <DrawerTitle className="text-xl font-bold">
+              {isCreateMode ? 'Tạo nội dung' : 'Chỉnh sửa nội dung'}
+            </DrawerTitle>
             {statusBadge}
           </div>
-          <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">
-            {isCreateMode ? 'Sáng tạo Nội dung' : 'Hiệu chỉnh Tài sản'}
-          </DrawerTitle>
-          <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">
-            {isCreateMode ? 'Khởi tạo chiến dịch mới.' : 'Cập nhật thông số.'}
+          <DrawerDescription>
+            {isCreateMode ? 'Khởi tạo nội dung mới.' : 'Cập nhật thông tin.'}
           </DrawerDescription>
         </DrawerHeader>
-        <div className="flex-1 overflow-y-auto px-6 pb-6 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto p-4">
           {teamId ? (
             <TeamContentForm
               formData={formData}
@@ -391,24 +369,15 @@ export function ContentModal({
             />
           )}
         </div>
-        <DrawerFooter className="p-6 pt-0">
-          <div className="flex flex-col gap-4">
+        <DrawerFooter className="border-t p-4">
+          <div className="flex flex-col gap-2">
             {(isEditing || isCreateMode) && (
               <Button
                 onClick={handleSave}
                 disabled={isProcessing || !formData.brandId}
-                className="h-16 w-full rounded-2xl bg-slate-900 text-white font-black uppercase tracking-widest text-[11px] shadow-2xl"
+                className="w-full"
               >
-                {isCreateMode ? 'Kiến tạo Nội dung' : 'Lưu Thay đổi'} <ChevronRight className="ml-2 size-5" />
-              </Button>
-            )}
-            {content && content.status === ContentStatusEnum.Draft && onSubmit && !isEditing && canUseTeamFeatures && (
-              <Button
-                onClick={() => content && onSubmit && onSubmit(content.id)}
-                disabled={isProcessing}
-                className="h-16 w-full rounded-2xl bg-blue-600 text-white font-black uppercase tracking-widest text-[11px] shadow-2xl"
-              >
-                Gửi phê duyệt <Send className="ml-3 size-4" />
+                {isCreateMode ? 'Tạo nội dung' : 'Lưu thay đổi'}
               </Button>
             )}
           </div>

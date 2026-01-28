@@ -40,17 +40,12 @@ export function CalendarGrid({
     const startingDayOfWeek = firstDay.getDay();
 
     const days = [];
-
-    // Add empty cells for days before the first day of the month
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
-
-    // Add days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(new Date(year, month, day));
     }
-
     return days;
   };
 
@@ -64,150 +59,105 @@ export function CalendarGrid({
 
   if (isLoading) {
     return (
-      <Card className="rounded-2xl border border-white/5 bg-background/40 backdrop-blur-xl shadow-2xl relative overflow-hidden group">
-        <CardContent className="flex items-center justify-center py-32">
-          <div className="text-center relative z-10">
-            <div className="relative mb-4">
-              <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full" />
-              <Loader2 className="size-12 animate-spin text-primary relative z-10 mx-auto" />
-            </div>
-            <p className="text-sm font-medium uppercase tracking-widest text-primary/80">Syncing Matrix...</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col items-center justify-center py-24 gap-3 bg-slate-50/50 rounded-lg">
+        <Loader2 className="size-8 animate-spin text-slate-400" />
+        <p className="text-xs font-semibold text-slate-400">Đang đồng bộ dữ liệu...</p>
+      </div>
     );
   }
 
   const days = getDaysInMonth(currentDate);
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+    'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
   ];
-  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dayNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
   return (
-    <Card className="rounded-2xl border border-white/5 bg-background/40 backdrop-blur-xl shadow-2xl relative overflow-hidden group">
-      <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
-
-      <CardHeader className="border-b border-white/5 p-6 relative z-10 flex flex-row items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="p-2 rounded-lg bg-primary/10 border border-primary/20 text-primary shadow-[0_0_15px_rgba(var(--primary),0.3)]">
-            <Calendar className="size-5" />
-          </div>
-          <CardTitle className="text-xl font-bold font-fira-sans tracking-tight">
-            <span className="text-primary">{monthNames[currentDate.getMonth()]}</span>
-            <span className="text-muted-foreground ml-2 font-light">{currentDate.getFullYear()}</span>
-          </CardTitle>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between px-2">
+        <div className="flex items-center gap-2">
+          <span className="text-base font-bold text-slate-900">{monthNames[currentDate.getMonth()]}</span>
+          <span className="text-sm font-medium text-slate-400">{currentDate.getFullYear()}</span>
         </div>
 
-        <div className="flex items-center gap-1 bg-white/5 p-1 rounded-lg border border-white/10">
+        <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onMonthChange('prev')}
-            className="h-8 w-8 hover:bg-white/10 hover:text-primary transition-colors rounded-md"
+            className="size-8 rounded-md hover:bg-slate-100"
           >
             <ChevronLeft className="size-4" />
           </Button>
-          <div className="w-px h-4 bg-white/10 mx-1" />
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onMonthChange('next')}
-            className="h-8 w-8 hover:bg-white/10 hover:text-primary transition-colors rounded-md"
+            className="size-8 rounded-md hover:bg-slate-100"
           >
             <ChevronRight className="size-4" />
           </Button>
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="p-6 relative z-10">
-        {/* Day Names */}
-        <div className="grid grid-cols-7 gap-2 mb-4">
-          {dayNames.map((day, i) => (
+      <div className="grid grid-cols-7 gap-1 sm:gap-2">
+        {dayNames.map((day, i) => (
+          <div
+            key={day}
+            className={cn(
+              "text-center text-[10px] sm:text-xs font-bold py-2",
+              i === 0 ? "text-rose-500" : "text-slate-400"
+            )}
+          >
+            {day}
+          </div>
+        ))}
+
+        {days.map((day, index) => {
+          if (!day) {
+            return <div key={`empty-${index}`} className="aspect-square rounded-lg bg-slate-50/30" />;
+          }
+
+          const dayEvents = getEventsForDate(day);
+          const hasEvents = dayEvents.length > 0;
+          const isToday = day.toDateString() === new Date().toDateString();
+          const isSelected = selectedDate?.toDateString() === day.toDateString();
+
+          return (
             <div
-              key={day}
+              key={day.toISOString()}
               className={cn(
-                "text-center text-xs font-bold uppercase tracking-widest py-2 rounded-md",
-                i === 0 || i === 6 ? "text-primary/70 bg-primary/5" : "text-muted-foreground/70"
+                "relative aspect-square p-1.5 sm:p-2 rounded-lg cursor-pointer transition-all border",
+                isToday ? "border-slate-900 bg-slate-900 text-white" : "border-slate-100 bg-white hover:border-slate-300",
+                isSelected && !isToday ? "ring-2 ring-slate-900" : "",
+                hasEvents && !isToday && "bg-slate-50"
               )}
+              onClick={() => onDateSelect?.(day)}
             >
-              <span className="hidden sm:inline">{day}</span>
-              <span className="sm:hidden">{day.charAt(0)}</span>
+              <span className={cn(
+                "text-xs sm:text-sm font-bold",
+                isToday ? "text-white" : "text-slate-900"
+              )}>
+                {day.getDate()}
+              </span>
+
+              {hasEvents && (
+                <div className="absolute bottom-1.5 sm:bottom-2 right-1.5 sm:right-2 flex gap-0.5">
+                  {isToday ? (
+                    <div className="size-1 rounded-full bg-white opacity-80" />
+                  ) : (
+                    <div className="size-1 rounded-full bg-blue-500" />
+                  )}
+                  {dayEvents.length > 1 && (
+                    <div className={cn("size-1 rounded-full", isToday ? "bg-white/60" : "bg-blue-300")} />
+                  )}
+                </div>
+              )}
             </div>
-          ))}
-        </div>
-
-        {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-2">
-          {days.map((day, index) => {
-            if (!day) {
-              return <div key={`empty-${index}`} className="aspect-[4/5] sm:aspect-square rounded-xl bg-white/[0.02] border border-transparent" />;
-            }
-
-            const dayEvents = getEventsForDate(day);
-            const hasEvents = dayEvents.length > 0;
-            const isToday = day.toDateString() === new Date().toDateString();
-            const isSelected = selectedDate?.toDateString() === day.toDateString();
-
-            return (
-              <div
-                key={day.toISOString().split('T')[0]}
-                className={cn(
-                  "relative aspect-[4/5] sm:aspect-square p-2 rounded-xl cursor-pointer transition-all duration-300 group/day flex flex-col justify-between overflow-hidden",
-                  "border border-white/5 hover:border-primary/30 hover:shadow-[0_0_15px_rgba(var(--primary),0.15)]",
-                  isToday ? "bg-primary/10 border-primary/40 shadow-[0_0_20px_rgba(var(--primary),0.2)]" : "bg-white/[0.02]",
-                  isSelected ? "ring-2 ring-primary ring-offset-2 ring-offset-background bg-primary/5" : "",
-                  hasEvents && !isToday && "bg-gradient-to-br from-white/[0.07] to-white/[0.02]"
-                )}
-                onClick={() => onDateSelect?.(day)}
-              >
-                <div className="flex justify-between items-start">
-                  <span className={cn(
-                    "text-sm font-bold font-fira-sans transition-colors",
-                    isToday ? "text-primary" : "text-muted-foreground group-hover/day:text-foreground",
-                    isSelected && "text-primary"
-                  )}>
-                    {day.getDate()}
-                  </span>
-
-                  {isToday && (
-                    <span className="block w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_5px_var(--primary)]" />
-                  )}
-                </div>
-
-                {/* Event Indicators */}
-                <div className="mt-auto space-y-1">
-                  {hasEvents && (
-                    <div className="flex flex-col gap-1">
-                      {/* Show dots for small view / many events */}
-                      <div className="flex gap-0.5 justify-end flex-wrap">
-                        {dayEvents.slice(0, 4).map((_, i) => (
-                          <div key={i} className={cn(
-                            "w-1.5 h-1.5 rounded-full",
-                            isToday ? "bg-primary" : "bg-sky-400"
-                          )} />
-                        ))}
-                        {dayEvents.length > 4 && (
-                          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
-                        )}
-                      </div>
-
-                      {/* Label for larger screens/emphasis */}
-                      <div className="hidden sm:block text-[10px] font-medium text-right text-muted-foreground group-hover/day:text-primary transition-colors">
-                        {dayEvents.length} Item{dayEvents.length !== 1 ? 's' : ''}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Active glow effect on hover */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-transparent opacity-0 group-hover/day:opacity-100 transition-opacity pointer-events-none" />
-              </div>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+          );
+        })}
+      </div>
+    </div>
   );
 }
