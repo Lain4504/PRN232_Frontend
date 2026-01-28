@@ -289,7 +289,12 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
             )}
 
             <div className="grid grid-cols-2 gap-4">
-              {SUBSCRIPTION_PLANS.filter(p => p.tier !== effectiveSubscription.tier).map(plan => (
+              {SUBSCRIPTION_PLANS.filter(plan => {
+                const tierOrder = { 'free': 0, 'basic': 1, 'pro': 2 }
+                const currentTierOrder = tierOrder[effectiveSubscription.tier as keyof typeof tierOrder] ?? 0
+                const targetTierOrder = tierOrder[plan.tier as keyof typeof tierOrder] ?? 0
+                return targetTierOrder > currentTierOrder
+              }).map(plan => (
                 <Button
                   key={plan.id}
                   onClick={() => handlePlanChange(plan)}
@@ -297,7 +302,7 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
                   variant="outline"
                 >
                   <Zap className="h-4 w-4 mr-2 opacity-50" />
-                  {plan.tier === 'free' ? 'Về gói Free' : `Lên gói ${plan.name}`}
+                  Lên gói {plan.name}
                 </Button>
               ))}
             </div>
