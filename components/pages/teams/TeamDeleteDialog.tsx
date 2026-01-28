@@ -53,9 +53,9 @@ export function TeamDeleteDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md rounded-[2.5rem] border-none p-0 shadow-2xl bg-white overflow-hidden">
+      <DialogContent className="sm:max-w-md rounded-3xl border-none p-0 shadow-2xl bg-white overflow-hidden">
         <DialogHeader className="p-10 pb-4">
-          <div className="size-16 rounded-[2rem] bg-rose-50 flex items-center justify-center text-rose-500 mb-8 border border-rose-100 shadow-sm mx-auto">
+          <div className="size-16 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 mb-8 border border-rose-100 shadow-sm mx-auto">
             <ShieldAlert className="size-10" />
           </div>
           <DialogTitle className="text-3xl font-black uppercase tracking-tight text-slate-900 text-center leading-none">Phá hủy Đội ngữ</DialogTitle>

@@ -73,27 +73,27 @@ export function DashboardSidebar() {
   ]
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-slate-100 bg-white shadow-sm transition-all duration-300">
-      <SidebarHeader className="h-16 flex items-center px-4 border-b border-slate-100">
+    <Sidebar collapsible="icon" className="border-r border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all duration-300">
+      <SidebarHeader className="h-16 flex items-center px-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
         <Link href="/overview" className="flex items-center gap-3 group">
-          <div className="size-8 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg shadow-slate-200 transition-transform group-hover:scale-110">
+          <div className="size-8 bg-slate-900 dark:bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-slate-200/50 dark:shadow-primary/20 transition-transform group-hover:scale-110">
             <Zap className="size-4 text-white fill-current" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="font-black text-lg tracking-tighter text-slate-900 leading-none">omniadly</span>
-            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mt-1">Dashboard</span>
+            <span className="font-black text-lg tracking-tighter text-slate-900 dark:text-white leading-none">omniadly</span>
+            <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mt-1">Bảng điều khiển</span>
           </div>
         </Link>
       </SidebarHeader>
 
-      <SidebarContent className="py-6 px-3 group-data-[collapsible=icon]:px-2">
+      <SidebarContent className="py-6 px-3 group-data-[collapsible=icon]:px-1.5 scrollbar-hide bg-white dark:bg-slate-900">
         {/* Core Systems Group */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-3 mb-4 group-data-[collapsible=icon]:hidden">
-            Hệ thống chính
+          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-600 px-3 mb-5 group-data-[collapsible=icon]:hidden">
+            HỆ THỐNG CHÍNH
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1">
+            <SidebarMenu className="gap-1.5">
               {mainNavItems.map((item) => {
                 const isActive = pathname === item.url || (item.url !== "/dashboard" && pathname.startsWith(item.url))
                 return (
@@ -103,15 +103,15 @@ export function DashboardSidebar() {
                       isActive={isActive}
                       tooltip={item.title}
                       className={cn(
-                        "h-11 rounded-xl transition-all duration-200 group px-3 group-data-[collapsible=icon]:px-0",
+                        "h-12 rounded-2xl transition-all duration-300 group px-3 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center",
                         isActive
-                          ? "bg-slate-900 text-white hover:bg-slate-800 hover:text-white"
-                          : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                          ? "bg-slate-900 dark:bg-primary text-white shadow-xl shadow-slate-200 dark:shadow-primary/20 hover:bg-slate-800 dark:hover:bg-primary/90 hover:text-white"
+                          : "text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
                       )}
                     >
-                      <Link href={item.url} className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0">
-                        <item.icon className={cn("size-5 shrink-0 transition-transform", isActive ? "text-white" : "group-hover:scale-110")} />
-                        <span className="font-bold text-xs uppercase tracking-widest truncate group-data-[collapsible=icon]:hidden">
+                      <Link href={item.url} className="flex items-center gap-3 w-full">
+                        <item.icon className={cn("size-5 shrink-0 transition-transform duration-300", isActive ? "text-white scale-110" : "group-hover:scale-110")} />
+                        <span className="font-black text-[10px] uppercase tracking-widest truncate group-data-[collapsible=icon]:hidden">
                           {item.title}
                         </span>
                       </Link>
@@ -124,23 +124,19 @@ export function DashboardSidebar() {
         </SidebarGroup>
 
         {/* Workflow Group */}
-        <SidebarGroup className="mt-8">
-          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-3 mb-4 group-data-[collapsible=icon]:hidden">
-            Quy trình làm việc
+        <SidebarGroup className="mt-10">
+          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-600 px-3 mb-5 group-data-[collapsible=icon]:hidden">
+            QUY TRÌNH LÀM VIỆC
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1">
+            <SidebarMenu className="gap-1.5">
               {workflowNavItems
                 .filter(item => {
-                  // Both Teams and Approvals require at least Basic/Pro plan
                   if (!canUseTeamFeatures) return false;
-
-                  // Only owners and specific manager roles can manage teams
                   if (item.url === "/dashboard/teams") {
                     const managementRoles = ['Vendor', 'TeamLeader'];
                     return activeProfile?.isOwner || (activeProfile?.memberRole && managementRoles.includes(activeProfile.memberRole));
                   }
-
                   return true;
                 })
                 .map((item) => {
@@ -152,21 +148,21 @@ export function DashboardSidebar() {
                         isActive={isActive}
                         tooltip={item.title}
                         className={cn(
-                          "h-11 rounded-xl transition-all duration-200 group px-3 group-data-[collapsible=icon]:px-0",
+                          "h-12 rounded-2xl transition-all duration-300 group px-3 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center",
                           isActive
-                            ? "bg-slate-900 text-white hover:bg-slate-800 hover:text-white"
-                            : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                            ? "bg-slate-900 dark:bg-primary text-white shadow-xl shadow-slate-200 dark:shadow-primary/20 hover:bg-slate-800 dark:hover:bg-primary/90 hover:text-white"
+                            : "text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
                         )}
                       >
-                        <Link href={item.url} className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0">
-                          <item.icon className={cn("size-5 shrink-0 transition-transform", isActive ? "text-white" : "group-hover:scale-110")} />
-                          <span className="font-bold text-xs uppercase tracking-widest truncate group-data-[collapsible=icon]:hidden">
+                        <Link href={item.url} className="flex items-center gap-3 w-full relative">
+                          <item.icon className={cn("size-5 shrink-0 transition-transform duration-300", isActive ? "text-white scale-110" : "group-hover:scale-110")} />
+                          <span className="font-black text-[10px] uppercase tracking-widest truncate group-data-[collapsible=icon]:hidden">
                             {item.title}
                           </span>
                           {item.badge && (
-                            <SidebarMenuBadge className="bg-rose-500 text-white font-black text-[9px] size-5 rounded-full border-2 border-white group-data-[collapsible=icon]:hidden">
+                            <div className="absolute top-0 right-0 size-5 bg-rose-500 text-white font-black text-[8px] flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 translate-x-2 -translate-y-2 shadow-sm group-data-[collapsible=icon]:hidden">
                               {item.badge}
-                            </SidebarMenuBadge>
+                            </div>
                           )}
                         </Link>
                       </SidebarMenuButton>
@@ -178,8 +174,11 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-slate-50 group-data-[collapsible=icon]:p-2">
-        {/* Footer can be used for help or collapse toggle info */}
+      <SidebarFooter className="p-4 border-t border-slate-50 dark:border-slate-800 bg-white dark:bg-slate-900 group-data-[collapsible=icon]:p-2 min-h-16 flex items-center">
+        <div className="flex items-center gap-3 px-2 group-data-[collapsible=icon]:px-0">
+          <div className="size-2 rounded-full bg-emerald-500 animate-pulse group-data-[collapsible=icon]:hidden" />
+          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-600 group-data-[collapsible=icon]:hidden">Server: Online</span>
+        </div>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -58,20 +58,20 @@ export function ForgotPasswordForm({
       {success ? (
         <div className="text-center space-y-10 animate-in fade-in zoom-in duration-500">
           <div className="flex flex-col items-center gap-6">
-            <div className="h-20 w-20 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100 shadow-xl shadow-emerald-50">
+            <div className="h-20 w-20 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20 shadow-xl shadow-emerald-50 dark:shadow-emerald-900/10">
               <CheckCircle className="h-10 w-10 text-emerald-500" />
             </div>
             <div className="space-y-3">
-              <h3 className="text-2xl font-black text-slate-900 leading-tight">
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">
                 Email đã được gửi!
               </h3>
-              <p className="text-slate-500 font-medium leading-relaxed max-w-sm mx-auto">
+              <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-sm mx-auto">
                 Chúng tôi đã gửi hướng dẫn khôi phục mật khẩu đến email của bạn. Vui lòng kiểm tra hộp thư đến.
               </p>
             </div>
           </div>
 
-          <Button asChild className="w-full h-12 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition-all shadow-xl shadow-slate-100">
+          <Button asChild className="w-full h-12 rounded-xl bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white font-bold transition-all shadow-xl shadow-slate-100 dark:shadow-primary/10">
             <Link href="/auth/login" className="flex items-center justify-center gap-2">
               <ArrowLeft className="w-4 h-4" />
               Quay lại đăng nhập
@@ -87,15 +87,15 @@ export function ForgotPasswordForm({
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-slate-500 px-1">Email của bạn</FormLabel>
+                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">Email của bạn</FormLabel>
                     <FormControl>
                       <div className="relative group">
-                        <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+                        <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-600 h-4 w-4" />
                         <Input
                           {...field}
                           type="email"
                           placeholder="email@vidu.com"
-                          className="pl-12 h-12 rounded-xl border-slate-100 bg-white focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all font-medium"
+                          className="pl-12 h-12 rounded-xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all font-medium text-slate-900 dark:text-white"
                         />
                       </div>
                     </FormControl>
@@ -105,15 +105,15 @@ export function ForgotPasswordForm({
               />
 
               {error && (
-                <Alert variant="destructive" className="rounded-xl border-rose-100 bg-rose-50 text-rose-600">
-                  <AlertCircle className="h-4 w-4 fill-rose-600 text-white" />
+                <Alert variant="destructive" className="rounded-xl border-rose-100 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400">
+                  <AlertCircle className="h-4 w-4 fill-rose-600 dark:fill-rose-400 text-white dark:text-slate-950" />
                   <AlertDescription className="text-xs font-bold">{error.message}</AlertDescription>
                 </Alert>
               )}
 
               <Button
                 type="submit"
-                className="w-full h-12 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold shadow-xl shadow-slate-200 transition-all active:scale-[0.98]"
+                className="w-full h-12 rounded-xl bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white dark:text-white font-bold shadow-xl shadow-slate-200 dark:shadow-primary/10 transition-all active:scale-[0.98]"
                 disabled={isLoading}
               >
                 {isLoading ? (

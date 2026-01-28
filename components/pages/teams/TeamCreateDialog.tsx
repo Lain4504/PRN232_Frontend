@@ -96,7 +96,7 @@ export function TeamCreateDialog({ open, onOpenChange, onCreated }: Props) {
                 <Textarea
                   placeholder="Ghi chú ngắn gọn về mục tiêu của đội ngũ này..."
                   rows={4}
-                  className="rounded-[1.5rem] border-2 border-slate-100 bg-white p-6 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm"
+                  className="rounded-xl border-2 border-slate-100 bg-white p-6 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm"
                   {...field}
                 />
               </FormControl>
@@ -137,14 +137,14 @@ export function TeamCreateDialog({ open, onOpenChange, onCreated }: Props) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-[90vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white">
-          <DrawerHeader className="flex-shrink-0 text-left p-10 pb-4">
+          <DrawerHeader className="flex-shrink-0 text-left p-6 pb-2">
             <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200">
               <Users className="size-6" />
             </div>
             <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">Kiến tạo Đội ngũ</DrawerTitle>
             <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">Phác thảo thông tin cơ bản để bắt đầu quy trình cộng tác.</DrawerDescription>
           </DrawerHeader>
-          <div className="px-10 overflow-y-auto flex-1 pb-10">
+          <div className="px-6 overflow-y-auto flex-1 pb-6">
             <TeamFormContent onCancel={() => onOpenChange(false)} />
           </div>
         </DrawerContent>
@@ -154,15 +154,15 @@ export function TeamCreateDialog({ open, onOpenChange, onCreated }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden flex flex-col rounded-[3rem] border-none p-0 shadow-2xl bg-white">
-        <DialogHeader className="flex-shrink-0 p-12 pb-8">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl border-none p-0 shadow-2xl bg-white">
+        <DialogHeader className="flex-shrink-0 p-8 pb-4">
           <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-8 border border-slate-200 shadow-sm">
             <Users className="size-8" />
           </div>
           <DialogTitle className="text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">Kiến tạo Đội ngũ</DialogTitle>
           <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic">Xây dựng cấu trúc cộng tác mới cho tổ chức truyền thông của bạn.</DialogDescription>
         </DialogHeader>
-        <div className="overflow-y-auto flex-1 px-12 pb-12">
+        <div className="overflow-y-auto flex-1 px-8 pb-8">
           <TeamFormContent onCancel={() => onOpenChange(false)} />
         </div>
       </DialogContent>

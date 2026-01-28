@@ -42,13 +42,13 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
     <div className="space-y-12 animate-pulse">
       <div className="h-12 w-64 bg-slate-50 rounded-xl" />
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {[1, 2, 3, 4].map(i => <div key={i} className="h-40 bg-slate-50 rounded-[2rem] border border-slate-100" />)}
+        {[1, 2, 3, 4].map(i => <div key={i} className="h-40 bg-slate-50 rounded-2xl border border-slate-100" />)}
       </div>
     </div>
   )
 
   if (!team) return (
-    <div className="flex flex-col items-center justify-center py-32 text-center bg-slate-50/50 rounded-[3rem] border border-dashed border-slate-200">
+    <div className="flex flex-col items-center justify-center py-32 text-center bg-slate-50/50 rounded-3xl border border-dashed border-slate-200">
       <Shield className="size-16 text-slate-300 mb-8" />
       <h3 className="text-3xl font-black uppercase tracking-tight mb-3 text-slate-900 leading-none">Không tìm thấy đội nhóm</h3>
       <p className="text-slate-500 font-medium max-w-sm mx-auto mb-10 leading-relaxed italic border-l-4 border-slate-100 pl-6">Dữ liệu đội nhóm không tồn tại hoặc bạn không có quyền truy cập phối hợp.</p>
@@ -108,7 +108,7 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
           { label: "Lời mời chờ", value: pendingInvitations, icon: Mail, color: "text-blue-600", bg: "bg-blue-50" },
           { label: "Trạng thái nhóm", value: team.status, icon: Shield, color: team.status === 'Active' ? "text-emerald-600" : "text-amber-600", bg: team.status === 'Active' ? "bg-emerald-50" : "bg-amber-50" },
         ].map((stat, i) => (
-          <Card key={i} className="rounded-[2rem] border border-slate-100 bg-white p-8 shadow-sm group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 hover:-translate-y-1">
+          <Card key={i} className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between mb-8">
               <div className={cn("size-12 rounded-2xl flex items-center justify-center shadow-sm border border-white ring-4 ring-slate-50", stat.bg, stat.color)}>
                 <stat.icon className="size-5 transition-transform group-hover:rotate-12" />
@@ -135,7 +135,7 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {/* Quick Actions */}
-            <Card className="rounded-[2.5rem] border border-slate-100 bg-white shadow-sm p-10 space-y-8">
+            <Card className="rounded-3xl border border-slate-100 bg-white shadow-sm p-10 space-y-8">
               <div className="space-y-2">
                 <h4 className="text-xl font-black text-slate-900 uppercase tracking-widest leading-none">Thao tác nhanh</h4>
                 <p className="text-xs font-medium text-slate-400">Các quy trình quản trị đội ngũ được tối ưu hóa</p>
@@ -167,7 +167,7 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
             </Card>
 
             {/* Strategy Banner */}
-            <Card className="p-10 rounded-[2.5rem] bg-slate-900 text-white relative overflow-hidden group border-none flex flex-col justify-center">
+            <Card className="p-10 rounded-3xl bg-slate-900 text-white relative overflow-hidden group border-none flex flex-col justify-center">
               <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 rotate-12 group-hover:rotate-0 transition-transform duration-1000">
                 <Target className="size-48" />
               </div>
@@ -192,7 +192,7 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
 
         {activeTab === 'members' && (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="p-8 rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/40">
+            <div className="p-8 rounded-3xl border border-slate-100 bg-white shadow-xl shadow-slate-200/40">
               <TeamMembersTable
                 teamId={teamId}
                 canManage={canManage}
@@ -205,7 +205,7 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
 
         {activeTab === 'brands' && (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="p-8 rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/40">
+            <div className="p-8 rounded-3xl border border-slate-100 bg-white shadow-xl shadow-slate-200/40">
               <TeamBrandsList
                 teamId={teamId}
                 canManage={canManage}

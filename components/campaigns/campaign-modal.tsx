@@ -57,14 +57,14 @@ export function CampaignModal({
           </DrawerTrigger>
         )}
         <DrawerContent className="max-h-[95vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white">
-          <DrawerHeader className="flex-shrink-0 text-left p-10 pb-4">
+          <DrawerHeader className="flex-shrink-0 text-left p-6 pb-2">
             <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200">
               <Zap className="size-6" />
             </div>
             <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">{title}</DrawerTitle>
             <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">{description}</DrawerDescription>
           </DrawerHeader>
-          <div className="px-10 overflow-y-auto flex-1 pb-10 scrollbar-hide">
+          <div className="px-6 overflow-y-auto flex-1 pb-6 scrollbar-hide">
             <CampaignForm
               mode={mode}
               campaign={campaign}
@@ -86,8 +86,8 @@ export function CampaignModal({
           {children}
         </DialogTrigger>
       )}
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-[3rem] border-none p-0 shadow-2xl bg-white">
-        <DialogHeader className="flex-shrink-0 p-12 pb-8">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl border-none p-0 shadow-2xl bg-white">
+        <DialogHeader className="flex-shrink-0 p-8 pb-4">
           <div className="flex items-center justify-between">
             <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-0 border border-slate-200 shadow-sm">
               <Rocket className="size-8" />
@@ -101,7 +101,7 @@ export function CampaignModal({
             <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic">{description}</DialogDescription>
           </div>
         </DialogHeader>
-        <div className="overflow-y-auto flex-1 px-12 pb-12 scrollbar-hide">
+        <div className="overflow-y-auto flex-1 px-8 pb-8 scrollbar-hide">
           <CampaignForm
             mode={mode}
             campaign={campaign}

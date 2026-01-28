@@ -13,14 +13,14 @@ export function UserInfoSection() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-6 w-48 bg-slate-100 animate-pulse rounded" />
-        <Card className="rounded-[2rem] border-slate-100 shadow-none">
+        <Skeleton className="h-6 w-48 bg-slate-100 dark:bg-slate-800 rounded" />
+        <Card className="rounded-2xl border-slate-100 dark:border-slate-800 shadow-none">
           <CardContent className="p-8 space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {[1, 2, 3, 4].map(i => (
                 <div key={i} className="space-y-3">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-6 w-full" />
+                  <Skeleton className="h-4 w-24 dark:bg-slate-800" />
+                  <Skeleton className="h-6 w-full dark:bg-slate-800" />
                 </div>
               ))}
             </div>
@@ -42,50 +42,50 @@ export function UserInfoSection() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-slate-900 uppercase tracking-widest flex items-center gap-3">
-        <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
+      <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-3">
+        <div className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
           <Fingerprint className="size-4" />
         </div>
         Thông tin định danh
       </h2>
 
-      <Card className="rounded-[2.5rem] border-slate-100 bg-white shadow-sm overflow-hidden">
+      <Card className="rounded-3xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
         <CardContent className="p-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Email */}
             <div className="space-y-3 group">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-slate-900 transition-colors">
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                 <Mail className="h-3.5 w-3.5" />
                 Địa chỉ Email
               </div>
-              <p className="text-base font-bold text-slate-900">{user.email}</p>
+              <p className="text-base font-bold text-slate-900 dark:text-white">{user.email}</p>
             </div>
 
             {/* User ID */}
             <div className="space-y-3 group">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-slate-900 transition-colors">
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                 <Shield className="h-3.5 w-3.5" />
                 Mã định danh (ID)
               </div>
-              <p className="text-xs font-mono text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100 w-fit">
+              <p className="text-xs font-mono text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700 w-fit">
                 {user.id}
               </p>
             </div>
 
             {/* Created At */}
             <div className="space-y-3 group">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-slate-900 transition-colors">
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                 <Calendar className="h-3.5 w-3.5" />
                 Tham gia từ
               </div>
-              <p className="text-base font-bold text-slate-900">
+              <p className="text-base font-bold text-slate-900 dark:text-white">
                 {formatDate(user.createdAt)}
               </p>
             </div>
 
             {/* Status */}
             <div className="space-y-3 group">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-slate-900 transition-colors">
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 Trạng thái xác thực
               </div>
@@ -93,8 +93,8 @@ export function UserInfoSection() {
                 <span className={cn(
                   "inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest",
                   user.isEmailVerified
-                    ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                    : 'bg-amber-50 text-amber-600 border border-amber-100'
+                    ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20'
+                    : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20'
                 )}>
                   {user.isEmailVerified ? (
                     <>

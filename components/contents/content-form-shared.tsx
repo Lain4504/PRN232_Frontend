@@ -246,14 +246,14 @@ export function ContentFormShared({
             disabled={!isEditing && !isCreateMode}
             placeholder="Nhập nội dung văn bản sẽ hiển thị trên bài viết..."
             rows={8}
-            className="rounded-[2rem] border-2 border-slate-100 bg-white p-8 focus-visible:ring-slate-100 font-medium text-slate-900 text-base shadow-sm leading-relaxed"
+            className="rounded-2xl border-2 border-slate-100 bg-white p-8 focus-visible:ring-slate-100 font-medium text-slate-900 text-base shadow-sm leading-relaxed"
           />
         </div>
       </div>
 
       {/* Media Asset Pool */}
       {(formData.adType === AdTypeEnum.ImageText || formData.adType === AdTypeEnum.VideoText) && (
-        <div className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 space-y-6">
+        <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 space-y-6">
           <div className="flex items-center gap-3">
             <Upload className="size-4 text-slate-400" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Tài sản truyền thông đa phương tiện</span>

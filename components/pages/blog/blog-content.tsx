@@ -105,7 +105,7 @@ export default function BlogContent() {
                         {posts.map((post) => (
                             <div key={post.title} className="p-8 rounded-2xl bg-card/40 border border-border/40 backdrop-blur-3xl hover:bg-card/60 transition-all group flex flex-col justify-between h-[500px]">
                                 <div className="space-y-6">
-                                    <div className="h-48 relative rounded-[1.5rem] overflow-hidden mb-6">
+                                    <div className="h-48 relative rounded-xl overflow-hidden mb-6">
                                         <img src={post.image} alt={post.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                     </div>
                                     <Badge className="bg-muted/50 text-muted-foreground border-none font-black text-[9px] px-4 py-1.5 uppercase tracking-[0.3em]">{post.tag}</Badge>

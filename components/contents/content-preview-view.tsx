@@ -204,14 +204,14 @@ export function ContentPreviewView({
       {content.description && (
         <div className="space-y-4">
           <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Bối cảnh & Mô tả sáng tạo</Label>
-          <p className="p-6 bg-slate-50 rounded-[1.5rem] border border-slate-100 text-sm font-medium text-slate-600 leading-relaxed italic">{content.description}</p>
+          <p className="p-6 bg-slate-50 rounded-xl border border-slate-100 text-sm font-medium text-slate-600 leading-relaxed italic">{content.description}</p>
         </div>
       )}
 
       {content.textContent && (
         <div className="space-y-4">
           <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Nội dung văn bản (Copywriting)</Label>
-          <div className="p-8 bg-white rounded-[2rem] border-2 border-slate-100 shadow-sm relative group overflow-hidden">
+          <div className="p-8 bg-white rounded-2xl border-2 border-slate-100 shadow-sm relative group overflow-hidden">
             <div className="absolute top-0 right-0 p-6 opacity-[0.03] rotate-12 group-hover:rotate-0 transition-transform">
               <FileText className="size-20" />
             </div>

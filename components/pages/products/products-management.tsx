@@ -234,16 +234,16 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
     <div className="space-y-12 animate-pulse">
       <div className="h-12 w-64 bg-slate-50 rounded-xl" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {[1, 2].map(i => <div key={i} className="h-40 bg-slate-50 rounded-[2rem] border border-slate-100" />)}
+        {[1, 2].map(i => <div key={i} className="h-40 bg-slate-50 rounded-2xl border border-slate-100" />)}
       </div>
-      <div className="h-[600px] w-full bg-slate-50 rounded-[2.5rem] border border-slate-100" />
+      <div className="h-[600px] w-full bg-slate-50 rounded-3xl border border-slate-100" />
     </div>
   )
 
   if (!teamId && !brandId && !initialBrandId) {
     return (
-      <div className="flex flex-col items-center justify-center py-40 px-6 text-center border border-dashed border-slate-200 rounded-[3rem] bg-slate-50/50">
-        <div className="size-20 rounded-[2rem] bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
+      <div className="flex flex-col items-center justify-center py-40 px-6 text-center border border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+        <div className="size-20 rounded-2xl bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
           <Box className="size-10 text-slate-200" />
         </div>
         <h3 className="text-2xl font-black text-slate-900 mb-3 uppercase tracking-widest">Chọn thương hiệu</h3>
@@ -296,7 +296,7 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
           { label: "Tổng số thực thể", value: filteredProducts.length, icon: Package, color: "text-slate-900", bg: "bg-slate-100" },
           { label: "Trạng thái kho dữ liệu", value: "Online", icon: Zap, color: "text-emerald-600", bg: "bg-emerald-50", ping: true },
         ].map((stat, i) => (
-          <Card key={i} className="rounded-[2rem] border border-slate-100 bg-white p-8 shadow-sm group hover:shadow-xl transition-all duration-300">
+          <Card key={i} className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm group hover:shadow-xl transition-all duration-300">
             <div className="flex items-center justify-between mb-8">
               <div className={cn("size-12 rounded-2xl flex items-center justify-center shadow-sm border border-white ring-4 ring-slate-50", stat.bg, stat.color)}>
                 <stat.icon className="size-5 transition-transform group-hover:rotate-12" />
@@ -356,7 +356,7 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
 
       {/* Table Section */}
       {filteredProducts.length > 0 ? (
-        <Card className="rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden relative group">
+        <Card className="rounded-3xl border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden relative group">
           <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 group-hover:rotate-0 transition-transform duration-1000">
             <Package className="size-40 text-slate-900" />
           </div>
@@ -369,8 +369,8 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
           />
         </Card>
       ) : (
-        <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-[3rem] bg-slate-50/50">
-          <div className="size-20 rounded-[2rem] bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
+        <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+          <div className="size-20 rounded-2xl bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
             <Layers className="size-10 text-slate-200" />
           </div>
           <h3 className="text-2xl font-black text-slate-900 mb-3 uppercase tracking-widest">
@@ -399,7 +399,7 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
       {/* Dossier Modal */}
       {viewingProduct && (
         <AlertDialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-          <AlertDialogContent className="max-w-2xl p-0 overflow-hidden bg-white border-none shadow-2xl rounded-[2.5rem] font-sans">
+          <AlertDialogContent className="max-w-2xl p-0 overflow-hidden bg-white border-none shadow-2xl rounded-3xl font-sans">
             <div className="relative h-72 w-full bg-slate-900">
               {viewingProduct.images?.[0] ? (
                 <Image src={viewingProduct.images[0]} alt="" fill className="object-cover opacity-80" />
@@ -467,7 +467,7 @@ export function ProductsManagement({ initialBrandId, teamId }: ProductsManagemen
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteProductId} onOpenChange={() => setDeleteProductId(null)}>
-        <AlertDialogContent className="rounded-[2.5rem] border-slate-100 p-10 max-w-md shadow-2xl">
+        <AlertDialogContent className="rounded-3xl border-slate-100 p-10 max-w-md shadow-2xl">
           <AlertDialogHeader className="space-y-6">
             <div className="size-20 rounded-3xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto border border-rose-100 shadow-sm">
               <Trash2 className="size-10" />

@@ -70,7 +70,7 @@ function ScheduleDetailContent({ schedule }: { schedule: ContentCalendar | null 
   return (
     <div className="space-y-12 animate-in fade-in duration-500">
       {/* Content Identity */}
-      <div className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 space-y-6">
+      <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 space-y-6">
         <div className="flex items-start justify-between">
           <div className="space-y-3 flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -163,7 +163,7 @@ export function ScheduleDetailModal({ schedule, isOpen, onClose }: ScheduleDetai
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-[3rem] border-none p-0 shadow-2xl bg-white focus:outline-none">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl border-none p-0 shadow-2xl bg-white focus:outline-none">
         <DialogHeader className="flex-shrink-0 p-12 pb-8">
           <div className="flex items-center justify-between">
             <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-0 border border-slate-200 shadow-sm">

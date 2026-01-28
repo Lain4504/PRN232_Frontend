@@ -620,15 +620,51 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[300px] p-0 border-r border-border/40">
-                <div className="h-full flex flex-col pt-4">
-                  <div className="p-4">
-                    <Button onClick={createNewChatSession} className="w-full rounded-2xl h-11 font-bold">
-                      <Plus className="mr-2 h-4 w-4" /> Chat mới
+              <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0 border-r border-border/40 bg-background/95 backdrop-blur-3xl">
+                <SheetHeader className="p-6 border-b border-border/40">
+                  <SheetTitle className="text-left text-sm font-black uppercase tracking-widest text-primary">Lịch sử hội thoại</SheetTitle>
+                </SheetHeader>
+                <div className="h-full flex flex-col">
+                  <div className="p-4 border-b border-border/10">
+                    <Button onClick={createNewChatSession} className="w-full rounded-2xl h-12 font-bold shadow-lg shadow-primary/10">
+                      <Plus className="mr-2 h-5 w-5" /> Chat mới
                     </Button>
                   </div>
-                  <div className="flex-1 overflow-y-auto px-2">
-                    {/* Mobile Conversation List - reuse same logic */}
+                  <div className="flex-1 overflow-y-auto p-2 space-y-2">
+                    {conversations.map((conversation) => (
+                      <div
+                        key={conversation.id}
+                        className={`group cursor-pointer p-3 rounded-2xl transition-all flex items-center justify-between border ${currentSession?.id === conversation.id
+                          ? 'bg-primary/5 border-primary/20'
+                          : 'border-transparent hover:bg-muted/50'
+                          }`}
+                        onClick={() => {
+                          selectConversation(conversation);
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${currentSession?.id === conversation.id ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                            }`}>
+                            <MessageSquare className="h-5 w-5" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-xs font-bold truncate uppercase tracking-tight">
+                              {conversation.brandName || conversation.title}
+                            </div>
+                            <div className="text-[10px] text-muted-foreground line-clamp-1 font-medium italic">
+                              {conversation.lastMessage || "Chưa có nội dung"}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {conversations.length === 0 && (
+                      <div className="text-center py-10 opacity-40">
+                        <MessageSquare className="h-8 w-8 mx-auto mb-2" />
+                        <p className="text-[10px] font-bold uppercase tracking-widest">Trống</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </SheetContent>
@@ -698,79 +734,79 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
         </header>
 
         {/* Chat Content Container */}
-        <div className="flex-1 overflow-y-auto relative z-10 scroll-smooth" ref={chatScrollRef}>
+        <div className="flex-1 overflow-y-auto relative z-10 scroll-smooth pb-32" ref={chatScrollRef}>
           {!currentSession ? (
-            <div className="h-full flex items-center justify-center px-6">
-              <div className="text-center max-w-2xl space-y-12">
-                <div className="space-y-4">
-                  <div className="w-24 h-24 mx-auto bg-primary rounded-3xl flex items-center justify-center shadow-2xl shadow-primary/30 animate-bounce-subtle">
-                    <Sparkles className="h-12 w-12 text-primary-foreground fill-current" />
+            <div className="h-full flex items-center justify-center px-4">
+              <div className="text-center max-w-2xl space-y-8 md:space-y-12 py-10">
+                <div className="space-y-4 md:space-y-6">
+                  <div className="w-20 h-20 md:w-24 md:h-24 mx-auto bg-primary rounded-3xl flex items-center justify-center shadow-2xl shadow-primary/30 animate-bounce-subtle">
+                    <Sparkles className="h-10 w-10 md:h-12 md:w-12 text-primary-foreground fill-current" />
                   </div>
-                  <h2 className="text-4xl md:text-5xl font-black tracking-tight text-foreground leading-[1.1]">
+                  <h2 className="text-3xl md:text-5xl font-black tracking-tight text-foreground leading-[1.1] px-4">
                     Hôm nay chúng ta sẽ <br /><span className="text-primary italic">sáng tạo</span> gì?
                   </h2>
-                  <p className="text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
-                    Hợp tác với omniadly Intelligence để thiết kế các chiến dịch đa kênh,
-                    bản sao sáng tạo hoặc chiến lược thị trường.
+                  <p className="text-sm md:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed px-6">
+                    Hợp tác với AI Architect để thiết kế các chiến dịch đa kênh,
+                    nội dung sáng tạo hoặc chiến thuật tiếp cận thị trường.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto">
-                  <Button variant="outline" className="h-auto p-4 rounded-2xl border-border/50 bg-card/50 hover:bg-muted justify-start group" onClick={() => { setChatInput("Viết 5 tiêu đề chuyển đổi cao cho thương hiệu của tôi"); createNewChatSession(); }}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 max-w-md mx-auto px-4">
+                  <Button variant="outline" className="h-auto p-4 rounded-2xl border-border/50 bg-card/50 hover:bg-muted justify-start group transition-all" onClick={() => { setChatInput("Viết 5 tiêu đề chuyển đổi cao cho thương hiệu của tôi"); createNewChatSession(); }}>
                     <div className="text-left space-y-1">
                       <p className="font-bold text-sm">Tiêu đề</p>
-                      <p className="text-[10px] text-muted-foreground uppercase font-black">Tập trung chuyển đổi</p>
+                      <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase font-black tracking-widest">Tập trung chuyển đổi</p>
                     </div>
                   </Button>
-                  <Button variant="outline" className="h-auto p-4 rounded-2xl border-border/50 bg-card/50 hover:bg-muted justify-start group" onClick={() => { setChatInput("Tạo chiến lược mạng xã hội cho sản phẩm mới"); createNewChatSession(); }}>
+                  <Button variant="outline" className="h-auto p-4 rounded-2xl border-border/50 bg-card/50 hover:bg-muted justify-start group transition-all" onClick={() => { setChatInput("Tạo chiến lược mạng xã hội cho sản phẩm mới"); createNewChatSession(); }}>
                     <div className="text-left space-y-1">
                       <p className="font-bold text-sm">Chiến lược</p>
-                      <p className="text-[10px] text-muted-foreground uppercase font-black">Lộ trình chiến lược</p>
+                      <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase font-black tracking-widest">Lộ trình chiến lược</p>
                     </div>
                   </Button>
                 </div>
 
-                <Button onClick={createNewChatSession} size="lg" className="rounded-full px-12 h-14 text-lg font-bold shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                <Button onClick={createNewChatSession} size="lg" className="rounded-full px-10 md:px-12 h-12 md:h-14 md:text-lg font-bold shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
                   Bắt đầu sáng tạo
                 </Button>
               </div>
             </div>
           ) : (
-            <div className="max-w-4xl mx-auto px-6 py-12 md:py-20 space-y-12">
+            <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-20 space-y-8 md:space-y-12">
               {currentSession.messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex items-start gap-4 md:gap-6 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                  className={`flex items-start gap-3 md:gap-6 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
                 >
-                  <div className={`shrink-0 h-10 w-10 md:h-12 md:w-12 rounded-2xl flex items-center justify-center transition-transform hover:scale-110 ${message.role === 'assistant'
+                  <div className={`shrink-0 h-9 w-9 md:h-12 md:w-12 rounded-xl md:rounded-2xl flex items-center justify-center transition-transform hover:scale-110 ${message.role === 'assistant'
                     ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
                     : 'bg-muted text-muted-foreground'
                     }`}>
-                    {message.role === 'assistant' ? <Bot className="h-6 w-6" /> : <User className="h-6 w-6" />}
+                    {message.role === 'assistant' ? <Bot className="h-5 w-5 md:h-6 md:w-6" /> : <User className="h-5 w-5 md:h-6 md:w-6" />}
                   </div>
 
-                  <div className={`flex flex-col gap-3 min-w-0 max-w-[85%] md:max-w-[75%] ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
-                    <div className={`p-5 md:p-6 rounded-2xl shadow-sm backdrop-blur-sm border transition-all duration-300 ${message.role === 'user'
-                      ? 'bg-primary/95 text-primary-foreground border-primary/20 rounded-tr-none font-medium text-lg lg:text-xl selection:bg-background/20'
-                      : 'bg-card border-border/60 text-foreground rounded-tl-none leading-relaxed text-base md:text-lg'
+                  <div className={`flex flex-col gap-2 md:gap-3 min-w-0 max-w-[90%] md:max-w-[75%] ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
+                    <div className={`p-4 md:p-6 rounded-2xl shadow-sm backdrop-blur-sm border transition-all duration-300 ${message.role === 'user'
+                      ? 'bg-primary text-primary-foreground border-primary/20 rounded-tr-none font-medium text-base md:text-xl selection:bg-background/20'
+                      : 'bg-card border-border/60 text-foreground rounded-tl-none leading-relaxed text-sm md:text-lg'
                       }`}>
                       <p className="whitespace-pre-wrap">{message.content}</p>
                     </div>
 
                     {message.generation && (
-                      <Card className="w-full border-border/40 bg-card/30 backdrop-blur-md rounded-3xl overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-500">
-                        <CardContent className="p-8 space-y-6">
+                      <Card className="w-full border-border/40 bg-card/30 backdrop-blur-md rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500">
+                        <CardContent className="p-5 md:p-8 space-y-4 md:space-y-6">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:rotate-12 transition-transform">
+                              <div className="size-7 md:size-8 rounded-lg md:rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:rotate-12 transition-transform">
                                 <Sparkles className="h-4 w-4" />
                               </div>
-                              <span className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60">Trí tuệ nhân tạo AI</span>
+                              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">TRÍ TUỆ NHÂN TẠO</span>
                             </div>
-                            <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 uppercase font-bold text-[9px] px-2">Sẵn sàng</Badge>
+                            <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 uppercase font-black text-[8px] px-2 py-0.5 rounded-lg">LIVE</Badge>
                           </div>
 
-                          <div className="p-8 rounded-2xl bg-muted/30 border border-border/30 font-serif italic text-lg lg:text-2xl leading-relaxed text-foreground/90 selection:bg-primary/10">
+                          <div className="p-5 md:p-8 rounded-2xl bg-muted/30 border border-border/30 font-serif italic text-base md:text-2xl leading-relaxed text-foreground/90 selection:bg-primary/10">
                             &ldquo;{message.generation.generated_content}&rdquo;
                           </div>
 
@@ -789,7 +825,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                             </div>
                           )}
 
-                          <div className="flex gap-4">
+                          <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                             <Button
                               variant="outline"
                               size="lg"
@@ -800,19 +836,19 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                                   handleCopyContent(message.generation!.generated_content);
                                 }
                               }}
-                              className="flex-1 rounded-2xl h-12 font-bold border-border/40 hover:bg-muted hover:text-foreground transition-all"
+                              className="flex-1 rounded-2xl h-12 font-bold border-border/40 hover:bg-muted hover:text-foreground transition-all text-xs md:text-sm"
                             >
                               <Copy className="h-4 w-4 mr-2" />
-                              Sao chép tài nguyên
+                              Sao chép
                             </Button>
                             <Button
                               variant="default"
                               size="lg"
                               onClick={() => handleSaveToLibrary(message.generation!)}
-                              className="flex-1 rounded-2xl h-12 font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]"
+                              className="flex-1 rounded-2xl h-12 font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] text-xs md:text-sm"
                             >
                               <Save className="h-4 w-4 mr-2" />
-                              Lưu vào kho dữ liệu
+                              Lưu dữ liệu
                             </Button>
                           </div>
                         </CardContent>
@@ -823,7 +859,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                       {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       {message.role === 'assistant' && (
                         <span className="flex items-center gap-1 text-primary">
-                          <div className="h-1 w-1 rounded-full bg-primary" /> Được tối ưu hóa
+                          <div className="h-1 w-1 rounded-full bg-primary" /> ĐÃ TỐI ƯU
                         </span>
                       )}
                     </span>
@@ -832,81 +868,84 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
               ))}
 
               {isTyping && (
-                <div className="flex gap-4 justify-start">
-                  <div className="h-12 w-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center animate-pulse">
-                    <Bot className="h-6 w-6" />
+                <div className="flex gap-3 md:gap-4 justify-start">
+                  <div className="h-9 w-9 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-primary text-primary-foreground flex items-center justify-center animate-pulse">
+                    <Bot className="h-5 w-5 md:h-6 md:w-6" />
                   </div>
-                  <div className="bg-card border border-border/60 rounded-2xl rounded-tl-none px-6 py-4 flex items-center gap-2">
+                  <div className="bg-card border border-border/60 rounded-2xl rounded-tl-none px-5 py-3 md:px-6 md:py-4 flex items-center gap-2">
                     <div className="flex gap-1.5">
-                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-                      <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
-                      <div className="w-2 h-2 bg-primary/30 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary/30 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
                     </div>
                   </div>
                 </div>
               )}
               {/* Spacer for input area */}
-              <div className="h-32" />
+              <div className="h-32 md:h-40" />
             </div>
           )}
         </div>
 
         {/* Floating Input Area */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 pointer-events-none z-30">
+        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-10 pointer-events-none z-30">
           <div className="max-w-3xl mx-auto w-full pointer-events-auto">
             {currentSession && (
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-chart-2/10 to-primary/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition duration-1000 group-focus-within:opacity-100" />
-                <div className="relative bg-card/80 backdrop-blur-2xl border border-border/60 rounded-3xl shadow-2xl p-2 flex items-center gap-2 transition-all duration-500 group-focus-within:border-primary/30 group-focus-within:shadow-primary/5">
-                  <div className="pl-4 pr-1 hidden sm:block">
-                    <Sparkles className="h-5 w-5 text-primary/40 group-focus-within:text-primary transition-colors" />
-                  </div>
+                <div className="relative bg-card/80 backdrop-blur-2xl border border-border/60 rounded-[2rem] shadow-2xl p-2 flex flex-col sm:flex-row items-center gap-2 transition-all duration-500 group-focus-within:border-primary/30 group-focus-within:shadow-primary/5">
+                  <div className="flex items-center w-full gap-2 px-1">
+                    <div className="pl-3 pr-1 hidden sm:block">
+                      <Sparkles className="h-5 w-5 text-primary/40 group-focus-within:text-primary transition-colors" />
+                    </div>
 
-                  <div className="flex bg-muted/50 rounded-2xl p-1 gap-1 border border-border/40 ml-2">
+                    <div className="flex bg-muted/50 rounded-2xl p-1 gap-1 border border-border/40">
+                      <Button
+                        variant={selectedAdType === AdTypes.TextOnly ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setSelectedAdType(AdTypes.TextOnly)}
+                        className={`h-9 px-3 rounded-xl transition-all ${selectedAdType === AdTypes.TextOnly ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:bg-muted'}`}
+                      >
+                        <Type className="size-4 sm:mr-2" />
+                        <span className="text-[10px] font-black uppercase tracking-widest hidden lg:inline">Văn bản</span>
+                      </Button>
+                      <Button
+                        variant={selectedAdType === AdTypes.Image ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setSelectedAdType(AdTypes.Image)}
+                        className={`h-9 px-3 rounded-xl transition-all ${selectedAdType === AdTypes.Image ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:bg-muted'}`}
+                      >
+                        <ImageIcon className="size-4 sm:mr-2" />
+                        <span className="text-[10px] font-black uppercase tracking-widest hidden lg:inline">Hình ảnh</span>
+                      </Button>
+                    </div>
+
+                    <Input
+                      placeholder="Mô tả nội dung bạn cần..."
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendChatMessage()}
+                      disabled={isTyping}
+                      className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm md:text-lg h-12 md:h-14 italic font-medium placeholder:text-muted-foreground/40"
+                    />
+
                     <Button
-                      variant={selectedAdType === AdTypes.TextOnly ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setSelectedAdType(AdTypes.TextOnly)}
-                      className={`h-9 px-3 rounded-xl transition-all ${selectedAdType === AdTypes.TextOnly ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:bg-muted'}`}
+                      onClick={sendChatMessage}
+                      disabled={!chatInput.trim() || isTyping}
+                      size="icon"
+                      className="size-11 md:size-14 rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 shrink-0"
                     >
-                      <Type className="h-4 w-4 mr-2" />
-                      <span className="text-[10px] font-black uppercase tracking-widest hidden lg:inline">Text</span>
-                    </Button>
-                    <Button
-                      variant={selectedAdType === AdTypes.Image ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setSelectedAdType(AdTypes.Image)}
-                      className={`h-9 px-3 rounded-xl transition-all ${selectedAdType === AdTypes.Image ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:bg-muted'}`}
-                    >
-                      <ImageIcon className="h-4 w-4 mr-2" />
-                      <span className="text-[10px] font-black uppercase tracking-widest hidden lg:inline">Image</span>
+                      {isTyping ? (
+                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/20 border-t-white" />
+                      ) : (
+                        <Send className="h-5 w-5 md:h-6 md:w-6 ml-0.5" />
+                      )}
                     </Button>
                   </div>
-
-                  <Input
-                    placeholder="Brief your content requirements here..."
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendChatMessage()}
-                    disabled={isTyping}
-                    className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg py-6 italic font-medium placeholder:text-muted-foreground/40"
-                  />
-                  <Button
-                    onClick={sendChatMessage}
-                    disabled={!chatInput.trim() || isTyping}
-                    size="icon"
-                    className="h-14 w-14 rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 shrink-0"
-                  >
-                    {isTyping ? (
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/20 border-t-white" />
-                    ) : (
-                      <Send className="h-6 w-6 ml-0.5" />
-                    )}
-                  </Button>
                 </div>
-                <div className="mt-3 text-center">
-                  <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.3em]">
-                    AI Architect can make mistakes. Verify important information.
+                <div className="mt-4 text-center hidden md:block">
+                  <p className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-[0.4em]">
+                    Artificial Intelligence Architecture Core v4.0.5
                   </p>
                 </div>
               </div>

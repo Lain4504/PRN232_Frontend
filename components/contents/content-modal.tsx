@@ -263,8 +263,8 @@ export function ContentModal({
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-5xl w-[90vw] max-h-[95vh] flex flex-col rounded-[3rem] border-none p-0 shadow-2xl bg-white overflow-hidden font-sans">
-          <DialogHeader className="flex-shrink-0 p-12 pb-8">
+        <DialogContent className="sm:max-w-5xl w-[90vw] max-h-[95vh] flex flex-col rounded-3xl border-none p-0 shadow-2xl bg-white overflow-hidden font-sans">
+          <DialogHeader className="flex-shrink-0 p-8 pb-4">
             <div className="flex items-center justify-between">
               <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-0 border border-slate-200 shadow-sm">
                 <Sparkles className="size-8" />
@@ -285,7 +285,7 @@ export function ContentModal({
               </DialogDescription>
             </div>
           </DialogHeader>
-          <div className="flex-1 overflow-y-auto px-12 pb-12 scrollbar-hide">
+          <div className="flex-1 overflow-y-auto px-8 pb-8 scrollbar-hide">
             {teamId ? (
               <TeamContentForm
                 formData={formData}
@@ -335,7 +335,7 @@ export function ContentModal({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-[95vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white font-sans">
-        <DrawerHeader className="flex-shrink-0 text-left p-10 pb-4">
+        <DrawerHeader className="flex-shrink-0 text-left p-6 pb-2">
           <div className="flex items-center justify-between mb-6">
             <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200">
               <Sparkles className="size-6" />
@@ -349,7 +349,7 @@ export function ContentModal({
             {isCreateMode ? 'Khởi tạo chiến dịch mới.' : 'Cập nhật thông số.'}
           </DrawerDescription>
         </DrawerHeader>
-        <div className="flex-1 overflow-y-auto px-10 pb-10 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto px-6 pb-6 scrollbar-hide">
           {teamId ? (
             <TeamContentForm
               formData={formData}
@@ -391,7 +391,7 @@ export function ContentModal({
             />
           )}
         </div>
-        <DrawerFooter className="p-10 pt-0">
+        <DrawerFooter className="p-6 pt-0">
           <div className="flex flex-col gap-4">
             {(isEditing || isCreateMode) && (
               <Button

@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { UserDropdown } from "@/components/layout/user-dropdown"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 
 export function Header() {
@@ -33,7 +34,7 @@ export function Header() {
     ]
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/20">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border-b border-white/20 dark:border-slate-800/50">
             <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-10">
                     {/* Logo */}
@@ -41,19 +42,13 @@ export function Header() {
                         <div className="size-9 bg-primary rounded-xl flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20 transition-transform group-hover:scale-105">
                             <Zap className="size-5 fill-current" />
                         </div>
-                        <span className="text-xl font-bold tracking-tight text-slate-900">
+                        <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                             omniadly
                         </span>
                     </Link>
 
                     {/* Desktop Navigation */}
                     <nav className="hidden lg:flex items-center gap-8">
-                        <Link
-                            href="/subscription/plans"
-                            className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors"
-                        >
-                            Bảng giá
-                        </Link>
 
                         <div
                             className="relative py-4"
@@ -62,7 +57,7 @@ export function Header() {
                         >
                             <button className={cn(
                                 "flex items-center gap-1.5 text-sm font-semibold transition-colors outline-none",
-                                activeMenu === 'solutions' ? "text-primary" : "text-slate-600 hover:text-slate-900"
+                                activeMenu === 'solutions' ? "text-primary" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                             )}>
                                 Giải pháp
                                 <ChevronDown className={cn("size-3.5 transition-transform duration-300", activeMenu === 'solutions' && "rotate-180")} />
@@ -73,20 +68,22 @@ export function Header() {
                                 "absolute top-full left-0 w-[240px] pt-2 transition-all duration-300 ease-out",
                                 activeMenu === 'solutions' ? "opacity-100 translate-y-0 visible" : "opacity-0 translate-y-2 invisible"
                             )}>
-                                <div className="bg-white border border-slate-100 rounded-2xl shadow-2xl p-2 flex flex-col gap-1">
-                                    <Link href="/solutions/startup" className="p-3 rounded-xl hover:bg-slate-50 transition-colors text-sm font-bold text-slate-700">Startup</Link>
-                                    <Link href="/solutions/enterprise" className="p-3 rounded-xl hover:bg-slate-50 transition-colors text-sm font-bold text-slate-700">Doanh nghiệp</Link>
+                                <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-2xl p-2 flex flex-col gap-1">
+                                    <Link href="/solutions/startup" className="p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm font-bold text-slate-700 dark:text-slate-300">Startup</Link>
+                                    <Link href="/solutions/enterprise" className="p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm font-bold text-slate-700 dark:text-slate-300">Doanh nghiệp</Link>
                                 </div>
                             </div>
                         </div>
                     </nav>
                 </div>
 
-                {/* Authentication */}
+                {/* Authentication & Toggle */}
                 <div className="flex items-center gap-4">
+                    <ThemeToggle />
+
                     {user ? (
                         <div className="flex items-center gap-4">
-                            <Button asChild variant="default" size="sm" className="hidden lg:flex rounded-full px-5 font-semibold bg-slate-900 text-white hover:bg-slate-800">
+                            <Button asChild variant="default" size="sm" className="hidden lg:flex rounded-full px-5 font-semibold bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100">
                                 <Link href="/overview">
                                     <Layout className="size-4 mr-2" />
                                     Bảng điều khiển
@@ -96,7 +93,7 @@ export function Header() {
                         </div>
                     ) : (
                         <div className="flex items-center gap-3">
-                            <Button asChild variant="ghost" size="sm" className="hidden lg:flex text-slate-600 hover:text-slate-900 font-semibold px-4">
+                            <Button asChild variant="ghost" size="sm" className="hidden lg:flex text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold px-4">
                                 <Link href="/auth/login">Đăng nhập</Link>
                             </Button>
                             <Button asChild size="sm" className="rounded-full px-6 font-semibold bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20">
@@ -110,7 +107,7 @@ export function Header() {
                     {/* Mobile Navigation */}
                     <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                         <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="lg:hidden rounded-lg">
+                            <Button variant="ghost" size="icon" className="lg:hidden rounded-lg dark:text-slate-400">
                                 <Menu className="size-5" />
                             </Button>
                         </SheetTrigger>
@@ -150,9 +147,6 @@ export function Header() {
                                     <div className="space-y-4 pt-4 border-t border-slate-100">
                                         <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest px-2">Nền tảng</h4>
                                         <div className="flex flex-col gap-1">
-                                            <Link href="/subscription/plans" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-slate-700 p-3 rounded-xl hover:bg-slate-50 transition-colors">
-                                                Bảng giá
-                                            </Link>
                                             <Link href="/solutions/startup" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-slate-700 p-3 rounded-xl hover:bg-slate-50 transition-colors">
                                                 Giải pháp Startup
                                             </Link>

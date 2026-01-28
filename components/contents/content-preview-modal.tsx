@@ -53,7 +53,7 @@ export function ContentPreviewModal({
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-6xl w-[90vw] max-h-[90vh] flex flex-col rounded-[3rem] border-none shadow-2xl p-0 overflow-hidden">
+        <DialogContent className="max-w-6xl w-[90vw] max-h-[90vh] flex flex-col rounded-3xl border-none shadow-2xl p-0 overflow-hidden">
           <DialogHeader className="flex-shrink-0 p-12 pb-8">
             <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-8 border border-slate-200 shadow-sm">
               <Laptop className="size-8" />

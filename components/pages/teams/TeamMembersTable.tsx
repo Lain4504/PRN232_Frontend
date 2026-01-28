@@ -182,7 +182,7 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
   )
 
   if (isError) return (
-    <div className="flex items-center gap-4 p-6 rounded-[2rem] bg-rose-50 border border-rose-100 text-rose-500">
+    <div className="flex items-center gap-4 p-6 rounded-2xl bg-rose-50 border border-rose-100 text-rose-500">
       <AlertTriangle className="size-6" />
       <div className="text-sm font-black uppercase tracking-widest">Không thể tải danh sách thành viên.</div>
     </div>
@@ -242,8 +242,8 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
           headerClassName="bg-slate-50/50 border-b border-slate-100 py-6 px-10 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400"
         />
       ) : (
-        <div className="flex flex-col items-center justify-center py-24 px-6 text-center border border-dashed border-slate-200 rounded-[3rem] bg-slate-50/50">
-          <div className="size-16 rounded-[2rem] bg-white flex items-center justify-center mb-6 shadow-sm border border-slate-100">
+        <div className="flex flex-col items-center justify-center py-24 px-6 text-center border border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+          <div className="size-16 rounded-2xl bg-white flex items-center justify-center mb-6 shadow-sm border border-slate-100">
             <User2 className="size-8 text-slate-200" />
           </div>
           <h3 className="text-xl font-black text-slate-900 mb-2 uppercase tracking-widest">
@@ -257,7 +257,7 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteMemberId} onOpenChange={() => setDeleteMemberId(null)}>
-        <AlertDialogContent className="rounded-[2.5rem] border-slate-100 p-10 max-w-md shadow-2xl">
+        <AlertDialogContent className="rounded-3xl border-slate-100 p-10 max-w-md shadow-2xl">
           <AlertDialogHeader className="space-y-6">
             <div className="size-20 rounded-3xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto border border-rose-100 shadow-sm">
               <Trash2 className="size-10" />

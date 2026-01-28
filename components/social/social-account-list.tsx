@@ -230,7 +230,7 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteDialogOpen} onOpenChange={() => setDeleteDialogOpen(null)}>
-        <AlertDialogContent className="rounded-[2.5rem] border-slate-100 p-10 max-w-md shadow-2xl">
+        <AlertDialogContent className="rounded-3xl border-slate-100 p-10 max-w-md shadow-2xl">
           <AlertDialogHeader className="space-y-6">
             <div className="size-20 rounded-3xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto border border-rose-100 shadow-sm">
               <Trash2 className="size-10" />

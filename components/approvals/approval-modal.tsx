@@ -112,7 +112,7 @@ export function ApprovalModal({
     <div className="space-y-10">
       {/* Overview Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="p-6 rounded-[1.5rem] bg-slate-50 border border-slate-100 flex items-center gap-4">
+        <div className="p-6 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-4">
           <div className="size-12 rounded-2xl bg-white flex items-center justify-center text-slate-900 shadow-sm border border-slate-200">
             <ShieldCheck className="size-6" />
           </div>
@@ -121,7 +121,7 @@ export function ApprovalModal({
             <p className="text-sm font-black text-slate-900 uppercase tracking-tight truncate max-w-[150px]">{approval.brandName}</p>
           </div>
         </div>
-        <div className="p-6 rounded-[1.5rem] bg-slate-50 border border-slate-100 flex items-center gap-4">
+        <div className="p-6 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-4">
           <div className="size-12 rounded-2xl bg-white flex items-center justify-center text-slate-900 shadow-sm border border-slate-200">
             <Loader2 className="size-6" />
           </div>
@@ -138,7 +138,7 @@ export function ApprovalModal({
             <MessageSquare className="size-4 text-slate-400" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Ghi chú từ Content Creator</span>
           </div>
-          <div className="p-6 bg-slate-50 rounded-[1.5rem] border border-slate-100 italic font-medium text-slate-600 text-sm leading-relaxed border-l-4 border-l-slate-900">
+          <div className="p-6 bg-slate-50 rounded-xl border border-slate-100 italic font-medium text-slate-600 text-sm leading-relaxed border-l-4 border-l-slate-900">
             {approval.notes}
           </div>
         </div>
@@ -150,7 +150,7 @@ export function ApprovalModal({
           <FileText className="size-4 text-slate-400" />
           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Xem trước tài sản truyền thông</span>
         </div>
-        <div className="p-2 rounded-[2rem] border border-slate-100 bg-white overflow-hidden shadow-xl shadow-slate-100">
+        <div className="p-2 rounded-2xl border border-slate-100 bg-white overflow-hidden shadow-xl shadow-slate-100">
           {contentLoading ? (
             <div className="flex flex-col items-center justify-center py-20 gap-4">
               <Loader2 className="size-10 animate-spin text-slate-900" />
@@ -177,7 +177,7 @@ export function ApprovalModal({
           <Textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="min-h-[120px] rounded-[1.5rem] border-slate-100 bg-white p-6 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm"
+            className="min-h-[120px] rounded-xl border-slate-100 bg-white p-6 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm"
             placeholder={
               approval.status === ContentStatusEnum.PendingApproval
                 ? "Thêm phản hồi kỹ thuật cho người tạo nội dung (tùy chọn)..."
@@ -277,7 +277,7 @@ export function ApprovalModal({
   if (isDesktop) {
     return (
       <Dialog open={!!approval} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="max-w-4xl w-[90vw] max-h-[90vh] flex flex-col p-0 border-none rounded-[3rem] shadow-2xl overflow-hidden bg-white font-sans">
+        <DialogContent className="max-w-4xl w-[90vw] max-h-[90vh] flex flex-col p-0 border-none rounded-3xl shadow-2xl overflow-hidden bg-white font-sans">
           <DialogHeader className="flex-shrink-0 p-10 pb-0">
             <div className="flex items-start justify-between">
               <div className="space-y-2">
