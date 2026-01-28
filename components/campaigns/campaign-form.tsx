@@ -146,7 +146,7 @@ export function CampaignForm({
                       type="button"
                       onClick={() => setSelectedSocialAccountId(account.id)}
                       className={cn(
-                        "p-6 rounded-[1.5rem] border-2 transition-all duration-300 flex items-center gap-6 text-left relative overflow-hidden group",
+                        "p-6 rounded-xl border-2 transition-all duration-300 flex items-center gap-6 text-left relative overflow-hidden group",
                         isSelected
                           ? 'border-slate-900 bg-slate-50 shadow-md'
                           : 'border-slate-100 hover:border-slate-300 bg-white'
@@ -170,7 +170,7 @@ export function CampaignForm({
               </div>
 
               {socialAccounts.length === 0 && (
-                <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-[2.5rem]">
+                <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-3xl">
                   <Flag className="size-12 text-slate-200 mx-auto mb-4" />
                   <p className="text-sm font-black text-slate-400 uppercase tracking-tighter">Chưa có tài khoản liên kết nào.</p>
                 </div>

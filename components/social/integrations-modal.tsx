@@ -80,7 +80,7 @@ export function IntegrationsModal({ account, isOpen, onClose, onDeleteTarget }: 
             {account.targets.map((target) => (
               <div
                 key={target.id}
-                className="flex items-center justify-between gap-5 p-5 rounded-[1.5rem] border-2 border-slate-100 bg-white hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100 transition-all group"
+                className="flex items-center justify-between gap-5 p-5 rounded-xl border-2 border-slate-100 bg-white hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100 transition-all group"
               >
                 <div className="flex items-center gap-5 min-w-0 flex-1">
                   <Avatar className="size-14 rounded-2xl border border-white shadow-sm ring-4 ring-slate-50 flex-shrink-0">
@@ -126,8 +126,8 @@ export function IntegrationsModal({ account, isOpen, onClose, onDeleteTarget }: 
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-24 px-6 text-center border-2 border-dashed border-slate-100 rounded-[3rem] bg-slate-50/50">
-          <div className="size-20 rounded-[2rem] bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
+        <div className="flex flex-col items-center justify-center py-24 px-6 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
+          <div className="size-20 rounded-2xl bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
             <Users className="size-10 text-slate-200" />
           </div>
           <h4 className="text-xl font-black text-slate-900 mb-3 uppercase tracking-widest">Không có trang liên kết</h4>
@@ -166,7 +166,7 @@ export function IntegrationsModal({ account, isOpen, onClose, onDeleteTarget }: 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden flex flex-col rounded-[2.5rem] border-none p-0 shadow-2xl bg-white">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl border-none p-0 shadow-2xl bg-white">
         <DialogHeader className="flex-shrink-0 p-10 pb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-5">

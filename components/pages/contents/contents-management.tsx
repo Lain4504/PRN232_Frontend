@@ -342,7 +342,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
   if (isLoading || brandsLoading) return (
     <div className="space-y-12 animate-pulse">
       <div className="h-12 w-64 bg-slate-50 rounded-xl" />
-      <div className="h-[600px] w-full bg-slate-50 rounded-[2.5rem] border border-slate-100" />
+      <div className="h-[600px] w-full bg-slate-50 rounded-3xl border border-slate-100" />
     </div>
   )
 
@@ -447,7 +447,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
 
       {/* Table Section */}
       {contents.length > 0 ? (
-        <Card className="rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden relative group">
+        <Card className="rounded-3xl border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden relative group">
           <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-opacity">
             <Sparkles className="size-40 text-slate-900" />
           </div>
@@ -460,8 +460,8 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
           />
         </Card>
       ) : (
-        <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-[3rem] bg-slate-50/50">
-          <div className="size-20 rounded-[2rem] bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
+        <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+          <div className="size-20 rounded-2xl bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
             <FileText className="size-10 text-slate-200" />
           </div>
           <h3 className="text-2xl font-black text-slate-900 mb-3 uppercase tracking-widest">
@@ -480,7 +480,7 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
       )}
 
       {/* Governance Banner */}
-      <Card className="p-8 rounded-[2.5rem] border border-slate-100 bg-white shadow-sm flex items-start gap-8 group hover:-translate-y-1 transition-all">
+      <Card className="p-8 rounded-3xl border border-slate-100 bg-white shadow-sm flex items-start gap-8 group hover:-translate-y-1 transition-all">
         <div className="size-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-white ring-4 ring-slate-50 bg-slate-50 text-slate-900">
           <Settings className="size-7" />
         </div>

@@ -86,7 +86,7 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
   const FormContent = ({ className }: { className?: string }) => (
     <form onSubmit={handleSubmit} className={cn("space-y-10", className)}>
       {/* Member Profile Card */}
-      <div className="p-6 rounded-[2rem] bg-slate-50 border border-slate-100 flex items-center gap-5 relative overflow-hidden group">
+      <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-5 relative overflow-hidden group">
         <div className="absolute top-0 right-0 p-8 opacity-[0.03] -rotate-12 group-hover:rotate-0 transition-transform">
           <Fingerprint className="size-20 text-slate-900" />
         </div>
@@ -162,7 +162,7 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
         {showPermissions && (
           <div className="animate-in fade-in slide-in-from-top-4 duration-300">
             <TooltipProvider>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-6 rounded-[2rem] border-2 border-slate-100 bg-slate-50/50 max-h-64 overflow-y-auto scrollbar-hide">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-6 rounded-2xl border-2 border-slate-100 bg-slate-50/50 max-h-64 overflow-y-auto scrollbar-hide">
                 {getPermissionsForRole(role).map((permission) => {
                   const info = getPermissionInfo(permission);
                   const isSelected = permissions.includes(permission);
@@ -238,14 +238,14 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-[90vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white">
-          <DrawerHeader className="flex-shrink-0 text-left p-10 pb-4">
+          <DrawerHeader className="flex-shrink-0 text-left p-6 pb-2">
             <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200">
               <Settings className="size-6" />
             </div>
             <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">Điều chỉnh Quyền hạn</DrawerTitle>
             <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">Cập nhật vai trò và ma trận thẩm quyền cho nhân sự.</DrawerDescription>
           </DrawerHeader>
-          <div className="px-10 overflow-y-auto flex-1 pb-10">
+          <div className="px-6 overflow-y-auto flex-1 pb-6">
             <FormContent />
           </div>
         </DrawerContent>
@@ -255,15 +255,15 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col rounded-[3rem] border-none p-0 shadow-2xl bg-white font-sans">
-        <DialogHeader className="flex-shrink-0 p-12 pb-8">
+      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl border-none p-0 shadow-2xl bg-white font-sans">
+        <DialogHeader className="flex-shrink-0 p-8 pb-4">
           <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-8 border border-slate-200 shadow-sm">
             <Settings className="size-8" />
           </div>
           <DialogTitle className="text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">Điều chỉnh Quyền hạn</DialogTitle>
           <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic whitespace-normal">Hiệu chỉnh cấu hình nhân sự và quản trị ma trận phân quyền trong Đội ngũ.</DialogDescription>
         </DialogHeader>
-        <div className="overflow-y-auto flex-1 px-12 pb-12 scrollbar-hide">
+        <div className="overflow-y-auto flex-1 px-8 pb-8 scrollbar-hide">
           <FormContent />
         </div>
       </DialogContent>

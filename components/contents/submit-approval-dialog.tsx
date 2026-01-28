@@ -124,7 +124,7 @@ export function SubmitApprovalDialog({
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Cung cấp ngữ cảnh chiến lược cho người phê duyệt..."
-          className="bg-slate-50 border-2 border-slate-100 hover:border-slate-200 transition-all rounded-[2rem] min-h-[120px] font-medium text-sm p-6 leading-relaxed tracking-tight focus-visible:ring-slate-100"
+          className="bg-slate-50 border-2 border-slate-100 hover:border-slate-200 transition-all rounded-2xl min-h-[120px] font-medium text-sm p-6 leading-relaxed tracking-tight focus-visible:ring-slate-100"
         />
       </div>
 
@@ -180,7 +180,7 @@ export function SubmitApprovalDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-[3rem] border-none p-0 shadow-2xl bg-white">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl border-none p-0 shadow-2xl bg-white">
         <DialogHeader className="flex-shrink-0 p-12 pb-8">
           <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-8 border border-slate-200 shadow-sm">
             <ShieldCheck className="size-8" />

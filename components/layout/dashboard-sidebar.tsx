@@ -73,15 +73,15 @@ export function DashboardSidebar() {
   ]
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-slate-100 bg-white shadow-sm transition-all duration-300">
-      <SidebarHeader className="h-16 flex items-center px-4 border-b border-slate-100">
+    <Sidebar collapsible="icon" className="border-r border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all duration-300">
+      <SidebarHeader className="h-16 flex items-center px-4 border-b border-slate-100 dark:border-slate-800">
         <Link href="/overview" className="flex items-center gap-3 group">
-          <div className="size-8 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg shadow-slate-200 transition-transform group-hover:scale-110">
+          <div className="size-8 bg-slate-900 dark:bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-slate-200 dark:shadow-primary/20 transition-transform group-hover:scale-110">
             <Zap className="size-4 text-white fill-current" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="font-black text-lg tracking-tighter text-slate-900 leading-none">omniadly</span>
-            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mt-1">Dashboard</span>
+            <span className="font-black text-lg tracking-tighter text-slate-900 dark:text-white leading-none">omniadly</span>
+            <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mt-1">Bảng điều khiển</span>
           </div>
         </Link>
       </SidebarHeader>
@@ -89,7 +89,7 @@ export function DashboardSidebar() {
       <SidebarContent className="py-6 px-3 group-data-[collapsible=icon]:px-2">
         {/* Core Systems Group */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-3 mb-4 group-data-[collapsible=icon]:hidden">
+          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 px-3 mb-4 group-data-[collapsible=icon]:hidden">
             Hệ thống chính
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -105,8 +105,8 @@ export function DashboardSidebar() {
                       className={cn(
                         "h-11 rounded-xl transition-all duration-200 group px-3 group-data-[collapsible=icon]:px-0",
                         isActive
-                          ? "bg-slate-900 text-white hover:bg-slate-800 hover:text-white"
-                          : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                          ? "bg-slate-900 dark:bg-primary text-white hover:bg-slate-800 dark:hover:bg-primary/90 hover:text-white"
+                          : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
                       )}
                     >
                       <Link href={item.url} className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0">
@@ -125,7 +125,7 @@ export function DashboardSidebar() {
 
         {/* Workflow Group */}
         <SidebarGroup className="mt-8">
-          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-3 mb-4 group-data-[collapsible=icon]:hidden">
+          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 px-3 mb-4 group-data-[collapsible=icon]:hidden">
             Quy trình làm việc
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -154,8 +154,8 @@ export function DashboardSidebar() {
                         className={cn(
                           "h-11 rounded-xl transition-all duration-200 group px-3 group-data-[collapsible=icon]:px-0",
                           isActive
-                            ? "bg-slate-900 text-white hover:bg-slate-800 hover:text-white"
-                            : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                            ? "bg-slate-900 dark:bg-primary text-white hover:bg-slate-800 dark:hover:bg-primary/90 hover:text-white"
+                            : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
                         )}
                       >
                         <Link href={item.url} className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0">
@@ -164,7 +164,7 @@ export function DashboardSidebar() {
                             {item.title}
                           </span>
                           {item.badge && (
-                            <SidebarMenuBadge className="bg-rose-500 text-white font-black text-[9px] size-5 rounded-full border-2 border-white group-data-[collapsible=icon]:hidden">
+                            <SidebarMenuBadge className="bg-rose-500 text-white font-black text-[9px] size-5 rounded-full border-2 border-white dark:border-slate-800 group-data-[collapsible=icon]:hidden">
                               {item.badge}
                             </SidebarMenuBadge>
                           )}
@@ -178,7 +178,7 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-slate-50 group-data-[collapsible=icon]:p-2">
+      <SidebarFooter className="p-4 border-t border-slate-50 dark:border-slate-800 group-data-[collapsible=icon]:p-2">
         {/* Footer can be used for help or collapse toggle info */}
       </SidebarFooter>
       <SidebarRail />

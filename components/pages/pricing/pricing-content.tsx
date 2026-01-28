@@ -157,7 +157,7 @@ export default function PricingContent() {
                         </div>
                         <div className="grid gap-6 md:grid-cols-2">
                             {faqItems.map((item) => (
-                                <div key={item.q as string} className="p-6 rounded-[1.5rem] bg-muted/20 border border-border/20">
+                                <div key={item.q as string} className="p-6 rounded-xl bg-muted/20 border border-border/20">
                                     <h4 className="text-xs font-black uppercase tracking-widest text-primary mb-2 italic px-1">{item.q}</h4>
                                     <p className="text-sm font-medium text-muted-foreground leading-relaxed">{item.a}</p>
                                 </div>

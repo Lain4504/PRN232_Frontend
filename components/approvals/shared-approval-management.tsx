@@ -283,7 +283,7 @@ export function SharedApprovalManagement({
   if (isLoading) return (
     <div className="space-y-12 animate-pulse">
       <div className="h-12 w-64 bg-slate-50 rounded-xl" />
-      <div className="h-[600px] w-full bg-slate-50 rounded-[2.5rem] border border-slate-100" />
+      <div className="h-[600px] w-full bg-slate-50 rounded-3xl border border-slate-100" />
     </div>
   )
 
@@ -373,7 +373,7 @@ export function SharedApprovalManagement({
 
       {/* Table Section */}
       {filteredApprovals.length > 0 ? (
-        <Card className="rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden relative group">
+        <Card className="rounded-3xl border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden relative group">
           <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 group-hover:rotate-0 transition-transform duration-1000">
             <CheckCircle className="size-40 text-slate-900" />
           </div>
@@ -392,8 +392,8 @@ export function SharedApprovalManagement({
           />
         </Card>
       ) : (
-        <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-[3rem] bg-slate-50/50">
-          <div className="size-20 rounded-[2rem] bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
+        <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+          <div className="size-20 rounded-2xl bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
             <CheckCircle className="size-10 text-slate-200" />
           </div>
           <h3 className="text-2xl font-black text-slate-900 mb-3 uppercase tracking-widest">
@@ -421,7 +421,7 @@ export function SharedApprovalManagement({
       />
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="rounded-[2.5rem] border-slate-100 p-10 max-w-md shadow-2xl">
+        <DialogContent className="rounded-3xl border-slate-100 p-10 max-w-md shadow-2xl">
           <DialogHeader className="space-y-6">
             <div className="size-20 rounded-3xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto border border-rose-100 shadow-sm">
               <AlertTriangle className="size-10" />

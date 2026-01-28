@@ -78,7 +78,7 @@ export function ProfileSwitcher() {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-80 rounded-[2rem] bg-white border-slate-100 p-3 shadow-2xl shadow-slate-200" align="start" sideOffset={12}>
+      <DropdownMenuContent className="w-80 rounded-2xl bg-white border-slate-100 p-3 shadow-2xl shadow-slate-200" align="start" sideOffset={12}>
         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-4 py-3">Ma trận hồ sơ</DropdownMenuLabel>
 
         <div className="max-h-[300px] overflow-y-auto px-1 py-1 space-y-1">

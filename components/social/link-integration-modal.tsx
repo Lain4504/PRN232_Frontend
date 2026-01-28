@@ -78,7 +78,7 @@ export function LinkIntegrationModal({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col rounded-[2.5rem] border-none p-0 shadow-2xl bg-white">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl border-none p-0 shadow-2xl bg-white">
         <DialogHeader className="flex-shrink-0 p-10 pb-0">
           <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200 shadow-sm">
             <Building2 className="size-6" />
@@ -209,14 +209,14 @@ function LinkIntegrationForm({
             <div className="h-16 w-full bg-slate-50 animate-pulse rounded-2xl" />
           </div>
         ) : targetsError ? (
-          <div className="p-8 rounded-[2rem] bg-rose-50 border border-rose-100 text-center">
+          <div className="p-8 rounded-2xl bg-rose-50 border border-rose-100 text-center">
             <AlertCircle className="size-10 text-rose-500 mx-auto mb-4" />
             <p className="text-sm font-black text-rose-600 uppercase tracking-widest leading-relaxed">
               Lỗi tải dữ liệu thực thể. Vui lòng kiểm tra quyền truy cập tài khoản.
             </p>
           </div>
         ) : availableTargets.length === 0 ? (
-          <div className="p-10 rounded-[2rem] bg-slate-50 border border-slate-100 text-center border-dashed">
+          <div className="p-10 rounded-2xl bg-slate-50 border border-slate-100 text-center border-dashed">
             <Globe className="size-10 text-slate-200 mx-auto mb-4" />
             <p className="text-sm font-black text-slate-500 uppercase tracking-tighter">
               Không tìm thấy trang nào trên tài khoản {provider} này.

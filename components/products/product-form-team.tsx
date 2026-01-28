@@ -110,7 +110,7 @@ export function TeamProductForm({ mode, product, defaultBrandId, teamId, onSucce
 
   if (teamBrands.length === 0) {
     return (
-      <div className="py-20 px-8 text-center border-2 border-dashed border-slate-100 rounded-[3rem] bg-slate-50/50">
+      <div className="py-20 px-8 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
         <Boxes className="size-16 text-slate-200 mx-auto mb-6" />
         <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-2">Đội ngũ trống Thương hiệu</h3>
         <p className="text-sm font-medium text-slate-400 italic max-w-xs mx-auto">
@@ -186,20 +186,20 @@ export function TeamProductForm({ mode, product, defaultBrandId, teamId, onSucce
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               rows={5}
-              className="pl-16 pt-6 rounded-[2rem] border-2 border-slate-100 bg-white p-6 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm leading-relaxed"
+              className="pl-16 pt-6 rounded-2xl border-2 border-slate-100 bg-white p-6 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm leading-relaxed"
               required
             />
           </div>
         </div>
 
-        <div className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 space-y-6">
+        <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 space-y-6">
           <div className="flex items-center gap-3">
             <ImageIcon className="size-4 text-slate-400" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Hình ảnh đại diện Đội ngũ</span>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-8">
             <div className="relative group">
-              <Avatar className="size-32 rounded-[2rem] border-4 border-white shadow-2xl ring-4 ring-slate-100 transition-transform group-hover:scale-105 duration-500">
+              <Avatar className="size-32 rounded-2xl border-4 border-white shadow-2xl ring-4 ring-slate-100 transition-transform group-hover:scale-105 duration-500">
                 {imagePreview ? (
                   <AvatarImage src={imagePreview} alt="Preview" className="object-cover" />
                 ) : (

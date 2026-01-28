@@ -81,7 +81,7 @@ export function ProfileSidebar() {
 
   const renderNavGroup = (label: string, items: NavItem[]) => (
     <SidebarGroup>
-      <SidebarGroupLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-3 mb-2 group-data-[collapsible=icon]:hidden">
+      <SidebarGroupLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600 px-3 mb-2 group-data-[collapsible=icon]:hidden">
         {label}
       </SidebarGroupLabel>
       <SidebarGroupContent>
@@ -96,11 +96,13 @@ export function ProfileSidebar() {
                   tooltip={item.title}
                   className={cn(
                     "h-10 rounded-xl transition-all duration-200 group relative",
-                    isActive ? "bg-slate-900 text-white shadow-lg shadow-slate-200 hover:bg-slate-800 hover:text-white" : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                    isActive
+                      ? "bg-slate-900 dark:bg-primary text-white shadow-lg shadow-slate-200 dark:shadow-primary/20 hover:bg-slate-800 dark:hover:bg-primary/90 hover:text-white"
+                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
                   )}
                 >
                   <Link href={item.url} className="flex items-center w-full px-3">
-                    <item.icon className={cn("size-4 shrink-0 transition-transform duration-200", isActive ? "text-white" : "text-slate-400 group-hover:text-slate-900")} />
+                    <item.icon className={cn("size-4 shrink-0 transition-transform duration-200", isActive ? "text-white" : "text-slate-400 dark:text-slate-600 group-hover:text-slate-900 dark:group-hover:text-white")} />
                     <span className="font-bold text-sm truncate ml-3 group-data-[collapsible=icon]:hidden">
                       {item.title}
                     </span>
@@ -115,20 +117,20 @@ export function ProfileSidebar() {
   )
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-slate-100 bg-white">
-      <SidebarHeader className="h-16 flex items-center border-b border-slate-50 px-6">
+    <Sidebar collapsible="icon" className="border-r border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950">
+      <SidebarHeader className="h-16 flex items-center border-b border-slate-50 dark:border-slate-800 px-6">
         <Link href="/" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center w-full overflow-hidden">
-          <div className="size-8 bg-slate-900 rounded-lg flex items-center justify-center shrink-0">
+          <div className="size-8 bg-slate-900 dark:bg-primary rounded-lg flex items-center justify-center shrink-0">
             <Zap className="size-4 text-white fill-current" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="font-bold text-lg tracking-tight text-slate-900 leading-none">omniadly</span>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Console</span>
+            <span className="font-bold text-lg tracking-tight text-slate-900 dark:text-white leading-none">omniadly</span>
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">Console</span>
           </div>
         </Link>
       </SidebarHeader>
 
-      <SidebarContent className="py-6 px-3 group-data-[collapsible=icon]:px-2 gap-6">
+      <SidebarContent className="py-6 px-3 group-data-[collapsible=icon]:px-2 gap-6 bg-white dark:bg-slate-950">
         {renderNavGroup("Danh tính", identityNavItems)}
         {renderNavGroup("Tài khoản", accountNavItems)}
         {renderNavGroup("Hệ thống", systemNavItems)}

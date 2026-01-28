@@ -248,9 +248,9 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
     <div className="space-y-12 animate-pulse">
       <div className="h-12 w-64 bg-slate-50 rounded-xl" />
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {[1, 2, 3, 4].map(i => <div key={i} className="h-40 bg-slate-50 rounded-[2rem] border border-slate-100" />)}
+        {[1, 2, 3, 4].map(i => <div key={i} className="h-40 bg-slate-50 rounded-2xl border border-slate-100" />)}
       </div>
-      <div className="h-[600px] w-full bg-slate-50 rounded-[2.5rem] border border-slate-100" />
+      <div className="h-[600px] w-full bg-slate-50 rounded-3xl border border-slate-100" />
     </div>
   )
 
@@ -258,74 +258,77 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
   const activeCount = campaigns.filter(c => getCampaignStatus(c) === 'active').length
 
   return (
-    <div className="space-y-12 pb-20 font-sans">
+    <div className="space-y-8 md:space-y-12 pb-10 md:pb-20 font-sans">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-100 pb-12">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 border-b border-slate-100 pb-6 md:pb-12">
+        <div className="space-y-3 md:space-y-4 text-center md:text-left">
+          <div className="flex items-center justify-center md:justify-start gap-3">
             <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400">
               <Megaphone className="size-4" />
             </div>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Hành lang chiến lược</span>
+            <span className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Hành lang chiến lược</span>
           </div>
-          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-none">
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-tight md:leading-none">
             CHIẾN DỊCH
           </h1>
-          <p className="text-lg text-slate-500 font-medium max-w-xl leading-relaxed">
-            Quản lý và theo dõi hiệu suất toàn bộ chiến dịch marketing đa kênh của bạn.
+          <p className="text-sm md:text-lg text-slate-500 font-medium max-w-xl mx-auto md:mx-0 leading-relaxed">
+            Quản lý và theo dõi hiệu suất toàn bộ chiến dịch đa kênh.
           </p>
         </div>
 
-        <CampaignModal mode="create" onSuccess={refetchCampaigns}>
-          <Button className="h-14 px-8 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 transition-all hover:-translate-y-1">
-            <Plus className="mr-3 h-4 w-4" />
-            Tạo chiến dịch mới
-          </Button>
-        </CampaignModal>
+        <div className="w-full md:w-auto">
+          <CampaignModal mode="create" onSuccess={refetchCampaigns}>
+            <Button className="h-12 md:h-14 w-full md:px-8 rounded-xl md:rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[9px] md:text-[10px] shadow-2xl shadow-slate-200 transition-all hover:-translate-y-1">
+              <Plus className="mr-2 md:mr-3 h-4 w-4" />
+              Tạo chiến dịch mới
+            </Button>
+          </CampaignModal>
+        </div>
       </div>
 
+
       {/* Highlights Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
         {[
           { label: "Đang hoạt động", value: activeCount, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
           { label: "Tổng ngân sách", value: `₫${totalBudget.toLocaleString('vi-VN')}`, icon: DollarSign, color: "text-blue-600", bg: "bg-blue-50" },
           { label: "Số lượng chiến dịch", value: campaigns.length, icon: Target, color: "text-slate-900", bg: "bg-slate-100" },
           { label: "Hiệu số AI", value: "92/100", icon: Sparkles, color: "text-purple-600", bg: "bg-purple-50" },
         ].map((stat, i) => (
-          <Card key={i} className="rounded-[2rem] border border-slate-100 bg-white p-8 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 group cursor-pointer hover:-translate-y-1">
-            <div className="flex items-center justify-between mb-8">
-              <div className={cn("size-12 rounded-2xl flex items-center justify-center shadow-sm border border-white ring-4 ring-slate-50", stat.bg, stat.color)}>
-                <stat.icon className="size-5 transition-transform group-hover:rotate-12" />
+          <Card key={i} className="rounded-2xl md:rounded-2xl border border-slate-100 bg-white p-5 md:p-8 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 group cursor-pointer hover:-translate-y-1">
+            <div className="flex items-center justify-between mb-6 md:mb-8">
+              <div className={cn("size-10 md:size-12 rounded-xl md:rounded-2xl flex items-center justify-center shadow-sm border border-white ring-4 ring-slate-50", stat.bg, stat.color)}>
+                <stat.icon className="size-4 md:size-5 transition-transform group-hover:rotate-12" />
               </div>
-              <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest text-slate-300 border-slate-100 p-1 px-2">Thời gian thực</Badge>
+              <Badge variant="outline" className="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-slate-300 border-slate-100 p-0.5 px-2">Thời gian thực</Badge>
             </div>
             <div className="space-y-1">
-              <p className="text-3xl font-black text-slate-900 tracking-tight">{stat.value}</p>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{stat.label}</p>
+              <p className="text-xl md:text-3xl font-black text-slate-900 tracking-tight">{stat.value}</p>
+              <p className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{stat.label}</p>
             </div>
           </Card>
         ))}
       </div>
 
       {/* Control Bar */}
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-4 md:gap-6">
         <div className="relative flex-1 group w-full lg:max-w-[400px]">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
           <Input
             placeholder="TÌM KIẾM CHIẾN DỊCH..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-12 h-12 bg-white border-slate-100 rounded-2xl shadow-sm focus-visible:ring-slate-100 font-medium transition-all"
+            className="pl-12 h-10 md:h-12 bg-white border-slate-100 rounded-xl md:rounded-2xl shadow-sm focus-visible:ring-slate-100 font-medium transition-all"
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
-          <div className="flex items-center gap-2 bg-white p-1 rounded-2xl border border-slate-100 shadow-sm">
-            <div className="size-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+        <div className="flex flex-wrap items-center gap-3 md:gap-4 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
+          <div className="flex items-center gap-2 bg-white p-1 rounded-xl md:rounded-2xl border border-slate-100 shadow-sm shrink-0">
+            <div className="size-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
               <Target className="size-3.5" />
             </div>
             <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
-              <SelectTrigger className="w-[160px] border-none focus:ring-0 font-bold text-xs uppercase tracking-widest h-8">
+              <SelectTrigger className="w-[140px] md:w-[160px] border-none focus:ring-0 font-bold text-[10px] md:text-xs uppercase tracking-widest h-8">
                 <SelectValue placeholder="Scope" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1">
@@ -339,12 +342,12 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
             </Select>
           </div>
 
-          <div className="flex items-center gap-2 bg-white p-1 rounded-2xl border border-slate-100 shadow-sm">
-            <div className="size-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+          <div className="flex items-center gap-2 bg-white p-1 rounded-xl md:rounded-2xl border border-slate-100 shadow-sm shrink-0">
+            <div className="size-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
               <Filter className="size-3.5" />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[140px] border-none focus:ring-0 font-bold text-xs uppercase tracking-widest h-8">
+              <SelectTrigger className="w-[120px] md:w-[140px] border-none focus:ring-0 font-bold text-[10px] md:text-xs uppercase tracking-widest h-8">
                 <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1">
@@ -356,7 +359,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
           </div>
 
           {(searchTerm || statusFilter !== "all") && (
-            <Button variant="ghost" className="h-10 px-4 rounded-xl font-bold text-xs text-rose-500 hover:bg-rose-50" onClick={() => {
+            <Button variant="ghost" className="h-10 px-4 rounded-xl font-bold text-[10px] md:text-xs text-rose-500 hover:bg-rose-50 shrink-0" onClick={() => {
               setSearchTerm("")
               setStatusFilter("all")
             }}>
@@ -366,9 +369,10 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
         </div>
       </div>
 
+
       {/* Campaigns Table */}
       {filteredCampaigns.length > 0 ? (
-        <Card className="rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden relative group">
+        <Card className="rounded-3xl border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden relative group">
           <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 group-hover:rotate-0 transition-transform duration-1000">
             <Zap className="size-40 text-slate-900" />
           </div>
@@ -381,8 +385,8 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
           />
         </Card>
       ) : (
-        <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-[3rem] bg-slate-50/50">
-          <div className="size-20 rounded-[2rem] bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
+        <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+          <div className="size-20 rounded-2xl bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
             <Megaphone className="size-10 text-slate-200" />
           </div>
           <h3 className="text-2xl font-black text-slate-900 mb-3 uppercase tracking-widest">
@@ -408,7 +412,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
           { title: "Mô phỏng hiệu suất AI", desc: "Hệ thống đang giám sát toàn bộ các luồng dữ liệu. Chỉ số CTR trên 2.8% được phát hiện tại một số phân khúc khách hàng tiềm năng.", icon: Sparkles, color: "text-amber-600", bg: "bg-amber-50" },
           { title: "Tối ưu hóa thời gian đăng", desc: "Dữ liệu mới cho thấy sự tương tác đạt đỉnh vào lúc 19:00 chiều. Hãy căn chỉnh các bài đăng quảng cáo để đạt độ phủ tối đa.", icon: Clock, color: "text-blue-600", bg: "bg-blue-50" },
         ].map((insight, i) => (
-          <Card key={i} className="p-10 rounded-[2.5rem] border border-slate-100 bg-white shadow-sm flex items-start gap-8 group hover:-translate-y-1 transition-all">
+          <Card key={i} className="p-10 rounded-3xl border border-slate-100 bg-white shadow-sm flex items-start gap-8 group hover:-translate-y-1 transition-all">
             <div className={cn("size-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-white ring-4 ring-slate-50", insight.bg, insight.color)}>
               <insight.icon className="size-7" />
             </div>
@@ -424,7 +428,7 @@ export function CampaignsManagement({ basePath = '/dashboard/campaigns' }: Campa
       </div>
 
       <AlertDialog open={!!deleteCampaignId} onOpenChange={() => setDeleteCampaignId(null)}>
-        <AlertDialogContent className="rounded-[2.5rem] border-slate-100 p-10 max-w-md shadow-2xl">
+        <AlertDialogContent className="rounded-3xl border-slate-100 p-10 max-w-md shadow-2xl">
           <AlertDialogHeader className="space-y-6">
             <div className="size-20 rounded-3xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto border border-rose-100 shadow-sm">
               <AlertTriangle className="size-10" />

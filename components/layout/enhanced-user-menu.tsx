@@ -57,55 +57,55 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 p-0 rounded-full overflow-hidden hover:bg-slate-100 transition-colors">
+        <Button variant="ghost" className="relative h-10 w-10 p-0 rounded-full overflow-hidden hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
           <Avatar className="h-full w-full">
             <AvatarImage
               src={user?.socialAccounts?.[0]?.avatarUrl}
               alt={user?.fullName || user?.email}
               className="object-cover"
             />
-            <AvatarFallback className="bg-slate-900 text-white w-full h-full flex items-center justify-center text-sm font-bold">
+            <AvatarFallback className="bg-slate-900 dark:bg-primary text-white w-full h-full flex items-center justify-center text-sm font-bold">
               {(user?.fullName || user?.email)?.[0]?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64 rounded-2xl border border-slate-100 bg-white p-2 shadow-2xl shadow-slate-200" align="end" forceMount>
+      <DropdownMenuContent className="w-64 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 shadow-2xl shadow-slate-200 dark:shadow-black/20" align="end" forceMount>
         <DropdownMenuLabel className="p-3">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-bold text-slate-900 leading-none">
+            <p className="text-sm font-bold text-slate-900 dark:text-white leading-none">
               {user?.fullName || "Người dùng"}
             </p>
-            <p className="text-xs font-medium text-slate-400 truncate">{user?.email}</p>
+            <p className="text-xs font-medium text-slate-400 dark:text-slate-500 truncate">{user?.email}</p>
           </div>
         </DropdownMenuLabel>
 
-        <DropdownMenuSeparator className="bg-slate-50" />
+        <DropdownMenuSeparator className="bg-slate-50 dark:bg-slate-800" />
 
         <DropdownMenuGroup className="p-1">
           <DropdownMenuItem asChild>
-            <Link href="/overview" className="flex items-center w-full px-3 py-2 rounded-xl text-sm font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer outline-none">
+            <Link href="/overview" className="flex items-center w-full px-3 py-2 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer outline-none">
               <UserIcon className="mr-3 size-4 opacity-70" />
               Tài khoản của tôi
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/overview/payment" className="flex items-center w-full px-3 py-2 rounded-xl text-sm font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer outline-none">
+            <Link href="/overview/payment" className="flex items-center w-full px-3 py-2 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer outline-none">
               <History className="mr-3 size-4 opacity-70" />
               Lịch sử thanh toán
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/overview/account" className="flex items-center w-full px-3 py-2 rounded-xl text-sm font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer outline-none">
+            <Link href="/overview/account" className="flex items-center w-full px-3 py-2 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer outline-none">
               <Settings className="mr-3 size-4 opacity-70" />
               Cài đặt
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
-        <DropdownMenuSeparator className="bg-slate-50" />
+        <DropdownMenuSeparator className="bg-slate-50 dark:bg-slate-800" />
 
-        <DropdownMenuLabel className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-3 my-2">
+        <DropdownMenuLabel className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest px-3 my-2">
           Giao diện
         </DropdownMenuLabel>
         <div className="flex items-center gap-1 p-1">
@@ -113,7 +113,7 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
             variant="ghost"
             size="sm"
             onClick={(e) => handleThemeChange(e, "light")}
-            className={`flex-1 rounded-lg h-9 ${theme === "light" ? "bg-slate-100 text-slate-900" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
+            className={`flex-1 rounded-lg h-9 ${theme === "light" ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
           >
             <Sun className="size-4" />
           </Button>
@@ -121,7 +121,7 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
             variant="ghost"
             size="sm"
             onClick={(e) => handleThemeChange(e, "dark")}
-            className={`flex-1 rounded-lg h-9 ${theme === "dark" ? "bg-slate-100 text-slate-900" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
+            className={`flex-1 rounded-lg h-9 ${theme === "dark" ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
           >
             <Moon className="size-4" />
           </Button>
@@ -129,16 +129,16 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
             variant="ghost"
             size="sm"
             onClick={(e) => handleThemeChange(e, "system")}
-            className={`flex-1 rounded-lg h-9 ${theme === "system" ? "bg-slate-100 text-slate-900" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
+            className={`flex-1 rounded-lg h-9 ${theme === "system" ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
           >
             <Monitor className="size-4" />
           </Button>
         </div>
 
-        <DropdownMenuSeparator className="bg-slate-50" />
+        <DropdownMenuSeparator className="bg-slate-50 dark:bg-slate-800" />
 
         <div className="p-1 mt-1">
-          <LogoutButton className="w-full flex items-center justify-start px-3 py-2 rounded-xl text-sm font-bold text-rose-500 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer" />
+          <LogoutButton className="w-full flex items-center justify-start px-3 py-2 rounded-xl text-sm font-bold text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors cursor-pointer" />
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

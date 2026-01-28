@@ -60,7 +60,7 @@ export function ChangeApproverDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px] rounded-[2.5rem] border-none p-0 shadow-2xl overflow-hidden bg-white">
+      <DialogContent className="sm:max-w-[500px] rounded-3xl border-none p-0 shadow-2xl overflow-hidden bg-white">
         <DialogHeader className="p-10 pb-0">
           <div className="size-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 mb-6 border border-amber-100 shadow-sm">
             <UserPlus className="size-6" />

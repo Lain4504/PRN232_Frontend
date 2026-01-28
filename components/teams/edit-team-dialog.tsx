@@ -124,7 +124,7 @@ function EditTeamForm({ team, onSuccess, onCancel, isSubmitting, className }: Ed
               <FormControl>
                 <Textarea
                   placeholder="Mô tả mục tiêu chiến lược của nhóm..."
-                  className="rounded-[1.5rem] border-2 border-slate-100 bg-white p-6 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm"
+                  className="rounded-xl border-2 border-slate-100 bg-white p-6 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm"
                   rows={4}
                   {...field}
                 />
@@ -202,15 +202,15 @@ export function EditTeamDialog({ open, onOpenChange, team }: EditTeamDialogProps
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden flex flex-col rounded-[3rem] border-none p-0 shadow-2xl bg-white">
-          <DialogHeader className="flex-shrink-0 p-12 pb-8 text-left">
+        <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl border-none p-0 shadow-2xl bg-white">
+          <DialogHeader className="flex-shrink-0 p-8 pb-4 text-left">
             <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-8 border border-slate-200 shadow-sm">
               <Settings2 className="size-8" />
             </div>
             <DialogTitle className="text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">Cấu hình Nhóm</DialogTitle>
             <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic">Hiệu chỉnh các tham số vận hành của đội ngũ chuyên gia.</DialogDescription>
           </DialogHeader>
-          <div className="overflow-y-auto flex-1 px-12 pb-12">
+          <div className="overflow-y-auto flex-1 px-8 pb-8">
             <EditTeamForm
               team={team}
               onSuccess={handleSuccess}
@@ -226,7 +226,7 @@ export function EditTeamDialog({ open, onOpenChange, team }: EditTeamDialogProps
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-[90vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white">
-        <DrawerHeader className="flex-shrink-0 text-left p-10 pb-4">
+        <DrawerHeader className="flex-shrink-0 text-left p-6 pb-2">
           <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200">
             <Settings2 className="size-6" />
           </div>
@@ -238,7 +238,7 @@ export function EditTeamDialog({ open, onOpenChange, team }: EditTeamDialogProps
           onSuccess={handleSuccess}
           onCancel={handleCancel}
           isSubmitting={isSubmitting}
-          className="px-10 pb-10"
+          className="px-6 pb-6"
         />
       </DrawerContent>
     </Drawer>

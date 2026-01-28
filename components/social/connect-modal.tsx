@@ -79,7 +79,7 @@ export function ConnectModal({ children }: ConnectModalProps) {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-hidden flex flex-col rounded-[2.5rem] border-none p-0 shadow-2xl">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-hidden flex flex-col rounded-3xl border-none p-0 shadow-2xl">
         <DialogHeader className="flex-shrink-0 p-10 pb-0">
           <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200 shadow-sm">
             <Globe className="size-6" />
@@ -147,7 +147,7 @@ function ConnectForm({ className, onConnect }: { className?: string; onConnect: 
                 key={provider.value}
                 onClick={() => setSelectedProvider(provider.value)}
                 className={cn(
-                  "p-6 rounded-[1.5rem] border-2 transition-all duration-300 text-left relative group overflow-hidden",
+                  "p-6 rounded-xl border-2 transition-all duration-300 text-left relative group overflow-hidden",
                   isSelected
                     ? 'border-slate-900 bg-slate-50 shadow-xl shadow-slate-100 ring-4 ring-slate-100'
                     : 'border-slate-100 bg-white hover:border-slate-300 hover:bg-slate-50/50'

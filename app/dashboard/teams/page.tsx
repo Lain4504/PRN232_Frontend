@@ -161,7 +161,7 @@ function TeamsPageContent() {
   if (isLoading || userLoading) return (
     <div className="space-y-12 animate-pulse">
       <div className="h-12 w-64 bg-slate-50 rounded-xl" />
-      <div className="h-[600px] w-full bg-slate-50 rounded-[2.5rem] border border-slate-100" />
+      <div className="h-[600px] w-full bg-slate-50 rounded-3xl border border-slate-100" />
     </div>
   )
 
@@ -229,21 +229,21 @@ function TeamsPageContent() {
       {/* Teams Content */}
       <div className="relative">
         {isError ? (
-          <div className="flex flex-col items-center justify-center py-32 text-center bg-rose-50/50 rounded-[3rem] border border-dashed border-rose-200">
+          <div className="flex flex-col items-center justify-center py-32 text-center bg-rose-50/50 rounded-3xl border border-dashed border-rose-200">
             <AlertCircle className="size-16 text-rose-500 mb-6" />
             <h3 className="text-2xl font-black uppercase tracking-widest text-slate-900">Lỗi hệ thống</h3>
             <p className="text-slate-500 font-medium max-w-sm mt-3">Không thể lấy dữ liệu đội nhóm. Vui lòng thử lại sau.</p>
           </div>
         ) : !checkFeatureAccess(profileType, 'teams') ? (
-          <div className="flex flex-col items-center justify-center py-32 text-center bg-slate-50/50 rounded-[3rem] border border-dashed border-slate-200">
+          <div className="flex flex-col items-center justify-center py-32 text-center bg-slate-50/50 rounded-3xl border border-dashed border-slate-200">
             <Shield className="size-16 text-slate-300 mb-8" />
             <h3 className="text-3xl font-black uppercase tracking-tight mb-3 text-slate-900 leading-none">Quyền truy cập hạn chế</h3>
             <p className="text-slate-500 font-medium max-w-sm mx-auto mb-10 leading-relaxed italic border-l-4 border-slate-100 pl-6">Quản lý đội nhóm nâng cao yêu cầu cấp độ quyền hạn cao hơn. Vui lòng nâng cấp gói dịch vụ để sử dụng tính năng này.</p>
             <Button variant="outline" className="h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] border-slate-200 bg-white hover:bg-slate-50">Xem bảng giá</Button>
           </div>
         ) : rows.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-[3rem] bg-slate-50/50">
-            <div className="size-20 rounded-[2rem] bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
+          <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+            <div className="size-20 rounded-2xl bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
               <Users className="size-10 text-slate-200" />
             </div>
             <h3 className="text-2xl font-black text-slate-900 mb-3 uppercase tracking-widest">
@@ -265,7 +265,7 @@ function TeamsPageContent() {
             )}
           </div>
         ) : (
-          <Card className="rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden relative group">
+          <Card className="rounded-3xl border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden relative group">
             <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 group-hover:rotate-0 transition-transform duration-1000">
               <Users className="size-40 text-slate-900" />
             </div>
@@ -291,7 +291,7 @@ function TeamsPageContent() {
 const PageSkeleton = () => (
   <div className="space-y-12 animate-pulse p-10 font-sans">
     <div className="h-12 w-64 bg-slate-50 rounded-xl" />
-    <div className="h-[600px] w-full bg-slate-50 rounded-[2.5rem] border border-slate-100" />
+    <div className="h-[600px] w-full bg-slate-50 rounded-3xl border border-slate-100" />
   </div>
 )
 

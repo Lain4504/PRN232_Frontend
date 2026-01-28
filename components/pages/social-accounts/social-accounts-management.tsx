@@ -26,7 +26,7 @@ export function SocialAccountsManagement() {
       <div className="space-y-12 animate-pulse">
         <div className="h-12 w-64 bg-slate-50 rounded-xl" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[1, 2, 3].map(i => <div key={i} className="h-48 bg-slate-50 rounded-[2rem] border border-slate-100" />)}
+          {[1, 2, 3].map(i => <div key={i} className="h-48 bg-slate-50 rounded-2xl border border-slate-100" />)}
         </div>
       </div>
     )
@@ -34,8 +34,8 @@ export function SocialAccountsManagement() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[500px] text-center space-y-8 bg-slate-50/50 rounded-[3rem] border border-dashed border-slate-200">
-        <div className="size-20 rounded-[2rem] bg-white flex items-center justify-center shadow-sm border border-slate-100">
+      <div className="flex flex-col items-center justify-center min-h-[500px] text-center space-y-8 bg-slate-50/50 rounded-3xl border border-dashed border-slate-200">
+        <div className="size-20 rounded-2xl bg-white flex items-center justify-center shadow-sm border border-slate-100">
           <AlertCircle className="size-10 text-rose-500" />
         </div>
         <div className="space-y-3">
@@ -106,7 +106,7 @@ export function SocialAccountsManagement() {
         </div>
 
         {socialAccounts.length > 0 ? (
-          <Card className="rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden relative group">
+          <Card className="rounded-3xl border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden relative group">
             <div className="p-2">
               <SocialAccountList
                 accounts={socialAccounts}
@@ -116,8 +116,8 @@ export function SocialAccountsManagement() {
             </div>
           </Card>
         ) : (
-          <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-[3rem] bg-slate-50/50">
-            <div className="size-20 rounded-[2rem] bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
+          <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+            <div className="size-20 rounded-2xl bg-white flex items-center justify-center mb-8 shadow-sm border border-slate-100">
               <Users className="size-10 text-slate-200" />
             </div>
             <h3 className="text-2xl font-black text-slate-900 mb-3 uppercase tracking-widest">Chưa có kết nối nào</h3>
@@ -134,7 +134,7 @@ export function SocialAccountsManagement() {
         )}
 
         {/* Security Info Card */}
-        <Card className="p-10 rounded-[2.5rem] bg-slate-900 text-white relative overflow-hidden group border-none">
+        <Card className="p-10 rounded-3xl bg-slate-900 text-white relative overflow-hidden group border-none">
           <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 rotate-12 group-hover:rotate-0 transition-transform duration-1000">
             <Shield className="size-48" />
           </div>
