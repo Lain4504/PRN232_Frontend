@@ -23,7 +23,8 @@ import {
 import { cn } from "@/lib/utils";
 import type { AdCreativeResponse, CreativeType } from "@/lib/types/creatives";
 import { getCreativeTypeColor, CREATIVE_TYPES } from "@/lib/types/creatives";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import NextImage from "next/image";
 
 interface CreativePreviewProps {
   creative: AdCreativeResponse;
@@ -79,10 +80,12 @@ export function CreativePreview({ creative, fullScreen = false }: CreativePrevie
         return (
           <div className="relative w-full h-full bg-slate-50 dark:bg-slate-950 rounded-lg overflow-hidden flex items-center justify-center">
             {creative.mediaUrl ? (
-              <img
+              <NextImage
                 src={creative.mediaUrl}
-                alt={creative.name}
-                className="w-full h-full object-contain"
+                alt={creative.name || "Creative Image"}
+                fill
+                unoptimized
+                className="object-contain"
               />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-4">
@@ -120,7 +123,7 @@ export function CreativePreview({ creative, fullScreen = false }: CreativePrevie
             <div className="space-y-4 max-w-md">
               <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{creative.name}</h3>
               {creative.content && (
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed italic line-clamp-6">"{creative.content}"</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed italic line-clamp-6">&quot;{creative.content}&quot;</p>
               )}
             </div>
           </div>
@@ -130,10 +133,12 @@ export function CreativePreview({ creative, fullScreen = false }: CreativePrevie
         return (
           <div className="relative w-full h-full bg-slate-50 dark:bg-slate-950 rounded-lg overflow-hidden flex items-center justify-center">
             {creative.mediaUrl ? (
-              <img
+              <NextImage
                 src={creative.mediaUrl}
-                alt={creative.name}
-                className="w-full h-full object-contain"
+                alt={creative.name || "Creative GIF"}
+                fill
+                unoptimized
+                className="object-contain"
               />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-4">
@@ -163,10 +168,12 @@ export function CreativePreview({ creative, fullScreen = false }: CreativePrevie
         return (
           <div className="relative w-full h-full bg-slate-50 dark:bg-slate-950 rounded-lg overflow-hidden flex items-center justify-center">
             {creative.mediaUrl ? (
-              <img
+              <NextImage
                 src={creative.mediaUrl}
-                alt={creative.name}
-                className="w-full h-full object-cover"
+                alt={creative.name || "Creative Story"}
+                fill
+                unoptimized
+                className="object-cover"
               />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-4">
@@ -299,7 +306,7 @@ export function CreativePreview({ creative, fullScreen = false }: CreativePrevie
             {creative.content && (
               <div className="space-y-3 pt-2">
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Mô tả hiển thị</span>
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl italic">"{creative.content}"</p>
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl italic">&quot;{creative.content}&quot;</p>
               </div>
             )}
           </CardContent>
@@ -371,7 +378,7 @@ export function CreativePreview({ creative, fullScreen = false }: CreativePrevie
 
   return (
     <div className="space-y-8">
-      <MainHeader />
+      {!fullScreen && <MainHeader />}
       <PreviewContent />
 
       <Dialog open={isFullScreenOpen} onOpenChange={setIsFullScreenOpen}>
