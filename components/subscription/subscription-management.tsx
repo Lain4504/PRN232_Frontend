@@ -20,15 +20,17 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  Zap
 } from 'lucide-react'
 import { useSubscription, useCancelSubscription } from '@/hooks/use-subscription'
 import { PlanChangeDialog } from './plan-change-dialog'
-import { getPlanById } from '@/lib/constants/subscription-plans'
+import { getPlanById, SUBSCRIPTION_PLANS } from '@/lib/constants/subscription-plans'
 import { toast } from 'sonner'
 import type { SubscriptionPlan, Subscription } from '@/lib/types/subscription'
-import { useProfile } from '@/lib/contexts/profile-context'
 import { SubscriptionPlanEnum } from '@/lib/types/subscription'
+import { createPayOSCheckoutLink } from '@/lib/api/subscription'
+import { useProfile } from '@/lib/contexts/profile-context'
 import { cn } from "@/lib/utils"
 
 
@@ -83,11 +85,12 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
   const [showPlanChangeDialog, setShowPlanChangeDialog] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
   const { activeProfileId, profileType } = useProfile()
 
   // Use prop profileId if provided, otherwise use activeProfileId from context
   const effectiveProfileId = profileId || activeProfileId || undefined
-  const { data: subscription, isLoading } = useSubscription(effectiveProfileId)
+  const { data: subscription, isLoading, refresh } = useSubscription(effectiveProfileId)
   const cancelSubscriptionMutation = useCancelSubscription()
 
   // Create fallback subscription if API returns null but we have profile type
@@ -110,11 +113,33 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
         subscriptionId: effectiveSubscription.id,
         reason: 'User requested cancellation'
       })
-      toast.success('Subscription cancelled successfully')
+      toast.success('Gói dịch vụ đã được hủy thành công')
       setShowCancelDialog(false)
+      refresh()
     } catch (error) {
       console.error('Cancellation error:', error)
-      toast.error('Failed to cancel subscription. Please try again.')
+      toast.error('Không thể hủy gói dịch vụ. Vui lòng thử lại.')
+    }
+  }
+
+  const handleRenew = async () => {
+    if (!effectiveSubscription || effectiveSubscription.tier === 'free') return
+
+    try {
+      setIsProcessing(true)
+      const planEnum = effectiveSubscription.plan
+
+      const checkoutData = await createPayOSCheckoutLink(planEnum)
+      if (checkoutData?.checkoutUrl) {
+        window.location.href = checkoutData.checkoutUrl
+      } else {
+        toast.error('Không thể tạo liên kết thanh toán.')
+      }
+    } catch (error) {
+      console.error('PayOS error:', error)
+      toast.error('Lỗi khi khởi tạo thanh toán PayOS.')
+    } finally {
+      setIsProcessing(false)
     }
   }
 
@@ -252,21 +277,30 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
             </CardDescription>
           </CardHeader>
           <CardContent className="p-8 pt-4 space-y-4">
-            <Button
-              onClick={() => {
-                const plan = getPlanById('pro')
-                if (plan) {
-                  handlePlanChange(plan)
-                } else {
-                  toast.error('Gói Pro không khả dụng. Vui lòng thử lại sau.')
-                }
-              }}
-              className="h-14 w-full justify-start rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 font-black uppercase tracking-widest text-[10px] shadow-sm transition-all hover:-translate-y-1"
-              variant="outline"
-            >
-              <Settings className="h-4 w-4 mr-3 opacity-50" />
-              Nâng cấp / Thay đổi gói
-            </Button>
+            {effectiveSubscription.tier !== 'free' && (
+              <Button
+                onClick={handleRenew}
+                disabled={isProcessing}
+                className="h-14 w-full justify-start rounded-2xl bg-slate-900 text-white hover:bg-slate-800 font-black uppercase tracking-widest text-[10px] shadow-lg shadow-slate-200 dark:shadow-primary/20 transition-all hover:-translate-y-1"
+              >
+                <Clock className="h-4 w-4 mr-3 opacity-70" />
+                {isProcessing ? "ĐANG XỬ LÝ..." : "GIA HẠN GÓI HIỆN TẠI"}
+              </Button>
+            )}
+
+            <div className="grid grid-cols-2 gap-4">
+              {SUBSCRIPTION_PLANS.filter(p => p.tier !== effectiveSubscription.tier).map(plan => (
+                <Button
+                  key={plan.id}
+                  onClick={() => handlePlanChange(plan)}
+                  className="h-14 w-full justify-start rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 font-black uppercase tracking-widest text-[9px] shadow-sm transition-all hover:-translate-y-1"
+                  variant="outline"
+                >
+                  <Zap className="h-4 w-4 mr-2 opacity-50" />
+                  {plan.tier === 'free' ? 'Về gói Free' : `Lên gói ${plan.name}`}
+                </Button>
+              ))}
+            </div>
 
             {effectiveSubscription.tier !== 'free' && (
               <Button

@@ -30,9 +30,9 @@ interface ProfileBrandSelectorProps {
   showAllOption?: boolean
 }
 
-export function ProfileBrandSelector({ 
-  selectedBrandId, 
-  onBrandChange, 
+export function ProfileBrandSelector({
+  selectedBrandId,
+  onBrandChange,
   placeholder = "Select a brand",
   disabled = false,
   showAllOption = false
@@ -87,44 +87,44 @@ export function ProfileBrandSelector({
 
   return (
     <div className="space-y-2">
-      <Select 
-        value={selectedBrand} 
+      <Select
+        value={selectedBrand}
         onValueChange={handleBrandChange}
         disabled={disabled}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="h-12 w-full rounded-2xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 font-black uppercase text-[10px] tracking-widest shadow-sm">
           <SelectValue placeholder={placeholder}>
-            {selectedBrand && profileBrands.find(brand => brand.id === selectedBrand) && (
+            {selectedBrand && (selectedBrand === 'all' ? (
               <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4" />
+                <Building2 className="h-4 w-4 opacity-50" />
+                <span>Tất cả thương hiệu</span>
+              </div>
+            ) : profileBrands.find(brand => brand.id === selectedBrand) && (
+              <div className="flex items-center gap-2">
+                <Building2 className="h-4 w-4 opacity-50" />
                 <span>{profileBrands.find(brand => brand.id === selectedBrand)?.name}</span>
               </div>
-            )}
+            ))}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {showAllOption && (
-            <SelectItem value="all">
+            <SelectItem value="all" className="rounded-xl font-bold text-[10px] uppercase tracking-widest">
               <div className="flex items-center gap-2">
                 <Building2 className="h-4 w-4" />
-                <span>All Brands</span>
+                <span>Tất cả thương hiệu</span>
               </div>
             </SelectItem>
           )}
           {profileBrands.map((brand) => (
-            <SelectItem key={brand.id} value={brand.id}>
+            <SelectItem key={brand.id} value={brand.id} className="rounded-xl">
               <div className="flex items-center gap-2">
                 <Building2 className="h-4 w-4" />
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium truncate">{brand.name}</div>
-                  {brand.description && (
-                    <div className="text-xs text-muted-foreground truncate">
-                      {brand.description}
-                    </div>
-                  )}
+                  <div className="font-bold text-[10px] uppercase tracking-widest truncate">{brand.name}</div>
                 </div>
                 {brand.status && (
-                  <Badge variant={brand.status === 'Active' ? 'default' : 'secondary'} className="text-xs">
+                  <Badge variant={brand.status === 'Active' ? 'default' : 'secondary'} className="text-[8px] font-black uppercase px-2 py-0 border-none">
                     {brand.status}
                   </Badge>
                 )}
@@ -133,7 +133,7 @@ export function ProfileBrandSelector({
           ))}
         </SelectContent>
       </Select>
-      
+
 
     </div>
   )

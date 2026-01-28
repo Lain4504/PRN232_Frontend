@@ -14,6 +14,8 @@ import { formatPrice } from '@/lib/constants/subscription-plans'
 import { analyzePlanChangeImpact } from '@/lib/utils/subscription'
 import { toast } from 'sonner'
 import type { SubscriptionPlan, BillingCycle, Subscription } from '@/lib/types/subscription'
+import { SubscriptionPlanEnum } from '@/lib/types/subscription'
+import { createPayOSCheckoutLink } from '@/lib/api/subscription'
 import { cn } from '@/lib/utils'
 
 interface PlanChangeDialogProps {
@@ -44,17 +46,44 @@ export function PlanChangeDialog({
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
+  const [isProcessing, setIsProcessing] = useState(false)
+
   const handleConfirm = async () => {
+    if (targetPlan.id === 'free') {
+      try {
+        await changePlanMutation.mutateAsync({
+          planId: targetPlan.id,
+          billingCycle: 'monthly',
+          immediate: true,
+        })
+        onOpenChange(false)
+        toast.success('Đã chuyển sang gói Miễn phí thành công')
+      } catch (error) {
+        toast.error('Lỗi khi thay đổi gói dịch vụ')
+      }
+      return
+    }
+
+    // For paid plans, create PayOS checkout link
     try {
-      await changePlanMutation.mutateAsync({
-        planId: targetPlan.id,
-        billingCycle,
-        immediate,
-      })
-      onOpenChange(false)
-      toast.success('Đã thay đổi gói dịch vụ thành công')
+      setIsProcessing(true)
+      const planEnumMap: Record<string, number> = {
+        'basic': SubscriptionPlanEnum.Basic,
+        'pro': SubscriptionPlanEnum.Pro
+      }
+      const planEnum = planEnumMap[targetPlan.id] ?? SubscriptionPlanEnum.Basic
+
+      const checkoutData = await createPayOSCheckoutLink(planEnum)
+      if (checkoutData?.checkoutUrl) {
+        window.location.href = checkoutData.checkoutUrl
+      } else {
+        toast.error('Không thể tạo liên kết thanh toán.')
+      }
     } catch (error) {
-      toast.error('Lỗi khi thay đổi gói dịch vụ')
+      console.error('PayOS error:', error)
+      toast.error('Lỗi khi khởi tạo thanh toán PayOS.')
+    } finally {
+      setIsProcessing(false)
     }
   }
 
@@ -102,51 +131,14 @@ export function PlanChangeDialog({
         </div>
       </div>
 
-      <div className="space-y-3">
-        <Label className="text-sm font-semibold">Chu kỳ thanh toán</Label>
-        <RadioGroup value={billingCycle} onValueChange={(value) => setBillingCycle(value as BillingCycle)} className="grid gap-2">
-          <div className="flex items-center space-x-2 rounded-md border p-3 cursor-pointer hover:bg-slate-50">
-            <RadioGroupItem value="monthly" id="monthly" />
-            <Label htmlFor="monthly" className="flex-1 cursor-pointer">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Thanh toán hàng tháng</span>
-                <span className="text-sm font-medium">{formatPrice(targetPlan.price.monthly)}</span>
-              </div>
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2 rounded-md border p-3 cursor-pointer hover:bg-slate-50">
-            <RadioGroupItem value="yearly" id="yearly" />
-            <Label htmlFor="yearly" className="flex-1 cursor-pointer">
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-sm">Thanh toán hàng năm</span>
-                  <Badge variant="secondary" className="ml-2 text-[10px] bg-emerald-50 text-emerald-600 border-none">Tiết kiệm 17%</Badge>
-                </div>
-                <span className="text-sm font-medium">{formatPrice(targetPlan.price.yearly)}</span>
-              </div>
-            </Label>
-          </div>
-        </RadioGroup>
-      </div>
-
-      <div className="space-y-3">
-        <Label className="text-sm font-semibold">Thời điểm áp dụng</Label>
-        <RadioGroup value={immediate ? 'immediate' : 'end-of-period'} onValueChange={(value) => setImmediate(value === 'immediate')} className="grid gap-2">
-          <div className="flex items-start space-x-2 rounded-md border p-3 cursor-pointer hover:bg-slate-50">
-            <RadioGroupItem value="immediate" id="immediate" className="mt-1" />
-            <Label htmlFor="immediate" className="flex-1 cursor-pointer">
-              <div className="font-semibold text-sm">Áp dụng ngay lập tức</div>
-              <p className="text-xs text-slate-500 mt-0.5">Bạn sẽ được trải nghiệm các tính năng mới ngay sau khi thanh toán phần chênh lệch.</p>
-            </Label>
-          </div>
-          <div className="flex items-start space-x-2 rounded-md border p-3 cursor-pointer hover:bg-slate-50">
-            <RadioGroupItem value="end-of-period" id="end-of-period" className="mt-1" />
-            <Label htmlFor="end-of-period" className="flex-1 cursor-pointer">
-              <div className="font-semibold text-sm">Áp dụng sau khi hết chu kỳ cũ</div>
-              <p className="text-xs text-slate-500 mt-0.5">Sẽ thay đổi gói ở chu kỳ thanh toán tiếp theo.</p>
-            </Label>
-          </div>
-        </RadioGroup>
+      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+        <div className="flex items-center gap-3 text-slate-900 dark:text-white mb-2">
+          <Info className="size-4 text-primary" />
+          <span className="text-sm font-black uppercase tracking-widest">Thông tin thanh toán</span>
+        </div>
+        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+          Gói dịch vụ sẽ được kích hoạt ngay lập tức sau khi hoàn tất thanh toán qua PayOS. Hệ thống hiện chỉ hỗ trợ đăng ký theo tháng.
+        </p>
       </div>
 
       {impactAnalysis && (impactAnalysis.warnings.length > 0 || impactAnalysis.immediateChanges.length > 0) && (
@@ -188,15 +180,15 @@ export function PlanChangeDialog({
       </Button>
       <Button
         onClick={handleConfirm}
-        disabled={changePlanMutation.isPending}
+        disabled={changePlanMutation.isPending || isProcessing}
       >
-        {changePlanMutation.isPending ? (
+        {changePlanMutation.isPending || isProcessing ? (
           <>
             <Loader2 className="mr-2 size-4 animate-spin" />
             Đang xử lý...
           </>
         ) : (
-          `Xác nhận ${comparison?.data?.isUpgrade ? 'Nâng cấp' : 'Thay đổi'}`
+          `Xác nhận ${targetPlan.id === 'free' ? 'Thay đổi' : 'Thanh toán'}`
         )}
       </Button>
     </div>

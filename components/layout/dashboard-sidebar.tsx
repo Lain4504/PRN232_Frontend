@@ -6,6 +6,7 @@ import Link from "next/link"
 import { useProfile } from '@/lib/contexts/profile-context'
 import { ProfileTypeEnum } from '@/lib/utils/profile-utils'
 import { usePendingApprovalsCount } from '@/hooks/use-approvals'
+import { Badge } from "@/components/ui/badge"
 
 import {
   Calendar,

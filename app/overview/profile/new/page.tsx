@@ -209,7 +209,8 @@ export default function CreateProfilePage() {
         <div className="flex items-center gap-8 grayscale opacity-20 dark:opacity-40 group-hover:opacity-40 dark:group-hover:opacity-60 transition-opacity">
           <span className="text-sm font-black dark:text-white">VISA</span>
           <span className="text-sm font-black dark:text-white">MASTERCARD</span>
-          <span className="text-sm font-black dark:text-white">STRIPE</span>
+          <span className="text-sm font-black dark:text-white">NAPAS</span>
+          <span className="text-sm font-black dark:text-white">PAYOS</span>
         </div>
       </div>
     </div>

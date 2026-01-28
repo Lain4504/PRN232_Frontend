@@ -11,9 +11,11 @@ import {
   Shield,
   History,
   FileText,
+  CreditCard,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { useProfile } from "@/lib/contexts/profile-context"
 import {
   Sidebar,
   SidebarContent,
@@ -65,6 +67,11 @@ const accountNavItems: NavItem[] = [
     url: "/overview/payment",
     icon: History,
   },
+  {
+    title: "Gói dịch vụ",
+    url: "/dashboard/subscription",
+    icon: CreditCard,
+  },
 ]
 
 // System navigation items
@@ -78,6 +85,14 @@ const systemNavItems: NavItem[] = [
 
 export function ProfileSidebar() {
   const pathname = usePathname()
+  const { activeProfile } = useProfile()
+  const isOwner = activeProfile?.isOwner
+
+  const filteredAccountNavItems = accountNavItems.filter(item => {
+    // Only owner can manage subscription
+    if (item.url === "/dashboard/subscription") return isOwner
+    return true
+  })
 
   const renderNavGroup = (label: string, items: NavItem[]) => (
     <SidebarGroup>
@@ -132,7 +147,7 @@ export function ProfileSidebar() {
 
       <SidebarContent className="py-6 px-3 group-data-[collapsible=icon]:px-2 gap-6 bg-white dark:bg-slate-950">
         {renderNavGroup("Danh tính", identityNavItems)}
-        {renderNavGroup("Tài khoản", accountNavItems)}
+        {renderNavGroup("Tài khoản", filteredAccountNavItems)}
         {renderNavGroup("Hệ thống", systemNavItems)}
       </SidebarContent>
 

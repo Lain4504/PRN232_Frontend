@@ -112,7 +112,13 @@ export default function PostsPage() {
           "text-[10px] font-black uppercase py-1 px-3 rounded-lg border",
           getStatusStyle(row.getValue('status'))
         )}>
-          {String(row.getValue('status') ? (row.getValue('status') === 'published' ? 'Đã xuất bản' : row.getValue('status') === 'failed' ? 'Thất bại' : row.getValue('status') === 'deleted' ? 'Đã xóa' : row.getValue('status')) : "Không xác định")}
+          {(() => {
+            const s = String(row.getValue('status') || '').toLowerCase();
+            if (s === 'published') return 'Đã xuất bản';
+            if (s === 'failed') return 'Thất bại';
+            if (s === 'deleted') return 'Đã xóa';
+            return row.getValue('status') || "Không xác định";
+          })()}
         </Badge>
       ),
     },
@@ -243,7 +249,7 @@ export default function PostsPage() {
               value={filters.status || 'all'}
               onValueChange={handleStatusFilter}
             >
-              <SelectTrigger className="h-12 w-full sm:w-[180px] rounded-2xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-980 font-black uppercase text-[10px] tracking-widest">
+              <SelectTrigger className="h-12 w-full sm:w-[180px] rounded-2xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 font-black uppercase text-[10px] tracking-widest">
                 <SelectValue placeholder="TRẠNG THÁI" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-slate-100 dark:border-slate-800 font-bold uppercase tracking-wider text-[10px] p-1">
@@ -338,9 +344,13 @@ export default function PostsPage() {
                       "text-[10px] font-black uppercase py-2 px-6 rounded-xl border-2 ring-4 ring-slate-50 dark:ring-slate-900/50",
                       getStatusStyle(selectedPost.status)
                     )}>
-                      {selectedPost.status === 'published' ? 'Đã xuất bản' :
-                        selectedPost.status === 'failed' ? 'Thất bại' :
-                          selectedPost.status === 'deleted' ? 'Đã xóa' : 'Chờ xử lý'}
+                      {(() => {
+                        const s = (selectedPost.status || '').toLowerCase();
+                        if (s === 'published') return 'Đã xuất bản';
+                        if (s === 'failed') return 'Thất bại';
+                        if (s === 'deleted') return 'Đã xóa';
+                        return selectedPost.status || 'Chờ xử lý';
+                      })()}
                     </Badge>
                   </div>
                 </div>
