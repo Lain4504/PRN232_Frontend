@@ -44,12 +44,29 @@ function ScheduleDetailContent({ schedule }: { schedule: ContentCalendar | null 
     return target || null;
   }).filter((t): t is NonNullable<typeof t> => !!t) || [];
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return {
-      date: date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' }),
-      time: date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
-    };
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return { date: 'N/A', time: 'N/A' };
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return { date: 'Ngày không hợp lệ', time: '' };
+
+      return {
+        date: date.toLocaleDateString('vi-VN', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          weekday: 'long'
+        }),
+        time: date.toLocaleTimeString('vi-VN', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        })
+      };
+    } catch (e) {
+      return { date: 'Lỗi định dạng', time: '' };
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -87,7 +104,7 @@ function ScheduleDetailContent({ schedule }: { schedule: ContentCalendar | null 
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
             <Building2 className="h-4 w-4 text-slate-400" />
-            <span className="text-xs font-black text-slate-900 uppercase tracking-tight">{schedule.brandName || 'Thương hiệu'}</span>
+            <span className="text-xs font-black text-emerald-600 uppercase tracking-tight">{schedule.brandName || 'Thương hiệu chưa xác định'}</span>
           </div>
         </div>
       </div>
@@ -101,7 +118,7 @@ function ScheduleDetailContent({ schedule }: { schedule: ContentCalendar | null 
           </div>
           <div className="p-6 rounded-2xl border-2 border-slate-100 bg-white shadow-sm space-y-1">
             <p className="text-base font-black text-slate-900 uppercase tracking-tight">{date}</p>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{time} ({schedule.timezone})</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{time} {schedule.timezone && `(${schedule.timezone})`}</p>
           </div>
         </div>
 

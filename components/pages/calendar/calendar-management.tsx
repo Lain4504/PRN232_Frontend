@@ -3,11 +3,11 @@
 import React, { useState } from "react";
 import { UnifiedContentCalendar } from "@/components/content-calendar/unified-content-calendar";
 import { ScheduleContentModal } from "@/components/content-calendar/schedule-content-modal";
+import { ScheduleDetailModal } from "@/components/content-calendar/schedule-detail-modal";
 import type { ContentCalendar } from "@/lib/types/omniadly-types";
-import { Plus, Calendar as CalendarIcon, Clock } from 'lucide-react';
+import { Plus, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-
 import { getActiveTeamId } from "@/lib/utils/profile-utils";
 
 export function CalendarManagement() {
@@ -88,6 +88,13 @@ export function CalendarManagement() {
           isOpen={showScheduleModal}
           onClose={() => setShowScheduleModal(false)}
           teamId={teamId}
+        />
+
+        {/* Schedule Detail Modal */}
+        <ScheduleDetailModal
+          schedule={selectedSchedule}
+          isOpen={!!selectedSchedule}
+          onClose={() => setSelectedSchedule(null)}
         />
       </div>
     </div>
