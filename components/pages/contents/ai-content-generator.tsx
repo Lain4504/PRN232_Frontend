@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -537,8 +538,8 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
       {/* Sidebar - Desktop */}
       <aside className="hidden lg:flex lg:w-72 border-r border-border/40 flex-col bg-muted/20 backdrop-blur-xl">
         <div className="p-6 border-b border-border/40 space-y-4">
-          <Badge variant="outline" className="px-3 py-0.5 text-[9px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/10">
-            Máy chủ nội dung
+          <Badge variant="outline" className="px-2 py-0.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/10">
+            AISAM Content
           </Badge>
           <Button
             onClick={createNewChatSession}
@@ -612,7 +613,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-chart-1/5 rounded-full blur-[100px] pointer-events-none translate-y-1/2 -translate-x-1/4" />
 
         {/* Header */}
-        <header className="h-16 shrink-0 border-b border-border/40 px-6 flex items-center justify-between bg-background/50 backdrop-blur-md relative z-20">
+        <header className="h-14 shrink-0 border-b border-border/40 px-4 md:px-6 flex items-center justify-between bg-background/50 backdrop-blur-md relative z-20">
           <div className="flex items-center gap-4">
             <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
               <SheetTrigger asChild>
@@ -772,7 +773,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
               </div>
             </div>
           ) : (
-            <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-20 space-y-8 md:space-y-12">
+            <div className="max-w-3xl mx-auto px-4 py-6 md:py-10 space-y-6 md:space-y-8">
               {currentSession.messages.map((message) => (
                 <div
                   key={message.id}
@@ -785,50 +786,50 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                     {message.role === 'assistant' ? <Bot className="h-5 w-5 md:h-6 md:w-6" /> : <User className="h-5 w-5 md:h-6 md:w-6" />}
                   </div>
 
-                  <div className={`flex flex-col gap-2 md:gap-3 min-w-0 max-w-[90%] md:max-w-[75%] ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
-                    <div className={`p-4 md:p-6 rounded-2xl shadow-sm backdrop-blur-sm border transition-all duration-300 ${message.role === 'user'
-                      ? 'bg-primary text-primary-foreground border-primary/20 rounded-tr-none font-medium text-base md:text-xl selection:bg-background/20'
-                      : 'bg-card border-border/60 text-foreground rounded-tl-none leading-relaxed text-sm md:text-lg'
+                  <div className={`flex flex-col gap-1.5 min-w-0 max-w-[85%] sm:max-w-[75%] ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
+                    <div className={`px-4 py-3 rounded-2xl shadow-sm border transition-all duration-300 ${message.role === 'user'
+                      ? 'bg-primary text-primary-foreground border-primary/20 rounded-tr-none font-medium text-sm sm:text-base'
+                      : 'bg-muted/30 border-border/60 text-foreground rounded-tl-none leading-relaxed text-sm sm:text-base'
                       }`}>
                       <p className="whitespace-pre-wrap">{message.content}</p>
                     </div>
 
                     {message.generation && (
-                      <Card className="w-full border-border/40 bg-card/30 backdrop-blur-md rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500">
-                        <CardContent className="p-5 md:p-8 space-y-4 md:space-y-6">
+                      <Card className="w-full border-border/40 bg-card/30 backdrop-blur-md rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-500">
+                        <CardContent className="p-4 md:p-6 space-y-3 md:space-y-4">
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <div className="size-7 md:size-8 rounded-lg md:rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:rotate-12 transition-transform">
-                                <Sparkles className="h-4 w-4" />
+                            <div className="flex items-center gap-2">
+                              <div className="size-6 md:size-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:rotate-12 transition-transform">
+                                <Sparkles className="h-3.5 w-3.5" />
                               </div>
-                              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">TRÍ TUỆ NHÂN TẠO</span>
+                              <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">TRÍ TUỆ NHÂN TẠO</span>
                             </div>
-                            <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 uppercase font-black text-[8px] px-2 py-0.5 rounded-lg">LIVE</Badge>
+                            <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 uppercase font-black text-[7px] px-1.5 py-0 rounded-md">LIVE</Badge>
                           </div>
 
-                          <div className="p-5 md:p-8 rounded-2xl bg-muted/30 border border-border/30 font-serif italic text-base md:text-2xl leading-relaxed text-foreground/90 selection:bg-primary/10">
+                          <div className="p-4 md:p-6 rounded-xl bg-muted/30 border border-border/30 font-serif italic text-sm md:text-lg leading-relaxed text-foreground/90 selection:bg-primary/10">
                             &ldquo;{message.generation.generated_content}&rdquo;
                           </div>
 
                           {message.generation.generated_image_url && (
-                            <div className="relative group/img overflow-hidden rounded-2xl border border-border/40 shadow-xl aspect-square w-full max-w-lg mx-auto bg-muted">
+                            <div className="relative group/img overflow-hidden rounded-xl border border-border/40 shadow-lg aspect-square w-full max-w-sm mx-auto bg-muted">
                               <img
                                 src={message.generation.generated_image_url}
                                 alt="AI Generated Content"
                                 className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-105"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                                <Button variant="secondary" size="sm" className="rounded-xl font-bold backdrop-blur-md bg-white/10 border-white/20 text-white" onClick={() => window.open(message.generation!.generated_image_url, '_blank')}>
-                                  <Maximize2 className="h-4 w-4 mr-2" /> Xem ảnh gốc
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                                <Button variant="secondary" size="sm" className="h-8 rounded-lg font-bold backdrop-blur-md bg-white/10 border-white/20 text-white" onClick={() => window.open(message.generation!.generated_image_url, '_blank')}>
+                                  <Maximize2 className="h-3.5 w-3.5 mr-1.5" /> Xem ảnh
                                 </Button>
                               </div>
                             </div>
                           )}
 
-                          <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+                          <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
                             <Button
                               variant="outline"
-                              size="lg"
+                              size="sm"
                               onClick={() => {
                                 if (message.generation?.generated_image_url) {
                                   handleCopyContent(message.generation.generated_image_url);
@@ -836,18 +837,18 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                                   handleCopyContent(message.generation!.generated_content);
                                 }
                               }}
-                              className="flex-1 rounded-2xl h-12 font-bold border-border/40 hover:bg-muted hover:text-foreground transition-all text-xs md:text-sm"
+                              className="flex-1 rounded-xl h-10 font-bold border-border/40 hover:bg-muted text-xs transition-all"
                             >
-                              <Copy className="h-4 w-4 mr-2" />
+                              <Copy className="h-3.5 w-3.5 mr-2" />
                               Sao chép
                             </Button>
                             <Button
                               variant="default"
-                              size="lg"
+                              size="sm"
                               onClick={() => handleSaveToLibrary(message.generation!)}
-                              className="flex-1 rounded-2xl h-12 font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] text-xs md:text-sm"
+                              className="flex-1 rounded-xl h-10 font-bold bg-primary text-primary-foreground shadow-sm transition-all hover:scale-[1.02] text-xs"
                             >
-                              <Save className="h-4 w-4 mr-2" />
+                              <Save className="h-3.5 w-3.5 mr-2" />
                               Lưu dữ liệu
                             </Button>
                           </div>
@@ -882,20 +883,20 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                 </div>
               )}
               {/* Spacer for input area */}
-              <div className="h-32 md:h-40" />
+              <div className="h-40 md:h-48" />
             </div>
           )}
         </div>
 
         {/* Floating Input Area */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-10 pointer-events-none z-30">
+        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-10 pointer-events-none z-30">
           <div className="max-w-3xl mx-auto w-full pointer-events-auto">
             {currentSession && (
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-chart-2/10 to-primary/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition duration-1000 group-focus-within:opacity-100" />
-                <div className="relative bg-card/80 backdrop-blur-2xl border border-border/60 rounded-[2rem] shadow-2xl p-2 flex flex-col sm:flex-row items-center gap-2 transition-all duration-500 group-focus-within:border-primary/30 group-focus-within:shadow-primary/5">
-                  <div className="flex items-center w-full gap-2 px-1">
-                    <div className="pl-3 pr-1 hidden sm:block">
+                <div className="relative bg-card/90 backdrop-blur-2xl border border-border/60 rounded-3xl shadow-2xl p-1.5 md:p-2 flex flex-col items-stretch gap-2 transition-all duration-500 group-focus-within:border-primary/30 group-focus-within:shadow-primary/5">
+                  <div className="flex items-end w-full gap-2 px-1">
+                    <div className="pb-3 pl-2 hidden sm:block">
                       <Sparkles className="h-5 w-5 text-primary/40 group-focus-within:text-primary transition-colors" />
                     </div>
 
@@ -920,25 +921,47 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                       </Button>
                     </div>
 
-                    <Input
-                      placeholder="Mô tả nội dung bạn cần..."
-                      value={chatInput}
-                      onChange={(e) => setChatInput(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendChatMessage()}
-                      disabled={isTyping}
-                      className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm md:text-lg h-12 md:h-14 italic font-medium placeholder:text-muted-foreground/40"
-                    />
+                    <div className="flex-1 flex items-center min-w-0">
+                      <Textarea
+                        placeholder="Hỏi gì đó..."
+                        value={chatInput}
+                        onChange={(e) => {
+                          setChatInput(e.target.value);
+                          // Auto-resize
+                          e.target.style.height = 'auto';
+                          e.target.style.height = `${Math.min(e.target.scrollHeight, 200)}px`;
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            sendChatMessage();
+                            // Reset height
+                            if (e.currentTarget) {
+                              e.currentTarget.style.height = 'auto';
+                            }
+                          }
+                        }}
+                        disabled={isTyping}
+                        rows={1}
+                        className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm md:text-base py-3 resize-none min-h-[44px] max-h-[200px] font-medium placeholder:text-muted-foreground/40 scrollbar-hide"
+                      />
+                    </div>
 
                     <Button
-                      onClick={sendChatMessage}
+                      onClick={() => {
+                        sendChatMessage();
+                        // Reset height of textarea if we can find it
+                        const textarea = document.querySelector('textarea');
+                        if (textarea) textarea.style.height = 'auto';
+                      }}
                       disabled={!chatInput.trim() || isTyping}
                       size="icon"
-                      className="size-11 md:size-14 rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 shrink-0"
+                      className="size-10 md:size-12 rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 shrink-0 mb-1"
                     >
                       {isTyping ? (
-                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/20 border-t-white" />
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/20 border-t-white" />
                       ) : (
-                        <Send className="h-5 w-5 md:h-6 md:w-6 ml-0.5" />
+                        <Send className="h-4 w-4 md:h-5 md:w-5" />
                       )}
                     </Button>
                   </div>
