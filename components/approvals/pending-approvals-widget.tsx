@@ -14,26 +14,29 @@ interface PendingApprovalsWidgetProps {
   showViewAll?: boolean;
 }
 
-export function PendingApprovalsWidget({ 
-  limit = 5, 
-  showViewAll = true 
+export function PendingApprovalsWidget({
+  limit = 5,
+  showViewAll = true
 }: PendingApprovalsWidgetProps) {
   const { data: pendingApprovalsData, isLoading } = usePendingApprovals(1, limit);
   const approvals = pendingApprovalsData?.data || [];
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5" />
-            Pending Approvals
+      <Card className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm animate-pulse">
+        <CardHeader className="p-6">
+          <CardTitle className="flex items-center gap-3 text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">
+            <div className="size-8 rounded-lg bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center">
+              <AlertCircle className="h-5 w-5 text-orange-500/40" />
+            </div>
+            Hàng chờ duyệt
           </CardTitle>
-          <CardDescription>Content waiting for approval</CardDescription>
+          <CardDescription className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">Đang đồng bộ dữ liệu...</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            <div className="h-16 bg-slate-50 dark:bg-slate-800 rounded-2xl w-full" />
+            <div className="h-16 bg-slate-50 dark:bg-slate-800 rounded-2xl w-full" />
           </div>
         </CardContent>
       </Card>
@@ -41,17 +44,19 @@ export function PendingApprovalsWidget({
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="rounded-[2.5rem] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/20 dark:shadow-black/20 overflow-hidden">
+      <CardHeader className="p-8 pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5" />
-              Pending Approvals
+            <CardTitle className="flex items-center gap-3 text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+              <div className="size-10 rounded-xl bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center text-orange-500">
+                <AlertCircle className="h-5 w-5" />
+              </div>
+              Hàng chờ duyệt
             </CardTitle>
-            <CardDescription>Content waiting for approval</CardDescription>
+            <CardDescription className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-2 ml-13">Nội dung chiến lược cần phê duyệt</CardDescription>
           </div>
-          <Badge variant="secondary" className="text-sm">
+          <Badge variant="secondary" className="bg-slate-900 dark:bg-primary text-white dark:text-white border-none font-black text-[11px] px-3 py-1 rounded-xl">
             {approvals.length}
           </Badge>
         </div>
@@ -64,22 +69,22 @@ export function PendingApprovalsWidget({
         ) : (
           <div className="space-y-3">
             {approvals.map((approval) => (
-              <div key={approval.id} className="flex items-center justify-between p-3 border rounded-lg">
+              <div key={approval.id} className="group flex items-center justify-between p-5 bg-slate-50/50 dark:bg-slate-800/10 border border-slate-100 dark:border-slate-800 rounded-2xl hover:bg-white dark:hover:bg-slate-800 transition-all duration-300">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">
-                    {approval.contentTitle || 'Unknown Content'}
+                  <p className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight truncate leading-tight">
+                    {approval.contentTitle || 'Nhiệm vụ không tên'}
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {approval.brandName || 'Unknown Brand'}
+                  <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">
+                    {approval.brandName || 'Thương hiệu N/A'}
                   </p>
-                  <div className="flex items-center gap-1 mt-1">
-                    <Clock className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2 mt-2">
+                    <Clock className="h-3 w-3 text-slate-300 dark:text-slate-600" />
+                    <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                       {new Date(approval.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm" asChild>
+                <Button variant="ghost" size="icon" className="size-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition-all" asChild>
                   <Link href={`/dashboard/approvals?id=${approval.id}`}>
                     <Eye className="h-4 w-4" />
                   </Link>
@@ -88,12 +93,12 @@ export function PendingApprovalsWidget({
             ))}
           </div>
         )}
-        
+
         {showViewAll && approvals.length > 0 && (
-          <div className="mt-4 pt-4 border-t">
-            <Button variant="outline" size="sm" className="w-full" asChild>
+          <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+            <Button variant="outline" className="w-full h-12 rounded-xl font-black uppercase tracking-widest text-[10px] bg-slate-50 dark:bg-slate-800 border-none text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all" asChild>
               <Link href="/dashboard/approvals">
-                View All Approvals
+                Truy cập trung tâm phê duyệt
               </Link>
             </Button>
           </div>

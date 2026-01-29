@@ -33,11 +33,11 @@ export function ApprovalList({
 
   const handleQuickApprove = async (approvalId: string) => {
     if (!onApprove) return;
-    
+
     try {
       const approval = approvals.find(a => a.id === approvalId);
       if (!approval) return;
-      
+
       setSelectedApproval(approval);
       await onApprove("");
       setSelectedApproval(null);
@@ -49,13 +49,13 @@ export function ApprovalList({
   const handleQuickReject = async (approvalId: string) => {
     const approval = approvals.find(a => a.id === approvalId);
     if (!approval) return;
-    
+
     setSelectedApproval(approval);
   };
 
   const handleModalApprove = async (notes: string) => {
     if (!onApprove) return;
-    
+
     try {
       await onApprove(notes);
       setSelectedApproval(null);
@@ -66,7 +66,7 @@ export function ApprovalList({
 
   const handleModalReject = async (notes: string) => {
     if (!onReject) return;
-    
+
     try {
       await onReject(notes);
       setSelectedApproval(null);
@@ -82,7 +82,7 @@ export function ApprovalList({
 
   const handleDeleteConfirm = async (approvalId: string) => {
     if (!onDelete) return;
-    
+
     try {
       await onDelete(approvalId);
       setIsDeleteDialogOpen(false);
@@ -99,12 +99,14 @@ export function ApprovalList({
 
   if (approvals.length === 0) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center py-12">
-            <CheckCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">{emptyMessage}</h3>
-            <p className="text-muted-foreground">{emptyDescription}</p>
+      <Card className="rounded-[2.5rem] border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/20 dark:bg-slate-900/50 transition-all duration-300">
+        <CardContent className="p-20">
+          <div className="text-center">
+            <div className="size-20 rounded-3xl bg-white dark:bg-slate-900 flex items-center justify-center mx-auto mb-8 shadow-sm border border-slate-100 dark:border-slate-800">
+              <CheckCircle className="size-10 text-slate-200 dark:text-slate-700" />
+            </div>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3 uppercase tracking-widest">{emptyMessage}</h3>
+            <p className="text-slate-500 dark:text-slate-400 font-medium max-w-sm mx-auto leading-relaxed uppercase tracking-tighter text-xs">{emptyDescription}</p>
           </div>
         </CardContent>
       </Card>
@@ -113,7 +115,7 @@ export function ApprovalList({
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {approvals.map((approval) => (
           <ApprovalCard
             key={approval.id}
