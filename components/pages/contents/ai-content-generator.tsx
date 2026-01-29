@@ -536,7 +536,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar - Desktop */}
-      <aside className="hidden lg:flex lg:w-72 border-r border-border/40 flex-col bg-muted/20 backdrop-blur-xl">
+      <aside className="hidden lg:flex lg:w-72 border-r border-border/40 dark:border-slate-800/40 flex-col bg-muted/20 dark:bg-slate-900/50 backdrop-blur-xl">
         <div className="p-6 border-b border-border/40 space-y-4">
           <Badge variant="outline" className="px-2 py-0.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/10">
             AISAM Content
@@ -559,8 +559,8 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
             <div
               key={conversation.id}
               className={`group cursor-pointer p-4 rounded-2xl transition-all duration-300 flex items-center justify-between border ${currentSession?.id === conversation.id
-                ? 'bg-card border-border shadow-sm'
-                : 'border-transparent hover:bg-muted/50 hover:border-border/30'
+                ? 'bg-card dark:bg-slate-800 border-border dark:border-slate-700 shadow-sm'
+                : 'border-transparent hover:bg-muted/50 dark:hover:bg-slate-800/50 hover:border-border/30 dark:hover:border-slate-700/30'
                 }`}
               onClick={() => selectConversation(conversation)}
             >
@@ -613,7 +613,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-chart-1/5 rounded-full blur-[100px] pointer-events-none translate-y-1/2 -translate-x-1/4" />
 
         {/* Header */}
-        <header className="h-14 shrink-0 border-b border-border/40 px-4 md:px-6 flex items-center justify-between bg-background/50 backdrop-blur-md relative z-20">
+        <header className="h-14 shrink-0 border-b border-border/40 dark:border-slate-800/40 px-4 md:px-6 flex items-center justify-between bg-background/50 backdrop-blur-md relative z-20">
           <div className="flex items-center gap-4">
             <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
               <SheetTrigger asChild>
@@ -621,7 +621,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0 border-r border-border/40 bg-background/95 backdrop-blur-3xl">
+              <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0 border-r border-border/40 dark:border-slate-800/40 bg-background/95 dark:bg-slate-900/95 backdrop-blur-3xl">
                 <SheetHeader className="p-6 border-b border-border/40">
                   <SheetTitle className="text-left text-sm font-black uppercase tracking-widest text-primary">Lịch sử hội thoại</SheetTitle>
                 </SheetHeader>
@@ -672,7 +672,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
             </Sheet>
 
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20">
+              <div className="h-10 w-10 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20 dark:shadow-primary/40">
                 <Bot className="h-6 w-6" />
               </div>
               <div>
@@ -694,7 +694,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                   Bối cảnh
                 </Button>
               </DialogTrigger>
-              <DialogContent className="rounded-3xl border-border/40 bg-background/95 backdrop-blur-xl">
+              <DialogContent className="rounded-3xl border-border/40 dark:border-slate-800 bg-background/95 dark:bg-slate-900/95 backdrop-blur-xl overflow-hidden shadow-2xl">
                 <DialogHeader className="pt-4">
                   <DialogTitle className="text-2xl font-bold">Bối cảnh mô hình</DialogTitle>
                   <DialogDescription>Tối ưu hóa đầu ra bằng cách chỉ định dữ liệu thương hiệu và sản phẩm.</DialogDescription>
@@ -740,7 +740,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
             <div className="h-full flex items-center justify-center px-4">
               <div className="text-center max-w-2xl space-y-8 md:space-y-12 py-10">
                 <div className="space-y-4 md:space-y-6">
-                  <div className="w-20 h-20 md:w-24 md:h-24 mx-auto bg-primary rounded-3xl flex items-center justify-center shadow-2xl shadow-primary/30 animate-bounce-subtle">
+                  <div className="w-20 h-20 md:w-24 md:h-24 mx-auto bg-primary dark:bg-primary rounded-3xl flex items-center justify-center shadow-2xl shadow-primary/30 dark:shadow-primary/50 animate-bounce-subtle">
                     <Sparkles className="h-10 w-10 md:h-12 md:w-12 text-primary-foreground fill-current" />
                   </div>
                   <h2 className="text-3xl md:text-5xl font-black tracking-tight text-foreground leading-[1.1] px-4">
@@ -767,7 +767,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                   </Button>
                 </div>
 
-                <Button onClick={createNewChatSession} size="lg" className="rounded-full px-10 md:px-12 h-12 md:h-14 md:text-lg font-bold shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                <Button onClick={createNewChatSession} size="lg" className="rounded-full px-10 md:px-12 h-12 md:h-14 md:text-lg font-black uppercase tracking-widest bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white shadow-2xl shadow-slate-200 dark:shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
                   Bắt đầu sáng tạo
                 </Button>
               </div>
@@ -789,13 +789,13 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                   <div className={`flex flex-col gap-1.5 min-w-0 max-w-[85%] sm:max-w-[75%] ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
                     <div className={`px-4 py-3 rounded-2xl shadow-sm border transition-all duration-300 ${message.role === 'user'
                       ? 'bg-primary text-primary-foreground border-primary/20 rounded-tr-none font-medium text-sm sm:text-base'
-                      : 'bg-muted/30 border-border/60 text-foreground rounded-tl-none leading-relaxed text-sm sm:text-base'
+                      : 'bg-muted/30 dark:bg-slate-800/30 border-border/60 dark:border-slate-700/60 text-foreground dark:text-slate-100 rounded-tl-none leading-relaxed text-sm sm:text-base'
                       }`}>
                       <p className="whitespace-pre-wrap">{message.content}</p>
                     </div>
 
                     {message.generation && (
-                      <Card className="w-full border-border/40 bg-card/30 backdrop-blur-md rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-500">
+                      <Card className="w-full border-border/40 dark:border-slate-800 bg-card/30 dark:bg-slate-800/30 backdrop-blur-md rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-500">
                         <CardContent className="p-4 md:p-6 space-y-3 md:space-y-4">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
@@ -807,7 +807,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                             <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 uppercase font-black text-[7px] px-1.5 py-0 rounded-md">LIVE</Badge>
                           </div>
 
-                          <div className="p-4 md:p-6 rounded-xl bg-muted/30 border border-border/30 font-serif italic text-sm md:text-lg leading-relaxed text-foreground/90 selection:bg-primary/10">
+                          <div className="p-4 md:p-6 rounded-xl bg-muted/30 dark:bg-slate-900/50 border border-border/30 dark:border-slate-800/30 font-serif italic text-sm md:text-lg leading-relaxed text-foreground/90 dark:text-slate-200 selection:bg-primary/10">
                             &ldquo;{message.generation.generated_content}&rdquo;
                           </div>
 
@@ -837,7 +837,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                                   handleCopyContent(message.generation!.generated_content);
                                 }
                               }}
-                              className="flex-1 rounded-xl h-10 font-bold border-border/40 hover:bg-muted text-xs transition-all"
+                              className="flex-1 rounded-xl h-10 font-black uppercase tracking-widest text-[10px] border-border/40 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-500 hover:bg-muted dark:hover:bg-slate-800 transition-all"
                             >
                               <Copy className="h-3.5 w-3.5 mr-2" />
                               Sao chép
@@ -846,7 +846,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                               variant="default"
                               size="sm"
                               onClick={() => handleSaveToLibrary(message.generation!)}
-                              className="flex-1 rounded-xl h-10 font-bold bg-primary text-primary-foreground shadow-sm transition-all hover:scale-[1.02] text-xs"
+                              className="flex-1 rounded-xl h-10 font-black uppercase tracking-widest text-[10px] bg-slate-900 dark:bg-primary text-white shadow-sm transition-all hover:scale-[1.02]"
                             >
                               <Save className="h-3.5 w-3.5 mr-2" />
                               Lưu dữ liệu
@@ -870,10 +870,10 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
 
               {isTyping && (
                 <div className="flex gap-3 md:gap-4 justify-start">
-                  <div className="h-9 w-9 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-primary text-primary-foreground flex items-center justify-center animate-pulse">
+                  <div className="h-9 w-9 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-primary text-primary-foreground flex items-center justify-center animate-pulse shadow-lg shadow-primary/20">
                     <Bot className="h-5 w-5 md:h-6 md:w-6" />
                   </div>
-                  <div className="bg-card border border-border/60 rounded-2xl rounded-tl-none px-5 py-3 md:px-6 md:py-4 flex items-center gap-2">
+                  <div className="bg-card dark:bg-slate-800 border border-border/60 dark:border-slate-700/60 rounded-2xl rounded-tl-none px-5 py-3 md:px-6 md:py-4 flex items-center gap-2">
                     <div className="flex gap-1.5">
                       <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
                       <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
@@ -894,7 +894,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
             {currentSession && (
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-chart-2/10 to-primary/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition duration-1000 group-focus-within:opacity-100" />
-                <div className="relative bg-card/90 backdrop-blur-2xl border border-border/60 rounded-3xl shadow-2xl p-1.5 md:p-2 flex flex-col items-stretch gap-2 transition-all duration-500 group-focus-within:border-primary/30 group-focus-within:shadow-primary/5">
+                <div className="relative bg-card/90 dark:bg-slate-900/90 backdrop-blur-2xl border border-border/60 dark:border-slate-800/60 rounded-3xl shadow-2xl p-1.5 md:p-2 flex flex-col items-stretch gap-2 transition-all duration-500 group-focus-within:border-primary/30 group-focus-within:shadow-primary/5">
                   <div className="flex items-end w-full gap-2 px-1">
                     <div className="pb-3 pl-2 hidden sm:block">
                       <Sparkles className="h-5 w-5 text-primary/40 group-focus-within:text-primary transition-colors" />
@@ -905,7 +905,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                         variant={selectedAdType === AdTypes.TextOnly ? "default" : "ghost"}
                         size="sm"
                         onClick={() => setSelectedAdType(AdTypes.TextOnly)}
-                        className={`h-9 px-3 rounded-xl transition-all ${selectedAdType === AdTypes.TextOnly ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:bg-muted'}`}
+                        className={`h-9 px-3 rounded-xl transition-all ${selectedAdType === AdTypes.TextOnly ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground dark:text-slate-500 hover:bg-muted dark:hover:bg-slate-800'}`}
                       >
                         <Type className="size-4 sm:mr-2" />
                         <span className="text-[10px] font-black uppercase tracking-widest hidden lg:inline">Văn bản</span>
@@ -914,7 +914,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                         variant={selectedAdType === AdTypes.Image ? "default" : "ghost"}
                         size="sm"
                         onClick={() => setSelectedAdType(AdTypes.Image)}
-                        className={`h-9 px-3 rounded-xl transition-all ${selectedAdType === AdTypes.Image ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:bg-muted'}`}
+                        className={`h-9 px-3 rounded-xl transition-all ${selectedAdType === AdTypes.Image ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground dark:text-slate-500 hover:bg-muted dark:hover:bg-slate-800'}`}
                       >
                         <ImageIcon className="size-4 sm:mr-2" />
                         <span className="text-[10px] font-black uppercase tracking-widest hidden lg:inline">Hình ảnh</span>
@@ -943,7 +943,7 @@ export function AIContentGenerator({ initialBrandId }: AIContentGeneratorProps =
                         }}
                         disabled={isTyping}
                         rows={1}
-                        className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm md:text-base py-3 resize-none min-h-[44px] max-h-[200px] font-medium placeholder:text-muted-foreground/40 scrollbar-hide"
+                        className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm md:text-base py-3 resize-none min-h-[44px] max-h-[200px] font-medium text-slate-900 dark:text-white placeholder:text-muted-foreground/40 dark:placeholder:text-slate-700 scrollbar-hide"
                       />
                     </div>
 

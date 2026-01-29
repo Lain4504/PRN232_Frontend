@@ -120,13 +120,13 @@ export function ContentFormShared({
     <div className={cn("space-y-6", className)}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Thương hiệu</Label>
+          <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Thương hiệu</Label>
           <Select
             value={formData.brandId}
             onValueChange={(value) => setFormData({ ...formData, brandId: value, productId: undefined })}
             disabled={!isEditing && !isCreateMode}
           >
-            <SelectTrigger>
+            <SelectTrigger className="h-11 bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 rounded-xl font-bold text-slate-900 dark:text-white">
               <SelectValue placeholder="Chọn thương hiệu" />
             </SelectTrigger>
             <SelectContent>
@@ -140,13 +140,13 @@ export function ContentFormShared({
         </div>
 
         <div className="space-y-2">
-          <Label>Sản phẩm (Tùy chọn)</Label>
+          <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Sản phẩm (Tùy chọn)</Label>
           <Select
             value={formData.productId || 'none'}
             onValueChange={(value) => setFormData({ ...formData, productId: value === 'none' ? undefined : value })}
             disabled={!isEditing && !isCreateMode}
           >
-            <SelectTrigger>
+            <SelectTrigger className="h-11 bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 rounded-xl font-bold text-slate-900 dark:text-white">
               <SelectValue placeholder="Chọn sản phẩm" />
             </SelectTrigger>
             <SelectContent>
@@ -162,17 +162,18 @@ export function ContentFormShared({
       </div>
 
       <div className="space-y-2">
-        <Label>Tiêu đề</Label>
+        <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Tiêu đề</Label>
         <Input
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           disabled={!isEditing && !isCreateMode}
           placeholder="Nhập tiêu đề nội dung..."
+          className="h-11 bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 rounded-xl font-bold text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-700"
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Loại bài viết</Label>
+        <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Loại bài viết</Label>
         <div className="flex flex-wrap gap-2">
           {[
             { id: AdTypeEnum.TextOnly, label: 'Văn bản', icon: FileText },
@@ -185,7 +186,12 @@ export function ContentFormShared({
               variant={formData.adType === item.id ? "default" : "outline"}
               onClick={() => setFormData({ ...formData, adType: item.id })}
               disabled={!isEditing && !isCreateMode}
-              className="flex-1 min-w-[120px]"
+              className={cn(
+                "flex-1 min-w-[120px] h-11 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all",
+                formData.adType === item.id
+                  ? "bg-slate-900 dark:bg-primary text-white shadow-lg shadow-slate-200 dark:shadow-primary/20"
+                  : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800"
+              )}
             >
               <item.icon className="mr-2 size-4" />
               {item.label}
@@ -195,22 +201,22 @@ export function ContentFormShared({
       </div>
 
       <div className="space-y-2">
-        <Label>Nội dung bài viết</Label>
+        <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Nội dung bài viết</Label>
         <Textarea
           value={formData.textContent || ''}
           onChange={(e) => setFormData({ ...formData, textContent: e.target.value })}
           disabled={!isEditing && !isCreateMode}
           placeholder="Nhập nội dung chi tiết bài viết..."
           rows={6}
-          className="resize-none"
+          className="resize-none bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 rounded-xl font-medium text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-700 p-4"
         />
       </div>
 
       {(formData.adType === AdTypeEnum.ImageText || formData.adType === AdTypeEnum.VideoText) && (
-        <div className="p-4 rounded-lg border bg-slate-50/50 space-y-4">
-          <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
+        <div className="p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 space-y-6">
+          <div className="flex items-center gap-3 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
             <Upload className="size-4" />
-            <span>Tệp đính kèm</span>
+            <span>Tệp phương tiện tác chiến</span>
           </div>
 
           <div className="space-y-4">
@@ -228,15 +234,16 @@ export function ContentFormShared({
               size="sm"
               onClick={() => document.getElementById('content-media')?.click()}
               disabled={!isEditing && !isCreateMode}
+              className="h-10 px-6 rounded-xl bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white font-black uppercase tracking-widest text-[9px] shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:-translate-y-0.5"
             >
-              <Upload className="mr-2 size-4" />
-              Tải lên {formData.adType === AdTypeEnum.ImageText ? 'ảnh' : 'video'}
+              <Upload className="mr-2 size-3.5" />
+              Tải lên {formData.adType === AdTypeEnum.ImageText ? 'hình ảnh' : 'video'}
             </Button>
 
             {formData.adType === AdTypeEnum.ImageText && displayImageUrls.length > 0 && (
               <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                 {displayImageUrls.map((src: string, i: number) => (
-                  <div key={i} className="aspect-square relative rounded-md overflow-hidden border bg-white">
+                  <div key={i} className="aspect-square relative rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-transform hover:scale-105 cursor-pointer">
                     <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover" />
                   </div>
                 ))}
@@ -244,7 +251,7 @@ export function ContentFormShared({
             )}
 
             {formData.adType === AdTypeEnum.VideoText && displayVideoUrl && (
-              <div className="max-w-xs rounded-md overflow-hidden border bg-black">
+              <div className="max-w-xs rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 bg-slate-900 dark:bg-black shadow-xl">
                 <video className="w-full aspect-video" controls src={displayVideoUrl} />
               </div>
             )}
@@ -253,15 +260,15 @@ export function ContentFormShared({
       )}
 
       {showButtons && (
-        <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
+        <div className="flex flex-col sm:flex-row gap-4 pt-8 border-t border-slate-100 dark:border-slate-800">
           {(isEditing || isCreateMode) && (
             <Button
               onClick={handleSave}
               disabled={isProcessing || !formData.brandId}
-              className="flex-1"
+              className="flex-1 h-12 rounded-xl bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 dark:shadow-primary/20 transition-all hover:-translate-y-1"
             >
               {isProcessing && <Loader2 className="mr-2 size-4 animate-spin" />}
-              {isCreateMode ? 'Tạo nội dung' : 'Lưu thay đổi'}
+              {isCreateMode ? 'Khởi tạo nội dung' : 'Lưu lại thay đổi'}
             </Button>
           )}
 
@@ -270,10 +277,10 @@ export function ContentFormShared({
               variant="outline"
               onClick={handleSubmit}
               disabled={isProcessing}
-              className="flex-1"
+              className="flex-1 h-12 rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 dark:hover:bg-slate-800 shadow-sm transition-all hover:-translate-y-1"
             >
-              <Send className="mr-2 size-4" />
-              Gửi phê duyệt
+              <Send className="mr-3 size-4 opacity-50" />
+              Gửi phê duyệt nội dung
             </Button>
           )}
         </div>

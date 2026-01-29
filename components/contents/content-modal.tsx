@@ -252,13 +252,13 @@ export function ContentModal({
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-4xl max-h-[90vh] flex flex-col p-0">
-          <DialogHeader className="p-6 border-b flex-row items-center justify-between space-y-0">
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] flex flex-col p-0 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
+          <DialogHeader className="p-6 border-b border-slate-100 dark:border-slate-800 flex-row items-center justify-between space-y-0 bg-slate-50/50 dark:bg-slate-800/20">
             <div>
-              <DialogTitle className="text-xl font-bold">
+              <DialogTitle className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white">
                 {isCreateMode ? 'Tạo nội dung mới' : 'Chỉnh sửa nội dung'}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">
                 {isCreateMode ? 'Khởi tạo nội dung quảng cáo cho thương hiệu của bạn.' : 'Cập nhật thông tin chi tiết của nội dung.'}
               </DialogDescription>
             </div>
@@ -315,15 +315,15 @@ export function ContentModal({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[95vh] flex flex-col">
-        <DrawerHeader className="text-left border-b">
+      <DrawerContent className="max-h-[95vh] flex flex-col bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+        <DrawerHeader className="text-left border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
           <div className="flex items-center justify-between mb-2">
-            <DrawerTitle className="text-xl font-bold">
+            <DrawerTitle className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white">
               {isCreateMode ? 'Tạo nội dung' : 'Chỉnh sửa nội dung'}
             </DrawerTitle>
             {statusBadge}
           </div>
-          <DrawerDescription>
+          <DrawerDescription className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
             {isCreateMode ? 'Khởi tạo nội dung mới.' : 'Cập nhật thông tin.'}
           </DrawerDescription>
         </DrawerHeader>
@@ -369,7 +369,7 @@ export function ContentModal({
             />
           )}
         </div>
-        <DrawerFooter className="border-t p-4">
+        <DrawerFooter className="border-t border-slate-100 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-slate-800/20">
           <div className="flex flex-col gap-2">
             {(isEditing || isCreateMode) && (
               <Button

@@ -102,52 +102,54 @@ export function ChangeStatusModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Cập nhật trạng thái</DialogTitle>
-          <DialogDescription>
-            Thay đổi trạng thái cho bài viết: <span className="font-semibold text-slate-900">{content.title}</span>
+      <DialogContent className="sm:max-w-[425px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-[2rem] p-0 overflow-hidden shadow-2xl">
+        <DialogHeader className="p-8 pb-4 bg-slate-50/50 dark:bg-slate-800/20 border-b border-slate-100 dark:border-slate-800 text-left">
+          <DialogTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 dark:text-white">Cập nhật trạng thái</DialogTitle>
+          <DialogDescription className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-2">
+            Bài viết: <span className="font-black text-slate-900 dark:text-white ml-2">{content.title}</span>
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-6 p-8">
           <div className="grid gap-2">
-            <Label htmlFor="status">Trạng thái mới</Label>
+            <Label htmlFor="status" className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Trạng thái mục tiêu</Label>
             <Select
               value={selectedStatus}
               onValueChange={(value) => setSelectedStatus(value as ContentStatusEnum)}
               disabled={isProcessing}
             >
-              <SelectTrigger id="status">
+              <SelectTrigger id="status" className="h-12 bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 rounded-xl font-bold text-slate-900 dark:text-white shadow-sm px-6">
                 <SelectValue placeholder="Chọn trạng thái" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ContentStatusEnum.Draft}>Bản nháp</SelectItem>
-                <SelectItem value={ContentStatusEnum.PendingApproval}>Chờ phê duyệt</SelectItem>
-                <SelectItem value={ContentStatusEnum.Approved}>Đã phê duyệt</SelectItem>
-                <SelectItem value={ContentStatusEnum.Rejected}>Từ chối</SelectItem>
-                <SelectItem value={ContentStatusEnum.Published}>Đã xuất bản</SelectItem>
+              <SelectContent className="rounded-2xl border-slate-100 dark:border-slate-800 p-1 shadow-2xl bg-white dark:bg-slate-900">
+                <SelectItem value={ContentStatusEnum.Draft} className="rounded-xl font-bold uppercase text-[10px]">Bản nháp</SelectItem>
+                <SelectItem value={ContentStatusEnum.PendingApproval} className="rounded-xl font-bold uppercase text-[10px]">Chờ phê duyệt</SelectItem>
+                <SelectItem value={ContentStatusEnum.Approved} className="rounded-xl font-bold uppercase text-[10px]">Đã phê duyệt</SelectItem>
+                <SelectItem value={ContentStatusEnum.Rejected} className="rounded-xl font-bold uppercase text-[10px]">Từ chối</SelectItem>
+                <SelectItem value={ContentStatusEnum.Published} className="rounded-xl font-bold uppercase text-[10px]">Đã xuất bản</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-[12px] text-slate-500 mt-1">
-              Lưu ý: Chuyển sang &quot;Đã xuất bản&quot; sẽ tự động tạo một bài viết tương ứng.
+            <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500 mt-2 italic leading-relaxed">
+              Lưu ý: Chuyển sang &quot;Đã xuất bản&quot; sẽ tự động kích hoạt tiến trình tạo bài viết tương ứng trên các nền tảng đã liên kết.
             </p>
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="p-8 pt-0 grid grid-cols-2 gap-4">
           <Button
             variant="outline"
             onClick={onClose}
             disabled={isProcessing}
+            className="h-12 rounded-xl border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-black uppercase tracking-widest text-[10px] text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700"
           >
-            Hủy
+            Hủy tác vụ
           </Button>
           <Button
             onClick={handleChangeStatus}
             disabled={isProcessing || selectedStatus === (content.status as unknown as ContentStatusEnum)}
+            className="h-12 rounded-xl bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 dark:shadow-primary/20 transition-all"
           >
-            {isProcessing ? "Đang lưu..." : "Lưu thay đổi"}
+            {isProcessing ? "Đang xử lý..." : "Cập nhật lệnh"}
           </Button>
         </DialogFooter>
       </DialogContent>
