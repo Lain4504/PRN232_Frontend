@@ -320,3 +320,14 @@ export function useCurrentTeamMember(teamId: string) {
     enabled: !!teamId,
   })
 }
+
+// Get all teams the user belongs to
+export function useUserTeams() {
+  return useQuery({
+    queryKey: [...teamKeys.lists(), 'user-teams'],
+    queryFn: async (): Promise<TeamResponse[]> => {
+      const resp = await api.get<TeamResponse[]>(endpoints.userTeams())
+      return resp.data
+    },
+  })
+}

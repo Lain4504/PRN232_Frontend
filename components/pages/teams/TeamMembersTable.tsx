@@ -46,15 +46,15 @@ const createColumns = (
       header: "Thành viên",
       cell: ({ row }) => (
         <div className="flex items-center gap-6 py-4">
-          <Avatar className="size-14 rounded-2xl border border-slate-200 shadow-sm ring-4 ring-slate-50">
-            <AvatarFallback className="bg-slate-900 text-white font-black text-xl">
+          <Avatar className="size-14 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm ring-4 ring-slate-50 dark:ring-slate-900/50">
+            <AvatarFallback className="bg-slate-900 dark:bg-primary text-white font-black text-xl">
               {row.original.userEmail ? row.original.userEmail.charAt(0).toUpperCase() : "?"}
             </AvatarFallback>
           </Avatar>
           <div className="space-y-1">
-            <div className="font-black text-slate-900 text-lg leading-none">{row.original.userEmail || '(Không có email)'}</div>
+            <div className="font-black text-slate-900 dark:text-white text-lg leading-none">{row.original.userEmail || '(Không có email)'}</div>
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="bg-slate-50 text-slate-400 border-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg">ID: {row.original.userId.slice(0, 8)}</Badge>
+              <Badge variant="secondary" className="bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg">ID: {row.original.userId.slice(0, 8)}</Badge>
             </div>
           </div>
         </div>
@@ -64,7 +64,7 @@ const createColumns = (
       accessorKey: "role",
       header: "Vai trò",
       cell: ({ row }) => (
-        <Badge variant="secondary" className="bg-slate-900 text-white border-none text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+        <Badge variant="secondary" className="bg-slate-900 dark:bg-primary text-white border-none text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
           {row.getValue("role") || 'thành viên'}
         </Badge>
       ),
@@ -76,8 +76,8 @@ const createColumns = (
         const permissions = row.getValue("permissions") as string[] || [];
         return (
           <div className="flex items-center gap-2">
-            <div className="size-2 rounded-full bg-blue-500" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{permissions.length} Phân quyền</span>
+            <div className="size-2 rounded-full bg-blue-500 dark:bg-blue-400" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">{permissions.length} Phân quyền</span>
           </div>
         );
       },
@@ -87,8 +87,8 @@ const createColumns = (
       header: "Trạng thái",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <div className={cn("size-2 rounded-full", row.getValue("isActive") ? "bg-emerald-500" : "bg-slate-300")} />
-          <span className={cn("text-[9px] font-black uppercase tracking-widest", row.getValue("isActive") ? "text-emerald-600" : "text-slate-400")}>
+          <div className={cn("size-2 rounded-full", row.getValue("isActive") ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-700")} />
+          <span className={cn("text-[9px] font-black uppercase tracking-widest", row.getValue("isActive") ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400 dark:text-slate-600")}>
             {row.getValue("isActive") ? 'Đang hoạt động' : 'Vô hiệu hóa'}
           </span>
         </div>
@@ -100,7 +100,7 @@ const createColumns = (
       cell: ({ row }) => {
         const date = row.getValue("joinedAt") as string;
         return (
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+          <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
             {date ? new Date(date).toLocaleDateString('vi-VN').replace(/\//g, '.') : '-'}
           </span>
         );
@@ -108,7 +108,7 @@ const createColumns = (
     },
     {
       id: "actions",
-      header: () => <div className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Thao tác</div>,
+      header: () => <div className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Thao tác</div>,
       cell: ({ row }) => {
         if (!canManage) return null;
 
@@ -176,13 +176,13 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
 
   if (isLoading) return (
     <div className="space-y-8 animate-pulse">
-      <div className="h-10 w-full bg-slate-50 rounded-xl" />
-      <div className="h-64 w-full bg-slate-50 rounded-2xl border border-slate-100" />
+      <div className="h-10 w-full bg-slate-100 dark:bg-slate-800 rounded-xl" />
+      <div className="h-64 w-full bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800" />
     </div>
   )
 
   if (isError) return (
-    <div className="flex items-center gap-4 p-6 rounded-2xl bg-rose-50 border border-rose-100 text-rose-500">
+    <div className="flex items-center gap-4 p-6 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-900/50 text-rose-500 dark:text-rose-400">
       <AlertTriangle className="size-6" />
       <div className="text-sm font-black uppercase tracking-widest">Không thể tải danh sách thành viên.</div>
     </div>
@@ -194,25 +194,25 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
       <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-4 w-full lg:w-auto">
           <div className="relative flex-1 lg:w-80 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-slate-900 transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 dark:text-slate-600 group-focus-within:text-slate-900 dark:group-focus-within:text-white transition-colors" />
             <Input
               placeholder="Tìm kiếm thành viên..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 h-12 bg-white border-slate-100 rounded-2xl shadow-sm focus-visible:ring-slate-100 font-medium transition-all"
+              className="pl-12 h-12 bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm focus-visible:ring-slate-100 dark:focus-visible:ring-slate-800 font-medium transition-all text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-700"
             />
           </div>
-          <div className="flex items-center gap-2 bg-white p-1 rounded-2xl border border-slate-100 shadow-sm">
-            <div className="size-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-1 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+            <div className="size-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
               <Filter className="size-3.5" />
             </div>
             <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
-              <SelectTrigger className="w-[100px] border-none focus:ring-0 font-bold text-xs uppercase tracking-widest h-8">
+              <SelectTrigger className="w-[100px] border-none focus:ring-0 font-bold text-xs uppercase tracking-widest h-8 text-slate-900 dark:text-white bg-transparent">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1">
+              <SelectContent className="rounded-2xl border-slate-100 dark:border-slate-800 shadow-2xl p-1 bg-white dark:bg-slate-900">
                 {[5, 10, 20, 50].map((size) => (
-                  <SelectItem key={size} value={String(size)} className="rounded-xl">Top {size}</SelectItem>
+                  <SelectItem key={size} value={String(size)} className="rounded-xl font-bold uppercase text-[10px]">Top {size}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -220,7 +220,7 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
         </div>
 
         {canManage && (
-          <Button onClick={onInviteMember} className="h-12 px-8 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-slate-200 transition-all hover:-translate-y-1">
+          <Button onClick={onInviteMember} className="h-12 px-8 rounded-xl bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-slate-200 dark:shadow-primary/20 transition-all hover:-translate-y-1">
             <UserCheck className="mr-3 h-4 w-4" />
             Mời nhân sự mới
           </Button>
@@ -239,17 +239,17 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
           data={filteredMembers}
           pageSize={pageSize}
           className="border-0 shadow-none bg-transparent"
-          headerClassName="bg-slate-50/50 border-b border-slate-100 py-6 px-10 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400"
+          headerClassName="bg-slate-50/50 dark:bg-slate-800/20 border-b border-slate-100 dark:border-slate-800 py-6 px-10 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500"
         />
       ) : (
-        <div className="flex flex-col items-center justify-center py-24 px-6 text-center border border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
-          <div className="size-16 rounded-2xl bg-white flex items-center justify-center mb-6 shadow-sm border border-slate-100">
-            <User2 className="size-8 text-slate-200" />
+        <div className="flex flex-col items-center justify-center py-24 px-6 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl bg-slate-50/50 dark:bg-slate-900/30">
+          <div className="size-16 rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center mb-6 shadow-sm border border-slate-100 dark:border-slate-800">
+            <User2 className="size-8 text-slate-200 dark:text-slate-700" />
           </div>
-          <h3 className="text-xl font-black text-slate-900 mb-2 uppercase tracking-widest">
+          <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2 uppercase tracking-widest">
             {searchTerm ? 'Không tìm thấy kết quả' : 'Danh sách trống'}
           </h3>
-          <p className="text-slate-500 font-medium max-w-sm mb-8 leading-relaxed text-xs italic">
+          <p className="text-slate-500 dark:text-slate-400 font-medium max-w-sm mb-8 leading-relaxed text-xs italic uppercase tracking-tighter">
             {searchTerm ? 'Thử điều chỉnh từ khóa tìm kiếm của bạn.' : 'Bắt đầu mời các thành viên đầu tiên gia nhập vào đội ngũ của bạn.'}
           </p>
         </div>
@@ -257,21 +257,21 @@ export function TeamMembersTable({ teamId, canManage = true, onEditMember, onInv
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteMemberId} onOpenChange={() => setDeleteMemberId(null)}>
-        <AlertDialogContent className="rounded-3xl border-slate-100 p-10 max-w-md shadow-2xl">
+        <AlertDialogContent className="rounded-3xl border-slate-100 dark:border-slate-800 p-10 max-w-md shadow-2xl bg-white dark:bg-slate-900">
           <AlertDialogHeader className="space-y-6">
-            <div className="size-20 rounded-3xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto border border-rose-100 shadow-sm">
+            <div className="size-20 rounded-3xl bg-rose-50 dark:bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto border border-rose-100 dark:border-rose-800 shadow-sm">
               <Trash2 className="size-10" />
             </div>
-            <AlertDialogTitle className="text-3xl font-black tracking-tight text-center uppercase text-slate-900">Loại bỏ thành viên?</AlertDialogTitle>
-            <AlertDialogDescription className="text-sm font-medium text-slate-500 leading-relaxed text-center italic mt-2">
+            <AlertDialogTitle className="text-3xl font-black tracking-tight text-center uppercase text-slate-900 dark:text-white">Loại bỏ thành viên?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed text-center italic mt-2">
               Xác nhận xóa tài khoản này khỏi cấu trúc đội ngũ. Họ sẽ mất quyền truy cập vào các tài sản chung ngay lập tức.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-12 grid grid-cols-2 gap-4">
-            <AlertDialogCancel className="rounded-xl h-12 font-black uppercase tracking-widest text-[10px] bg-slate-50 border-none">Hủy bỏ</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-xl h-12 font-black uppercase tracking-widest text-[10px] bg-slate-50 dark:bg-slate-800 border-none text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700">Hủy bỏ</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteMember}
-              className="bg-rose-500 text-white hover:bg-rose-600 rounded-xl h-12 font-black uppercase tracking-widest text-[10px] border-none shadow-lg shadow-rose-100"
+              className="bg-rose-500 text-white hover:bg-rose-600 rounded-xl h-12 font-black uppercase tracking-widest text-[10px] border-none shadow-lg shadow-rose-100 dark:shadow-none"
             >
               {deleteMemberMutation.isPending ? "..." : "Xác nhận xóa"}
             </AlertDialogAction>

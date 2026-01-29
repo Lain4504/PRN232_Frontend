@@ -68,19 +68,19 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
           className="flex items-center gap-6 py-4 cursor-pointer group/item"
           onClick={() => router.push(`/dashboard/brands/${row.original.id}`)}
         >
-          <Avatar className="size-14 rounded-2xl border border-slate-200 shadow-sm ring-4 ring-slate-50 overflow-hidden transition-transform group-hover/item:scale-105">
+          <Avatar className="size-14 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm ring-4 ring-slate-50 dark:ring-slate-900/50 overflow-hidden transition-transform group-hover/item:scale-105">
             {row.original.logo_url ? (
               <AvatarImage src={row.original.logo_url} alt={row.getValue("name")} className="object-cover" />
             ) : (
-              <AvatarFallback className="bg-slate-900 text-white font-black text-xl">
+              <AvatarFallback className="bg-slate-900 dark:bg-primary text-white font-black text-xl">
                 {row.original.name.charAt(0).toUpperCase()}
               </AvatarFallback>
             )}
           </Avatar>
           <div className="space-y-1">
-            <div className="font-black text-slate-900 text-lg leading-none truncate max-w-[250px] group-hover/item:text-primary transition-colors">{row.getValue("name")}</div>
+            <div className="font-black text-slate-900 dark:text-white text-lg leading-none truncate max-w-[250px] group-hover/item:text-primary transition-colors">{row.getValue("name")}</div>
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="bg-slate-50 text-slate-400 border-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg">ID: {row.original.id.slice(0, 8)}</Badge>
+              <Badge variant="secondary" className="bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg">ID: {row.original.id.slice(0, 8)}</Badge>
             </div>
           </div>
         </div>
@@ -92,7 +92,7 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
       cell: ({ row }) => {
         const date = row.getValue("createdAt") as string;
         return (
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+          <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
             {date ? new Date(date).toLocaleDateString('vi-VN').replace(/\//g, '.') : '-'}
           </span>
         )
@@ -100,7 +100,7 @@ export function TeamBrandsList({ teamId, canManage = true, onAddBrand }: TeamBra
     },
     {
       id: "actions",
-      header: () => <div className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Thao tác</div>,
+      header: () => <div className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Thao tác</div>,
       cell: ({ row }) => {
         const actions: ActionItem[] = [
           {

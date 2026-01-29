@@ -90,6 +90,16 @@ export function useSubscription(profileId?: string) {
 
     const status = dto.isActive ? 'active' : 'cancelled'
 
+    // Calculate end date: if endDate exists, use it; otherwise add 1 month to startDate
+    const calculateEndDate = (startDate: string, endDate?: string): string => {
+      if (endDate) return endDate
+
+      const start = new Date(startDate)
+      const end = new Date(start)
+      end.setMonth(end.getMonth() + 1)
+      return end.toISOString()
+    }
+
     const ui: Subscription = {
       id: dto.id,
       profileId: dto.profileId,
@@ -99,7 +109,7 @@ export function useSubscription(profileId?: string) {
       status,
       billingCycle: 'monthly',
       currentPeriodStart: dto.startDate,
-      currentPeriodEnd: dto.endDate ?? dto.startDate,
+      currentPeriodEnd: calculateEndDate(dto.startDate, dto.endDate),
       cancelAtPeriodEnd: false,
       features: [],
       limits,

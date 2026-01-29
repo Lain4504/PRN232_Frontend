@@ -62,7 +62,7 @@ import { ContentPreviewModal } from "@/components/contents/content-preview-modal
 import { ChangeStatusModal } from "@/components/contents/change-status-modal"
 import { toast } from "sonner"
 import { SubmitApprovalDialog } from "@/components/contents/submit-approval-dialog"
-import { useTeamMembers } from "@/hooks/use-teams"
+import { useTeamMembers, useUserTeams } from "@/hooks/use-teams"
 import { useQueryClient } from "@tanstack/react-query"
 import { api, endpoints } from "@/lib/api"
 import { useProfile } from "@/lib/contexts/profile-context"
@@ -275,9 +275,29 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
   const queryClient = useQueryClient()
 
   const [activeTeamId, setActiveTeamId] = useState<string | null>(null)
+  const { data: userTeams = [] } = useUserTeams()
+
   useEffect(() => {
-    if (typeof window !== 'undefined') setActiveTeamId(localStorage.getItem('activeTeamId'))
-  }, [])
+    if (teamId) {
+      setActiveTeamId(teamId)
+      return
+    }
+    if (typeof window !== 'undefined') {
+      const storedTeamId = localStorage.getItem('activeTeamId')
+      if (storedTeamId) {
+        setActiveTeamId(storedTeamId)
+      }
+    }
+  }, [teamId])
+
+  useEffect(() => {
+    if (!activeTeamId && userTeams && userTeams.length > 0) {
+      const firstTeamId = userTeams[0].id
+      setActiveTeamId(firstTeamId)
+      localStorage.setItem('activeTeamId', firstTeamId)
+    }
+  }, [activeTeamId, userTeams])
+
   const { data: teamMembers = [] } = useTeamMembers(activeTeamId || undefined)
 
   const contents: ContentResponseDto[] = Array.isArray(contentsData) ? (contentsData as ContentResponseDto[]) : ((contentsData as { data: ContentResponseDto[] })?.data || [])
@@ -399,9 +419,9 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
                 <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-slate-100 dark:border-slate-800 shadow-2xl p-1 bg-white dark:bg-slate-900">
-                <SelectItem value="all" className="rounded-xl">Tất cả bài</SelectItem>
+                <SelectItem value="all" className="rounded-xl font-bold uppercase text-[10px]">Tất cả bài</SelectItem>
                 {Object.values(ContentStatusEnum).map(s => (
-                  <SelectItem key={s} value={s} className="rounded-xl">{s === ContentStatusEnum.Published ? "Đã xuất bản" :
+                  <SelectItem key={s} value={s} className="rounded-xl font-bold uppercase text-[10px]">{s === ContentStatusEnum.Published ? "Đã xuất bản" :
                     s === ContentStatusEnum.Approved ? "Đã phê duyệt" :
                       s === ContentStatusEnum.PendingApproval ? "Chờ phê duyệt" :
                         s === ContentStatusEnum.Draft ? "Nháp" :
@@ -420,10 +440,10 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
                 <SelectValue placeholder="Định dạng" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-slate-100 dark:border-slate-800 shadow-2xl p-1 bg-white dark:bg-slate-900">
-                <SelectItem value="all" className="rounded-xl">Mọi định dạng</SelectItem>
-                <SelectItem value={AdTypeEnum.TextOnly.toString()} className="rounded-xl">Chỉ văn bản</SelectItem>
-                <SelectItem value={AdTypeEnum.ImageText.toString()} className="rounded-xl">Ảnh & Văn bản</SelectItem>
-                <SelectItem value={AdTypeEnum.VideoText.toString()} className="rounded-xl">Video & Văn bản</SelectItem>
+                <SelectItem value="all" className="rounded-xl font-bold uppercase text-[10px]">Mọi định dạng</SelectItem>
+                <SelectItem value={AdTypeEnum.TextOnly.toString()} className="rounded-xl font-bold uppercase text-[10px]">Chỉ văn bản</SelectItem>
+                <SelectItem value={AdTypeEnum.ImageText.toString()} className="rounded-xl font-bold uppercase text-[10px]">Ảnh & Văn bản</SelectItem>
+                <SelectItem value={AdTypeEnum.VideoText.toString()} className="rounded-xl font-bold uppercase text-[10px]">Video & Văn bản</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -632,4 +632,5 @@ export const endpoints = {
 
   // Dashboard endpoints
   dashboardStats: (teamId?: string) => `/dashboard/stats${teamId ? `?teamId=${teamId}` : ''}`,
+  userTeams: () => "/team/user-teams",
 }
