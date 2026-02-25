@@ -143,11 +143,11 @@ export function TeamCreateDialog({ open, onOpenChange, onCreated }: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden flex flex-col rounded-lg border-border p-0 shadow-lg bg-popover">
-        <DialogHeader className="flex-shrink-0 p-6 pb-2 text-left">
+        <DialogHeader className="flex-shrink-0 p-8 pb-4 text-left">
           <DialogTitle className="text-2xl font-bold tracking-tight text-foreground leading-none">Kiến tạo Đội ngũ</DialogTitle>
-          <DialogDescription className="text-sm font-medium text-muted-foreground mt-2">Xây dựng cấu trúc cộng tác mới cho tổ chức truyền thông của bạn.</DialogDescription>
+          <DialogDescription className="text-sm font-medium text-muted-foreground mt-2 italic">Xây dựng cấu trúc cộng tác mới cho tổ chức truyền thông của bạn.</DialogDescription>
         </DialogHeader>
-        <div className="overflow-y-auto flex-1 px-6 pb-6">
+        <div className="overflow-y-auto flex-1 px-8 pb-8">
           <TeamFormContent onCancel={() => onOpenChange(false)} />
         </div>
       </DialogContent>

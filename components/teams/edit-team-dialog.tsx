@@ -98,12 +98,16 @@ function EditTeamForm({ team, onSuccess, onCancel, isSubmitting, className }: Ed
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem className="space-y-1">
-              <FormLabel>Tên đội ngũ</FormLabel>
+            <FormItem className="space-y-2">
+              <FormLabel className="text-sm font-semibold text-muted-foreground">Định danh Đội ngũ</FormLabel>
               <FormControl>
-                <Input placeholder="Nhập tên mới..." {...field} />
+                <Input
+                  placeholder="Nhập tên mới..."
+                  className="h-10 rounded-md border-border bg-card px-4 focus-visible:ring-primary font-medium text-foreground shadow-sm"
+                  {...field}
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-[11px]" />
             </FormItem>
           )}
         />
@@ -112,12 +116,17 @@ function EditTeamForm({ team, onSuccess, onCancel, isSubmitting, className }: Ed
           control={form.control}
           name="description"
           render={({ field }) => (
-            <FormItem className="space-y-1">
-              <FormLabel>Mô tả ngắn</FormLabel>
+            <FormItem className="space-y-2">
+              <FormLabel className="text-sm font-semibold text-muted-foreground">Sứ mệnh / Mô tả ngắn</FormLabel>
               <FormControl>
-                <Textarea placeholder="Nhập mô tả về đội ngũ..." rows={3} {...field} />
+                <Textarea
+                  placeholder="Nhập mô tả về mục tiêu của đội ngũ..."
+                  rows={3}
+                  className="rounded-md border-border bg-card p-4 focus-visible:ring-primary font-medium text-foreground shadow-sm resize-none"
+                  {...field}
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-[11px]" />
             </FormItem>
           )}
         />
@@ -126,35 +135,36 @@ function EditTeamForm({ team, onSuccess, onCancel, isSubmitting, className }: Ed
           control={form.control}
           name="status"
           render={({ field }) => (
-            <FormItem className="space-y-1">
-              <FormLabel>Trạng thái</FormLabel>
+            <FormItem className="space-y-2">
+              <FormLabel className="text-sm font-semibold text-muted-foreground">Trạng thái vận hành</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-10 rounded-md border-border bg-card px-4 focus:ring-0 shadow-sm font-medium text-foreground">
                     <SelectValue placeholder="Chọn trạng thái" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="Active">Đang hoạt động</SelectItem>
-                  <SelectItem value="Inactive">Tạm dừng</SelectItem>
-                  <SelectItem value="Archived">Lưu trữ</SelectItem>
+                <SelectContent className="rounded-md border-border shadow-lg p-1">
+                  <SelectItem value="Active" className="rounded-sm h-10 font-medium text-sm focus:bg-accent">Đang hoạt động</SelectItem>
+                  <SelectItem value="Inactive" className="rounded-sm h-10 font-medium text-sm focus:bg-accent">Tạm dừng</SelectItem>
+                  <SelectItem value="Archived" className="rounded-sm h-10 font-medium text-sm focus:bg-accent focus:text-destructive">Lưu trữ</SelectItem>
                 </SelectContent>
               </Select>
-              <FormMessage />
+              <FormMessage className="text-[11px]" />
             </FormItem>
           )}
         />
 
-        <div className="flex items-center justify-end gap-3 pt-6 border-t mt-6">
+        <div className="flex items-center justify-end gap-3 pt-6 border-t border-border mt-6">
           <Button
             type="button"
             variant="outline"
             onClick={onCancel}
             disabled={isSubmitting}
+            className="h-10 px-6 rounded-md font-semibold text-sm"
           >
-            Hủy
+            Hủy bỏ
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting} className="h-10 px-6 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm shadow-sm transition-all">
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -187,12 +197,12 @@ export function EditTeamDialog({ open, onOpenChange, team }: EditTeamDialogProps
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-md max-h-[90vh] flex flex-col p-0 overflow-hidden">
-          <DialogHeader className="p-6 border-b">
-            <DialogTitle>Thiết lập đội ngũ</DialogTitle>
-            <DialogDescription>Cập nhật thông tin chi tiết và trạng thái của nhóm.</DialogDescription>
+        <DialogContent className="sm:max-w-md max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-lg border-border shadow-lg bg-popover">
+          <DialogHeader className="p-8 pb-4">
+            <DialogTitle className="text-2xl font-bold tracking-tight text-foreground leading-none">Thiết lập đội ngũ</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-muted-foreground mt-2 italic">Cập nhật thông tin chi tiết và trạng thái vận hành của nhóm.</DialogDescription>
           </DialogHeader>
-          <div className="overflow-y-auto flex-1 p-6">
+          <div className="overflow-y-auto flex-1 px-8 pb-8">
             <EditTeamForm
               team={team}
               onSuccess={handleSuccess}
@@ -207,12 +217,12 @@ export function EditTeamDialog({ open, onOpenChange, team }: EditTeamDialogProps
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[95vh] flex flex-col">
-        <DrawerHeader className="text-left border-b">
-          <DrawerTitle>Thiết lập đội ngũ</DrawerTitle>
-          <DrawerDescription>Cập nhật thông tin nhóm.</DrawerDescription>
+      <DrawerContent className="max-h-[95vh] flex flex-col rounded-t-lg border-none bg-popover shadow-2xl">
+        <DrawerHeader className="text-left p-6 pb-2">
+          <DrawerTitle className="text-xl font-bold text-foreground focus:outline-none">Thiết lập đội ngũ</DrawerTitle>
+          <DrawerDescription className="text-sm font-medium text-muted-foreground italic mt-1">Cập nhật thông tin nhóm vận hành.</DrawerDescription>
         </DrawerHeader>
-        <div className="p-4 overflow-y-auto flex-1">
+        <div className="p-6 overflow-y-auto flex-1">
           <EditTeamForm
             team={team}
             onSuccess={handleSuccess}

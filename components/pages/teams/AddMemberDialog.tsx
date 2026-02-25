@@ -119,7 +119,7 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
     const isMobile = useIsMobile()
 
     const renderFormContent = (onCancel: () => void) => (
-        <form onSubmit={handleSubmit} className="space-y-10">
+        <form onSubmit={handleSubmit} className="space-y-8">
             {/* User Search & Selection */}
             <div className="space-y-4">
                 <Label className="text-sm font-semibold text-muted-foreground">Truy vấn nhân sự</Label>
@@ -135,25 +135,25 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
                 </div>
 
                 {loading && (
-                    <div className="flex items-center gap-2 px-4">
-                        <Loader2 className="size-3 animate-spin text-slate-400" />
-                        <span className="text-xs font-semibold text-slate-400">Đang lục tìm hồ sơ...</span>
+                    <div className="flex items-center gap-2 px-1">
+                        <Loader2 className="size-3 animate-spin text-muted-foreground" />
+                        <span className="text-xs font-semibold text-muted-foreground">Đang lục tìm hồ sơ...</span>
                     </div>
                 )}
 
                 {searchQuery.length >= 2 && !loading && users.length === 0 && (
-                    <div className="px-4 text-xs font-semibold text-rose-400">Không tìm thấy thực thể phù hợp</div>
+                    <div className="px-1 text-xs font-semibold text-destructive">Không tìm thấy thực thể phù hợp</div>
                 )}
 
                 {users.length > 0 && (
                     <div className="space-y-2">
                         <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-                            <SelectTrigger className="h-10 rounded-lg border border-input bg-background px-4 focus:ring-0 shadow-sm font-medium text-foreground">
+                            <SelectTrigger className="h-10 rounded-md border-border bg-card px-4 focus:ring-0 shadow-sm font-medium text-foreground">
                                 <SelectValue placeholder="Xác nhận nhân sự từ danh sách" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-lg border-border shadow-lg p-1 max-h-[250px]">
+                            <SelectContent className="rounded-md border-border shadow-lg p-1 max-h-[250px]">
                                 {users.map((user) => (
-                                    <SelectItem key={user.id} value={user.id} className="rounded-md h-auto focus:bg-accent">
+                                    <SelectItem key={user.id} value={user.id} className="rounded-sm h-auto focus:bg-accent">
                                         <div className="flex items-center gap-4 py-2">
                                             <Avatar className="size-10 rounded-md border border-border bg-muted shadow-sm transition-transform">
                                                 <AvatarFallback className="bg-primary text-primary-foreground font-bold text-sm">
@@ -180,24 +180,24 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
                 <div className="space-y-4">
                     <Label className="text-sm font-semibold text-muted-foreground">Vai trò Cộng tác</Label>
                     <Select value={role} onValueChange={setRole}>
-                        <SelectTrigger className="h-10 rounded-lg border border-input bg-background px-4 focus:ring-0 shadow-sm font-medium text-foreground">
+                        <SelectTrigger className="h-10 rounded-md border-border bg-card px-4 focus:ring-0 shadow-sm font-medium text-foreground">
                             <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="rounded-lg border-border shadow-lg p-1">
+                        <SelectContent className="rounded-md border-border shadow-lg p-1">
                             {['Copywriter', 'Designer', 'Marketer', 'TeamLeader', 'Vendor'].map(r => (
-                                <SelectItem key={r} value={r} className="rounded-md h-10 font-medium text-sm focus:bg-accent">{r}</SelectItem>
+                                <SelectItem key={r} value={r} className="rounded-sm h-10 font-medium text-sm focus:bg-accent">{r}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
-                    <p className="text-[11px] font-medium text-muted-foreground leading-relaxed">Phân quyền sẽ được AI tự động thiết lập dựa trên vai trò chiến lược.</p>
+                    <p className="text-[10px] font-medium text-muted-foreground leading-relaxed uppercase tracking-wider">Phân quyền sẽ được AI tự động thiết lập dựa trên vai trò.</p>
                 </div>
 
                 <div className="space-y-4">
                     <Label className="text-sm font-semibold text-muted-foreground">Thẩm quyền hệ thống</Label>
-                    <div className="h-10 bg-muted rounded-lg border border-border px-4 flex items-center justify-between group hover:border-primary transition-all cursor-pointer" onClick={() => setShowPermissions(!showPermissions)}>
+                    <div className="h-10 bg-muted/30 rounded-md border border-border px-4 flex items-center justify-between group hover:border-primary/50 transition-all cursor-pointer shadow-sm" onClick={() => setShowPermissions(!showPermissions)}>
                         <div className="flex items-center gap-3">
-                            <Key className="size-4 text-muted-foreground" />
-                            <span className="text-sm font-medium text-foreground">{permissions.length} Phân quyền</span>
+                            <Key className="size-4 text-primary" />
+                            <span className="text-sm font-bold text-foreground">{permissions.length} Phân quyền</span>
                         </div>
                         <Button type="button" variant="ghost" className="size-8 p-0 hover:bg-accent rounded-md transition-transform" style={{ transform: showPermissions ? 'rotate(90deg)' : 'none' }}>
                             <ChevronRight className="size-4" />
@@ -220,7 +220,7 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
                                                 onClick={() => togglePermission(permission)}
                                                 className={cn(
                                                     "flex items-center gap-3 p-3 rounded-md border transition-all cursor-pointer",
-                                                    isSelected ? "bg-background border-primary shadow-sm" : "bg-transparent border-transparent hover:bg-accent"
+                                                    isSelected ? "border-primary bg-background shadow-sm" : "border-transparent bg-transparent hover:bg-accent"
                                                 )}
                                             >
                                                 <Checkbox
@@ -228,12 +228,12 @@ export function AddMemberDialog({ open, onOpenChange, teamId }: Props) {
                                                     onCheckedChange={() => togglePermission(permission)}
                                                     className="size-4 rounded border-input data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                                                 />
-                                                <span className="text-[11px] font-medium text-foreground truncate">
+                                                <span className="text-[11px] font-bold text-foreground truncate">
                                                     {info?.label || permission}
                                                 </span>
                                             </div>
                                         </TooltipTrigger>
-                                        <TooltipContent side="top" className="rounded-md bg-foreground text-background border-none p-2 text-[11px] font-medium">
+                                        <TooltipContent side="top" sideOffset={5} className="rounded-md bg-foreground text-background border-none p-2 text-[11px] font-medium">
                                             <p>{info?.description || permission}</p>
                                         </TooltipContent>
                                     </Tooltip>

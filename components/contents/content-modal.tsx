@@ -252,21 +252,21 @@ export function ContentModal({
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-4xl max-h-[90vh] flex flex-col p-0 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
-          <DialogHeader className="p-6 border-b border-slate-100 dark:border-slate-800 flex-row items-center justify-between space-y-0 bg-slate-50/50 dark:bg-slate-800/20">
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] flex flex-col p-0 bg-popover border-border shadow-2xl overflow-hidden rounded-lg">
+          <DialogHeader className="p-8 pb-4 flex-row items-center justify-between space-y-0 border-b border-border">
             <div>
-              <DialogTitle className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white">
+              <DialogTitle className="text-2xl font-bold tracking-tight text-foreground leading-none">
                 {isCreateMode ? 'Tạo nội dung mới' : 'Chỉnh sửa nội dung'}
               </DialogTitle>
-              <DialogDescription className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">
-                {isCreateMode ? 'Khởi tạo nội dung quảng cáo cho thương hiệu của bạn.' : 'Cập nhật thông tin chi tiết của nội dung.'}
+              <DialogDescription className="text-sm font-medium text-muted-foreground mt-2 italic">
+                {isCreateMode ? 'Khởi tạo nội dung quảng cáo chiến lược cho thương hiệu của bạn.' : 'Cập nhật thông tin chi tiết và định dạng của nội dung.'}
               </DialogDescription>
             </div>
             <div className="flex items-center gap-3">
               {statusBadge}
             </div>
           </DialogHeader>
-          <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
+          <div className="flex-1 overflow-y-auto p-8 scrollbar-hide">
             {teamId ? (
               <TeamContentForm
                 formData={formData}
@@ -315,16 +315,16 @@ export function ContentModal({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[95vh] flex flex-col bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
-        <DrawerHeader className="text-left border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
-          <div className="flex items-center justify-between mb-2">
-            <DrawerTitle className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white">
+      <DrawerContent className="max-h-[95vh] flex flex-col bg-popover border-none rounded-t-lg shadow-2xl">
+        <DrawerHeader className="text-left p-6 pb-2 border-b border-border">
+          <div className="flex items-center justify-between mb-1">
+            <DrawerTitle className="text-xl font-bold text-foreground">
               {isCreateMode ? 'Tạo nội dung' : 'Chỉnh sửa nội dung'}
             </DrawerTitle>
             {statusBadge}
           </div>
-          <DrawerDescription className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
-            {isCreateMode ? 'Khởi tạo nội dung mới.' : 'Cập nhật thông tin.'}
+          <DrawerDescription className="text-sm font-medium text-muted-foreground italic">
+            {isCreateMode ? 'Khởi tạo nội dung mới.' : 'Cập nhật thông tin nội dung.'}
           </DrawerDescription>
         </DrawerHeader>
         <div className="flex-1 overflow-y-auto p-4">
@@ -369,17 +369,18 @@ export function ContentModal({
             />
           )}
         </div>
-        <DrawerFooter className="border-t border-slate-100 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-slate-800/20">
-          <div className="flex flex-col gap-2">
+        <DrawerFooter className="border-t border-border p-6 mt-4">
+          <div className="flex flex-col gap-3">
             {(isEditing || isCreateMode) && (
               <Button
                 onClick={handleSave}
                 disabled={isProcessing || !formData.brandId}
-                className="w-full"
+                className="w-full h-12 rounded-md font-bold text-base shadow-lg"
               >
-                {isCreateMode ? 'Tạo nội dung' : 'Lưu thay đổi'}
+                {isCreateMode ? 'Tạo nội dung ngay' : 'Lưu mọi thay đổi'}
               </Button>
             )}
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="h-12 rounded-md font-semibold text-muted-foreground">Hủy bỏ</Button>
           </div>
         </DrawerFooter>
       </DrawerContent>

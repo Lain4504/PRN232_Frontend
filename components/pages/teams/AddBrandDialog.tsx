@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { Building2, Search, Plus, Target, ChevronRight, CheckCircle2, X, AlertCircle } from 'lucide-react'
+import { Building2, Search, Plus, Target, ChevronRight, CheckCircle2, X, AlertCircle, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { api, endpoints } from '@/lib/api'
 import { useBrands } from '@/hooks/use-brands'
@@ -82,24 +82,14 @@ export function AddBrandDialog({ open, onOpenChange, teamId, onSuccess }: Props)
     const AddBrandFormContent = ({ onCancel }: { onCancel: () => void }) => (
         <form onSubmit={handleSubmit} className="space-y-6"> {/* Adjusted spacing */}
             {/* Search Section */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="relative flex-1 w-full sm:max-w-xs group">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
-                    <Input
-                        placeholder="Tìm kiếm thương hiệu..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 h-10 bg-card border-border rounded-md shadow-sm focus-visible:ring-primary font-medium transition-all text-foreground"
-                    />
-                </div>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onCancel}
-                    className="h-10 px-4 rounded-md font-semibold text-sm"
-                >
-                    Hủy bỏ
-                </Button>
+            <div className="relative group">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+                <Input
+                    placeholder="Tìm kiếm thương hiệu theo tên hoặc mô tả..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 h-10 bg-card border-border rounded-md shadow-sm focus-visible:ring-primary font-medium transition-all text-foreground"
+                />
             </div>
 
             {/* Brands List */}
@@ -107,7 +97,7 @@ export function AddBrandDialog({ open, onOpenChange, teamId, onSuccess }: Props)
                 <div className="flex items-center justify-between">
                     <Label className="text-sm font-semibold text-muted-foreground">Danh sách Thương hiệu khả dụng</Label>
                     {selectedBrands.length > 0 && (
-                        <Badge variant="secondary" className="bg-primary text-primary-foreground border-none text-[10px] font-semibold px-3 py-1 rounded-md">
+                        <Badge variant="secondary" className="bg-primary/10 text-primary border-none text-[10px] font-bold px-3 py-1 rounded-sm">
                             Đã chọn {selectedBrands.length}
                         </Badge>
                     )}
@@ -125,25 +115,25 @@ export function AddBrandDialog({ open, onOpenChange, teamId, onSuccess }: Props)
                         </p>
                     </div>
                 ) : (
-                    <div className="max-h-[300px] overflow-y-auto space-y-3 pr-2 scrollbar-hide"> {/* Adjusted max-height */}
+                    <div className="max-h-[300px] overflow-y-auto space-y-2 pr-2 scrollbar-hide">
                         {filteredBrands.map((brand) => (
                             <div
                                 key={brand.id}
                                 onClick={() => handleBrandToggle(brand.id)}
                                 className={cn(
-                                    "flex items-center gap-4 p-3 rounded-lg border transition-all duration-300 cursor-pointer group", // Adjusted gap, padding, rounded-2xl to rounded-lg, border-2 to border
+                                    "flex items-center gap-4 p-3 rounded-lg border transition-all duration-300 cursor-pointer group",
                                     selectedBrands.includes(brand.id)
-                                        ? "border-primary bg-primary/5 shadow-md ring-1 ring-primary" // Adjusted border, bg, shadow, ring
-                                        : "border-border bg-card hover:border-muted-foreground/50 hover:bg-muted/50" // Adjusted border, bg, hover styles
+                                        ? "border-primary bg-primary/10 shadow-sm"
+                                        : "border-border bg-card hover:border-primary/50 hover:bg-muted/30"
                                 )}
                             >
                                 <Checkbox
                                     checked={selectedBrands.includes(brand.id)}
                                     onCheckedChange={() => handleBrandToggle(brand.id)}
-                                    className="size-5 rounded-md border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary" // Adjusted rounded-lg to rounded-md, border-slate-300 to border-border, bg-slate-900 to bg-primary
+                                    className="size-5 rounded border-input data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                                 />
                                 <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-4 py-1 group/item"> {/* Adjusted gap, removed py-3 */}
+                                    <div className="flex items-center gap-4 group/item">
                                         <Avatar className="size-10 rounded-md border border-border bg-muted shadow-sm transition-transform group-hover/item:scale-105">
                                             {brand.logo_url ? (
                                                 <AvatarImage src={brand.logo_url || (brand as { logoUrl?: string }).logoUrl} alt={brand.name} className="object-cover" />
@@ -155,7 +145,7 @@ export function AddBrandDialog({ open, onOpenChange, teamId, onSuccess }: Props)
                                         </Avatar>
                                         <div className="flex-1 min-w-0">
                                             <p className="font-bold text-foreground text-sm leading-none truncate group-hover/item:text-primary transition-colors">{brand.name}</p>
-                                            <p className="text-[11px] font-medium text-muted-foreground mt-1">{brand.description?.slice(0, 50) || 'Dữ liệu thương hiệu'}</p>
+                                            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mt-1">{brand.description?.slice(0, 50) || 'Thương hiệu'}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -165,16 +155,25 @@ export function AddBrandDialog({ open, onOpenChange, teamId, onSuccess }: Props)
                 )}
             </div>
 
-            <div className="flex justify-end pt-4"> {/* Adjusted spacing */}
+            <div className="flex justify-end gap-3 pt-6 border-t border-border">
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={onCancel}
+                    disabled={assigning}
+                    className="h-10 px-6 rounded-md font-semibold text-sm"
+                >
+                    Hủy bỏ
+                </Button>
                 <Button type="submit" disabled={assigning || selectedBrands.length === 0} className="h-10 px-6 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm shadow-sm transition-all">
                     {assigning ? (
                         <>
-                            <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                            <Loader2 className="mr-3 h-4 w-4 animate-spin" />
                             Đang xử lý...
                         </>
                     ) : (
                         <>
-                            Gán Thực thể ({selectedBrands.length}) <ChevronRight className="ml-2 size-4" />
+                            Xác nhận Gán ({selectedBrands.length}) <ChevronRight className="ml-2 size-4" />
                         </>
                     )}
                 </Button>

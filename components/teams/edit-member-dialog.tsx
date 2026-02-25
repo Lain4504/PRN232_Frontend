@@ -86,41 +86,41 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
 
   const FormContent = ({ className }: { className?: string }) => (
     <form onSubmit={handleSubmit} className={cn("space-y-6", className)}>
-      <div className="flex items-center gap-4 p-4 rounded-lg border bg-slate-50/50">
-        <Avatar className="size-12 rounded-md border bg-white">
-          <AvatarFallback className="bg-slate-900 text-white text-lg">
+      <div className="flex items-center gap-4 p-4 rounded-lg border border-border bg-muted/30">
+        <Avatar className="size-12 rounded-md border border-border bg-card">
+          <AvatarFallback className="bg-primary text-primary-foreground text-lg font-bold">
             {member.userEmail?.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">
           <p className="font-bold text-foreground truncate">{member.userEmail}</p>
-          <p className="text-[11px] text-muted-foreground">Tham gia: {new Date(member.joinedAt).toLocaleDateString('vi-VN')}</p>
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tham gia: {new Date(member.joinedAt).toLocaleDateString('vi-VN')}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Vai trò</Label>
+          <Label className="text-sm font-semibold text-muted-foreground">Vai trò Cộng tác</Label>
           <Select value={role} onValueChange={setRole}>
-            <SelectTrigger>
+            <SelectTrigger className="h-10 rounded-md border-border bg-card px-4 focus:ring-0 shadow-sm font-medium text-foreground">
               <SelectValue placeholder="Chọn vai trò..." />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-md border-border shadow-lg p-1">
               {['Copywriter', 'Designer', 'Marketer', 'TeamLeader', 'Vendor'].map(r => (
-                <SelectItem key={r} value={r}>{r}</SelectItem>
+                <SelectItem key={r} value={r} className="rounded-sm h-10 font-medium text-sm focus:bg-accent">{r}</SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
         <div className="space-y-2">
-          <Label>Trạng thái</Label>
-          <div className="flex h-10 items-center justify-between gap-4 px-3 border rounded-md bg-white">
-            <span className="text-sm">{isActive ? 'Đang hoạt động' : 'Đã khóa'}</span>
+          <Label className="text-sm font-semibold text-muted-foreground">Trạng thái Nhân sự</Label>
+          <div className="flex h-10 items-center justify-between gap-4 px-4 border border-border rounded-md bg-card shadow-sm hover:border-primary/50 transition-colors">
+            <span className="text-sm font-medium text-foreground">{isActive ? 'Đang hoạt động' : 'Đã khóa'}</span>
             <Switch
               checked={isActive}
               onCheckedChange={setIsActive}
-              className="data-[state=checked]:bg-emerald-500"
+              className="data-[state=checked]:bg-primary"
             />
           </div>
         </div>
@@ -142,19 +142,19 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
 
         <div
           onClick={() => setShowPermissions(!showPermissions)}
-          className="flex items-center justify-between p-3 rounded-md border bg-card cursor-pointer hover:bg-accent"
+          className="flex items-center justify-between p-4 rounded-md border border-border bg-card cursor-pointer hover:bg-muted/50 shadow-sm transition-all"
         >
-          <div className="flex items-center gap-2">
-            <Shield className="size-4 text-muted-foreground" />
-            <span className="text-xs font-semibold">Gán {permissions.length} quyền cho {role}</span>
+          <div className="flex items-center gap-3">
+            <Shield className="size-4 text-primary" />
+            <span className="text-xs font-bold text-foreground">Gán {permissions.length} quyền hạn cho {role}</span>
           </div>
           <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", showPermissions && "rotate-180")} />
         </div>
 
         {showPermissions && (
-          <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
             <TooltipProvider>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 rounded-md border bg-slate-50/50 max-h-48 overflow-y-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 rounded-lg border border-border bg-muted/30 max-h-48 overflow-y-auto scrollbar-hide">
                 {getPermissionsForRole(role).map((permission) => {
                   const info = getPermissionInfo(permission);
                   const isSelected = permissions.includes(permission);
@@ -164,30 +164,31 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
                         <div
                           onClick={() => togglePermission(permission)}
                           className={cn(
-                            "flex items-center gap-2 p-2 rounded border bg-white cursor-pointer hover:border-slate-400",
-                            isSelected && "border-slate-900 bg-slate-50"
+                            "flex items-center gap-3 p-2.5 rounded border transition-all cursor-pointer",
+                            isSelected ? "border-primary bg-background shadow-sm" : "border-transparent bg-transparent hover:bg-accent"
                           )}
                         >
                           <Checkbox
                             checked={isSelected}
                             onCheckedChange={() => togglePermission(permission)}
+                            className="size-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                           />
-                          <span className="text-xs truncate">
+                          <span className="text-[11px] font-medium text-foreground truncate">
                             {info?.label || permission}
                           </span>
                         </div>
                       </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">{info?.description || permission}</p>
+                      <TooltipContent sideOffset={5} className="rounded-md bg-foreground text-background border-none p-2 text-xs font-medium">
+                        <p>{info?.description || permission}</p>
                       </TooltipContent>
                     </Tooltip>
                   );
                 })}
               </div>
             </TooltipProvider>
-            <div className="flex gap-4">
-              <button type="button" className="text-xs font-semibold text-muted-foreground hover:text-foreground" onClick={() => setPermissions(getPermissionsForRole(role).slice())}>Về mặc định</button>
-              <button type="button" className="text-xs font-semibold text-destructive hover:text-destructive/80" onClick={() => setPermissions([])}>Gỡ sạch quyền</button>
+            <div className="flex gap-4 px-2">
+              <button type="button" className="text-[11px] font-bold text-muted-foreground hover:text-foreground transition-colors" onClick={() => setPermissions(getPermissionsForRole(role).slice())}>Về mặc định</button>
+              <button type="button" className="text-[11px] font-bold text-destructive hover:text-destructive/80 transition-colors" onClick={() => setPermissions([])}>Gỡ sạch quyền</button>
             </div>
           </div>
         )}
@@ -199,16 +200,17 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
         </div>
       )}
 
-      <div className="flex items-center justify-end gap-3 pt-6 border-t mt-6">
+      <div className="flex items-center justify-end gap-3 pt-6 border-t border-border mt-6">
         <Button
           type="button"
           variant="outline"
           onClick={() => onOpenChange(false)}
           disabled={updating}
+          className="h-10 px-6 rounded-md font-semibold text-sm"
         >
-          Hủy
+          Hủy bỏ
         </Button>
-        <Button type="submit" disabled={updating || !role}>
+        <Button type="submit" disabled={updating || !role} className="h-10 px-6 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm shadow-sm transition-all border-none">
           {updating ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -225,12 +227,12 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[95vh] flex flex-col">
-          <DrawerHeader className="text-left border-b">
-            <DrawerTitle>Phân quyền nhân sự</DrawerTitle>
-            <DrawerDescription>Cập nhật vai trò và chức năng cho thành viên.</DrawerDescription>
+        <DrawerContent className="max-h-[95vh] flex flex-col rounded-t-lg border-none bg-popover shadow-2xl">
+          <DrawerHeader className="text-left p-6 pb-2">
+            <DrawerTitle className="text-xl font-bold text-foreground">Phân quyền nhân sự</DrawerTitle>
+            <DrawerDescription className="text-sm font-medium text-muted-foreground mt-2 italic">Cập nhật vai trò và ma trận chức năng cho thành viên.</DrawerDescription>
           </DrawerHeader>
-          <div className="p-4 overflow-y-auto flex-1">
+          <div className="p-6 overflow-y-auto flex-1 pb-10">
             <FormContent />
           </div>
         </DrawerContent>
@@ -240,12 +242,12 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
-        <DialogHeader className="p-6 border-b">
-          <DialogTitle>Phân quyền nhân sự</DialogTitle>
-          <DialogDescription>Điều chỉnh vai trò và ma trận quyền hạn cho thành viên đội ngũ.</DialogDescription>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-lg border-border shadow-lg bg-popover">
+        <DialogHeader className="p-8 pb-4">
+          <DialogTitle className="text-2xl font-bold tracking-tight text-foreground leading-none">Phân quyền nhân sự</DialogTitle>
+          <DialogDescription className="text-sm font-medium text-muted-foreground mt-2 italic">Điều chỉnh vai trò và ma trận thẩm quyền cho thành viên đội ngũ.</DialogDescription>
         </DialogHeader>
-        <div className="overflow-y-auto flex-1 p-6 scrollbar-hide">
+        <div className="overflow-y-auto flex-1 px-8 pb-8 scrollbar-hide">
           <FormContent />
         </div>
       </DialogContent>
