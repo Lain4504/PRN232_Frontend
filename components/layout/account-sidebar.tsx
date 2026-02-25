@@ -16,17 +16,17 @@ interface AccountNavItem {
 // Account navigation items
 const accountNavItems: AccountNavItem[] = [
   {
-    title: "Preferences",
+    title: "Tùy chỉnh",
     url: "/account/me",
     icon: Settings,
   },
   {
-    title: "Security",
+    title: "Bảo mật",
     url: "/account/security",
     icon: Shield,
   },
   {
-    title: "Payment History",
+    title: "Lịch sử thanh toán",
     url: "/account/payment",
     icon: History,
   },
@@ -35,7 +35,7 @@ const accountNavItems: AccountNavItem[] = [
 // Logs navigation items
 const logsNavItems: AccountNavItem[] = [
   {
-    title: "Audit Logs",
+    title: "Nhật ký hệ thống",
     url: "/account/logs",
     icon: FileText,
   },
@@ -47,15 +47,16 @@ export function AccountSidebar() {
   return (
     <div className="flex flex-col h-full w-64 bg-sidebar border-r border-sidebar-border">
       {/* Back to dashboard */}
+      {/* Back to dashboard */}
       <div className="p-4 border-b border-sidebar-border">
         <Button
           variant="ghost"
           asChild
-          className="w-full justify-start text-sm text-sidebar-foreground hover:text-sidebar-foreground"
+          className="w-full justify-start text-sm text-sidebar-foreground"
         >
           <Link href="/dashboard">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to dashboard
+            Quay lại bảng điều khiển
           </Link>
         </Button>
       </div>
@@ -63,9 +64,9 @@ export function AccountSidebar() {
       {/* Navigation Content */}
       <div className="flex-1 p-4 overflow-y-auto">
         {/* Account Section */}
-        <div className="mb-8">
-          <h3 className="text-xs font-semibold text-sidebar-foreground uppercase tracking-wider mb-4">
-            ACCOUNT
+        <div className="mb-6">
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            TÀI KHOẢN
           </h3>
           <div className="space-y-1">
             {accountNavItems.map((item) => (
@@ -74,8 +75,10 @@ export function AccountSidebar() {
                 variant="ghost"
                 asChild
                 className={cn(
-                  "w-full justify-start text-sm font-normal text-sidebar-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent",
-                  pathname === item.url && "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                  "w-full justify-start text-sm font-medium",
+                  pathname === item.url
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
                 )}
               >
                 <Link href={item.url}>
@@ -89,8 +92,8 @@ export function AccountSidebar() {
 
         {/* Logs Section */}
         <div>
-          <h3 className="text-xs font-semibold text-sidebar-foreground uppercase tracking-wider mb-4">
-            LOGS
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            NHẬT KÝ
           </h3>
           <div className="space-y-1">
             {logsNavItems.map((item) => (
@@ -99,8 +102,10 @@ export function AccountSidebar() {
                 variant="ghost"
                 asChild
                 className={cn(
-                  "w-full justify-start text-sm font-normal text-sidebar-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent",
-                  pathname === item.url && "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                  "w-full justify-start text-sm font-medium",
+                  pathname === item.url
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
                 )}
               >
                 <Link href={item.url}>

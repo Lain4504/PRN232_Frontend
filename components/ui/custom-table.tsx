@@ -108,7 +108,7 @@ export function CustomTable<TData, TValue>({
 
   return (
     <div className={cn(
-      "rounded-2xl border border-white/10 overflow-hidden bg-background/40 backdrop-blur-xl shadow-2xl custom-scrollbar",
+      "rounded-lg border border-border overflow-hidden bg-card shadow-sm custom-scrollbar",
       className
     )}>
       <Table>
@@ -117,7 +117,7 @@ export function CustomTable<TData, TValue>({
             <TableRow
               key={headerGroup.id}
               className={cn(
-                "hover:bg-transparent border-b border-white/10 bg-white/5",
+                "hover:bg-transparent border-b border-border bg-muted/50",
                 headerClassName
               )}
             >
@@ -125,7 +125,7 @@ export function CustomTable<TData, TValue>({
                 <TableHead
                   key={header.id}
                   className={cn(
-                    "h-12 text-muted-foreground font-semibold text-xs uppercase tracking-wider py-3 px-4",
+                    "h-12 text-muted-foreground font-semibold text-xs py-3 px-4",
                     header.id === "index" && "w-[50px] text-center",
                     header.id === "actions" && "w-[50px] text-center"
                   )}
@@ -173,8 +173,8 @@ export function CustomTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 className={cn(
-                  "border-b border-white/5 transition-all duration-200 group",
-                  "hover:bg-primary/5 hover:border-primary/10",
+                  "border-b border-border transition-all duration-200 group",
+                  "hover:bg-muted/50",
                   onRowClick && "cursor-pointer"
                 )}
                 onClick={() => onRowClick?.(row.original)}

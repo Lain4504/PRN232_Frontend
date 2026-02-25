@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
-import { Building2, Plus, ChevronsUpDown, Layout } from 'lucide-react'
+import { Building2, Plus, ChevronsUpDown, Layout, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export function ProfileSwitcher() {
@@ -43,7 +43,7 @@ export function ProfileSwitcher() {
 
   if (!activeProfile) {
     return (
-      <Button variant="outline" size="sm" onClick={handleSwitchToOverview} className="rounded-xl font-bold bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-300">
+      <Button variant="outline" size="sm" onClick={handleSwitchToOverview} className="rounded-md font-bold bg-muted/50 border-border text-foreground hover:bg-muted transition-colors">
         <Building2 className="h-3.5 w-3.5 mr-2 opacity-70" />
         CHỌN HỒ SƠ
       </Button>
@@ -53,37 +53,37 @@ export function ProfileSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-12 px-4 gap-4 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 rounded-2xl transition-all duration-300 group">
+        <Button variant="ghost" className="h-10 px-3 gap-3 hover:bg-accent rounded-md transition-all">
           <div className="flex items-center gap-3">
-            <div className="size-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden group-hover:scale-105 transition-transform duration-300">
+            <div className="size-8 rounded bg-muted flex items-center justify-center border border-border overflow-hidden">
               {activeProfile.avatarUrl ? (
                 <img src={activeProfile.avatarUrl} alt="" className="size-full object-cover" />
               ) : (
-                <Building2 className="size-4 text-slate-400 dark:text-slate-500" />
+                <Building2 className="size-3.5 text-muted-foreground" />
               )}
             </div>
             <div className="flex flex-col items-start leading-none space-y-1">
-              <span className="text-xs font-black text-slate-900 dark:text-white truncate max-w-[140px] uppercase tracking-tight">
+              <span className="text-[10px] font-bold text-foreground truncate max-w-[120px] uppercase tracking-widest">
                 {activeProfile.name}
               </span>
               <div className="flex items-center gap-2">
-                <div className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                <span className="text-[9px] font-black uppercase tracking-[0.15em] text-slate-400 dark:text-slate-500">
-                  {PROFILE_TYPE_LABELS[activeProfile.type]} TIER
+                <div className="size-1.5 rounded-full bg-emerald-500" />
+                <span className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground">
+                  {PROFILE_TYPE_LABELS[activeProfile.type]}
                 </span>
               </div>
             </div>
           </div>
-          <ChevronsUpDown className="h-3.5 w-3.5 text-slate-300 dark:text-slate-600 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+          <ChevronsUpDown className="h-3 w-3 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-80 rounded-3xl bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 p-3 shadow-2xl shadow-slate-200/50 dark:shadow-black/60 animate-in fade-in zoom-in-95 duration-200" align="start" sideOffset={12}>
-        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 px-4 py-4">
-          MA TRẬN HỒ SƠ
+      <DropdownMenuContent className="w-64 rounded-lg bg-popover border border-border p-1 shadow-md" align="start">
+        <DropdownMenuLabel className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground px-3 py-2">
+          DANH SÁCH HỒ SƠ
         </DropdownMenuLabel>
 
-        <div className="max-h-[360px] overflow-y-auto px-1 py-1 space-y-1 scrollbar-hide">
+        <div className="max-h-[300px] overflow-y-auto p-1 space-y-1">
           {profiles.map((profile) => {
             const isActive = profile.id === activeProfile.id
             return (
@@ -91,39 +91,37 @@ export function ProfileSwitcher() {
                 key={profile.id}
                 onClick={() => handleProfileSelect(profile)}
                 className={cn(
-                  "rounded-2xl cursor-pointer p-4 transition-all duration-300",
+                  "rounded-md cursor-pointer p-3 transition-colors",
                   isActive
-                    ? "bg-slate-900 dark:bg-primary text-white shadow-xl shadow-slate-200 dark:shadow-primary/20"
-                    : "hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-900 dark:text-slate-400"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "hover:bg-accent text-foreground"
                 )}
               >
                 <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <div className={cn(
-                      "size-11 rounded-xl flex items-center justify-center shrink-0 border transition-all duration-300",
+                      "size-9 rounded flex items-center justify-center shrink-0 border transition-all",
                       isActive
-                        ? "bg-white/10 border-white/10"
-                        : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                        ? "bg-white/10 border-white/20"
+                        : "bg-muted border-border"
                     )}>
                       {profile.avatarUrl ? (
-                        <img src={profile.avatarUrl} alt="" className="size-full object-cover rounded-xl" />
+                        <img src={profile.avatarUrl} alt="" className="size-full object-cover rounded" />
                       ) : (
-                        <Building2 className={cn("size-6", isActive ? "text-white" : "text-slate-400 dark:text-slate-500")} />
+                        <Building2 className={cn("size-5", isActive ? "text-white" : "text-muted-foreground")} />
                       )}
                     </div>
-                    <div className="space-y-1">
-                      <div className={cn("font-black text-sm truncate max-w-[150px] uppercase tracking-tight", isActive ? "text-white" : "text-slate-900 dark:text-white")}>
+                    <div className="space-y-0.5">
+                      <div className={cn("font-bold text-xs truncate max-w-[130px] uppercase tracking-tight", isActive ? "text-white" : "text-foreground")}>
                         {profile.name || profile.company_name || "Hồ sơ không tên"}
                       </div>
-                      <div className={cn("text-[9px] font-black uppercase tracking-widest", isActive ? "text-white/60" : "text-slate-400 dark:text-slate-500")}>
+                      <div className={cn("text-[8px] font-bold uppercase tracking-widest", isActive ? "text-white/70" : "text-muted-foreground")}>
                         {PROFILE_TYPE_LABELS[profile.profileType as keyof typeof PROFILE_TYPE_LABELS]}
                       </div>
                     </div>
                   </div>
                   {isActive && (
-                    <div className="flex items-center justify-center size-5 rounded-full bg-white/20">
-                      <div className="size-1.5 rounded-full bg-white animate-pulse" />
-                    </div>
+                    <Check className="size-3.5 text-white" />
                   )}
                 </div>
               </DropdownMenuItem>
@@ -131,23 +129,21 @@ export function ProfileSwitcher() {
           })}
         </div>
 
-        <DropdownMenuSeparator className="bg-slate-50 dark:bg-slate-800/50 my-3 mx-4" />
-
-        <div className="grid grid-cols-2 gap-2 p-1">
+        <div className="grid grid-cols-2 gap-2 p-1 pt-2 border-t mt-1">
           <Button
             variant="ghost"
             onClick={() => window.location.href = '/overview/profile/new'}
-            className="rounded-xl h-12 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
+            className="rounded-md h-9 text-[9px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
           >
-            <Plus className="size-4 mr-2 opacity-70" />
+            <Plus className="size-3.5 mr-2 opacity-70" />
             Tạo mới
           </Button>
           <Button
             variant="ghost"
             onClick={handleSwitchToOverview}
-            className="rounded-xl h-12 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
+            className="rounded-md h-9 text-[9px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
           >
-            <Layout className="size-4 mr-2 opacity-70" />
+            <Layout className="size-3.5 mr-2 opacity-70" />
             Quản lý
           </Button>
         </div>

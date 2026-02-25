@@ -7,7 +7,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useTheme } from "next-themes";
-import { Zap } from "lucide-react";
 
 export function AppearanceSection() {
   const { theme, setTheme } = useTheme();
@@ -23,10 +22,6 @@ export function AppearanceSection() {
     }
   }, []);
 
-  const handleThemeChange = (newTheme: string) => {
-    setTheme(newTheme);
-  };
-
   const handleSidebarBehaviorChange = (value: string) => {
     setSidebarBehavior(value);
     // Save to localStorage
@@ -39,134 +34,124 @@ export function AppearanceSection() {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-xl font-semibold">Appearance</CardTitle>
-        <Separator />
-      </CardHeader>
-      <CardContent className="space-y-8">
-        {/* Theme Mode Section */}
-        <div className="space-y-4">
-          <div>
-            <h3 className="text-lg font-medium">Theme mode</h3>
-            <p className="text-sm text-muted-foreground">
-              Choose how OmniAdly looks to you. Select a single theme, or sync with your system.
-            </p>
-          </div>
-
-          <p className="text-sm text-muted-foreground">
-            OmniAdly will use your selected theme
-          </p>
-
-          <RadioGroup value={theme} onValueChange={handleThemeChange} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Dark Theme */}
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="dark" id="dark" />
-              <Label htmlFor="dark" className="flex items-center space-x-2 cursor-pointer flex-1">
-                <div className="flex-1">
-                  <div className="w-full h-16 bg-slate-900 rounded border p-2">
-                    <div className="flex h-full">
-                      <div className="w-8 bg-slate-800 rounded mr-2 flex items-center justify-center">
-                        <Zap className="h-4 w-4 text-orange-500" />
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">Chủ đề hệ thống</h2>
+        <Card className="rounded-lg border shadow-sm">
+          <CardContent className="p-6">
+            <RadioGroup
+              value={theme}
+              onValueChange={(v) => setTheme(v)}
+              className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            >
+              {/* Light Theme */}
+              <div>
+                <RadioGroupItem value="light" id="theme-light" className="sr-only" />
+                <Label
+                  htmlFor="theme-light"
+                  className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer transition-all"
+                >
+                  <div className="relative aspect-video w-full rounded bg-white border overflow-hidden mb-3 shadow-inner">
+                    <div className="absolute inset-0 p-2">
+                      <div className="flex gap-1.5 mb-2">
+                        <div className="size-2 rounded-full bg-red-400" />
+                        <div className="size-2 rounded-full bg-amber-400" />
+                        <div className="size-2 rounded-full bg-emerald-400" />
                       </div>
-                      <div className="flex-1 space-y-1">
-                        <div className="h-2 bg-slate-700 rounded w-3/4"></div>
-                        <div className="h-1.5 bg-slate-700 rounded w-1/2"></div>
-                        <div className="h-1.5 bg-orange-500 rounded w-1/3"></div>
+                      <div className="space-y-1.5">
+                        <div className="h-1.5 w-full bg-slate-100 rounded-px" />
+                        <div className="h-1.5 w-3/4 bg-slate-100 rounded-px" />
                       </div>
                     </div>
                   </div>
-                  <p className="text-sm font-medium mt-2">Dark</p>
-                </div>
-              </Label>
-            </div>
+                  <span className="text-xs font-bold uppercase tracking-widest">Sáng</span>
+                </Label>
+              </div>
 
-            {/* Light Theme */}
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="light" id="light" />
-              <Label htmlFor="light" className="flex items-center space-x-2 cursor-pointer flex-1">
-                <div className="flex-1">
-                  <div className="w-full h-16 bg-white border rounded p-2">
-                    <div className="flex h-full">
-                      <div className="w-8 bg-gray-100 rounded mr-2 flex items-center justify-center">
-                        <Zap className="h-4 w-4 text-orange-500" />
+              {/* Dark Theme */}
+              <div>
+                <RadioGroupItem value="dark" id="theme-dark" className="sr-only" />
+                <Label
+                  htmlFor="theme-dark"
+                  className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer transition-all"
+                >
+                  <div className="relative aspect-video w-full rounded bg-[#020617] border border-white/10 overflow-hidden mb-3 shadow-inner">
+                    <div className="absolute inset-0 p-2">
+                      <div className="flex gap-1.5 mb-2">
+                        <div className="size-2 rounded-full bg-red-400" />
+                        <div className="size-2 rounded-full bg-amber-400" />
+                        <div className="size-2 rounded-full bg-emerald-400" />
                       </div>
-                      <div className="flex-1 space-y-1">
-                        <div className="h-2 bg-gray-200 rounded w-3/4"></div>
-                        <div className="h-1.5 bg-gray-200 rounded w-1/2"></div>
-                        <div className="h-1.5 bg-orange-500 rounded w-1/3"></div>
+                      <div className="space-y-1.5">
+                        <div className="h-1.5 w-full bg-slate-800 rounded-px" />
+                        <div className="h-1.5 w-3/4 bg-slate-800 rounded-px" />
                       </div>
                     </div>
                   </div>
-                  <p className="text-sm font-medium mt-2">Light</p>
-                </div>
-              </Label>
-            </div>
+                  <span className="text-xs font-bold uppercase tracking-widest">Tối</span>
+                </Label>
+              </div>
 
-            {/* System Theme */}
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="system" id="system" />
-              <Label htmlFor="system" className="flex items-center space-x-2 cursor-pointer flex-1">
-                <div className="flex-1">
-                  <div className="w-full h-16 rounded border overflow-hidden">
+              {/* System Theme */}
+              <div>
+                <RadioGroupItem value="system" id="theme-system" className="sr-only" />
+                <Label
+                  htmlFor="theme-system"
+                  className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer transition-all"
+                >
+                  <div className="relative aspect-video w-full rounded border overflow-hidden mb-3 shadow-inner">
                     <div className="flex h-full">
-                      <div className="w-1/2 bg-slate-900 p-1">
-                        <div className="flex h-full">
-                          <div className="w-6 bg-slate-800 rounded mr-1 flex items-center justify-center">
-                            <Zap className="h-3 w-3 text-orange-500" />
-                          </div>
-                          <div className="flex-1 space-y-1">
-                            <div className="h-1.5 bg-slate-700 rounded w-3/4"></div>
-                            <div className="h-1 bg-slate-700 rounded w-1/2"></div>
-                            <div className="h-1 bg-orange-500 rounded w-1/3"></div>
-                          </div>
+                      <div className="w-1/2 bg-[#020617] p-2">
+                        <div className="flex gap-1.5 mb-2">
+                          <div className="size-2 rounded-full bg-red-400" />
+                          <div className="size-2 rounded-full bg-amber-400" />
+                          <div className="size-2 rounded-full bg-emerald-400" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <div className="h-1.5 w-full bg-slate-800 rounded-px" />
                         </div>
                       </div>
-                      <div className="w-1/2 bg-white p-1">
-                        <div className="flex h-full">
-                          <div className="w-6 bg-gray-100 rounded mr-1 flex items-center justify-center">
-                            <Zap className="h-3 w-3 text-orange-500" />
-                          </div>
-                          <div className="flex-1 space-y-1">
-                            <div className="h-1.5 bg-gray-200 rounded w-3/4"></div>
-                            <div className="h-1 bg-gray-200 rounded w-1/2"></div>
-                            <div className="h-1 bg-orange-500 rounded w-1/3"></div>
-                          </div>
+                      <div className="w-1/2 bg-white p-2">
+                        <div className="flex gap-1.5 mb-2">
+                          <div className="size-2 rounded-full bg-red-400" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <div className="h-1.5 w-full bg-slate-100 rounded-px" />
                         </div>
                       </div>
                     </div>
                   </div>
-                  <p className="text-sm font-medium mt-2">System</p>
-                </div>
-              </Label>
-            </div>
-          </RadioGroup>
-        </div>
+                  <span className="text-xs font-bold uppercase tracking-widest">Hệ thống</span>
+                </Label>
+              </div>
+            </RadioGroup>
+          </CardContent>
+        </Card>
+      </div>
 
-        {/* Sidebar Behavior Section */}
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h3 className="text-lg font-medium">Sidebar behavior</h3>
-              <p className="text-sm text-muted-foreground">
-                Choose your preferred sidebar behavior: open, closed, or expand on hover.
-              </p>
-            </div>
-            <div className="w-full sm:w-48">
+      <div className="pt-4">
+        <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">Hành vi sidebar</h2>
+        <Card className="rounded-lg border shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label className="text-sm font-bold uppercase tracking-tight">Trạng thái mặc định</Label>
+                <p className="text-[11px] text-muted-foreground font-medium">Chọn cách sidebar hiển thị khi bạn truy cập hệ thống.</p>
+              </div>
               <Select value={sidebarBehavior} onValueChange={handleSidebarBehaviorChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select behavior" />
+                <SelectTrigger className="w-[200px] rounded-md h-10 font-bold text-xs uppercase tracking-widest">
+                  <SelectValue placeholder="Chọn trạng thái" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="expanded">Expanded</SelectItem>
-                  <SelectItem value="collapsed">Collapsed</SelectItem>
-                  <SelectItem value="hover">Expand on hover</SelectItem>
+                <SelectContent className="rounded-md">
+                  <SelectItem value="expanded" className="text-xs font-bold uppercase tracking-widest">Mở rộng</SelectItem>
+                  <SelectItem value="collapsed" className="text-xs font-bold uppercase tracking-widest">Thu gọn</SelectItem>
+                  <SelectItem value="hover" className="text-xs font-bold uppercase tracking-widest">Mở rộng khi di chuột</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

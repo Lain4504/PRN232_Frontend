@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
@@ -125,14 +125,14 @@ const DashboardContent = () => {
   }, [selectedTeamId])
 
   if (loading) return (
-    <div className="space-y-12 animate-pulse">
-      <div className="h-20 w-full bg-slate-50 dark:bg-slate-900 rounded-3xl" />
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {[1, 2, 3, 4].map(i => <div key={i} className="h-40 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800" />)}
+    <div className="space-y-8 animate-pulse">
+      <div className="h-16 w-full bg-muted rounded-lg" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map(i => <div key={i} className="h-32 bg-muted rounded-lg" />)}
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-5 h-[600px] bg-slate-50 dark:bg-slate-900 rounded-3xl" />
-        <div className="lg:col-span-7 h-[600px] bg-slate-50 dark:bg-slate-900 rounded-3xl" />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-5 h-[400px] bg-muted rounded-lg" />
+        <div className="lg:col-span-7 h-[400px] bg-muted rounded-lg" />
       </div>
     </div>
   )
@@ -140,38 +140,32 @@ const DashboardContent = () => {
   return (
     <div className="space-y-8 md:space-y-12 pb-10 md:pb-20">
       {/* Top Console Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 md:gap-8 border-b border-slate-100 dark:border-slate-800 pb-6 md:pb-12 text-slate-950 dark:text-white">
-        <div className="space-y-2 md:space-y-4 text-center lg:text-left">
-          <div className="flex items-center justify-center lg:justify-start gap-3">
-            <Badge variant="secondary" className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none font-black text-[8px] md:text-[9px] uppercase tracking-widest px-2 md:px-3 py-1 rounded-full">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b pb-8">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Badge variant="secondary" className="px-2 py-0 h-5 text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none">
               Hệ thống trực tuyến
             </Badge>
-            <span className="text-[9px] md:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-              Cập nhật: Vừa xong
-            </span>
           </div>
-          <h1 className="text-2xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight md:leading-none uppercase">
-            Trung tâm <span className="text-slate-400 dark:text-slate-600">Điều khiển</span>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground uppercase">
+            Trung tâm <span className="text-muted-foreground">Điều khiển</span>
           </h1>
-          <p className="text-sm md:text-lg text-slate-500 dark:text-slate-400 font-medium max-w-xl mx-auto lg:mx-0 leading-relaxed uppercase tracking-tighter">
-            Chào mừng, <span className="text-slate-900 dark:text-white font-black">{user?.first_name || user?.email?.split('@')[0]}</span>. Hệ thống đã sẵn sàng điều phối.
+          <p className="text-muted-foreground">
+            Chào mừng, <span className="text-foreground font-semibold">{user?.first_name || user?.email?.split('@')[0]}</span>. Hệ thống đã sẵn sàng điều phối.
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 w-full lg:w-auto">
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
           {teams.length > 0 && (
-            <div className="flex items-center gap-3 bg-white dark:bg-slate-900 p-1.5 md:p-2 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all focus-within:ring-2 focus-within:ring-slate-100 dark:focus-within:ring-slate-800 w-full sm:w-auto">
-              <div className="size-9 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 shrink-0">
-                <Layout className="size-4" />
-              </div>
+            <div className="flex items-center gap-2 bg-muted p-1 rounded-md w-full sm:w-auto">
               <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
-                <SelectTrigger className="w-full sm:w-[200px] border-none focus:ring-0 font-black text-[10px] md:text-xs uppercase tracking-widest h-9 bg-transparent text-slate-900 dark:text-white transition-colors">
-                  <SelectValue placeholder="Toàn bộ không gian" />
+                <SelectTrigger className="w-full sm:w-[200px] border-none bg-transparent h-9 text-sm font-medium">
+                  <SelectValue placeholder="Chọn không gian" />
                 </SelectTrigger>
-                <SelectContent className="rounded-2xl border-slate-100 dark:border-slate-800 shadow-3xl p-1 bg-white dark:bg-slate-900">
-                  <SelectItem value="all" className="font-black text-[10px] uppercase rounded-xl transition-colors">Tổng quan chung</SelectItem>
+                <SelectContent>
+                  <SelectItem value="all">Tổng quan chung</SelectItem>
                   {teams.map(team => (
-                    <SelectItem key={team.id} value={team.id} className="font-black text-[10px] uppercase rounded-xl transition-colors">
+                    <SelectItem key={team.id} value={team.id}>
                       {team.name}
                     </SelectItem>
                   ))}
@@ -179,8 +173,8 @@ const DashboardContent = () => {
               </Select>
             </div>
           )}
-          <Button variant="outline" className="h-12 w-full sm:w-auto px-8 rounded-2xl border-slate-200 dark:border-slate-800 font-black uppercase tracking-widest text-[10px] bg-white dark:bg-slate-900 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-xl shadow-slate-200/50 dark:shadow-none">
-            <Filter className="size-3.5 mr-3 opacity-50" />
+          <Button variant="outline" className="w-full sm:w-auto px-6">
+            <Filter className="size-4 mr-2" />
             Báo cáo chi tiết
           </Button>
         </div>
@@ -188,28 +182,28 @@ const DashboardContent = () => {
 
 
       {/* Primary Metrics Grid */}
-      <div className="grid gap-6 md:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         {stats && getStatsData(stats).map((stat, i) => (
           <Link href={stat.href} key={i}>
-            <Card className="group relative overflow-hidden rounded-[2rem] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50/50 dark:hover:bg-slate-800 transition-all duration-500 shadow-sm hover:shadow-2xl hover:shadow-slate-200/50 dark:hover:shadow-black/60 hover:-translate-y-2">
-              <CardContent className="p-8">
-                <div className="flex justify-between items-start mb-10">
-                  <div className={cn("size-14 rounded-2xl flex items-center justify-center shadow-lg border border-white dark:border-slate-800 ring-4 ring-slate-50 dark:ring-slate-800/10 transition-transform group-hover:scale-110 duration-500", stat.bgColor, stat.color)}>
-                    <stat.icon className="size-6" />
+            <Card className="hover:bg-muted/50 transition-colors">
+              <CardContent className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div className={cn("size-10 rounded-md flex items-center justify-center", stat.bgColor, stat.color)}>
+                    <stat.icon className="size-5" />
                   </div>
-                  <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-slate-600 border-slate-100 dark:border-slate-800 rounded-lg">LIVE</Badge>
+                  <Badge variant="outline" className="text-[10px] font-bold">LIVE</Badge>
                 </div>
 
-                <div className="space-y-1.5">
-                  <div className="text-4xl font-black tracking-tight text-slate-900 dark:text-white group-hover:text-slate-900 dark:group-hover:text-primary transition-colors">
+                <div className="space-y-1">
+                  <div className="text-3xl font-bold tracking-tight text-foreground">
                     {stat.value}
                   </div>
-                  <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">{stat.title}</p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{stat.title}</p>
                 </div>
 
-                <div className="mt-10 pt-6 border-t border-slate-50 dark:border-slate-800/50 flex items-center justify-between text-slate-300 dark:text-slate-700 group-hover:text-slate-900 dark:group-hover:text-white transition-all duration-500">
-                  <span className="text-[9px] font-black uppercase tracking-widest opacity-60 dark:opacity-40">{stat.description}</span>
-                  <ChevronRight className="size-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-[-10px] group-hover:translate-x-0" />
+                <div className="mt-6 pt-4 border-t flex items-center justify-between text-muted-foreground">
+                  <span className="text-[10px] font-medium uppercase">{stat.description}</span>
+                  <ChevronRight className="size-4" />
                 </div>
               </CardContent>
             </Card>
@@ -220,69 +214,69 @@ const DashboardContent = () => {
       <div className="grid gap-8 md:gap-12 lg:grid-cols-12">
         {/* Quick Hub */}
         <div className="lg:col-span-5">
-          <QuickActionsPanel className="h-full border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/40 dark:shadow-black/40 ring-1 ring-slate-100/50 dark:ring-slate-800/50 rounded-[2.5rem]" />
+          <QuickActionsPanel />
         </div>
 
         {/* Intelligence Node */}
-        <div className="lg:col-span-7 space-y-6 md:space-y-8">
-          <Card className="rounded-[2.5rem] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl shadow-slate-200/50 dark:shadow-black/50 overflow-hidden">
-            <div className="p-8 md:p-12 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between bg-slate-50/30 dark:bg-slate-800/20">
-              <div className="space-y-3">
-                <div className="flex items-center gap-4 text-slate-900 dark:text-white">
-                  <div className="size-10 rounded-2xl bg-slate-900 dark:bg-primary flex items-center justify-center text-white shadow-lg">
-                    <Activity className="size-5" />
-                  </div>
-                  <h3 className="text-2xl font-black tracking-tight leading-none uppercase tracking-widest">Hiệu suất vận hành</h3>
+        <div className="lg:col-span-7 space-y-6">
+          <Card>
+            <CardHeader className="p-6 bg-muted/50 border-b">
+              <div className="flex items-center gap-3">
+                <div className="size-10 rounded bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
+                  <Activity className="size-5" />
                 </div>
-                <p className="text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.4em]">Node Intelligence Core v2.0</p>
+                <div>
+                  <h3 className="text-xl font-bold tracking-tight uppercase">Hiệu suất vận hành</h3>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Node Intelligence Core v2.0</p>
+                </div>
               </div>
-            </div>
+            </CardHeader>
 
-            <CardContent className="p-6 md:p-10 space-y-6 md:space-y-10">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
-                <div className="group flex items-center justify-between p-6 md:p-8 rounded-xl md:rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700 transition-all duration-300 cursor-pointer shadow-sm active:scale-95">
-                  <div className="flex items-center gap-4 md:gap-6">
-                    <div className="size-12 md:size-14 rounded-xl md:rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center text-slate-900 dark:text-white shadow-sm border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-slate-900 dark:group-hover:bg-primary group-hover:text-white">
-                      <Clock className="size-5 md:size-6" />
+            <CardContent className="p-6 space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border hover:bg-background transition-colors cursor-pointer">
+                  <div className="flex items-center gap-4">
+                    <div className="size-10 rounded bg-background flex items-center justify-center shadow-sm border">
+                      <Clock className="size-5" />
                     </div>
-                    <div className="space-y-0.5 md:space-y-1">
-                      <p className="text-[9px] md:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-slate-900 dark:text-white">Đang chờ</p>
-                      <p className="text-[10px] md:text-xs font-bold text-slate-600 dark:text-slate-400">Hàng chờ phê duyệt</p>
+                    <div>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Đang chờ</p>
+                      <p className="text-xs font-semibold">Hàng chờ phê duyệt</p>
                     </div>
                   </div>
-                  <div className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white">{stats?.pending_approvals || 0}</div>
+                  <div className="text-2xl font-bold">{stats?.pending_approvals || 0}</div>
                 </div>
 
-                <div className="group flex items-center justify-between p-6 md:p-8 rounded-xl md:rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-transparent hover:border-slate-100 dark:hover:border-slate-700 transition-all duration-300 cursor-pointer shadow-sm active:scale-95">
-                  <div className="flex items-center gap-4 md:gap-6">
-                    <div className="size-12 md:size-14 rounded-xl md:rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center text-slate-900 dark:text-white shadow-sm border border-slate-100 dark:border-slate-700 transition-all group-hover:bg-slate-900 dark:group-hover:bg-primary group-hover:text-white">
-                      <Calendar className="size-5 md:size-6" />
+                <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border hover:bg-background transition-colors cursor-pointer">
+                  <div className="flex items-center gap-4">
+                    <div className="size-10 rounded bg-background flex items-center justify-center shadow-sm border">
+                      <Calendar className="size-5" />
                     </div>
-                    <div className="space-y-0.5 md:space-y-1">
-                      <p className="text-[9px] md:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-slate-900 dark:text-white">Đã lập lịch</p>
-                      <p className="text-[10px] md:text-xs font-bold text-slate-600 dark:text-slate-400">Tiến độ đồng bộ</p>
+                    <div>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Đã lập lịch</p>
+                      <p className="text-xs font-semibold">Tiến độ đồng bộ</p>
                     </div>
                   </div>
-                  <div className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white">{stats?.scheduled_posts || 0}</div>
+                  <div className="text-2xl font-bold">{stats?.scheduled_posts || 0}</div>
                 </div>
               </div>
 
               {/* AI Insight Insight */}
-              <div className="p-6 md:p-10 rounded-xl md:rounded-3xl bg-slate-900 dark:bg-slate-800 text-white relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 group-hover:rotate-12 transition-transform duration-700">
-                  <Sparkles className="size-32 md:size-48" />
+              <div className="p-6 rounded-lg bg-primary text-primary-foreground relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:rotate-12 transition-transform duration-700">
+                  <Sparkles className="size-24" />
                 </div>
-                <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-8 relative z-10">
-                  <div className="size-10 md:size-12 rounded-xl md:rounded-2xl bg-white/10 flex items-center justify-center text-white shrink-0 shadow-2xl">
-                    <TrendingUp className="size-5 md:size-6" />
+                <div className="flex items-start gap-4 md:gap-6 relative z-10">
+                  <div className="size-10 rounded bg-white/10 flex items-center justify-center text-white shrink-0 shadow-lg">
+                    <TrendingUp className="size-5" />
                   </div>
-                  <div className="space-y-3 md:space-y-4">
-                    <h4 className="text-lg md:text-xl font-black tracking-tight uppercase tracking-widest text-slate-900 dark:text-white">Phân tích chiến lược AI</h4>
-                    <p className="text-xs md:text-sm text-slate-400 leading-relaxed font-bold">
-                      Dựa trên <span className="text-emerald-400">14.2%</span> tốc độ tăng trưởng hiện tại, mô hình AI dự báo việc triển khai nội dung vào lúc 18:00 tối nay sẽ mang lại tỉ lệ tương tác cao nhất cho thương hiệu của bạn.
+                  <div className="space-y-2">
+                    <h4 className="text-lg font-bold tracking-tight uppercase">Phân tích chiến lược AI</h4>
+                    <p className="text-sm opacity-80 leading-relaxed">
+                      Dựa trên <span className="font-bold text-amber-300">14.2%</span> tốc độ tăng trưởng hiện tại, mô hình AI dự báo việc triển khai nội dung vào lúc 18:00 tối nay sẽ mang lại tỉ lệ tương tác cao nhất.
                     </p>
-                    <div className="pt-2 text-slate-900 dark:text-white">
-                      <Button variant="ghost" className="p-0 text-white hover:text-emerald-400 font-black text-[9px] md:text-[10px] uppercase tracking-widest hover:bg-transparent flex items-center gap-2 group/btn">
+                    <div className="pt-2">
+                      <Button variant="ghost" className="p-0 h-auto text-primary-foreground hover:text-white font-bold text-[10px] uppercase tracking-widest hover:bg-transparent flex items-center gap-2 group/btn">
                         Xem lộ trình tối ưu hóa
                         <MousePointer2 className="size-3 group-hover/btn:translate-x-1 transition-transform" />
                       </Button>

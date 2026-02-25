@@ -103,10 +103,10 @@ export function SessionManagementSection() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-6 w-48 bg-slate-100 dark:bg-slate-800 animate-pulse rounded" />
+        <div className="h-6 w-48 bg-muted animate-pulse rounded" />
         <div className="space-y-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-24 w-full bg-slate-50 dark:bg-slate-900 animate-pulse rounded-2xl border border-slate-100 dark:border-slate-800" />
+            <div key={i} className="h-24 w-full bg-card animate-pulse rounded-lg border border-border" />
           ))}
         </div>
       </div>
@@ -116,21 +116,20 @@ export function SessionManagementSection() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-3">
-          <div className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
+        <h2 className="text-xl font-bold text-foreground uppercase tracking-widest flex items-center gap-3">
+          <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
             <Activity className="size-4" />
           </div>
           Phiên hoạt động
         </h2>
         {sessions.filter(s => !s.current).length > 0 && (
-          <Button
-            variant="ghost"
+          <button
             onClick={revokeAllOtherSessions}
             disabled={revokingSession === "all-other"}
-            className="text-xs font-bold uppercase tracking-widest text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl px-4"
+            className="text-[10px] font-bold uppercase tracking-widest text-destructive hover:underline disabled:opacity-50"
           >
             Đăng xuất tất cả
-          </Button>
+          </button>
         )}
       </div>
 
@@ -139,35 +138,35 @@ export function SessionManagementSection() {
           <Card
             key={session.id}
             className={cn(
-              "rounded-3xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all duration-300 shadow-sm hover:shadow-md",
-              session.current && "border-slate-900/10 dark:border-primary/20 ring-1 ring-slate-100 dark:ring-slate-800 flex-1 overflow-visible"
+              "rounded-lg border-border bg-card transition-all duration-300 shadow-sm",
+              session.current && "border-primary/20 bg-muted/30"
             )}
           >
-            <CardContent className="p-6 md:p-8 flex items-center justify-between gap-6">
-              <div className="flex items-center gap-6">
+            <CardContent className="p-5 flex items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
                 <div className={cn(
-                  "size-14 rounded-2xl flex items-center justify-center",
+                  "size-10 rounded flex items-center justify-center",
                   session.current
-                    ? "bg-slate-900 dark:bg-primary text-white shadow-xl shadow-slate-200 dark:shadow-primary/20"
-                    : "bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-slate-100 dark:border-slate-700"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground/50 border border-border"
                 )}>
-                  {session.device.includes("Máy tính") ? <Monitor className="size-6" /> : <Smartphone className="size-6" />}
+                  {session.device.includes("Máy tính") ? <Monitor className="size-5" /> : <Smartphone className="size-5" />}
                 </div>
 
-                <div className="space-y-1">
-                  <div className="flex items-center gap-3">
-                    <span className="font-bold text-slate-900 dark:text-white text-lg">{session.device}</span>
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-foreground text-sm">{session.device}</span>
                     {session.current && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
                         Phiên hiện tại
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-medium text-slate-400 dark:text-slate-500">
-                    <span className="flex items-center gap-1.5"><Globe className="size-3.5 opacity-50" /> {session.browser}</span>
-                    <span className="flex items-center gap-1.5"><MapPin className="size-3.5 opacity-50" /> {session.location}</span>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><Globe className="size-3 opacity-50" /> {session.browser}</span>
+                    <span className="flex items-center gap-1"><MapPin className="size-3 opacity-50" /> {session.location}</span>
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-300 dark:text-slate-600">
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">
                     Hoạt động cuối: {formatLastActive(session.lastActive)}
                   </p>
                 </div>
@@ -179,12 +178,12 @@ export function SessionManagementSection() {
                   size="sm"
                   onClick={() => revokeSession(session.id)}
                   disabled={revokingSession === session.id}
-                  className="rounded-xl h-10 px-4 text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all"
+                  className="rounded-md h-8 px-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
                 >
                   {revokingSession === session.id ? (
-                    <RefreshCw className="h-4 w-4 animate-spin" />
+                    <RefreshCw className="h-3.5 w-3.5 animate-spin" />
                   ) : (
-                    <LogOut className="h-4 w-4 mr-2" />
+                    <LogOut className="h-3.5 w-3.5 mr-1.5" />
                   )}
                   Đăng xuất
                 </Button>
@@ -194,9 +193,9 @@ export function SessionManagementSection() {
         ))}
       </div>
 
-      <Alert className="rounded-2xl border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 border-none p-6 flex flex-row items-start gap-4 h-auto">
-        <Shield className="h-5 w-5 text-slate-900 dark:text-white shrink-0" />
-        <AlertDescription className="text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed pt-0.5">
+      <Alert className="rounded-lg border bg-muted/50 p-4 flex flex-row items-start gap-3 h-auto">
+        <Shield className="h-4 w-4 text-foreground shrink-0 mt-0.5" />
+        <AlertDescription className="text-xs font-medium text-muted-foreground leading-relaxed">
           Nếu bạn nhận thấy bất kỳ hoạt động bất thường nào hoặc phiên đăng nhập lạ, hãy đăng xuất chúng ngay lập tức và cân nhắc việc đổi mật khẩu để bảo vệ tài khoản.
         </AlertDescription>
       </Alert>

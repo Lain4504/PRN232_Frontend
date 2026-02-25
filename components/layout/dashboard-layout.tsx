@@ -13,9 +13,9 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full bg-[#fcfcfd] dark:bg-slate-950 selection:bg-slate-900 dark:selection:bg-primary selection:text-white transition-colors duration-300">
+      <div className="flex min-h-screen w-full bg-background selection:bg-primary/30 selection:text-primary transition-colors duration-300">
         {/* Subtle decorative background gradient */}
-        <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-slate-100/50 dark:from-slate-900/20 via-transparent to-transparent pointer-events-none -z-10" />
+        <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none -z-10" />
 
         <DashboardSidebar />
 

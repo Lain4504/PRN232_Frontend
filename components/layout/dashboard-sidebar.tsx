@@ -74,23 +74,23 @@ export function DashboardSidebar() {
   ]
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all duration-300">
-      <SidebarHeader className="h-16 flex items-center px-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar shadow-sm transition-all duration-300">
+      <SidebarHeader className="h-16 flex items-center px-4 border-b border-sidebar-border bg-sidebar">
         <Link href="/overview" className="flex items-center gap-3 group">
-          <div className="size-8 bg-slate-900 dark:bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-slate-200/50 dark:shadow-primary/20 transition-transform group-hover:scale-110">
-            <Zap className="size-4 text-white fill-current" />
+          <div className="size-8 bg-primary rounded-md flex items-center justify-center">
+            <Zap className="size-4 text-primary-foreground fill-current" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="font-black text-lg tracking-tighter text-slate-900 dark:text-white leading-none">OmniAdly</span>
-            <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mt-1">Bảng điều khiển</span>
+            <span className="font-bold text-base tracking-tight text-sidebar-foreground leading-none">OmniAdly</span>
+            <span className="text-[10px] text-muted-foreground mt-1">Bảng điều khiển</span>
           </div>
         </Link>
       </SidebarHeader>
 
-      <SidebarContent className="py-6 px-3 group-data-[collapsible=icon]:px-1.5 scrollbar-hide bg-white dark:bg-slate-900">
+      <SidebarContent className="py-6 px-3 group-data-[collapsible=icon]:px-1.5 scrollbar-hide bg-sidebar">
         {/* Core Systems Group */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-600 px-3 mb-5 group-data-[collapsible=icon]:hidden">
+          <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
             HỆ THỐNG CHÍNH
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -106,13 +106,13 @@ export function DashboardSidebar() {
                       className={cn(
                         "h-12 rounded-2xl transition-all duration-300 group px-3 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center",
                         isActive
-                          ? "bg-slate-900 dark:bg-primary text-white shadow-xl shadow-slate-200 dark:shadow-primary/20 hover:bg-slate-800 dark:hover:bg-primary/90 hover:text-white"
-                          : "text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-xl shadow-sidebar-accent/20 hover:bg-sidebar-accent/80"
+                          : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
                       )}
                     >
                       <Link href={item.url} className="flex items-center gap-3 w-full">
-                        <item.icon className={cn("size-5 shrink-0 transition-transform duration-300", isActive ? "text-white scale-110" : "group-hover:scale-110")} />
-                        <span className="font-black text-[10px] uppercase tracking-widest truncate group-data-[collapsible=icon]:hidden">
+                        <item.icon className={cn("size-4 shrink-0", isActive && "text-sidebar-accent-foreground")} />
+                        <span className="text-sm font-medium truncate group-data-[collapsible=icon]:hidden">
                           {item.title}
                         </span>
                       </Link>
@@ -125,8 +125,8 @@ export function DashboardSidebar() {
         </SidebarGroup>
 
         {/* Workflow Group */}
-        <SidebarGroup className="mt-10">
-          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-600 px-3 mb-5 group-data-[collapsible=icon]:hidden">
+        <SidebarGroup className="mt-4">
+          <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
             QUY TRÌNH LÀM VIỆC
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -149,19 +149,19 @@ export function DashboardSidebar() {
                         isActive={isActive}
                         tooltip={item.title}
                         className={cn(
-                          "h-12 rounded-2xl transition-all duration-300 group px-3 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center",
+                          "transition-all duration-300 group group-data-[collapsible=icon]:justify-center",
                           isActive
-                            ? "bg-slate-900 dark:bg-primary text-white shadow-xl shadow-slate-200 dark:shadow-primary/20 hover:bg-slate-800 dark:hover:bg-primary/90 hover:text-white"
-                            : "text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                            : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
                         )}
                       >
                         <Link href={item.url} className="flex items-center gap-3 w-full relative">
-                          <item.icon className={cn("size-5 shrink-0 transition-transform duration-300", isActive ? "text-white scale-110" : "group-hover:scale-110")} />
-                          <span className="font-black text-[10px] uppercase tracking-widest truncate group-data-[collapsible=icon]:hidden">
+                          <item.icon className={cn("size-4 shrink-0", isActive && "text-sidebar-accent-foreground")} />
+                          <span className="text-sm font-medium truncate group-data-[collapsible=icon]:hidden">
                             {item.title}
                           </span>
                           {item.badge && (
-                            <div className="absolute top-0 right-0 size-5 bg-rose-500 text-white font-black text-[8px] flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 translate-x-2 -translate-y-2 shadow-sm group-data-[collapsible=icon]:hidden">
+                            <div className="absolute top-0 right-0 size-4 bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center rounded-full border-2 border-sidebar translate-x-1 -translate-y-1 group-data-[collapsible=icon]:hidden">
                               {item.badge}
                             </div>
                           )}
@@ -175,10 +175,10 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-slate-50 dark:border-slate-800 bg-white dark:bg-slate-900 group-data-[collapsible=icon]:p-2 min-h-16 flex items-center">
+      <SidebarFooter className="p-4 border-t border-sidebar-border bg-sidebar group-data-[collapsible=icon]:p-2 min-h-12 flex items-center">
         <div className="flex items-center gap-3 px-2 group-data-[collapsible=icon]:px-0">
-          <div className="size-2 rounded-full bg-emerald-500 animate-pulse group-data-[collapsible=icon]:hidden" />
-          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-600 group-data-[collapsible=icon]:hidden">Server: Online</span>
+          <div className="size-2 rounded-full bg-success animate-pulse group-data-[collapsible=icon]:hidden" />
+          <span className="text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">Server: Online</span>
         </div>
       </SidebarFooter>
       <SidebarRail />

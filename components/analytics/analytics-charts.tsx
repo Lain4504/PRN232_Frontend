@@ -4,27 +4,26 @@ import React, { useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  LineChart, 
-  Line, 
-  AreaChart, 
-  Area, 
-  BarChart, 
-  Bar, 
-  PieChart, 
-  Pie, 
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
   Cell,
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer,
-  LegendPayload
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
 } from 'recharts';
-import { 
-  BarChart3, 
-  TrendingUp, 
+import {
+  BarChart3,
+  TrendingUp,
   TrendingDown,
   Download,
   Maximize2,
@@ -32,9 +31,9 @@ import {
 } from 'lucide-react';
 import { AnalyticsData, TimeRange } from '@/lib/types/analytics';
 
-import { 
-  formatChartData, 
-  formatDistributionData, 
+import {
+  formatChartData,
+  formatDistributionData,
   generateTimeSeriesData,
   generateTooltipContent,
   generateLegendContent,
@@ -42,8 +41,8 @@ import {
   generateChartLoadingState,
   generateChartErrorState
 } from '@/lib/utils/charts';
-import { 
-  formatNumber, 
+import {
+  formatNumber,
   formatPercentage
 } from '@/lib/utils/analytics';
 import { CHART_COLORS } from '@/lib/constants/analytics-metrics';
@@ -91,11 +90,11 @@ export function AnalyticsCharts({
           return generateTimeSeriesData(data, metrics);
         }
         return formatChartData(data, metrics[0], dimension);
-      
+
       case 'pie':
       case 'doughnut':
         return formatDistributionData(data, dimension);
-      
+
       default:
         return formatChartData(data, metrics[0], dimension);
     }
@@ -104,7 +103,7 @@ export function AnalyticsCharts({
   // Calculate chart statistics
   const statistics = useMemo(() => {
     if (type === 'pie' || type === 'doughnut') {
-      const pieData = chartData as Array<{value: number}>;
+      const pieData = chartData as Array<{ value: number }>;
       return {
         min: 0,
         max: Math.max(...pieData.map(d => d.value)),
@@ -113,7 +112,7 @@ export function AnalyticsCharts({
         trend: 'stable' as const,
       };
     }
-    return calculateChartStatistics(chartData as Array<{value: number, date: string}>);
+    return calculateChartStatistics(chartData as Array<{ value: number, date: string }>);
   }, [chartData, type]);
 
   // Generate chart colors
@@ -160,8 +159,8 @@ export function AnalyticsCharts({
           <ResponsiveContainer width="100%" height={300}>
             <LineChart {...commonProps}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis 
-                dataKey="date" 
+              <XAxis
+                dataKey="date"
                 stroke="#666"
                 fontSize={12}
                 tickFormatter={(value) => {
@@ -170,16 +169,16 @@ export function AnalyticsCharts({
                 }}
               />
               <YAxis stroke="#666" fontSize={12} />
-              <Tooltip 
-                content={({ active, payload, label }) => 
-                  generateTooltipContent(active, payload, String(label || ''), formatNumber)
+              <Tooltip
+                content={({ active, payload, label }) =>
+                  generateTooltipContent(!!active, payload as Array<{ value: number; name: string; color: string; dataKey: string }>, String(label || ''), formatNumber)
                 }
               />
-              <Legend 
+              <Legend
                 content={({ payload }) => {
-                  const transformedPayload = (payload || []).map((item: LegendPayload) => ({
+                  const transformedPayload = (payload || []).map((item) => ({
                     value: String(typeof item.value === 'number' ? item.value : item.value || ''),
-                    
+
                     color: item.color || '#000',
                     dataKey: String(item.dataKey || '')
                   }));
@@ -207,8 +206,8 @@ export function AnalyticsCharts({
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart {...commonProps}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis 
-                dataKey="date" 
+              <XAxis
+                dataKey="date"
                 stroke="#666"
                 fontSize={12}
                 tickFormatter={(value) => {
@@ -217,16 +216,16 @@ export function AnalyticsCharts({
                 }}
               />
               <YAxis stroke="#666" fontSize={12} />
-              <Tooltip 
-                content={({ active, payload, label }) => 
-                  generateTooltipContent(active, payload, String(label || ''), formatNumber)
+              <Tooltip
+                content={({ active, payload, label }) =>
+                  generateTooltipContent(!!active, payload as Array<{ value: number; name: string; color: string; dataKey: string }>, String(label || ''), formatNumber)
                 }
               />
-              <Legend 
+              <Legend
                 content={({ payload }) => {
-                  const transformedPayload = (payload || []).map((item: LegendPayload) => ({
+                  const transformedPayload = (payload || []).map((item) => ({
                     value: String(typeof item.value === 'number' ? item.value : item.value || ''),
-                    
+
                     color: item.color || '#000',
                     dataKey: String(item.dataKey || '')
                   }));
@@ -254,8 +253,8 @@ export function AnalyticsCharts({
           <ResponsiveContainer width="100%" height={300}>
             <BarChart {...commonProps}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis 
-                dataKey={dimension === 'date' ? 'date' : 'category'} 
+              <XAxis
+                dataKey={dimension === 'date' ? 'date' : 'category'}
                 stroke="#666"
                 fontSize={12}
                 tickFormatter={(value) => {
@@ -267,16 +266,16 @@ export function AnalyticsCharts({
                 }}
               />
               <YAxis stroke="#666" fontSize={12} />
-              <Tooltip 
-                content={({ active, payload, label }) => 
-                  generateTooltipContent(active, payload, String(label || ''), formatNumber)
+              <Tooltip
+                content={({ active, payload, label }) =>
+                  generateTooltipContent(!!active, payload as Array<{ value: number; name: string; color: string; dataKey: string }>, String(label || ''), formatNumber)
                 }
               />
-              <Legend 
+              <Legend
                 content={({ payload }) => {
-                  const transformedPayload = (payload || []).map((item: LegendPayload) => ({
+                  const transformedPayload = (payload || []).map((item) => ({
                     value: String(typeof item.value === 'number' ? item.value : item.value || ''),
-                    
+
                     color: item.color || '#000',
                     dataKey: String(item.dataKey || '')
                   }));
@@ -302,7 +301,7 @@ export function AnalyticsCharts({
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={chartData as Array<{value: number, category: string, color?: string}>}
+                data={chartData as Array<{ value: number, category: string, color?: string }>}
                 cx="50%"
                 cy="50%"
                 innerRadius={type === 'doughnut' ? 40 : 0}
@@ -311,11 +310,11 @@ export function AnalyticsCharts({
                 dataKey="value"
                 nameKey="category"
               >
-                {(chartData as Array<{value: number, category: string, color?: string}>).map((entry, index) => (
+                {(chartData as Array<{ value: number, category: string, color?: string }>).map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color || colors[index % colors.length]} />
                 ))}
               </Pie>
-              <Tooltip 
+              <Tooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length > 0) {
                     const data = payload[0].payload;
@@ -334,11 +333,11 @@ export function AnalyticsCharts({
                   return null;
                 }}
               />
-              <Legend 
+              <Legend
                 content={({ payload }) => {
-                  const transformedPayload = (payload || []).map((item: LegendPayload) => ({
+                  const transformedPayload = (payload || []).map((item) => ({
                     value: String(typeof item.value === 'number' ? item.value : item.value || ''),
-                    
+
                     color: item.color || '#000',
                     dataKey: String(item.dataKey || '')
                   }));
@@ -364,7 +363,7 @@ export function AnalyticsCharts({
           </div>
           <div className="flex items-center gap-2">
             {statistics.trend !== 'stable' && (
-              <Badge 
+              <Badge
                 variant={statistics.trend === 'up' ? 'default' : 'destructive'}
                 className="text-xs"
               >
@@ -396,7 +395,7 @@ export function AnalyticsCharts({
       </CardHeader>
       <CardContent>
         {renderChart()}
-        
+
         {/* Chart Statistics */}
         {!isLoading && !error && chartData.length > 0 && (
           <div className="mt-4 pt-4 border-t">

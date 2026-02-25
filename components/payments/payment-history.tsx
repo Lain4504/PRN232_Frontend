@@ -8,12 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { 
-  Search, 
-  Filter, 
-  Download, 
-  Eye, 
-  RefreshCw, 
+import {
+  Search,
+  Filter,
+  Download,
+  Eye,
+  RefreshCw,
   CreditCard,
   Calendar,
   DollarSign,
@@ -21,15 +21,15 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Payment } from '@/lib/types/payments';
-import { 
-  usePayments, 
-  usePaymentFilters, 
-  useRetryPayment 
+import {
+  usePayments,
+  usePaymentFilters,
+  useRetryPayment
 } from '@/hooks/use-payments';
-import { 
-  formatCurrency, 
-  formatPaymentDate, 
-  getPaymentStatusColor, 
+import {
+  formatCurrency,
+  formatPaymentDate,
+  getPaymentStatusColor,
   getPaymentStatusIcon,
   searchPayments,
   filterPaymentsByStatus,
@@ -49,7 +49,7 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
   const [dateTo, setDateTo] = useState('');
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  
+
   const { filters, updateFilter, clearFilters, hasActiveFilters } = usePaymentFilters();
   const { data: payments, isLoading, refetch } = usePayments(filters);
   const retryPayment = useRetryPayment();
@@ -57,24 +57,24 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
   // Apply filters to payments
   const filteredPayments = React.useMemo(() => {
     if (!payments) return [];
-    
+
     let filtered = [...payments];
-    
+
     // Search filter
     if (searchQuery) {
       filtered = searchPayments(filtered, searchQuery);
     }
-    
+
     // Status filter
     if (statusFilter) {
       filtered = filterPaymentsByStatus(filtered, statusFilter as 'pending' | 'processing' | 'succeeded' | 'failed' | 'cancelled' | 'refunded' | 'partially_refunded');
     }
-    
+
     // Date range filter
     if (dateFrom && dateTo) {
       filtered = filterPaymentsByDateRange(filtered, dateFrom, dateTo);
     }
-    
+
     return filtered;
   }, [payments, searchQuery, statusFilter, dateFrom, dateTo]);
 
@@ -110,12 +110,9 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5" />
-              Payment History
-            </CardTitle>
+            <CardTitle className="text-xl font-bold">Lịch sử thanh toán</CardTitle>
             <CardDescription>
-              View and manage your payment history
+              Xem và quản lý các giao dịch của bạn
             </CardDescription>
           </div>
           <Button
@@ -125,48 +122,48 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
             disabled={isLoading}
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
+            Làm mới
           </Button>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         {/* Filters */}
         <div className="space-y-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search payments..."
+                  placeholder="Tìm kiếm giao dịch..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-9"
                 />
               </div>
             </div>
-            
+
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="All statuses" />
+                <SelectValue placeholder="Tất cả trạng thái" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All statuses</SelectItem>
-                <SelectItem value={PAYMENT_STATUSES.SUCCEEDED}>Succeeded</SelectItem>
-                <SelectItem value={PAYMENT_STATUSES.FAILED}>Failed</SelectItem>
-                <SelectItem value={PAYMENT_STATUSES.PENDING}>Pending</SelectItem>
-                <SelectItem value={PAYMENT_STATUSES.PROCESSING}>Processing</SelectItem>
-                <SelectItem value={PAYMENT_STATUSES.CANCELLED}>Cancelled</SelectItem>
-                <SelectItem value={PAYMENT_STATUSES.REFUNDED}>Refunded</SelectItem>
+                <SelectItem value="">Tất cả trạng thái</SelectItem>
+                <SelectItem value={PAYMENT_STATUSES.SUCCEEDED}>Thành công</SelectItem>
+                <SelectItem value={PAYMENT_STATUSES.FAILED}>Thất bại</SelectItem>
+                <SelectItem value={PAYMENT_STATUSES.PENDING}>Đang chờ</SelectItem>
+                <SelectItem value={PAYMENT_STATUSES.PROCESSING}>Đang xử lý</SelectItem>
+                <SelectItem value={PAYMENT_STATUSES.CANCELLED}>Đã hủy</SelectItem>
+                <SelectItem value={PAYMENT_STATUSES.REFUNDED}>Đã hoàn tiền</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <Input
                 type="date"
-                placeholder="From date"
+                placeholder="Từ ngày"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
               />
@@ -174,7 +171,7 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
             <div className="flex-1">
               <Input
                 type="date"
-                placeholder="To date"
+                placeholder="Đến ngày"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
               />
@@ -185,7 +182,7 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
                 variant="outline"
                 size="sm"
               >
-                Clear Filters
+                Xóa bộ lọc
               </Button>
             )}
           </div>
@@ -202,12 +199,12 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Payment Method</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>NÀY</TableHead>
+                  <TableHead>MÔ TẢ</TableHead>
+                  <TableHead>SỐ TIỀN</TableHead>
+                  <TableHead>TRẠNG THÁI</TableHead>
+                  <TableHead>PHƯƠNG THỨC</TableHead>
+                  <TableHead className="text-right">THAO TÁC</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -221,7 +218,7 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
                         </span>
                       </div>
                     </TableCell>
-                    
+
                     <TableCell>
                       <div>
                         <p className="font-medium">{payment.description}</p>
@@ -232,7 +229,7 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
                         )}
                       </div>
                     </TableCell>
-                    
+
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -241,16 +238,16 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
                         </span>
                       </div>
                     </TableCell>
-                    
+
                     <TableCell>
-                      <Badge 
-                        variant="secondary" 
+                      <Badge
+                        variant="secondary"
                         className={getPaymentStatusColor(payment.status)}
                       >
                         {payment.status}
                       </Badge>
                     </TableCell>
-                    
+
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <CreditCard className="h-4 w-4 text-muted-foreground" />
@@ -259,7 +256,7 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
                         </span>
                       </div>
                     </TableCell>
-                    
+
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Button
@@ -269,7 +266,7 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        
+
                         {payment.status === 'succeeded' && (
                           <Button
                             size="sm"
@@ -279,7 +276,7 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
                             <Download className="h-4 w-4" />
                           </Button>
                         )}
-                        
+
                         {payment.status === 'failed' && (
                           <Button
                             size="sm"
@@ -302,8 +299,8 @@ export function PaymentHistory({ className }: PaymentHistoryProps) {
             <CreditCard className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">No Payments Found</h3>
             <p className="text-muted-foreground">
-              {hasActiveFilters 
-                ? 'No payments match your current filters.' 
+              {hasActiveFilters
+                ? 'No payments match your current filters.'
                 : 'You haven\'t made any payments yet.'
               }
             </p>

@@ -134,20 +134,20 @@ export function SignUpForm({
     <div className={cn("space-y-8", className)} {...props}>
       {/* Success Modal */}
       <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
-        <DialogContent className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl p-10 max-w-md animate-in zoom-in-95 duration-300">
+        <DialogContent className="rounded-3xl border border-border bg-card shadow-2xl p-10 max-w-md animate-in zoom-in-95 duration-300">
           <DialogHeader className="space-y-6">
             <div className="flex flex-col items-center gap-6">
-              <div className="h-20 w-20 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20">
-                <CheckCircle className="h-10 w-10 text-emerald-500" />
+              <div className="h-20 w-20 rounded-full bg-success/10 flex items-center justify-center border border-success/20">
+                <CheckCircle className="h-10 w-10 text-success" />
               </div>
-              <DialogTitle className="text-2xl font-black text-center text-slate-900 dark:text-white">Chúc mừng!</DialogTitle>
+              <DialogTitle className="text-2xl font-black text-center text-foreground">Chúc mừng!</DialogTitle>
             </div>
-            <DialogDescription className="text-center font-medium text-slate-500 dark:text-slate-400 leading-relaxed">
+            <DialogDescription className="text-center font-medium text-muted-foreground leading-relaxed">
               Tài khoản của bạn đã được tạo thành công. Vui lòng kiểm tra email để xác thực trước khi đăng nhập.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-6">
-            <Button onClick={() => setSuccessOpen(false)} className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition-all shadow-xl shadow-emerald-100 dark:shadow-emerald-900/10">
+            <Button onClick={() => setSuccessOpen(false)} className="w-full h-12 bg-success hover:bg-success/90 text-success-foreground font-bold rounded-xl transition-all shadow-xl shadow-success/10">
               Đã hiểu
             </Button>
           </DialogFooter>
@@ -157,7 +157,7 @@ export function SignUpForm({
       <div className="space-y-4">
         <Button
           variant="outline"
-          className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all font-bold text-slate-700 dark:text-slate-300 shadow-sm"
+          className="w-full h-12 rounded-xl border-border bg-card hover:bg-accent transition-all font-bold text-foreground/80 shadow-sm"
           onClick={handleGoogleSignUp}
           disabled={isGoogleLoading || isLoading}
         >
@@ -176,10 +176,10 @@ export function SignUpForm({
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-slate-100 dark:border-slate-800" />
+            <span className="w-full border-t border-border" />
           </div>
           <div className="relative flex justify-center text-[10px]">
-            <span className="bg-white dark:bg-slate-900 lg:bg-[#FAFAFA] lg:dark:bg-slate-900 px-4 text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">Hoặc đăng ký bằng Email</span>
+            <span className="bg-background px-4 text-muted-foreground/50 font-black uppercase tracking-widest">Hoặc đăng ký bằng Email</span>
           </div>
         </div>
       </div>
@@ -192,15 +192,15 @@ export function SignUpForm({
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">Họ và tên</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground px-1">Họ và tên</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-600 h-4 w-4" />
+                      <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 h-4 w-4" />
                       <Input
                         {...field}
                         type="text"
                         placeholder="Nguyễn Văn A"
-                        className="pl-12 h-12 rounded-xl bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-800 focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all font-medium text-slate-900 dark:text-white"
+                        className="pl-12 h-12 rounded-xl bg-muted/30 border-border focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all font-medium text-foreground"
                       />
                     </div>
                   </FormControl>
@@ -214,15 +214,15 @@ export function SignUpForm({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">Email</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground px-1">Email</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-600 h-4 w-4" />
+                      <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 h-4 w-4" />
                       <Input
                         {...field}
                         type="email"
                         placeholder="email@vidu.com"
-                        className="pl-12 h-12 rounded-xl bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-800 focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all font-medium text-slate-900 dark:text-white"
+                        className="pl-12 h-12 rounded-xl bg-muted/30 border-border focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all font-medium text-foreground"
                       />
                     </div>
                   </FormControl>
@@ -236,14 +236,14 @@ export function SignUpForm({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">Mật khẩu</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground px-1">Mật khẩu</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-600 h-4 w-4" />
+                      <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 h-4 w-4" />
                       <PasswordInput
                         {...field}
                         placeholder="••••••••••••"
-                        className="pl-12 h-12 rounded-xl bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-800 focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all text-slate-900 dark:text-white"
+                        className="pl-12 h-12 rounded-xl bg-muted/30 border-border focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all text-foreground"
                       />
                     </div>
                   </FormControl>
@@ -257,14 +257,14 @@ export function SignUpForm({
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">Xác nhận mật khẩu</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground px-1">Xác nhận mật khẩu</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-600 h-4 w-4" />
+                      <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 h-4 w-4" />
                       <PasswordInput
                         {...field}
                         placeholder="••••••••••••"
-                        className="pl-12 h-12 rounded-xl bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-800 focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all text-slate-900 dark:text-white"
+                        className="pl-12 h-12 rounded-xl bg-muted/30 border-border focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all text-foreground"
                       />
                     </div>
                   </FormControl>
@@ -275,8 +275,8 @@ export function SignUpForm({
           </div>
 
           {error && (
-            <Alert variant="destructive" className="rounded-xl border-rose-100 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400">
-              <AlertCircle className="h-4 w-4 fill-rose-600 dark:fill-rose-400 text-white dark:text-slate-950" />
+            <Alert variant="destructive" className="rounded-xl border-destructive/20 bg-destructive/10 text-destructive">
+              <AlertCircle className="h-4 w-4 fill-destructive text-destructive-foreground" />
               <AlertDescription className="text-xs font-bold">
                 {error.message}
               </AlertDescription>
@@ -285,7 +285,7 @@ export function SignUpForm({
 
           <Button
             type="submit"
-            className="w-full h-12 rounded-xl bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white dark:text-white font-bold shadow-xl shadow-slate-200 dark:shadow-primary/10 transition-all active:scale-[0.98]"
+            className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-xl shadow-primary/10 transition-all active:scale-[0.98]"
             disabled={isLoading || isGoogleLoading}
           >
             {isLoading ? (
@@ -301,7 +301,7 @@ export function SignUpForm({
       </Form>
 
       <div className="text-center pt-4">
-        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+        <p className="text-sm font-medium text-muted-foreground">
           Đã có tài khoản?{" "}
           <Link
             href="/auth/login"

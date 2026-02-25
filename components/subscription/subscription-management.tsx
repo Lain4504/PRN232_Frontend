@@ -202,18 +202,18 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
   return (
     <div className={`space-y-12 pb-20 font-sans ${className}`}>
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-100 dark:border-slate-800 pb-12 text-slate-900 dark:text-white transition-all duration-300">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
-              <Settings className="size-4" />
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b pb-8">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="size-6 rounded bg-muted flex items-center justify-center text-muted-foreground">
+              <Settings className="size-3" />
             </div>
-            <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">Cài đặt hệ thống</span>
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Cài đặt hệ thống</span>
           </div>
-          <h1 className="text-4xl lg:text-5xl font-black tracking-tight leading-none uppercase">
-            QUẢN LÝ GÓI DỊCH VỤ
+          <h1 className="text-3xl font-bold tracking-tight uppercase">
+            Quản lý gói dịch vụ
           </h1>
-          <p className="text-lg text-slate-500 dark:text-slate-400 font-medium max-w-xl leading-relaxed">
+          <p className="text-sm text-muted-foreground font-medium max-w-xl">
             Quản lý gói dịch vụ, thanh toán và cài đặt gói của bạn để tối ưu hiệu suất.
           </p>
         </div>
@@ -222,19 +222,19 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
       {/* Subscription Information */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Subscription Status */}
-        <Card className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/40 dark:shadow-black/40 overflow-hidden group transition-all duration-300">
-          <CardHeader className="p-8 pb-4">
-            <CardTitle className="flex items-center gap-4 text-xl font-black uppercase text-slate-900 dark:text-white">
-              <div className="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
-                {getStatusIcon(effectiveSubscription.status)}
+        <Card className="rounded-lg border-border bg-card shadow-sm overflow-hidden">
+          <CardHeader className="p-6 pb-2">
+            <CardTitle className="flex items-center gap-3 text-lg font-bold uppercase">
+              <div className="size-8 rounded bg-muted flex items-center justify-center text-muted-foreground">
+                <Zap className="size-4" /> {/* Icon replaced to match Zap usage elsewhere */}
               </div>
-              TRẠNG THÁI GÓI DỊCH VỤ
+              Trạng thái gói
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-8 pt-4 space-y-6">
-            <div className="flex items-center justify-between py-4 border-b border-slate-50 dark:border-slate-800/50">
-              <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Trạng thái</span>
-              <Badge className={cn("rounded-lg px-3 py-1 font-black uppercase tracking-widest text-[9px] border-none shadow-sm", getStatusColor(effectiveSubscription.status))}>
+          <CardContent className="p-6 pt-2 space-y-4">
+            <div className="flex items-center justify-between py-3 border-b">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Trạng thái</span>
+              <Badge variant="secondary" className={cn("rounded-full px-2 py-0.5 font-bold uppercase text-[9px]", getStatusColor(effectiveSubscription.status))}>
                 {effectiveSubscription.status === 'active' ? "Đang hoạt động" :
                   effectiveSubscription.status === 'cancelled' ? "Đã hủy" :
                     effectiveSubscription.status === 'past_due' ? "Quá hạn" :
@@ -243,24 +243,24 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
               </Badge>
             </div>
 
-            <div className="flex items-center justify-between py-4 border-b border-slate-50 dark:border-slate-800/50">
-              <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Gói hiện tại</span>
-              <span className="text-sm font-black text-slate-900 dark:text-white uppercase">{effectiveSubscription.planName}</span>
+            <div className="flex items-center justify-between py-3 border-b">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Gói hiện tại</span>
+              <span className="text-xs font-bold uppercase">{effectiveSubscription.planName}</span>
             </div>
 
             {effectiveSubscription.currentPeriodEnd && (
-              <div className="flex items-center justify-between py-4 border-b border-slate-50 dark:border-slate-800/50">
-                <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Ngày kết thúc</span>
-                <span className="text-sm font-black text-slate-900 dark:text-white uppercase">
+              <div className="flex items-center justify-between py-3 border-b">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Ngày kết thúc</span>
+                <span className="text-xs font-semibold uppercase">
                   {new Date(effectiveSubscription.currentPeriodEnd).toLocaleDateString('vi-VN')}
                 </span>
               </div>
             )}
 
             {effectiveSubscription.currentPeriodStart && (
-              <div className="flex items-center justify-between py-4">
-                <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Ngày bắt đầu</span>
-                <span className="text-sm font-black text-slate-900 dark:text-white uppercase">
+              <div className="flex items-center justify-between py-3">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Ngày bắt đầu</span>
+                <span className="text-xs font-semibold uppercase">
                   {new Date(effectiveSubscription.currentPeriodStart).toLocaleDateString('vi-VN')}
                 </span>
               </div>
@@ -269,26 +269,26 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
         </Card>
 
         {/* Quick Actions */}
-        <Card className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/40 dark:shadow-black/40 overflow-hidden group transition-all duration-300">
-          <CardHeader className="p-8 pb-4">
-            <CardTitle className="text-xl font-black uppercase text-slate-900 dark:text-white">THAO TÁC NHANH</CardTitle>
-            <CardDescription className="text-xs font-medium text-slate-500 dark:text-slate-400">
+        <Card className="rounded-lg border-border bg-card shadow-sm overflow-hidden">
+          <CardHeader className="p-6 pb-2">
+            <CardTitle className="text-lg font-bold uppercase">Thao tác nhanh</CardTitle>
+            <CardDescription className="text-xs">
               Quản lý và cập nhật gói dịch vụ của bạn một cách nhanh chóng.
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-8 pt-4 space-y-4">
+          <CardContent className="p-6 pt-2 space-y-3">
             {effectiveSubscription.tier !== 'free' && (
               <Button
                 onClick={handleRenew}
                 disabled={isProcessing}
-                className="h-14 w-full justify-start rounded-2xl bg-slate-900 text-white hover:bg-slate-800 font-black uppercase tracking-widest text-[10px] shadow-lg shadow-slate-200 dark:shadow-primary/20 transition-all hover:-translate-y-1"
+                className="w-full justify-start rounded-md h-10 font-bold uppercase tracking-wider text-[10px]"
               >
-                <Clock className="h-4 w-4 mr-3 opacity-70" />
-                {isProcessing ? "ĐANG XỬ LÝ..." : "GIA HẠN GÓI HIỆN TẠI"}
+                <Clock className="size-3.5 mr-2" />
+                {isProcessing ? "Đang xử lý..." : "Gia hạn gói hiện tại"}
               </Button>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-2">
               {SUBSCRIPTION_PLANS.filter(plan => {
                 const tierOrder = { 'free': 0, 'basic': 1, 'pro': 2 }
                 const currentTierOrder = tierOrder[effectiveSubscription.tier as keyof typeof tierOrder] ?? 0
@@ -298,11 +298,11 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
                 <Button
                   key={plan.id}
                   onClick={() => handlePlanChange(plan)}
-                  className="h-14 w-full justify-start rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 font-black uppercase tracking-widest text-[9px] shadow-sm transition-all hover:-translate-y-1"
+                  className="w-full justify-start rounded-md h-10 font-bold uppercase tracking-wider text-[10px]"
                   variant="outline"
                 >
-                  <Zap className="h-4 w-4 mr-2 opacity-50" />
-                  Lên gói {plan.name}
+                  <Zap className="size-3.5 mr-2 text-primary" />
+                  Nâng cấp lên {plan.name}
                 </Button>
               ))}
             </div>
@@ -310,12 +310,12 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
             {effectiveSubscription.tier !== 'free' && (
               <Button
                 onClick={handleCancelClick}
-                className="h-14 w-full justify-start rounded-2xl bg-white dark:bg-slate-900 text-rose-500 border border-slate-100 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-500/10 font-black uppercase tracking-widest text-[10px] shadow-sm transition-all hover:-translate-y-1"
+                className="w-full justify-start rounded-md h-10 font-bold uppercase tracking-wider text-[10px] text-destructive hover:text-destructive hover:bg-destructive/10"
                 variant="outline"
                 disabled={cancelSubscriptionMutation.isPending}
               >
-                <XCircle className="h-4 w-4 mr-3 opacity-70" />
-                {cancelSubscriptionMutation.isPending ? "ĐANG XỬ LÝ..." : "HỦY GÓI DỊCH VỤ"}
+                <XCircle className="size-3.5 mr-2" />
+                {cancelSubscriptionMutation.isPending ? "Đang xử lý..." : "Hủy gói dịch vụ"}
               </Button>
             )}
           </CardContent>
@@ -334,29 +334,29 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
 
       {/* Cancel Subscription Alert Dialog */}
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <AlertDialogContent className="rounded-3xl border-slate-100 dark:border-slate-800 p-10 max-w-md shadow-2xl bg-white dark:bg-slate-900 transition-all duration-300">
+        <AlertDialogContent className="rounded-lg max-w-md p-8">
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex flex-col items-center gap-6 text-center">
-              <div className="size-20 rounded-3xl bg-rose-50 dark:bg-rose-500/10 text-rose-500 flex items-center justify-center border border-rose-100 dark:border-rose-800 shadow-sm">
-                <AlertTriangle className="size-10" />
+            <AlertDialogTitle className="flex flex-col items-center gap-4 text-center">
+              <div className="size-12 rounded bg-destructive/10 text-destructive flex items-center justify-center border border-destructive/20">
+                <AlertTriangle className="size-6" />
               </div>
-              <span className="text-3xl font-black uppercase text-slate-900 dark:text-white leading-tight">Hủy gói dịch vụ?</span>
+              <span className="text-xl font-bold uppercase">Hủy gói dịch vụ?</span>
             </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-6 pt-4">
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 text-center italic">
+            <AlertDialogDescription className="space-y-4 pt-2">
+              <p className="text-sm font-medium text-muted-foreground text-center italic">
                 Bạn có chắc chắn muốn hủy gói dịch vụ không? Hành động này không thể hoàn tác và sẽ ảnh hưởng trực tiếp đến khả năng truy cập của bạn.
               </p>
-              <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-2xl space-y-4 border border-slate-100 dark:border-slate-800">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Điều gì sẽ xảy ra:</p>
-                <ul className="space-y-3">
+              <div className="bg-muted/50 p-4 rounded-md space-y-3 border">
+                <p className="text-[10px] font-bold uppercase tracking-widest">Điều gì sẽ xảy ra:</p>
+                <ul className="space-y-2">
                   {[
                     "Mất quyền truy cập vào các tính năng cao cấp ngay lập tức",
                     "Gói sẽ bị hủy vào cuối chu kỳ thanh toán hiện tại",
                     "Tự động chuyển về gói Miễn phí với giới hạn thấp hơn",
                     "Dữ liệu được giữ lại nhưng không thể tạo thêm nội dung cao cấp"
                   ].map((item, i) => (
-                    <li key={i} className="flex items-start gap-3 text-xs font-medium text-slate-500 dark:text-slate-400">
-                      <div className="size-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0" />
+                    <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
+                      <div className="size-1 rounded-full bg-destructive mt-1.5 shrink-0" />
                       {item}
                     </li>
                   ))}
@@ -364,14 +364,14 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-12 grid grid-cols-2 gap-4">
-            <AlertDialogCancel className="rounded-xl h-12 font-black uppercase tracking-widest text-[10px] bg-slate-50 dark:bg-slate-800 border-none text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700">Giữ gói dịch vụ</AlertDialogCancel>
+          <AlertDialogFooter className="mt-8 flex gap-3">
+            <AlertDialogCancel className="rounded-md h-9 font-bold uppercase tracking-widest text-[10px]">Giữ gói</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancelSubscription}
               disabled={cancelSubscriptionMutation.isPending}
-              className="bg-rose-500 text-white hover:bg-rose-600 rounded-xl h-12 font-black uppercase tracking-widest text-[10px] border-none shadow-lg shadow-rose-100 dark:shadow-none"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md h-9 font-bold uppercase tracking-widest text-[10px]"
             >
-              {cancelSubscriptionMutation.isPending ? "ĐANG HỦY..." : "XÁC NHẬN HỦY"}
+              {cancelSubscriptionMutation.isPending ? "Đang hủy..." : "Xác nhận hủy"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

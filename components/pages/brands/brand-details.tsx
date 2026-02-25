@@ -63,19 +63,19 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
             variant="ghost"
             size="sm"
             onClick={() => router.back()}
-            className="h-9 w-9 p-0 rounded-full"
+            className="h-8 w-8 p-0 rounded-md"
           >
             <ArrowLeft className="h-4 w-4" />
             <span className="sr-only">Quay lại</span>
           </Button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">{brand.name}</h1>
-            <p className="text-sm text-muted-foreground">Chi tiết thương hiệu</p>
+            <h1 className="text-xl font-bold tracking-tight">{brand.name}</h1>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Chi tiết thương hiệu</p>
           </div>
         </div>
         <BrandModal mode="edit" brand={brand} onSuccess={() => window.location.reload()}>
-          <Button variant="outline" size="sm">
-            <Settings className="mr-2 h-4 w-4" />
+          <Button variant="outline" size="sm" className="rounded-md font-bold uppercase tracking-widest text-[10px] h-9">
+            <Settings className="mr-2 h-3.5 w-3.5" />
             Thiết lập
           </Button>
         </BrandModal>
@@ -84,21 +84,20 @@ export function BrandDetails({ brandId }: BrandDetailsProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           {/* Brand Overview */}
-          <Card className="border shadow-sm">
+          <Card className="border shadow-sm rounded-lg">
             <CardHeader className="flex flex-row items-center gap-4 pb-4">
-              <Avatar className="h-16 w-16 rounded-xl border-2 border-background shadow-sm">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                <AvatarImage src={brand.logo_url || (brand as any).logoUrl} alt={brand.name} className="object-cover" />
-                <AvatarFallback className="rounded-xl bg-primary/10 text-primary">
-                  <Target className="h-8 w-8" />
+              <Avatar className="h-14 w-14 rounded-md border border-border bg-muted shadow-sm">
+                <AvatarImage src={brand.logo_url || (brand as { logoUrl?: string }).logoUrl} alt={brand.name} className="object-cover" />
+                <AvatarFallback className="rounded-md bg-primary text-primary-foreground">
+                  <Target className="h-6 w-6" />
                 </AvatarFallback>
               </Avatar>
-              <div className="grid gap-1">
-                <CardTitle className="text-xl">{brand.name}</CardTitle>
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <div className="space-y-1">
+                <CardTitle className="text-lg font-bold">{brand.name}</CardTitle>
+                <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    <span>Ngày tạo: {format(new Date(brand.createdAt || new Date()), 'dd/MM/yyyy')}</span>
+                    <span>{format(new Date(brand.createdAt || new Date()), 'dd.MM.yyyy')}</span>
                   </div>
                 </div>
               </div>

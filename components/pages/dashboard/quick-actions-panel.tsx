@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
@@ -79,48 +79,47 @@ export function QuickActionsPanel({ className }: { className?: string }) {
   ]
 
   return (
-    <Card className={cn("rounded-2xl md:rounded-3xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm flex flex-col transition-all duration-300", className)}>
-      <div className="p-6 md:p-10 border-b border-slate-50 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/10 flex items-center justify-between">
+    <Card className={cn("overflow-hidden flex flex-col transition-all duration-300", className)}>
+      <CardHeader className="p-6 md:p-8 border-b bg-muted/50 flex flex-row items-center justify-between space-y-0">
         <div className="space-y-1">
-          <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3 uppercase tracking-widest leading-none">
+          <CardTitle className="text-xl font-bold tracking-tight uppercase">
             Hành động nhanh
-          </h3>
-          <p className="text-[9px] md:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">Phím tắt điều hành</p>
+          </CardTitle>
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Phím tắt điều hành</p>
         </div>
-        <div className="size-8 md:size-10 rounded-lg md:rounded-xl bg-slate-900 dark:bg-primary flex items-center justify-center text-white">
-          <Zap className="size-4 md:size-5" />
+        <div className="size-8 rounded bg-primary flex items-center justify-center text-primary-foreground">
+          <Zap className="size-4" />
         </div>
-      </div>
+      </CardHeader>
 
-      <CardContent className="p-5 md:p-8 space-y-6 md:space-y-8 flex-1">
+      <CardContent className="p-6 flex-1">
         <div className="space-y-4">
-          <div className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 dark:text-slate-600 px-2">Hoạt động trọng tâm</div>
-          <div className="grid gap-2 md:gap-3">
+          <div className="grid gap-2">
             {quickActions.map((action, index) => (
               <Button
                 key={index}
                 asChild
                 variant="ghost"
-                className="w-full justify-start h-auto p-3 md:p-4 rounded-xl md:rounded-2xl border border-transparent hover:border-slate-100 dark:hover:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 group transition-all duration-300 active:scale-[0.98]"
+                className="w-full justify-start h-auto p-3 rounded-lg border border-transparent hover:border-border hover:bg-muted group transition-all"
               >
                 <Link href={action.href}>
-                  <div className="flex items-center gap-4 md:gap-5 w-full">
+                  <div className="flex items-center gap-4 w-full">
                     <div className={cn(
-                      "flex-shrink-0 size-10 md:size-11 rounded-lg md:rounded-xl flex items-center justify-center transition-all duration-500 group-hover:bg-slate-900 dark:group-hover:bg-primary group-hover:text-white group-hover:rotate-12 shadow-sm",
+                      "flex-shrink-0 size-10 rounded flex items-center justify-center transition-all group-hover:bg-primary group-hover:text-primary-foreground shadow-sm",
                       action.bgColor, action.textColor
                     )}>
-                      <action.icon className="size-4 md:size-5" />
+                      <action.icon className="size-4" />
                     </div>
                     <div className="flex-1 text-left">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900 dark:text-white text-xs md:text-sm">{action.title}</span>
+                        <span className="font-semibold text-foreground text-sm">{action.title}</span>
                         {action.isPopular && (
-                          <div className="px-1 py-0.5 rounded bg-slate-900 dark:bg-primary text-white text-[7px] md:text-[8px] font-black uppercase tracking-tighter">PHỔ BIẾN</div>
+                          <div className="px-1.5 py-0.5 rounded-full bg-primary text-primary-foreground text-[8px] font-bold uppercase">PHỔ BIẾN</div>
                         )}
                       </div>
-                      <p className="text-[10px] md:text-xs font-medium text-slate-400 dark:text-slate-500 mt-0.5">{action.description}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{action.description}</p>
                     </div>
-                    <ArrowRight className="size-3.5 md:size-4 text-slate-200 dark:text-slate-700 group-hover:text-slate-900 dark:group-hover:text-white group-hover:translate-x-1 transition-all" />
+                    <ArrowRight className="size-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all" />
                   </div>
                 </Link>
               </Button>
@@ -129,14 +128,14 @@ export function QuickActionsPanel({ className }: { className?: string }) {
         </div>
 
         {/* Mini CTA or Insight */}
-        <div className="mt-auto p-4 md:p-6 rounded-2xl md:rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 flex items-center justify-between">
-          <div className="flex items-center gap-3 md:gap-4">
-            <div className="size-8 rounded-lg bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 dark:text-slate-500 shadow-sm border border-slate-100 dark:border-slate-800">
+        <div className="mt-8 p-4 rounded-lg border bg-muted/50 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="size-8 rounded bg-background flex items-center justify-center text-muted-foreground shadow-sm border">
               <TrendingUp className="size-4" />
             </div>
-            <p className="text-[9px] md:text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Xem tất cả phím tắt</p>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Xem tất cả phím tắt</p>
           </div>
-          <Button variant="ghost" size="sm" className="size-7 md:size-8 rounded-full p-0 hover:bg-white dark:hover:bg-slate-700 text-slate-900 dark:text-white">
+          <Button variant="ghost" size="icon" className="size-8 rounded-full hover:bg-background">
             <Plus className="size-4" />
           </Button>
         </div>

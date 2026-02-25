@@ -93,8 +93,8 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">
-          <p className="font-bold text-slate-900 truncate">{member.userEmail}</p>
-          <p className="text-[10px] text-slate-500">Tham gia: {new Date(member.joinedAt).toLocaleDateString('vi-VN')}</p>
+          <p className="font-bold text-foreground truncate">{member.userEmail}</p>
+          <p className="text-[11px] text-muted-foreground">Tham gia: {new Date(member.joinedAt).toLocaleDateString('vi-VN')}</p>
         </div>
       </div>
 
@@ -133,7 +133,7 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
             type="button"
             variant="ghost"
             size="sm"
-            className="h-8 px-2 text-[10px] font-bold"
+            className="h-8 px-2 text-xs font-semibold"
             onClick={() => setShowPermissions(!showPermissions)}
           >
             {showPermissions ? 'Ẩn bớt' : 'Xem chi tiết'}
@@ -142,13 +142,13 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
 
         <div
           onClick={() => setShowPermissions(!showPermissions)}
-          className="flex items-center justify-between p-3 rounded-md border bg-white cursor-pointer hover:bg-slate-50"
+          className="flex items-center justify-between p-3 rounded-md border bg-card cursor-pointer hover:bg-accent"
         >
           <div className="flex items-center gap-2">
-            <Shield className="size-4 text-slate-400" />
+            <Shield className="size-4 text-muted-foreground" />
             <span className="text-xs font-semibold">Gán {permissions.length} quyền cho {role}</span>
           </div>
-          <ChevronDown className={cn("size-4 text-slate-400 transition-transform", showPermissions && "rotate-180")} />
+          <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", showPermissions && "rotate-180")} />
         </div>
 
         {showPermissions && (
@@ -186,8 +186,8 @@ export function EditMemberDialog({ open, onOpenChange, teamId, member }: EditMem
               </div>
             </TooltipProvider>
             <div className="flex gap-4">
-              <button type="button" className="text-[10px] font-bold text-slate-400 hover:text-slate-900" onClick={() => setPermissions(getPermissionsForRole(role).slice())}>Về mặc định</button>
-              <button type="button" className="text-[10px] font-bold text-rose-400 hover:text-rose-600" onClick={() => setPermissions([])}>Gỡ sạch quyền</button>
+              <button type="button" className="text-xs font-semibold text-muted-foreground hover:text-foreground" onClick={() => setPermissions(getPermissionsForRole(role).slice())}>Về mặc định</button>
+              <button type="button" className="text-xs font-semibold text-destructive hover:text-destructive/80" onClick={() => setPermissions([])}>Gỡ sạch quyền</button>
             </div>
           </div>
         )}

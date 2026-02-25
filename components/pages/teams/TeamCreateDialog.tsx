@@ -72,16 +72,16 @@ export function TeamCreateDialog({ open, onOpenChange, onCreated }: Props) {
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Định danh Đội ngũ</FormLabel>
+            <FormItem className="space-y-2">
+              <FormLabel className="text-sm font-semibold text-muted-foreground">Định danh Đội ngũ</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Ví dụ: Growth Hub, Content Wizards..."
-                  className="h-14 rounded-2xl border-2 border-slate-100 bg-white px-6 focus-visible:ring-slate-100 font-black text-slate-900 uppercase tracking-tight shadow-sm"
+                  className="h-10 rounded-md border-border bg-card px-4 focus-visible:ring-primary font-medium text-foreground shadow-sm"
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="text-[10px] font-bold uppercase" />
+              <FormMessage className="text-[11px]" />
             </FormItem>
           )}
         />
@@ -90,43 +90,34 @@ export function TeamCreateDialog({ open, onOpenChange, onCreated }: Props) {
           control={form.control}
           name="description"
           render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Sứ mệnh / Mô tả (Tùy chọn)</FormLabel>
+            <FormItem className="space-y-2">
+              <FormLabel className="text-sm font-semibold text-muted-foreground">Sứ mệnh / Mô tả (Tùy chọn)</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Ghi chú ngắn gọn về mục tiêu của đội ngũ này..."
-                  rows={4}
-                  className="rounded-xl border-2 border-slate-100 bg-white p-6 focus-visible:ring-slate-100 font-medium text-slate-900 shadow-sm"
+                  rows={3}
+                  className="rounded-md border-border bg-card p-4 focus-visible:ring-primary font-medium text-foreground shadow-sm"
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="text-[10px] font-bold uppercase" />
+              <FormMessage className="text-[11px]" />
             </FormItem>
           )}
         />
 
         {error && (
-          <div className="flex items-center gap-4 p-5 rounded-2xl bg-rose-50 border border-rose-100 text-rose-500">
-            <AlertCircle className="size-5 shrink-0" />
-            <div className="text-[10px] font-black uppercase tracking-widest leading-relaxed">{error}</div>
+          <div className="flex items-center gap-3 p-4 rounded-md bg-destructive/10 border border-destructive/20 text-destructive">
+            <AlertCircle className="size-4 shrink-0" />
+            <div className="text-xs font-semibold leading-relaxed">{error}</div>
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6">
-          <Button type="button" variant="outline" onClick={onCancel} className="h-14 rounded-2xl border-slate-100 bg-slate-50 text-slate-400 hover:bg-slate-100 font-black uppercase tracking-widest text-[10px] order-2 sm:order-1 flex-1 sm:flex-none sm:px-10">
+        <div className="flex justify-end gap-3 pt-4">
+          <Button type="button" variant="outline" onClick={onCancel} className="h-10 px-6 rounded-md font-semibold text-sm">
             Hủy bỏ
           </Button>
-          <Button type="submit" disabled={isPending} className="h-14 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 transition-all hover:-translate-y-1 order-1 sm:order-2 flex-1 sm:flex-none sm:px-10">
-            {isPending ? (
-              <>
-                <div className="mr-3 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                Đang tạo...
-              </>
-            ) : (
-              <>
-                Triển khai Đội ngũ <ChevronRight className="ml-2 size-4" />
-              </>
-            )}
+          <Button type="submit" disabled={isPending} className="h-10 px-6 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm shadow-sm transition-all">
+            {isPending ? "Đang tạo..." : "Triển khai Đội ngũ"}
           </Button>
         </div>
       </form>
@@ -136,13 +127,10 @@ export function TeamCreateDialog({ open, onOpenChange, onCreated }: Props) {
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[90vh] flex flex-col rounded-t-[3rem] border-none shadow-2xl bg-white">
+        <DrawerContent className="max-h-[90vh] flex flex-col rounded-t-lg border-none shadow-2xl bg-popover">
           <DrawerHeader className="flex-shrink-0 text-left p-6 pb-2">
-            <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-6 border border-slate-200">
-              <Users className="size-6" />
-            </div>
-            <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">Kiến tạo Đội ngũ</DrawerTitle>
-            <DrawerDescription className="text-sm font-medium text-slate-400 mt-2 italic">Phác thảo thông tin cơ bản để bắt đầu quy trình cộng tác.</DrawerDescription>
+            <DrawerTitle className="text-xl font-bold tracking-tight text-foreground leading-none">Kiến tạo Đội ngũ</DrawerTitle>
+            <DrawerDescription className="text-sm font-medium text-muted-foreground mt-2">Phác thảo thông tin cơ bản để bắt đầu quy trình cộng tác.</DrawerDescription>
           </DrawerHeader>
           <div className="px-6 overflow-y-auto flex-1 pb-6">
             <TeamFormContent onCancel={() => onOpenChange(false)} />
@@ -154,15 +142,12 @@ export function TeamCreateDialog({ open, onOpenChange, onCreated }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl border-none p-0 shadow-2xl bg-white">
-        <DialogHeader className="flex-shrink-0 p-8 pb-4">
-          <div className="size-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-8 border border-slate-200 shadow-sm">
-            <Users className="size-8" />
-          </div>
-          <DialogTitle className="text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">Kiến tạo Đội ngũ</DialogTitle>
-          <DialogDescription className="text-base font-medium text-slate-500 mt-2 italic">Xây dựng cấu trúc cộng tác mới cho tổ chức truyền thông của bạn.</DialogDescription>
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden flex flex-col rounded-lg border-border p-0 shadow-lg bg-popover">
+        <DialogHeader className="flex-shrink-0 p-6 pb-2 text-left">
+          <DialogTitle className="text-2xl font-bold tracking-tight text-foreground leading-none">Kiến tạo Đội ngũ</DialogTitle>
+          <DialogDescription className="text-sm font-medium text-muted-foreground mt-2">Xây dựng cấu trúc cộng tác mới cho tổ chức truyền thông của bạn.</DialogDescription>
         </DialogHeader>
-        <div className="overflow-y-auto flex-1 px-8 pb-8">
+        <div className="overflow-y-auto flex-1 px-6 pb-6">
           <TeamFormContent onCancel={() => onOpenChange(false)} />
         </div>
       </DialogContent>

@@ -8,7 +8,18 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
-import { Check, Info, Crown, Building2, Zap, AlertTriangle, Loader2 } from 'lucide-react'
+import {
+  Users,
+  Building2,
+  Calendar,
+  FileText,
+  CheckCircle,
+  Sparkles,
+  TrendingUp,
+  ArrowRight,
+  Loader2,
+  Check, Info, Crown, Zap, AlertTriangle
+} from 'lucide-react'
 import { useChangePlan, usePlanComparison } from '@/hooks/use-subscription'
 import { formatPrice } from '@/lib/constants/subscription-plans'
 import { analyzePlanChangeImpact } from '@/lib/utils/subscription'
@@ -131,12 +142,12 @@ export function PlanChangeDialog({
         </div>
       </div>
 
-      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-        <div className="flex items-center gap-3 text-slate-900 dark:text-white mb-2">
-          <Info className="size-4 text-primary" />
-          <span className="text-sm font-black uppercase tracking-widest">Thông tin thanh toán</span>
+      <div className="p-4 rounded-lg bg-muted border">
+        <div className="flex items-center gap-2 mb-1.5">
+          <Info className="size-3.5 text-primary" />
+          <span className="text-[10px] font-bold uppercase tracking-widest">Thông tin thanh toán</span>
         </div>
-        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+        <p className="text-xs text-muted-foreground font-medium leading-relaxed">
           Gói dịch vụ sẽ được kích hoạt ngay lập tức sau khi hoàn tất thanh toán qua PayOS. Hệ thống hiện chỉ hỗ trợ đăng ký theo tháng.
         </p>
       </div>

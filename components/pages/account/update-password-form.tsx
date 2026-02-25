@@ -141,62 +141,57 @@ export function UpdatePasswordForm() {
                 {[1, 2, 3, 4, 5].map((level) => (
                   <div
                     key={level}
-                    className={`h-2 w-full rounded ${level <= passwordStrength
-                        ? passwordStrength <= 2
-                          ? "bg-destructive"
-                          : passwordStrength <= 3
-                            ? "bg-yellow-500"
-                            : "bg-green-500"
-                        : "bg-muted"
+                    className={`h-1.5 w-full rounded-full ${level <= passwordStrength
+                      ? passwordStrength <= 2
+                        ? "bg-destructive"
+                        : passwordStrength <= 3
+                          ? "bg-amber-500"
+                          : "bg-emerald-500"
+                      : "bg-muted"
                       }`}
                   />
                 ))}
               </div>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                 {passwordStrength <= 2
-                  ? "Weak"
+                  ? "Yếu"
                   : passwordStrength <= 3
-                    ? "Medium"
-                    : "Strong"}
+                    ? "Trung bình"
+                    : "Mạnh"}
               </span>
             </div>
 
             {/* Password Requirements */}
-            <div className="space-y-1 text-xs text-muted-foreground">
-              <div className="flex items-center space-x-2">
+            <div className="space-y-1.5 pt-2">
+              <div className="flex items-center gap-2 text-[11px]">
                 <CheckCircle
-                  className={`h-3 w-3 ${(newPassword?.length || 0) >= 8 ? "text-green-500" : "text-muted-foreground"
-                    }`}
+                  className={`size-3 ${newPassword?.length >= 8 ? "text-emerald-500" : "text-muted-foreground/40"}`}
                 />
-                <span>At least 8 characters</span>
+                <span className={newPassword?.length >= 8 ? "text-foreground font-medium" : "text-muted-foreground"}>Tối thiểu 8 ký tự</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2 text-[11px]">
                 <CheckCircle
-                  className={`h-3 w-3 ${/[A-Z]/.test(newPassword || "") ? "text-green-500" : "text-muted-foreground"
-                    }`}
+                  className={`size-3 ${/[A-Z]/.test(newPassword || "") ? "text-emerald-500" : "text-muted-foreground/40"}`}
                 />
-                <span>One uppercase letter</span>
+                <span className={/[A-Z]/.test(newPassword || "") ? "text-foreground font-medium" : "text-muted-foreground"}>Một chữ cái viết hoa</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2 text-[11px]">
                 <CheckCircle
-                  className={`h-3 w-3 ${/[a-z]/.test(newPassword || "") ? "text-green-500" : "text-muted-foreground"
-                    }`}
+                  className={`size-3 ${/[a-z]/.test(newPassword || "") ? "text-emerald-500" : "text-muted-foreground/40"}`}
                 />
-                <span>One lowercase letter</span>
+                <span className={/[a-z]/.test(newPassword || "") ? "text-foreground font-medium" : "text-muted-foreground"}>Một chữ cái viết thường</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2 text-[11px]">
                 <CheckCircle
-                  className={`h-3 w-3 ${/[0-9]/.test(newPassword || "") ? "text-green-500" : "text-muted-foreground"
-                    }`}
+                  className={`size-3 ${/[0-9]/.test(newPassword || "") ? "text-emerald-500" : "text-muted-foreground/40"}`}
                 />
-                <span>One number</span>
+                <span className={/[0-9]/.test(newPassword || "") ? "text-foreground font-medium" : "text-muted-foreground"}>Một con số</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2 text-[11px]">
                 <CheckCircle
-                  className={`h-3 w-3 ${/[^A-Za-z0-9]/.test(newPassword || "") ? "text-green-500" : "text-muted-foreground"
-                    }`}
+                  className={`size-3 ${/[^A-Za-z0-9]/.test(newPassword || "") ? "text-emerald-500" : "text-muted-foreground/40"}`}
                 />
-                <span>One special character</span>
+                <span className={/[^A-Za-z0-9]/.test(newPassword || "") ? "text-foreground font-medium" : "text-muted-foreground"}>Một ký tự đặc biệt</span>
               </div>
             </div>
           </div>
@@ -234,30 +229,30 @@ export function UpdatePasswordForm() {
       </div>
 
       {/* Submit Button */}
-      <div className="flex justify-end space-x-4">
+      <div className="flex justify-end gap-3 pt-4">
         <Link href="/account/me">
           <Button
             type="button"
             variant="outline"
             disabled={isSubmitting}
           >
-            Cancel
+            Hủy
           </Button>
         </Link>
         <Button
           type="submit"
           disabled={isSubmitting || updatePasswordMutation.isPending}
-          className="min-w-[120px]"
+          className="min-w-[140px]"
         >
           {isSubmitting || updatePasswordMutation.isPending ? (
             <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-              Updating...
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2" />
+              Đang cập nhật...
             </>
           ) : (
             <>
               <Lock className="mr-2 h-4 w-4" />
-              Update Password
+              Cập nhật mật khẩu
             </>
           )}
         </Button>

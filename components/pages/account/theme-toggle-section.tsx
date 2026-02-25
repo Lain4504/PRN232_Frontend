@@ -18,15 +18,15 @@ export function ThemeToggleSection() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-3">
-        <div className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
+      <h2 className="text-xl font-bold text-foreground uppercase tracking-widest flex items-center gap-3">
+        <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
           <Palette className="size-4" />
         </div>
         Giao diện hệ thống
       </h2>
 
-      <Card className="rounded-3xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
-        <CardContent className="p-10 space-y-8">
+      <Card className="rounded-lg border-border bg-card shadow-sm overflow-hidden">
+        <CardContent className="p-8 space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {themes.map((themeOption) => {
               const Icon = themeOption.icon
@@ -35,19 +35,19 @@ export function ThemeToggleSection() {
               return (
                 <Button
                   key={themeOption.value}
-                  variant="ghost"
+                  variant="outline"
                   className={cn(
-                    "h-auto p-8 flex flex-col items-center gap-4 rounded-2xl border-2 transition-all duration-300",
+                    "h-auto p-6 flex flex-col items-center gap-3 rounded-lg border transition-all duration-300",
                     isActive
-                      ? "bg-slate-900 dark:bg-primary text-white border-slate-900 dark:border-primary shadow-xl shadow-slate-200 dark:shadow-primary/20"
-                      : "bg-slate-50 dark:bg-slate-800/50 border-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-muted/50 border-input text-muted-foreground hover:bg-accent"
                   )}
                   onClick={() => setTheme(themeOption.value)}
                 >
-                  <Icon className={cn("size-6", isActive ? "text-white" : "text-slate-400 dark:text-slate-500")} />
+                  <Icon className={cn("size-5", isActive ? "text-primary-foreground" : "text-muted-foreground")} />
                   <div className="text-center">
-                    <span className="block text-sm font-bold uppercase tracking-widest leading-none mb-1">{themeOption.label}</span>
-                    <span className={cn("text-[10px] font-medium opacity-60", isActive ? "text-slate-300" : "text-slate-400 dark:text-slate-500")}>
+                    <span className="block text-xs font-bold uppercase tracking-widest leading-none mb-1">{themeOption.label}</span>
+                    <span className={cn("text-[9px] font-medium", isActive ? "text-primary-foreground/70" : "text-muted-foreground/50")}>
                       {themeOption.desc}
                     </span>
                   </div>
@@ -56,7 +56,7 @@ export function ThemeToggleSection() {
             })}
           </div>
 
-          <p className="text-xs font-medium text-slate-400 dark:text-slate-500 text-center">
+          <p className="text-xs font-medium text-muted-foreground/50 text-center">
             Chế độ hệ thống sẽ tự động đồng bộ theo cài đặt của thiết bị bạn đang sử dụng.
           </p>
         </CardContent>

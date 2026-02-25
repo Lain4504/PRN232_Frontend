@@ -8,6 +8,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import { ProfileProvider } from "@/lib/contexts/profile-context";
 import { AuthProvider } from "@/lib/contexts/auth-context";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 
 
@@ -35,7 +36,9 @@ export default function ClientProviders({ children }: { children: React.ReactNod
                 <QueryClientProvider client={queryClient}>
                     <AuthProvider>
                         <ProfileProvider>
-                            {children}
+                            <TooltipProvider>
+                                {children}
+                            </TooltipProvider>
                             <Toaster
                                 position="top-right"
                                 closeButton

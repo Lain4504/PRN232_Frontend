@@ -40,20 +40,20 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
 
   if (teamLoading) return (
     <div className="space-y-12 animate-pulse">
-      <div className="h-12 w-64 bg-slate-100 dark:bg-slate-800 rounded-xl" />
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {[1, 2, 3, 4].map(i => <div key={i} className="h-40 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800" />)}
+      <div className="h-10 w-64 bg-muted rounded-lg" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map(i => <div key={i} className="h-32 bg-card rounded-lg border" />)}
       </div>
     </div>
   )
 
   if (!team) return (
-    <div className="flex flex-col items-center justify-center py-32 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
-      <Shield className="size-16 text-slate-300 dark:text-slate-700 mb-8" />
-      <h3 className="text-3xl font-black uppercase tracking-tight mb-3 text-slate-900 dark:text-white leading-none">Không tìm thấy đội nhóm</h3>
-      <p className="text-slate-500 dark:text-slate-400 font-medium max-w-sm mx-auto mb-10 leading-relaxed italic border-l-4 border-slate-100 dark:border-slate-800 pl-6">Dữ liệu đội nhóm không tồn tại hoặc bạn không có quyền truy cập phối hợp.</p>
+    <div className="flex flex-col items-center justify-center py-24 text-center bg-muted/30 rounded-lg border border-dashed">
+      <Shield className="size-12 text-muted-foreground/30 mb-6" />
+      <h3 className="text-2xl font-bold tracking-tight mb-2 text-foreground">Không tìm thấy đội nhóm</h3>
+      <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto mb-8 leading-relaxed italic border-l-2 pl-4">Dữ liệu đội nhóm không tồn tại hoặc bạn không có quyền truy cập phối hợp.</p>
       <Link href="/dashboard/teams">
-        <Button variant="outline" className="h-12 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800">Quay lại danh sách</Button>
+        <Button variant="outline" className="h-10 px-6 rounded-md font-semibold text-sm">Quay lại danh sách</Button>
       </Link>
     </div>
   )
@@ -69,55 +69,54 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
   ]
 
   return (
-    <div className="space-y-12 pb-20 font-sans">
+    <div className="space-y-10 pb-20 font-sans">
       {/* Navigation */}
-      <Link href="/dashboard/teams" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
+      <Link href="/dashboard/teams" className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="size-3.5" />
         Quay lại danh sách đội ngũ
       </Link>
 
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-100 dark:border-slate-800 pb-12">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
-              <Target className="size-4" />
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b pb-8">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="size-6 rounded bg-muted flex items-center justify-center text-muted-foreground">
+              <Target className="size-3" />
             </div>
-            <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">Hồ sơ định danh nhóm</span>
+            <span className="text-[11px] font-semibold text-muted-foreground">Hồ sơ định danh nhóm</span>
           </div>
-          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-none truncate max-w-[800px]">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground truncate max-w-[800px]">
             {team.name}
           </h1>
-          <p className="text-lg text-slate-500 dark:text-slate-400 font-medium max-w-xl leading-relaxed">
+          <p className="text-sm text-muted-foreground font-medium max-w-xl leading-relaxed">
             {team.description || 'Quản lý cấu trúc thành viên, thương hiệu và quyền hạn cộng tác trong tổ chức của bạn.'}
           </p>
         </div>
 
         {canManage && (
-          <Button variant="outline" className="h-14 w-14 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-900 dark:text-white shadow-sm transition-all hover:-translate-y-1">
-            <MoreHorizontal className="size-5" />
+          <Button variant="outline" size="icon" className="h-10 w-10 rounded-md">
+            <MoreHorizontal className="size-4" />
           </Button>
         )}
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: "Tổng nhân sự", value: totalMembers, icon: Users, color: "text-slate-900 dark:text-white", bg: "bg-slate-100 dark:bg-slate-800" },
-          { label: "Đang hoạt động", value: activeMembers, icon: Activity, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-500/10" },
-          { label: "Lời mời chờ", value: pendingInvitations, icon: Mail, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" },
-          { label: "Trạng thái nhóm", value: team.status, icon: Shield, color: team.status === 'Active' ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400", bg: team.status === 'Active' ? "bg-emerald-50 dark:bg-emerald-500/10" : "bg-amber-50 dark:bg-amber-500/10" },
+          { label: "Tổng nhân sự", value: totalMembers, icon: Users, color: "text-foreground", bg: "bg-muted" },
+          { label: "Đang hoạt động", value: activeMembers, icon: Activity, color: "text-emerald-600", bg: "bg-emerald-500/10" },
+          { label: "Lời mời chờ", value: pendingInvitations, icon: Mail, color: "text-blue-600", bg: "bg-blue-500/10" },
+          { label: "Trạng thái", value: team.status, icon: Shield, color: team.status === 'Active' ? "text-emerald-600" : "text-amber-600", bg: team.status === 'Active' ? "bg-emerald-500/10" : "bg-amber-500/10" },
         ].map((stat, i) => (
-          <Card key={i} className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-sm group hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/50 transition-all duration-300 hover:-translate-y-1">
-            <div className="flex items-center justify-between mb-8">
-              <div className={cn("size-12 rounded-2xl flex items-center justify-center shadow-sm border border-white dark:border-slate-800 ring-4 ring-slate-50 dark:ring-slate-800/10", stat.bg, stat.color)}>
-                <stat.icon className="size-5 transition-transform group-hover:rotate-12" />
+          <Card key={i} className="rounded-lg border bg-card p-6 shadow-sm transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className={cn("size-10 rounded flex items-center justify-center border", stat.bg, stat.color)}>
+                <stat.icon className="size-4" />
               </div>
-              <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest text-slate-300 dark:text-slate-600 border-slate-100 dark:border-slate-800 p-1 px-2">Thời gian thực</Badge>
             </div>
-            <div className="space-y-1">
-              <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{stat.value}</p>
-              <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none">{stat.label}</p>
+            <div className="space-y-0.5">
+              <p className="text-2xl font-bold text-foreground tracking-tight">{stat.value}</p>
+              <p className="text-[11px] font-semibold text-muted-foreground">{stat.label}</p>
             </div>
           </Card>
         ))}
@@ -135,31 +134,31 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {/* Quick Actions */}
-            <Card className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-10 space-y-8">
-              <div className="space-y-2">
-                <h4 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-widest leading-none">Thao tác nhanh</h4>
-                <p className="text-xs font-medium text-slate-400 dark:text-slate-500">Các quy trình quản trị đội ngũ được tối ưu hóa</p>
+            <Card className="rounded-lg border bg-card shadow-sm p-8 space-y-6">
+              <div className="space-y-1">
+                <h4 className="text-lg font-bold text-foreground leading-none">Thao tác nhanh</h4>
+                <p className="text-xs font-medium text-muted-foreground">Các quy trình quản trị đội ngũ được tối ưu hóa</p>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 {[
                   { label: "Mời nhân sự", desc: "Thêm thành viên mới", icon: UserPlus, onClick: () => setAddMemberOpen(true) },
                   { label: "Gán thương hiệu", desc: "Liên kết Brand với Team", icon: Building2, onClick: () => setAddBrandOpen(true) },
-                  { label: "Xem thành viên", desc: "Danh sách chi tiết", icon: Users, onClick: () => setActiveTab('members') },
-                  { label: "Xem thương hiệu", desc: "Danh sách sở hữu", icon: Building2, onClick: () => setActiveTab('brands') },
+                  { label: "Thành viên", desc: "Danh sách chi tiết", icon: Users, onClick: () => setActiveTab('members') },
+                  { label: "Thương hiệu", desc: "Danh sách sở hữu", icon: Building2, onClick: () => setActiveTab('brands') },
                 ].map((action, i) => (
                   <Button
                     key={i}
-                    variant="outline"
-                    className="h-auto p-6 flex flex-col items-start gap-4 rounded-2xl border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-all text-left group bg-white dark:bg-slate-900"
+                    variant="ghost"
+                    className="h-auto p-4 flex flex-col items-start gap-4 rounded-lg border border-transparent hover:border-border hover:bg-muted transition-all text-left"
                     onClick={action.onClick}
                     disabled={!canManage}
                   >
-                    <div className="size-10 rounded-xl bg-slate-900 dark:bg-primary flex items-center justify-center text-white ring-4 ring-slate-50 dark:ring-slate-800 group-hover:scale-110 transition-transform">
-                      <action.icon className="size-5" />
+                    <div className="size-8 rounded bg-primary flex items-center justify-center text-primary-foreground">
+                      <action.icon className="size-4" />
                     </div>
-                    <div className="space-y-1">
-                      <span className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight block">{action.label}</span>
-                      <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{action.desc}</span>
+                    <div className="space-y-0.5">
+                      <span className="text-[12px] font-bold text-foreground block">{action.label}</span>
+                      <span className="text-[10px] font-medium text-muted-foreground leading-relaxed">{action.desc}</span>
                     </div>
                   </Button>
                 ))}
@@ -167,22 +166,22 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
             </Card>
 
             {/* Strategy Banner */}
-            <Card className="p-10 rounded-3xl bg-slate-900 dark:bg-primary text-white relative overflow-hidden group border-none flex flex-col justify-center shadow-xl shadow-slate-200 dark:shadow-primary/20">
-              <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 rotate-12 group-hover:rotate-0 transition-transform duration-1000">
+            <Card className="p-8 rounded-lg bg-primary text-primary-foreground relative overflow-hidden group border-none flex flex-col justify-center shadow-md">
+              <div className="absolute top-0 right-0 p-8 opacity-5 scale-150 rotate-12 transition-transform duration-1000">
                 <Target className="size-48" />
               </div>
-              <div className="space-y-6 relative z-10">
-                <div className="size-14 rounded-2xl bg-white/10 flex items-center justify-center text-white shrink-0 shadow-2xl border border-white/5">
-                  <Shield className="size-7" />
+              <div className="space-y-4 relative z-10">
+                <div className="size-10 rounded bg-white/10 flex items-center justify-center text-white shrink-0 border border-white/10">
+                  <Shield className="size-5" />
                 </div>
-                <div className="space-y-4">
-                  <h4 className="text-xl font-black tracking-tight uppercase tracking-widest">Bảng điều khiển tác chiến</h4>
-                  <p className="text-sm text-slate-400 dark:text-slate-100/70 leading-relaxed font-bold">
+                <div className="space-y-3">
+                  <h4 className="text-lg font-bold tracking-tight">Bảng điều khiển tác chiến</h4>
+                  <p className="text-xs text-primary-foreground/80 leading-relaxed font-medium">
                     Tất cả các thành viên trong nhóm này sẽ có quyền truy cập phối hợp dựa trên vai trò được gán.
                     Sử dụng các thao tác nhanh để duy trì luồng vận hành của tổ chức.
                   </p>
-                  <Button variant="ghost" className="p-0 text-white hover:text-emerald-400 dark:hover:text-white font-black text-[10px] uppercase tracking-widest hover:bg-transparent flex items-center gap-2">
-                    Hướng dẫn phân quyền <ChevronRight className="size-4" />
+                  <Button variant="ghost" className="p-0 h-auto text-[11px] font-bold hover:bg-transparent text-primary-foreground hover:text-primary-foreground hover:underline">
+                    Hướng dẫn phân quyền <ChevronRight className="size-3 ml-1" />
                   </Button>
                 </div>
               </div>
@@ -191,8 +190,8 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
         )}
 
         {activeTab === 'members' && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="p-8 rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/40 dark:shadow-black/40">
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="p-6 rounded-lg border bg-card shadow-sm">
               <TeamMembersTable
                 teamId={teamId}
                 canManage={canManage}
@@ -204,8 +203,8 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
         )}
 
         {activeTab === 'brands' && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="p-8 rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/40 dark:shadow-black/40">
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="p-6 rounded-lg border bg-card shadow-sm">
               <TeamBrandsList
                 teamId={teamId}
                 canManage={canManage}

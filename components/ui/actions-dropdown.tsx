@@ -40,7 +40,7 @@ export function ActionsDropdown({
                 <Button
                     variant="ghost"
                     size={size}
-                    className="h-8 w-8 p-0 rounded-lg border border-border bg-card backdrop-blur-sm hover:bg-muted/50 data-[state=open]:bg-muted/50 shadow-sm"
+                    className="h-8 w-8 p-0"
                     disabled={disabled}
                 >
                     <span className="sr-only">Open menu</span>

@@ -53,27 +53,24 @@ export function TeamDeleteDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md rounded-3xl border-none p-0 shadow-2xl bg-white overflow-hidden">
-        <DialogHeader className="p-10 pb-4">
-          <div className="size-16 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 mb-8 border border-rose-100 shadow-sm mx-auto">
-            <ShieldAlert className="size-10" />
-          </div>
-          <DialogTitle className="text-3xl font-black uppercase tracking-tight text-slate-900 text-center leading-none">Phá hủy Đội ngữ</DialogTitle>
-          <DialogDescription className="text-sm font-medium text-slate-500 mt-4 italic text-center leading-relaxed">
+      <DialogContent className="sm:max-w-md rounded-lg border-border p-0 shadow-lg bg-popover overflow-hidden">
+        <DialogHeader className="p-8 pb-4 text-left">
+          <DialogTitle className="text-2xl font-bold tracking-tight text-foreground leading-none">Phá hủy Đội ngữ</DialogTitle>
+          <DialogDescription className="text-sm font-medium text-muted-foreground mt-4 leading-relaxed">
             Hành động này mang tính vĩnh viễn và không thể đảo ngược. Mọi dữ liệu liên quan sẽ bị xóa sạch khỏi hạ tầng.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="p-10 pt-4 space-y-8">
-          <div className="p-6 rounded-2xl bg-rose-50/50 border border-rose-100 space-y-4">
+        <div className="p-8 pt-4 space-y-8">
+          <div className="p-6 rounded-lg bg-destructive/5 border border-destructive/10 space-y-4">
             <div className="flex items-center gap-3">
-              <AlertOctagon className="size-4 text-rose-600" />
-              <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest leading-none">Danh mục bị ảnh hưởng:</p>
+              <AlertOctagon className="size-4 text-destructive" />
+              <p className="text-xs font-semibold text-destructive leading-none">Danh mục bị ảnh hưởng:</p>
             </div>
             <ul className="space-y-2">
               {['Tất cả thành viên & Quyền truy cập', 'Dữ liệu vận hành & Cấu hình nhóm', 'Liên kết thương hiệu & Chiến dịch'].map(item => (
-                <li key={item} className="flex items-center gap-3 text-[10px] font-bold text-rose-800 uppercase tracking-tighter">
-                  <div className="size-1.5 rounded-full bg-rose-300" />
+                <li key={item} className="flex items-center gap-3 text-xs font-medium text-destructive/80">
+                  <div className="size-1.5 rounded-full bg-destructive/30" />
                   {item}
                 </li>
               ))}
@@ -81,8 +78,8 @@ export function TeamDeleteDialog({
           </div>
 
           <div className="space-y-4">
-            <Label htmlFor="confirm-text" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block px-1">
-              Nhập mã định danh <strong className="text-slate-900">&quot;{teamName}&quot;</strong> để xác nhận:
+            <Label htmlFor="confirm-text" className="text-sm font-semibold text-muted-foreground block px-1">
+              Nhập mã định danh <strong className="text-foreground">&quot;{teamName}&quot;</strong> để xác nhận:
             </Label>
             <Input
               id="confirm-text"
@@ -90,17 +87,17 @@ export function TeamDeleteDialog({
               onChange={(e) => setConfirmText(e.target.value)}
               placeholder={`Nhập chính xác "${teamName}"`}
               disabled={isPending}
-              className="h-14 rounded-2xl border-2 border-slate-100 bg-white px-6 focus-visible:ring-slate-100 font-black text-slate-900 uppercase tracking-tight shadow-sm"
+              className="h-12 rounded-lg border-border bg-card px-6 focus-visible:ring-primary font-medium text-foreground shadow-sm"
             />
           </div>
         </div>
 
-        <DialogFooter className="p-10 pt-0 grid grid-cols-2 gap-4">
+        <DialogFooter className="p-8 pt-0 grid grid-cols-2 gap-4">
           <Button
             variant="outline"
             onClick={handleClose}
             disabled={isPending}
-            className="h-12 rounded-xl border-slate-100 bg-slate-50 text-slate-400 hover:bg-slate-100 font-black uppercase tracking-widest text-[9px]"
+            className="h-10 rounded-md border-border font-semibold text-sm"
           >
             Hủy bỏ
           </Button>
@@ -108,7 +105,7 @@ export function TeamDeleteDialog({
             variant="destructive"
             onClick={handleDelete}
             disabled={isDisabled}
-            className="h-12 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[9px] shadow-xl shadow-rose-100 transition-all hover:-translate-y-1"
+            className="h-10 rounded-md font-semibold text-sm shadow-sm transition-all"
           >
             {isPending ? 'Đang phá hủy...' : 'Xác nhận xóa bỏ'}
           </Button>
