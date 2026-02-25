@@ -18,12 +18,10 @@ import React from "react"
 import Link from "next/link"
 import {
   User as UserIcon,
-  Settings,
   Moon,
   Sun,
   Monitor,
   Shield,
-  History,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -58,70 +56,66 @@ export function EnhancedUserMenu({ user }: EnhancedUserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 p-0 rounded-full overflow-hidden hover:bg-accent transition-colors">
-          <Avatar className="h-8 w-8 rounded-lg">
+        <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+          <Avatar className="h-9 w-9">
             <AvatarImage src={user?.socialAccounts?.[0]?.avatarUrl || ''} alt={user?.fullName || ''} />
-            <AvatarFallback className="rounded-lg bg-primary text-primary-foreground text-xs font-medium">
+            <AvatarFallback>
               {(user?.fullName?.[0] || user?.email?.[0] || 'U').toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-72 p-1 rounded-lg border shadow-md" align="end" forceMount>
-        <DropdownMenuLabel className="flex items-center gap-2 p-3">
-          <Avatar className="h-8 w-8 rounded">
-            <AvatarImage src={user?.socialAccounts?.[0]?.avatarUrl || ''} alt={user?.fullName || ''} />
-            <AvatarFallback className="rounded bg-primary text-primary-foreground text-[10px] font-bold">
-              {(user?.fullName?.[0] || user?.email?.[0] || 'U').toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-1 flex-col">
-            <span className="text-sm font-bold leading-none">{user?.fullName || user?.email}</span>
-            <span className="text-[11px] text-muted-foreground mt-1 truncate">{user?.email}</span>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{user?.fullName || user?.email}</p>
+            <p className="text-xs leading-none text-muted-foreground truncate">
+              {user?.email}
+            </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/overview/profile" className="cursor-pointer flex items-center gap-2">
-              <UserIcon className="size-4" />
+            <Link href="/overview/account" className="cursor-pointer">
+              <UserIcon className="mr-2 h-4 w-4" />
               <span>Hồ sơ cá nhân</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/overview/security" className="cursor-pointer flex items-center gap-2">
-              <Shield className="size-4" />
+            <Link href="/overview/security" className="cursor-pointer">
+              <Shield className="mr-2 h-4 w-4" />
               <span>Bảo mật</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <div className="p-2 space-y-2">
-          <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Giao diện</div>
-          <div className="flex bg-muted rounded-md p-1">
-            {[
-              { id: 'light', icon: Sun, label: 'Sáng' },
-              { id: 'dark', icon: Moon, label: 'Tối' },
-              { id: 'system', icon: Monitor, label: 'Hệ thống' }
-            ].map((t) => (
-              <button
-                key={t.id}
-                onClick={(e) => handleThemeChange(e, t.id as ThemeOption)}
-                className={cn(
-                  "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-sm text-xs font-medium transition-all",
-                  theme === t.id
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <t.icon className="size-3.5" />
-                <span className="hidden sm:inline">{t.label}</span>
-              </button>
-            ))}
-          </div>
+        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+          Giao diện
+        </DropdownMenuLabel>
+        <div className="flex p-2 gap-1">
+          {[
+            { id: 'light', icon: Sun, label: 'Sáng' },
+            { id: 'dark', icon: Moon, label: 'Tối' },
+            { id: 'system', icon: Monitor, label: 'Hệ thống' }
+          ].map((t) => (
+            <Button
+              key={t.id}
+              variant="ghost"
+              size="sm"
+              onClick={(e) => handleThemeChange(e, t.id as ThemeOption)}
+              className={cn(
+                "flex-1 h-8 px-0",
+                theme === t.id && "bg-accent text-accent-foreground"
+              )}
+            >
+              <t.icon className="h-4 w-4" />
+              <span className="sr-only">{t.label}</span>
+            </Button>
+          ))}
         </div>
         <DropdownMenuSeparator />
-        <LogoutButton className="w-full flex items-center gap-2 p-2 px-3 text-destructive hover:bg-destructive/10 rounded-md transition-colors" />
+        <LogoutButton className="w-full justify-start text-destructive focus:text-destructive hover:bg-destructive/10 focus:bg-destructive/10" />
       </DropdownMenuContent>
     </DropdownMenu>
   )

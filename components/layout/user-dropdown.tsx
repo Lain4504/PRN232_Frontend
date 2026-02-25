@@ -88,13 +88,17 @@ export function UserDropdown({ user }: UserDropdownProps) {
               Bảng điều khiển
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="flex items-center px-3 py-2 rounded-md text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer outline-none">
-            <User className="mr-3 size-4 opacity-70" />
-            Trang cá nhân
+          <DropdownMenuItem asChild>
+            <Link href="/overview/account" className="flex items-center w-full px-3 py-2 rounded-md text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer outline-none">
+              <User className="mr-3 size-4 opacity-70" />
+              Trang cá nhân
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="flex items-center px-3 py-2 rounded-md text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer outline-none">
-            <Settings className="mr-3 size-4 opacity-70" />
-            Cài đặt
+          <DropdownMenuItem asChild>
+            <Link href="/overview/account" className="flex items-center w-full px-3 py-2 rounded-md text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer outline-none">
+              <Settings className="mr-3 size-4 opacity-70" />
+              Cài đặt
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 

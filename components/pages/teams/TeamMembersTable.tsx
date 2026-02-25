@@ -11,7 +11,6 @@ import {
   Trash2,
   User2,
   Search,
-  Filter,
   UserCheck,
   Settings,
 } from 'lucide-react'
@@ -60,17 +59,15 @@ export function TeamMembersTable({
       accessorKey: "userEmail",
       header: "Thành viên",
       cell: ({ row }) => (
-        <div className="flex items-center gap-4 py-3">
-          <Avatar className="size-10 rounded-md border border-border bg-muted shadow-sm transition-transform">
-            <AvatarFallback className="bg-primary text-primary-foreground font-bold text-sm">
+        <div className="flex items-center gap-3">
+          <Avatar className="h-9 w-9">
+            <AvatarFallback>
               {row.original.userEmail ? row.original.userEmail.charAt(0).toUpperCase() : "?"}
             </AvatarFallback>
           </Avatar>
-          <div className="space-y-0.5">
-            <div className="font-bold text-foreground text-sm leading-none">{row.original.userEmail || '(Không có email)'}</div>
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="bg-muted text-muted-foreground border-none text-[10px] font-semibold px-2 py-0.5 rounded-sm">ID: {row.original.userId.slice(0, 8)}</Badge>
-            </div>
+          <div>
+            <div className="font-medium text-sm">{row.original.userEmail || '(Không có email)'}</div>
+            <div className="text-xs text-muted-foreground">ID: {row.original.userId.slice(0, 8)}</div>
           </div>
         </div>
       ),
@@ -79,7 +76,7 @@ export function TeamMembersTable({
       accessorKey: "role",
       header: "Vai trò",
       cell: ({ row }) => (
-        <Badge variant="secondary" className="bg-primary text-primary-foreground border-none text-[10px] font-semibold px-3 py-1 rounded-full">
+        <Badge variant="secondary" className="font-normal">
           {row.getValue("role") || 'thành viên'}
         </Badge>
       ),
@@ -90,9 +87,9 @@ export function TeamMembersTable({
       cell: ({ row }) => {
         const permissions = row.getValue("permissions") as string[] || [];
         return (
-          <div className="flex items-center gap-2">
-            <div className="size-2 rounded-full bg-blue-500" />
-            <span className="text-[11px] font-medium text-muted-foreground">{permissions.length} Phân quyền</span>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+            <span>{permissions.length} Phân quyền</span>
           </div>
         );
       },
@@ -102,8 +99,8 @@ export function TeamMembersTable({
       header: "Trạng thái",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <div className={cn("size-2 rounded-full", row.getValue("isActive") ? "bg-emerald-500" : "bg-muted")} />
-          <span className={cn("text-[11px] font-medium", row.getValue("isActive") ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground")}>
+          <div className={cn("h-2 w-2 rounded-full", row.getValue("isActive") ? "bg-emerald-500" : "bg-muted")} />
+          <span className="text-sm">
             {row.getValue("isActive") ? 'Đang hoạt động' : 'Vô hiệu hóa'}
           </span>
         </div>
@@ -115,27 +112,27 @@ export function TeamMembersTable({
       cell: ({ row }) => {
         const date = row.getValue("joinedAt") as string;
         return (
-          <span className="text-[11px] font-medium text-muted-foreground">
-            {date ? new Date(date).toLocaleDateString('vi-VN').replace(/\//g, '.') : '-'}
+          <span className="text-sm text-muted-foreground">
+            {date ? new Date(date).toLocaleDateString('vi-VN') : '-'}
           </span>
         );
       },
     },
     {
       id: "actions",
-      header: () => <div className="text-right text-[11px] font-semibold text-muted-foreground">Thao tác</div>,
+      header: () => <div className="text-right">Thao tác</div>,
       cell: ({ row }) => {
         if (!canManage) return null;
 
         const actions: ActionItem[] = [
           {
             label: "Chỉnh sửa",
-            icon: <Settings className="size-4" />,
+            icon: <Settings className="h-4 w-4" />,
             onClick: () => onEditMember?.(row.original),
           },
           {
             label: "Loại bỏ",
-            icon: <Trash2 className="size-4" />,
+            icon: <Trash2 className="h-4 w-4" />,
             onClick: () => setDeleteMemberId(row.original.userId),
             variant: "destructive",
           },
@@ -170,80 +167,76 @@ export function TeamMembersTable({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Table Controls */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex flex-1 w-full items-center gap-3">
-          <div className="relative flex-1 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+        <div className="flex flex-1 w-full items-center gap-2">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Truy vấn nhân sự theo email..."
+              placeholder="Tìm kiếm thành viên..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 h-10 bg-card border-border rounded-md shadow-sm focus-visible:ring-primary font-medium transition-all text-foreground"
+              className="pl-8"
             />
           </div>
-          <div className="flex items-center gap-2 bg-card p-1 rounded-md border border-border shadow-sm">
-            <div className="size-8 rounded bg-muted flex items-center justify-center text-muted-foreground">
-              <Filter className="size-3.5" />
-            </div >
-            <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
-              <SelectTrigger className="w-[100px] border-none focus:ring-0 font-medium text-sm h-8 text-foreground bg-transparent">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="rounded-md border-border shadow-lg p-1 bg-popover">
-                {[5, 10, 20, 50].map((size) => (
-                  <SelectItem key={size} value={String(size)} className="rounded-sm font-medium text-xs">Top {size}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
+            <SelectTrigger className="w-[100px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[5, 10, 20, 50].map((size) => (
+                <SelectItem key={size} value={String(size)}>Top {size}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         {canManage && (
-          <Button onClick={onInviteMember} className="h-10 px-6 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm shadow-sm transition-all">
+          <Button onClick={onInviteMember}>
             <UserCheck className="mr-2 h-4 w-4" />
-            Mời nhân sự mới
+            Mời nhân sự
           </Button>
         )}
       </div>
 
       {/* Table Area */}
       {filteredData.length > 0 ? (
-        <CustomTable
-          columns={columns}
-          data={filteredData}
-          isLoading={isLoading}
-          pageSize={pageSize}
-          className="rounded-lg border border-border overflow-hidden bg-card"
-          headerClassName="bg-muted/50 border-b border-border py-4 px-6 text-[11px] font-semibold text-muted-foreground"
-        />
+        <div className="rounded-md border">
+          <CustomTable
+            columns={columns}
+            data={filteredData}
+            isLoading={isLoading}
+            pageSize={pageSize}
+            className="border-none"
+          />
+        </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 px-6 text-center border border-dashed border-border rounded-lg bg-muted/30">
-          <div className="size-16 rounded-md bg-card flex items-center justify-center mb-6 shadow-sm border border-border">
-            <User2 className="size-8 text-muted-foreground/30" />
+        <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed rounded-lg">
+          <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+            <User2 className="h-6 w-6 text-muted-foreground" />
           </div>
-          <h3 className="text-xl font-bold text-foreground mb-2">
+          <h3 className="text-lg font-semibold">
             {searchTerm ? 'Không tìm thấy kết quả' : 'Danh sách trống'}
           </h3>
-          <p className="text-muted-foreground font-medium max-w-sm mb-8 leading-relaxed text-sm italic">
+          <p className="text-sm text-muted-foreground max-w-sm mb-6">
             {searchTerm ? 'Thử điều chỉnh từ khóa tìm kiếm của bạn.' : 'Bắt đầu mời các thành viên đầu tiên gia nhập vào đội ngũ của bạn.'}
           </p>
         </div>
       )}
 
       <AlertDialog open={!!deleteMemberId} onOpenChange={() => setDeleteMemberId(null)}>
-        <AlertDialogContent className="rounded-md border-border max-w-md shadow-lg bg-popover">
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-lg font-bold tracking-tight text-foreground">Loại bỏ thành viên?</AlertDialogTitle>
-            <AlertDialogDescription className="text-sm font-medium text-muted-foreground leading-relaxed mt-2">
+            <AlertDialogTitle>Loại bỏ thành viên?</AlertDialogTitle>
+            <AlertDialogDescription>
               Xác nhận xóa tài khoản này khỏi cấu trúc đội ngũ. Họ sẽ mất quyền truy cập vào các tài sản chung ngay lập tức.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-8 flex items-center justify-end gap-3">
-            <AlertDialogCancel className="rounded-md h-10 font-bold text-xs bg-muted border-none text-muted-foreground hover:bg-muted/80">Hủy bỏ</AlertDialogCancel>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteMember}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md h-10 font-bold text-xs border-none shadow-sm"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={deleteMemberMutation.isPending}
             >
               {deleteMemberMutation.isPending ? "..." : "Xác nhận xóa"}

@@ -6,15 +6,15 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Link from "next/link";
-// import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginFormData, type AuthError } from "@/lib/types/auth";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
 
 export function LoginForm({
   className,
@@ -24,8 +24,6 @@ export function LoginForm({
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { login, googleLogin } = useAuth();
-  // const router = useRouter();
-  // const searchParams = useSearchParams();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -74,7 +72,6 @@ export function LoginForm({
       callback: async (response: any) => {
         try {
           await googleLogin(response.credential);
-          // Redirect is handled in context
         } catch (error: unknown) {
           const message = error instanceof Error ? error.message : "Đăng nhập Google thất bại";
           toast.error(message);
@@ -129,18 +126,18 @@ export function LoginForm({
   }, []);
 
   return (
-    <div className={cn("space-y-8", className)} {...props}>
-      <div className="space-y-4">
+    <div className={cn("grid gap-6", className)} {...props}>
+      <div className="grid gap-4">
         <Button
           variant="outline"
-          className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all font-bold text-slate-700 dark:text-slate-300 shadow-sm"
           onClick={handleGoogleLogin}
           disabled={isGoogleLoading || isLoading}
+          className="w-full"
         >
           {isGoogleLoading ? (
-            <Loader2 className="w-4 h-4 mr-3 animate-spin" />
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
-            <svg className="w-4 h-4 mr-3" viewBox="0 0 24 24">
+            <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
@@ -149,89 +146,78 @@ export function LoginForm({
           )}
           Tiếp tục với Google
         </Button>
+      </div>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-slate-100 dark:border-slate-800" />
-          </div>
-          <div className="relative flex justify-center text-[10px]">
-            <span className="bg-white dark:bg-slate-900 lg:bg-[#FAFAFA] lg:dark:bg-slate-900 px-4 text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">Hoặc đăng nhập với Email</span>
-          </div>
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">
+            Hoặc đăng nhập với Email
+          </span>
         </div>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-6">
-          <div className="space-y-5">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-1">Email</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-600 h-4 w-4" />
-                      <Input
-                        {...field}
-                        type="email"
-                        placeholder="email@vidu.com"
-                        className="pl-12 h-12 rounded-xl bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-800 focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all font-medium text-slate-900 dark:text-white"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-xs font-medium" />
-                </FormItem>
-              )}
-            />
+        <form onSubmit={form.handleSubmit(handleLogin)} className="grid gap-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="email"
+                    placeholder="email@vidu.com"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center justify-between px-1">
-                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Mật khẩu</FormLabel>
-                    <Link
-                      href="/auth/forgot-password"
-                      className="text-xs font-bold text-primary hover:text-primary/80 transition-all font-sans tracking-tight"
-                    >
-                      Quên mật khẩu?
-                    </Link>
-                  </div>
-                  <FormControl>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-600 h-4 w-4" />
-                      <PasswordInput
-                        {...field}
-                        placeholder="••••••••••••"
-                        className="pl-12 h-12 rounded-xl bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-800 focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all text-slate-900 dark:text-white"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-xs font-medium" />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Mật khẩu</FormLabel>
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-sm font-medium text-primary hover:underline"
+                  >
+                    Quên mật khẩu?
+                  </Link>
+                </div>
+                <FormControl>
+                  <PasswordInput
+                    {...field}
+                    placeholder="••••••••••••"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {error && (
-            <Alert variant="destructive" className="rounded-xl border-rose-100 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400">
-              <AlertCircle className="h-4 w-4 fill-rose-600 dark:fill-rose-400 text-white dark:text-slate-950" />
-              <AlertDescription className="text-xs font-bold">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Lỗi</AlertTitle>
+              <AlertDescription>
                 {error.message}
               </AlertDescription>
             </Alert>
           )}
 
-          <Button
-            type="submit"
-            className="w-full h-12 rounded-xl bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white dark:text-white font-bold shadow-xl shadow-slate-200 dark:shadow-primary/10 transition-all active:scale-[0.98]"
-            disabled={isLoading || isGoogleLoading}
-          >
+          <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
             {isLoading ? (
               <>
-                <Loader2 className="w-4 h-4 mr-3 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Đang đăng nhập...
               </>
             ) : (
@@ -241,16 +227,11 @@ export function LoginForm({
         </form>
       </Form>
 
-      <div className="text-center pt-4">
-        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-          Chưa có tài khoản?{" "}
-          <Link
-            href="/auth/sign-up"
-            className="text-primary font-bold hover:underline"
-          >
-            Tạo tài khoản mới
-          </Link>
-        </p>
+      <div className="text-center text-sm">
+        Chưa có tài khoản?{" "}
+        <Link href="/auth/sign-up" className="font-semibold text-primary underline-offset-4 hover:underline">
+          Tạo tài khoản mới
+        </Link>
       </div>
     </div>
   );

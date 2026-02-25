@@ -29,14 +29,12 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// Profile navigation items
 interface NavItem {
   title: string
   url: string
   icon: React.ComponentType<{ className?: string }>
 }
 
-// Identity navigation items
 const identityNavItems: NavItem[] = [
   {
     title: "Hồ sơ của tôi",
@@ -50,7 +48,6 @@ const identityNavItems: NavItem[] = [
   }
 ]
 
-// Account navigation items
 const accountNavItems: NavItem[] = [
   {
     title: "Tùy chỉnh",
@@ -74,7 +71,6 @@ const accountNavItems: NavItem[] = [
   },
 ]
 
-// System navigation items
 const systemNavItems: NavItem[] = [
   {
     title: "Nhật ký hệ thống",
@@ -89,14 +85,13 @@ export function ProfileSidebar() {
   const isOwner = activeProfile?.isOwner
 
   const filteredAccountNavItems = accountNavItems.filter(item => {
-    // Only owner can manage subscription
     if (item.url === "/dashboard/subscription") return isOwner
     return true
   })
 
   const renderNavGroup = (label: string, items: NavItem[]) => (
     <SidebarGroup>
-      <SidebarGroupLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600 px-3 mb-2 group-data-[collapsible=icon]:hidden">
+      <SidebarGroupLabel>
         {label}
       </SidebarGroupLabel>
       <SidebarGroupContent>
@@ -109,18 +104,10 @@ export function ProfileSidebar() {
                   asChild
                   isActive={isActive}
                   tooltip={item.title}
-                  className={cn(
-                    "h-10 rounded-xl transition-all duration-200 group relative",
-                    isActive
-                      ? "bg-slate-900 dark:bg-primary text-white shadow-lg shadow-slate-200 dark:shadow-primary/20 hover:bg-slate-800 dark:hover:bg-primary/90 hover:text-white"
-                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
-                  )}
                 >
-                  <Link href={item.url} className="flex items-center w-full px-3">
-                    <item.icon className={cn("size-4 shrink-0 transition-transform duration-200", isActive ? "text-white" : "text-slate-400 dark:text-slate-600 group-hover:text-slate-900 dark:group-hover:text-white")} />
-                    <span className="font-bold text-sm truncate ml-3 group-data-[collapsible=icon]:hidden">
-                      {item.title}
-                    </span>
+                  <Link href={item.url}>
+                    <item.icon />
+                    <span>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -132,20 +119,26 @@ export function ProfileSidebar() {
   )
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950">
-      <SidebarHeader className="h-16 flex items-center border-b border-slate-50 dark:border-slate-800 px-6">
-        <Link href="/" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center w-full overflow-hidden">
-          <div className="size-8 bg-slate-900 dark:bg-primary rounded-lg flex items-center justify-center shrink-0">
-            <Zap className="size-4 text-white fill-current" />
-          </div>
-          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="font-bold text-lg tracking-tight text-slate-900 dark:text-white leading-none">OmniAdly</span>
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">Console</span>
-          </div>
-        </Link>
+    <Sidebar collapsible="icon">
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <Link href="/">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <Zap className="size-4" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">OmniAdly</span>
+                  <span className="truncate text-xs">Console</span>
+                </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent className="py-6 px-3 group-data-[collapsible=icon]:px-2 gap-6 bg-white dark:bg-slate-950">
+      <SidebarContent>
         {renderNavGroup("Danh tính", identityNavItems)}
         {renderNavGroup("Tài khoản", filteredAccountNavItems)}
         {renderNavGroup("Hệ thống", systemNavItems)}

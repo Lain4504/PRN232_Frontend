@@ -18,8 +18,6 @@ interface SubscriptionPlansPageProps {
   isLoading?: boolean
 }
 
-
-
 export function SubscriptionPlansPage({
   onPlanSelect,
   showCurrentPlan = true,
@@ -95,17 +93,17 @@ export function SubscriptionPlansPage({
   }
 
   return (
-    <div className="space-y-12 dark:text-slate-50">
+    <div className="space-y-10">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight uppercase">Chọn gói dịch vụ của bạn</h1>
-        <p className="text-muted-foreground text-sm font-medium max-w-2xl mx-auto">
+      <div className="text-center space-y-4">
+        <h2 className="text-3xl font-bold tracking-tight">Chọn gói dịch vụ của bạn</h2>
+        <p className="text-muted-foreground max-w-2xl mx-auto">
           Tối ưu hóa chiến lược marketing của bạn với sự hỗ trợ từ AI. Chuyển đổi hoặc hủy bất kỳ lúc nào.
         </p>
       </div>
 
       {/* Plans Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {plans.map((plan) => {
           const features = getPlanFeatures(plan.id)
           const isSelected = selectedPlan === plan.id
@@ -114,82 +112,71 @@ export function SubscriptionPlansPage({
             <Card
               key={plan.id}
               className={cn(
-                "relative flex flex-col transition-all duration-300 rounded-lg border bg-card shadow-sm",
-                plan.isPopular && "border-primary shadow-md",
-                isSelected && "ring-2 ring-primary/20",
-                !isSelected && !plan.isPopular && "hover:border-border hover:shadow-md"
+                "relative flex flex-col",
+                plan.isPopular && "border-primary shadow-lg",
+                isSelected && "ring-2 ring-primary"
               )}
             >
               {plan.isPopular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                  <Badge className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border-none">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-primary text-primary-foreground hover:bg-primary">
                     Phổ biến nhất
                   </Badge>
                 </div>
               )}
 
-              <CardHeader className="text-center p-8 pb-4">
-                <div className="flex justify-center mb-6">
+              <CardHeader className="text-center pb-8">
+                <div className="flex justify-center mb-4">
                   <div className={cn(
-                    "size-16 rounded-lg flex items-center justify-center transition-transform duration-300",
-                    plan.id === SubscriptionPlanEnum.Free ? 'bg-blue-500/10 text-blue-600' :
-                      plan.id === SubscriptionPlanEnum.Basic ? 'bg-purple-500/10 text-purple-600' :
-                        'bg-orange-500/10 text-orange-600'
+                    "p-3 rounded-lg bg-muted",
+                    plan.id === SubscriptionPlanEnum.Free && "bg-blue-500/10 text-blue-600",
+                    plan.id === SubscriptionPlanEnum.Basic && "bg-purple-500/10 text-purple-600",
+                    plan.id === SubscriptionPlanEnum.Pro && "bg-orange-500/10 text-orange-600"
                   )}>
                     {getPlanIcon(plan.id)}
                   </div>
                 </div>
-                <CardTitle className="text-2xl font-bold uppercase tracking-tight">{plan.name}</CardTitle>
-                <CardDescription className="text-sm font-medium mt-2 leading-relaxed">{plan.description}</CardDescription>
+                <CardTitle className="text-xl">{plan.name}</CardTitle>
+                <CardDescription className="mt-2">{plan.description}</CardDescription>
               </CardHeader>
 
-              <CardContent className="flex-1 p-8 pt-0 space-y-8">
+              <CardContent className="flex-1 space-y-6">
                 <div className="text-center">
-                  <div className="flex flex-col items-center justify-center gap-1">
-                    <span className="text-4xl font-bold tracking-tight">
-                      {plan.price === 0 ? 'Miễn phí' : formatCurrency(plan.price)}
-                    </span>
-                    {plan.price > 0 && (
-                      <span className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">mỗi {plan.period}</span>
-                    )}
-                  </div>
+                  <span className="text-3xl font-bold">
+                    {plan.price === 0 ? 'Miễn phí' : formatCurrency(plan.price)}
+                  </span>
+                  {plan.price > 0 && (
+                    <span className="text-muted-foreground text-sm ml-1">/ {plan.period}</span>
+                  )}
                 </div>
 
-                <ul className="space-y-4 pt-6 border-t">
-                  <li className="flex items-start gap-3">
-                    <div className="mt-0.5 bg-emerald-500/10 rounded-full p-0.5">
-                      <Check className="h-3 w-3 text-emerald-600" />
-                    </div>
-                    <span className="text-sm font-medium text-muted-foreground">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <span>
                       {features.posts === -1 ? 'Không giới hạn' : `${features.posts} bài đăng`} / tháng
                     </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="mt-0.5 bg-emerald-500/10 rounded-full p-0.5">
-                      <Check className="h-3 w-3 text-emerald-600" />
-                    </div>
-                    <span className="text-sm font-medium text-muted-foreground">
+                  </div>
+                  <div className="flex items-start gap-3 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <span>
                       Tối đa {features.platforms} nền tảng & {features.accounts} tài khoản
                     </span>
-                  </li>
+                  </div>
                   {features.features.map((feature: string, index: number) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <div className="mt-0.5 bg-emerald-500/10 rounded-full p-0.5">
-                        <Check className="h-3 w-3 text-emerald-600" />
-                      </div>
-                      <span className="text-sm font-medium text-muted-foreground">{feature}</span>
-                    </li>
+                    <div key={index} className="flex items-start gap-3 text-sm">
+                      <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                      <span>{feature}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </CardContent>
 
-              <CardFooter className="p-8 pt-0">
+              <CardFooter className="pt-4">
                 <Button
                   disabled={isLoading}
-                  className={cn(
-                    "w-full h-10 rounded-md font-bold uppercase tracking-wider text-[11px]",
-                    plan.isPopular ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground hover:bg-muted/80"
-                  )}
+                  className="w-full"
+                  variant={plan.isPopular ? "default" : "outline"}
                   onClick={() => handlePlanSelect(plan)}
                 >
                   {isLoading ? 'Đang xử lý...' : (plan.price === 0 ? 'Bắt đầu ngay' : 'Chọn gói này')}
@@ -201,13 +188,16 @@ export function SubscriptionPlansPage({
       </div>
 
       {/* Footer Info */}
-      <div className="max-w-2xl mx-auto text-center space-y-4 pt-8">
-        <p className="text-[10px] text-muted-foreground font-bold leading-relaxed uppercase tracking-widest">
+      <div className="text-center space-y-4">
+        <p className="text-sm text-muted-foreground">
           Không yêu cầu thẻ tín dụng cho gói Miễn phí. Tất cả các gói trả phí đều đi kèm với sự hỗ trợ tận tâm.
         </p>
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted rounded-lg text-[10px] font-bold uppercase tracking-widest text-muted-foreground border">
-          <Building2 className="h-3.5 w-3.5" />
-          Cần giải pháp gói lớn? <Link href="/contact" className="text-foreground hover:underline underline-offset-4 ml-1">Liên hệ chúng tôi</Link>
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <Building2 className="h-4 w-4" />
+          <span>Cần giải pháp gói lớn?</span>
+          <Link href="/contact" className="text-primary hover:underline">
+            Liên hệ chúng tôi
+          </Link>
         </div>
       </div>
     </div>
