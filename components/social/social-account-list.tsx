@@ -112,12 +112,12 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
         <Table className="w-full border-separate border-spacing-0">
           <TableHeader>
             <TableRow className="hover:bg-transparent border-none">
-              <TableHead className="py-6 px-8 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50">Tài khoản & Nền tảng</TableHead>
-              <TableHead className="py-6 px-8 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50">Trạng thái</TableHead>
-              <TableHead className="hidden md:table-cell py-6 px-8 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50">Đăng ký lúc</TableHead>
-              <TableHead className="hidden lg:table-cell py-6 px-8 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50">Thời hạn mã</TableHead>
-              <TableHead className="py-6 px-8 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50">Tích hợp</TableHead>
-              <TableHead className="w-16 py-6 px-8 border-b border-slate-50"></TableHead>
+              <TableHead className="py-4 px-6 text-[11px] font-semibold text-muted-foreground border-b border-border">Tài khoản & Nền tảng</TableHead>
+              <TableHead className="py-4 px-6 text-[11px] font-semibold text-muted-foreground border-b border-border">Trạng thái</TableHead>
+              <TableHead className="hidden md:table-cell py-4 px-6 text-[11px] font-semibold text-muted-foreground border-b border-border">Đăng ký lúc</TableHead>
+              <TableHead className="hidden lg:table-cell py-4 px-6 text-[11px] font-semibold text-muted-foreground border-b border-border">Thời hạn mã</TableHead>
+              <TableHead className="py-4 px-6 text-[11px] font-semibold text-muted-foreground border-b border-border">Tích hợp</TableHead>
+              <TableHead className="w-16 py-4 px-6 border-b border-border"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -127,52 +127,52 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
               const isExpired = account.expiresAt ? new Date(account.expiresAt) < new Date() : false
 
               return (
-                <TableRow key={account.id} className="group hover:bg-slate-50/50 transition-colors border-none">
-                  <TableCell className="py-6 px-8 border-b border-slate-50">
+                <TableRow key={account.id} className="group hover:bg-muted/30 transition-colors border-none">
+                  <TableCell className="py-4 px-6 border-b border-border">
                     <div className="flex items-center gap-4">
-                      <div className={cn("size-12 rounded-2xl flex items-center justify-center shadow-lg shadow-slate-200 group-hover:scale-110 transition-transform", colorClass)}>
-                        <Icon className="size-6 text-white" />
+                      <div className={cn("size-10 rounded-lg flex items-center justify-center shadow-md group-hover:scale-105 transition-transform", colorClass)}>
+                        <Icon className="size-5 text-white" />
                       </div>
-                      <div className="space-y-1">
-                        <div className="font-black text-slate-900 text-lg leading-none capitalize">
-                          {account.provider} <span className="text-slate-300 font-medium">Node</span>
+                      <div className="space-y-0.5">
+                        <div className="font-bold text-foreground text-base capitalize">
+                          {account.provider} <span className="text-muted-foreground/50 font-medium">Node</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="bg-slate-100/50 text-slate-400 border-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg">PROT: OAUTH 2.0</Badge>
+                          <Badge variant="secondary" className="bg-muted text-muted-foreground border-none text-[10px] font-semibold px-2 py-0.5 rounded-sm">PROT: OAUTH 2.0</Badge>
                         </div>
                       </div>
                     </div>
                   </TableCell>
 
-                  <TableCell className="py-6 px-8 border-b border-slate-50">
+                  <TableCell className="py-4 px-6 border-b border-border">
                     <div className="flex items-center gap-2">
-                      <div className={cn("size-2 rounded-full", account.isActive && !isExpired ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-rose-500")} />
-                      <span className={cn("text-[9px] font-black uppercase tracking-widest", account.isActive && !isExpired ? "text-emerald-600" : "text-rose-500")}>
+                      <div className={cn("size-2 rounded-full", account.isActive && !isExpired ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-destructive")} />
+                      <span className={cn("text-[11px] font-semibold", account.isActive && !isExpired ? "text-emerald-600 dark:text-emerald-400" : "text-destructive")}>
                         {account.isActive && !isExpired ? 'Đang hoạt động' : (isExpired ? 'Hết hạn mã' : 'Ngắt kết nối')}
                       </span>
                     </div>
                   </TableCell>
 
-                  <TableCell className="hidden md:table-cell py-6 px-8 border-b border-slate-50">
-                    <div className="text-[10px] font-black text-slate-900 flex items-center gap-2">
-                      <Clock className="size-3 text-slate-300" />
+                  <TableCell className="hidden md:table-cell py-4 px-6 border-b border-border">
+                    <div className="text-xs font-semibold text-foreground flex items-center gap-2">
+                      <Clock className="size-3 text-muted-foreground/50" />
                       {new Date(account.createdAt).toLocaleDateString('vi-VN').replace(/\//g, '.')}
                     </div>
                   </TableCell>
 
-                  <TableCell className="hidden lg:table-cell py-6 px-8 border-b border-slate-50">
-                    <div className={cn("text-[10px] font-black uppercase tracking-widest", isExpired ? "text-rose-500" : "text-slate-400")}>
+                  <TableCell className="hidden lg:table-cell py-4 px-6 border-b border-border">
+                    <div className={cn("text-[11px] font-semibold", isExpired ? "text-destructive" : "text-muted-foreground")}>
                       {account.expiresAt ? new Date(account.expiresAt).toLocaleDateString('vi-VN').replace(/\//g, '.') : 'Vô thời hạn'}
                     </div>
                   </TableCell>
 
-                  <TableCell className="py-6 px-8 border-b border-slate-50">
-                    <Badge variant="secondary" className="bg-slate-900 text-white border-none text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+                  <TableCell className="py-4 px-6 border-b border-border">
+                    <Badge variant="secondary" className="bg-primary text-primary-foreground border-none text-[10px] font-semibold px-2 py-0.5 rounded-sm">
                       {account.targets?.length || 0} Trang đã gán
                     </Badge>
                   </TableCell>
 
-                  <TableCell className="py-6 px-8 border-b border-slate-50 text-right">
+                  <TableCell className="py-4 px-6 border-b border-border text-right">
                     <ActionsDropdown
                       actions={[
                         ...(account.targets?.length ? [{
@@ -230,23 +230,20 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteDialogOpen} onOpenChange={() => setDeleteDialogOpen(null)}>
-        <AlertDialogContent className="rounded-3xl border-slate-100 p-10 max-w-md shadow-2xl">
-          <AlertDialogHeader className="space-y-6">
-            <div className="size-20 rounded-3xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto border border-rose-100 shadow-sm">
-              <Trash2 className="size-10" />
-            </div>
-            <AlertDialogTitle className="text-3xl font-black tracking-tight text-center uppercase text-slate-900">
+        <AlertDialogContent className="rounded-lg border-border p-8 max-w-md shadow-lg bg-popover">
+          <AlertDialogHeader className="space-y-4">
+            <AlertDialogTitle className="text-xl font-bold tracking-tight text-left text-foreground">
               {deleteDialogOpen?.targetId ? 'Hủy tích hợp?' : 'Gỡ tài khoản?'}
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm font-medium text-slate-500 leading-relaxed text-center italic mt-2">
+            <AlertDialogDescription className="text-sm font-medium text-muted-foreground leading-relaxed text-left mt-2">
               {deleteDialogOpen?.targetId
                 ? 'Bạn có chắc chắn muốn hủy liên kết trang này khỏi thương hiệu? Hành động này sẽ dừng mọi hoạt động đăng bài.'
                 : 'Thoát khỏi mạng lưới tài khoản? Tất cả các trang và chiến dịch liên kết sẽ bị dừng hoạt động ngay lập tức.'
               }
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-12 grid grid-cols-2 gap-4">
-            <AlertDialogCancel className="rounded-xl h-12 font-black uppercase tracking-widest text-[10px] bg-slate-50 border-none">Hủy bỏ</AlertDialogCancel>
+          <AlertDialogFooter className="mt-8 flex items-center justify-end gap-3">
+            <AlertDialogCancel className="rounded-md h-10 font-semibold text-sm m-0">Hủy bỏ</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (deleteDialogOpen?.targetId) {
@@ -255,7 +252,7 @@ export function SocialAccountList({ accounts, userId, onRefresh }: SocialAccount
                   handleDeleteAccount(deleteDialogOpen.accountId)
                 }
               }}
-              className="bg-rose-500 text-white hover:bg-rose-600 rounded-xl h-12 font-black uppercase tracking-widest text-[10px] border-none shadow-lg shadow-rose-100"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md h-10 font-semibold text-sm border-none shadow-sm"
             >
               {deleteDialogOpen?.targetId ? 'Xác nhận hủy' : 'Xác nhận gỡ'}
             </AlertDialogAction>

@@ -64,8 +64,8 @@ export function IntegrationsModal({ account, isOpen, onClose, onDeleteTarget }: 
     <div className="space-y-6">
       {account.targets && account.targets.length > 0 ? (
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            <CheckCircle2 className="size-3" />
+          <div className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground">
+            <CheckCircle2 className="size-3.5" />
             <span>Kênh đã liên kết ({account.targets.length})</span>
           </div>
 
@@ -73,23 +73,23 @@ export function IntegrationsModal({ account, isOpen, onClose, onDeleteTarget }: 
             {account.targets.map((target) => (
               <div
                 key={target.id}
-                className="flex items-center justify-between gap-4 p-4 rounded-lg border bg-white hover:bg-slate-50 transition-colors"
+                className="flex items-center justify-between gap-4 p-4 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors"
               >
                 <div className="flex items-center gap-4 min-w-0 flex-1">
                   <Avatar className="size-10 rounded-md border flex-shrink-0">
                     <AvatarImage src={target.profilePictureUrl} alt={target.name} className="object-cover" />
-                    <AvatarFallback className="bg-slate-100 text-slate-500 font-bold">
+                    <AvatarFallback className="bg-muted text-muted-foreground font-bold">
                       {target.name.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">
-                    <p className="font-bold text-slate-900 text-sm truncate">{target.name}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="secondary" className="text-[9px] px-1 py-0 h-4">
+                    <p className="font-bold text-foreground text-sm truncate">{target.name}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-semibold bg-muted text-muted-foreground border-none">
                         {target.type || 'PAGE'}
                       </Badge>
                       {target.brandName && (
-                        <div className="flex items-center gap-1 text-[10px] text-slate-500">
+                        <div className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
                           <Building2 className="size-3" />
                           <span className="truncate max-w-[120px]">{target.brandName}</span>
                         </div>
@@ -107,7 +107,7 @@ export function IntegrationsModal({ account, isOpen, onClose, onDeleteTarget }: 
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       onClick={() => onDeleteTarget(target.id, account.id)}
-                      className="text-rose-500 focus:text-rose-600 focus:bg-rose-50"
+                      className="text-destructive focus:text-destructive focus:bg-destructive/10"
                     >
                       <Trash2 className="size-4 mr-2" />
                       Hủy liên kết
@@ -119,10 +119,10 @@ export function IntegrationsModal({ account, isOpen, onClose, onDeleteTarget }: 
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed rounded-xl bg-slate-50/50">
-          <Users className="size-10 text-slate-300 mb-4" />
-          <h4 className="text-sm font-bold text-slate-900 mb-1">Chưa có kênh liên kết</h4>
-          <p className="text-xs text-slate-500 max-w-[200px]">
+        <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-border rounded-xl bg-muted/30">
+          <Users className="size-10 text-muted-foreground/30 mb-4" />
+          <h4 className="text-sm font-bold text-foreground mb-1">Chưa có kênh liên kết</h4>
+          <p className="text-xs text-muted-foreground max-w-[200px] italic">
             Tài khoản này hiện chưa có thực thể nào được đồng bộ.
           </p>
         </div>
@@ -136,7 +136,7 @@ export function IntegrationsModal({ account, isOpen, onClose, onDeleteTarget }: 
         <DrawerContent className="max-h-[90vh] flex flex-col">
           <DrawerHeader className="text-left border-b mb-6">
             <div className="flex items-center gap-4">
-              <div className={cn("size-10 rounded-lg flex items-center justify-center bg-white border shadow-sm", iconColor)}>
+              <div className={cn("size-10 rounded-lg flex items-center justify-center bg-background border border-border shadow-sm", iconColor)}>
                 <Icon className="size-5" />
               </div>
               <div>
@@ -158,7 +158,7 @@ export function IntegrationsModal({ account, isOpen, onClose, onDeleteTarget }: 
       <DialogContent className="sm:max-w-lg max-h-[85vh] flex flex-col p-0 overflow-hidden">
         <DialogHeader className="p-6 border-b">
           <div className="flex items-center gap-4">
-            <div className={cn("size-10 rounded-lg flex items-center justify-center bg-white border shadow-sm", iconColor)}>
+            <div className={cn("size-10 rounded-lg flex items-center justify-center bg-background border border-border shadow-sm", iconColor)}>
               <Icon className="size-5" />
             </div>
             <div>

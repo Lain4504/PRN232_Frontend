@@ -190,13 +190,13 @@ function ProfileCard({ profile, onSelect }: { profile: Profile; onSelect: (p: Pr
   const getStatusBadge = (status?: number) => {
     switch (status) {
       case 1: // Active
-        return <Badge className="bg-success/10 text-success border-success/20 rounded-lg px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">Hoạt động</Badge>
+        return <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 rounded-md px-2 py-0.5 text-[10px] font-semibold">Hoạt động</Badge>
       case 0: // Pending
-        return <Badge className="bg-warning/10 text-warning border-warning/20 rounded-lg px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">Đang chờ</Badge>
+        return <Badge variant="secondary" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 rounded-md px-2 py-0.5 text-[10px] font-semibold">Đang chờ</Badge>
       case 2: // Suspended
-        return <Badge className="bg-destructive/10 text-destructive border-destructive/20 rounded-lg px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">Tạm ngưng</Badge>
+        return <Badge variant="secondary" className="bg-destructive/10 text-destructive border-destructive/20 rounded-md px-2 py-0.5 text-[10px] font-semibold">Tạm ngưng</Badge>
       case 3: // Cancelled
-        return <Badge className="bg-muted text-muted-foreground border-border rounded-lg px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">Đã hủy</Badge>
+        return <Badge variant="secondary" className="bg-muted text-muted-foreground border-border rounded-md px-2 py-0.5 text-[10px] font-semibold">Đã hủy</Badge>
       default:
         return null
     }
@@ -226,7 +226,7 @@ function ProfileCard({ profile, onSelect }: { profile: Profile; onSelect: (p: Pr
           <div className="flex flex-col items-end gap-2">
             <Badge
               variant={profile.profileType === ProfileTypeEnum.Pro ? "default" : "secondary"}
-              className="uppercase text-[10px]"
+              className="text-[10px] font-semibold"
             >
               {profile.profileType === ProfileTypeEnum.Pro ? "PRO" :
                 profile.profileType === ProfileTypeEnum.Basic ? "PLUS" : "FREE"}

@@ -8,13 +8,13 @@ export function SearchCommand() {
   return (
     <CommandPalette>
       <Button
-        variant="ghost"
-        className="relative h-10 w-full items-center justify-start rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 shadow-none px-4 hover:bg-white dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all sm:pr-12 md:w-48 lg:w-72"
+        variant="outline"
+        className="relative h-10 w-full items-center justify-start rounded-md bg-muted/50 border-border text-xs font-medium text-muted-foreground shadow-sm px-4 hover:bg-muted transition-all sm:pr-12 md:w-48 lg:w-72"
       >
-        <Search className="mr-3 h-4 w-4 opacity-50" />
+        <Search className="mr-2 h-4 w-4" />
         <span className="hidden lg:inline-flex">Tìm kiếm hệ thống...</span>
         <span className="inline-flex lg:hidden">Tìm kiếm...</span>
-        <kbd className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 hidden h-7 select-none items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 font-mono text-[10px] font-black text-slate-400 dark:text-slate-500 opacity-100 sm:flex shadow-sm">
+        <kbd className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 hidden h-6 select-none items-center gap-1 rounded border border-border bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 sm:flex">
           <span className="text-[10px]">⌘</span>K
         </kbd>
       </Button>

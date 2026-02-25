@@ -141,7 +141,6 @@ export function TeamBrandsList({
                           <ExternalLink className="mr-2 size-3.5 text-muted-foreground" />
                           Chi tiết
                         </DropdownMenuItem>
-                        political
                         <DropdownMenuItem
                           onClick={() => setUnassigningBrand(brand)}
                           className="rounded-md h-10 font-medium text-sm focus:bg-destructive/10 text-destructive focus:text-destructive cursor-pointer"

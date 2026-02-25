@@ -65,14 +65,14 @@ const createColumns = (
       header: "Tiêu đề nội dung",
       cell: ({ row }) => {
         return (
-          <div className="flex items-center gap-6 py-4">
-            <div className="size-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 shrink-0 border border-slate-200 dark:border-slate-700 shadow-sm group-hover:bg-slate-900 dark:group-hover:bg-primary group-hover:text-white transition-all">
-              <FileText className="size-6" />
+          <div className="flex items-center gap-4 py-2">
+            <div className="size-10 rounded-md bg-muted flex items-center justify-center text-muted-foreground shrink-0 border border-border shadow-sm group-hover:bg-primary group-hover:text-primary-foreground transition-all">
+              <FileText className="size-5" />
             </div>
-            <div className="space-y-1">
-              <span className="font-black text-slate-900 dark:text-white text-lg leading-tight truncate max-w-[300px] block uppercase">{row.getValue("contentTitle")}</span>
+            <div className="space-y-0.5">
+              <span className="font-bold text-foreground text-sm leading-tight truncate max-w-[300px] block">{row.getValue("contentTitle")}</span>
               <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg">ID: {row.original.id.substring(0, 8)}</Badge>
+                <Badge variant="secondary" className="bg-muted text-muted-foreground border-none text-[10px] font-semibold px-2 py-0.5 rounded-sm">ID: {row.original.id.substring(0, 8)}</Badge>
               </div>
             </div>
           </div>
@@ -85,7 +85,7 @@ const createColumns = (
       cell: ({ row }) => {
         const status = row.getValue("status") as ContentStatusEnum
         return (
-          <Badge variant="secondary" className={cn("text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border-none",
+          <Badge variant="secondary" className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-sm border-none",
             status === ContentStatusEnum.Approved ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" :
               status === ContentStatusEnum.PendingApproval ? "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400" :
                 status === ContentStatusEnum.Rejected ? "bg-rose-50 dark:bg-rose-500/10 text-rose-500 dark:text-rose-400" :
@@ -102,11 +102,11 @@ const createColumns = (
       cell: ({ row }) => {
         const brandName = row.getValue("brandName") as string
         return (
-          <div className="text-sm font-bold text-slate-900 dark:text-white">
+          <div className="text-sm font-semibold text-foreground">
             {brandName ? (
-              <span className="hover:underline cursor-pointer">{brandName}</span>
+              <span>{brandName}</span>
             ) : (
-              <span className="text-slate-300 dark:text-slate-700 italic">N/A</span>
+              <span className="text-muted-foreground/30 italic">N/A</span>
             )}
           </div>
         )
@@ -118,11 +118,11 @@ const createColumns = (
       cell: ({ row }) => {
         const approverEmail = row.getValue("approverEmail") as string
         return (
-          <div className="flex items-center gap-3">
-            <div className="size-7 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-800">
-              <User className="size-3.5 text-slate-400 dark:text-slate-500" />
+          <div className="flex items-center gap-2">
+            <div className="size-6 rounded bg-muted flex items-center justify-center border border-border">
+              <User className="size-3 text-muted-foreground" />
             </div>
-            <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-tighter truncate max-w-[120px]">{approverEmail || "Chưa gán"}</span>
+            <span className="text-[11px] font-medium text-muted-foreground truncate max-w-[120px]">{approverEmail || "Chưa gán"}</span>
           </div>
         )
       },
@@ -134,15 +134,15 @@ const createColumns = (
         const createdAt = row.getValue("createdAt") as string
         return (
           <div className="space-y-0.5">
-            <div className="text-[10px] font-black text-slate-900 dark:text-white">{createdAt ? new Date(createdAt).toLocaleDateString('vi-VN') : "-"}</div>
-            <div className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{createdAt ? new Date(createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}</div>
+            <div className="text-xs font-semibold text-foreground">{createdAt ? new Date(createdAt).toLocaleDateString('vi-VN') : "-"}</div>
+            <div className="text-[10px] font-medium text-muted-foreground">{createdAt ? new Date(createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}</div>
           </div>
         )
       },
     },
     {
       id: "actions",
-      header: () => <div className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Thao tác</div>,
+      header: () => <div className="text-right text-[11px] font-semibold text-muted-foreground">Thao tác</div>,
       cell: ({ row }) => {
         const approval = row.original
 
@@ -281,39 +281,39 @@ export function SharedApprovalManagement({
   }
 
   if (isLoading) return (
-    <div className="space-y-12 animate-pulse font-sans">
-      <div className="h-12 w-64 bg-slate-50 dark:bg-slate-900 rounded-xl" />
-      <div className="h-[600px] w-full bg-slate-50 dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800" />
+    <div className="space-y-10 animate-pulse font-sans">
+      <div className="h-10 w-64 bg-muted rounded-lg" />
+      <div className="h-[500px] w-full bg-card rounded-lg border border-border" />
     </div>
   )
 
   return (
     <div className="space-y-12 pb-20 font-sans">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-100 dark:border-slate-800 pb-12">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
-              <CheckCircle className="size-4" />
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="size-6 rounded bg-muted flex items-center justify-center text-muted-foreground">
+              <CheckCircle className="size-3.5" />
             </div>
-            <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">Hệ thống kiểm soát chất lượng</span>
+            <span className="text-[11px] font-semibold text-muted-foreground">Hệ thống kiểm soát chất lượng</span>
           </div>
-          <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-none uppercase">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground leading-tight">
             {title || "Hệ thống phê duyệt"}
           </h1>
-          <p className="text-lg text-slate-500 dark:text-slate-400 font-medium max-w-xl leading-relaxed">
+          <p className="text-sm text-muted-foreground font-medium max-w-xl leading-relaxed">
             {description || "Giám sát và phê duyệt các tài sản truyền thông trước khi phân phối lên các kênh social."}
           </p>
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4">
-            <div className="size-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400">
-              <Zap className="size-5" />
+          <div className="p-2 px-4 rounded-md bg-card border border-border shadow-sm flex items-center gap-4">
+            <div className="size-8 rounded bg-amber-500/10 flex items-center justify-center text-amber-600">
+              <Zap className="size-4" />
             </div>
             <div className="space-y-0.5">
-              <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Đang chờ xử lý</p>
-              <p className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">{approvals.filter(a => a.status === ContentStatusEnum.PendingApproval).length} Yêu cầu</p>
+              <p className="text-[10px] font-semibold text-muted-foreground">Đang chờ xử lý</p>
+              <p className="text-xs font-bold text-foreground">{approvals.filter(a => a.status === ContentStatusEnum.PendingApproval).length} Yêu cầu</p>
             </div>
           </div>
           {showCreateButton && (
@@ -325,9 +325,9 @@ export function SharedApprovalManagement({
                   window.location.href = '/dashboard/contents'
                 }
               }}
-              className="h-14 px-8 rounded-2xl bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 dark:shadow-primary/20 transition-all hover:-translate-y-1"
+              className="h-10 px-6 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm shadow-sm transition-all"
             >
-              <Plus className="mr-3 h-4 w-4" />
+              <Plus className="mr-2 h-4 w-4" />
               Tạo yêu cầu mới
             </Button>
           )}
@@ -335,31 +335,31 @@ export function SharedApprovalManagement({
       </div>
 
       {/* Control Bar */}
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-        <div className="relative flex-1 group w-full lg:max-w-[400px]">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 dark:text-slate-600 group-focus-within:text-slate-900 dark:group-focus-within:text-white transition-colors" />
-          <input
-            placeholder="TÌM KIẾM YÊU CẦU PHÊ DUYỆT..."
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+        <div className="relative flex-1 group w-full lg:max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+          <Input
+            placeholder="Tìm kiếm yêu cầu phê duyệt..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 h-12 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm focus-visible:ring-slate-100 dark:focus-visible:ring-slate-800 font-medium transition-all text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-700 outline-none"
+            className="pl-10 h-10 bg-card border-border rounded-md shadow-sm focus-visible:ring-primary font-medium transition-all text-foreground"
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
-          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-1 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-            <div className="size-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
+        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
+          <div className="flex items-center gap-2 bg-card p-1 rounded-md border border-border shadow-sm">
+            <div className="size-7 rounded bg-muted flex items-center justify-center text-muted-foreground">
               <Filter className="size-3.5" />
             </div>
             <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ContentStatusEnum | "all")}>
-              <SelectTrigger className="w-[160px] border-none focus:ring-0 font-bold text-xs uppercase tracking-widest h-8 bg-transparent text-slate-900 dark:text-white">
+              <SelectTrigger className="w-[160px] border-none focus:ring-0 font-semibold text-xs h-7 bg-transparent text-foreground">
                 <SelectValue placeholder="Bộ lọc" />
               </SelectTrigger>
-              <SelectContent className="rounded-2xl border-slate-100 dark:border-slate-800 shadow-2xl p-1 bg-white dark:bg-slate-900">
-                <SelectItem value="all" className="rounded-xl font-bold uppercase text-[10px]">Tất cả trạng thái</SelectItem>
-                <SelectItem value={ContentStatusEnum.PendingApproval} className="rounded-xl font-bold uppercase text-[10px]">Đang chờ duyệt</SelectItem>
-                <SelectItem value={ContentStatusEnum.Approved} className="rounded-xl font-bold uppercase text-[10px]">Đã phê duyệt</SelectItem>
-                <SelectItem value={ContentStatusEnum.Rejected} className="rounded-xl font-bold uppercase text-[10px]">Đã từ chối</SelectItem>
+              <SelectContent className="rounded-md border-border shadow-lg p-1 bg-popover">
+                <SelectItem value="all" className="rounded-sm font-semibold text-[11px]">Tất cả trạng thái</SelectItem>
+                <SelectItem value={ContentStatusEnum.PendingApproval} className="rounded-sm font-semibold text-[11px]">Đang chờ duyệt</SelectItem>
+                <SelectItem value={ContentStatusEnum.Approved} className="rounded-sm font-semibold text-[11px]">Đã phê duyệt</SelectItem>
+                <SelectItem value={ContentStatusEnum.Rejected} className="rounded-sm font-semibold text-[11px]">Đã từ chối</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -373,10 +373,7 @@ export function SharedApprovalManagement({
 
       {/* Table Section */}
       {filteredApprovals.length > 0 ? (
-        <Card className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/40 dark:shadow-black/40 overflow-hidden relative group">
-          <div className="absolute top-0 right-0 p-10 opacity-5 dark:opacity-10 -rotate-12 group-hover:rotate-0 transition-transform duration-1000 pointer-events-none">
-            <CheckCircle className="size-40 text-slate-900 dark:text-primary" />
-          </div>
+        <Card className="rounded-lg border border-border bg-card shadow-sm overflow-hidden relative group">
           <CustomTable
             columns={createColumns(
               setSelectedApproval,
@@ -388,18 +385,18 @@ export function SharedApprovalManagement({
             data={filteredApprovals}
             pageSize={10}
             className="border-0 shadow-none bg-transparent"
-            headerClassName="bg-slate-50/50 dark:bg-slate-800/10 border-b border-slate-100 dark:border-slate-800 py-6 px-10 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500"
+            headerClassName="bg-muted/30 border-b border-border py-4 px-6 text-[11px] font-semibold text-muted-foreground"
           />
         </Card>
       ) : (
-        <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl bg-slate-50/50 dark:bg-slate-900/50 transition-all duration-300">
-          <div className="size-20 rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center mb-8 shadow-sm border border-slate-100 dark:border-slate-800">
-            <CheckCircle className="size-10 text-slate-200 dark:text-slate-700" />
+        <div className="flex flex-col items-center justify-center py-24 px-6 text-center border border-dashed border-border rounded-lg bg-muted/30 transition-all duration-300">
+          <div className="size-16 rounded-md bg-card flex items-center justify-center mb-6 shadow-sm border border-border">
+            <CheckCircle className="size-8 text-muted-foreground/30" />
           </div>
-          <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3 uppercase tracking-widest">
+          <h3 className="text-xl font-bold text-foreground mb-2">
             Hàng chờ đang trống
           </h3>
-          <p className="text-slate-500 dark:text-slate-400 font-medium max-w-sm mb-10 leading-relaxed uppercase tracking-tighter text-xs">
+          <p className="text-muted-foreground font-medium max-w-sm mb-8 leading-relaxed text-sm italic">
             {searchTerm || statusFilter !== "all"
               ? "Không có yêu cầu nào khớp với tiêu chí tìm kiếm của bạn."
               : "Tất cả các nội dung đã được xử lý xong. Hệ thống đang ở trạng thái tối ưu."}
@@ -421,31 +418,28 @@ export function SharedApprovalManagement({
       />
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="rounded-[2rem] border border-slate-100 dark:border-slate-800 p-0 max-w-md shadow-2xl bg-white dark:bg-slate-900 overflow-hidden">
-          <DialogHeader className="p-10 pb-4 space-y-6">
-            <div className="size-20 rounded-[2rem] bg-rose-50 dark:bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto border border-rose-100 dark:border-rose-500/20 shadow-sm">
-              <AlertTriangle className="size-10" />
-            </div>
-            <DialogTitle className="text-3xl font-black tracking-tight text-center uppercase text-slate-900 dark:text-white">Xóa yêu cầu?</DialogTitle>
-            <DialogDescription className="text-xs font-bold text-slate-400 dark:text-slate-500 leading-relaxed text-center uppercase tracking-widest mt-2 italic">
+        <DialogContent className="rounded-lg border border-border p-0 max-w-md shadow-lg bg-popover overflow-hidden">
+          <DialogHeader className="p-8 pb-4 space-y-4">
+            <DialogTitle className="text-xl font-bold tracking-tight text-left text-foreground">Xóa yêu cầu?</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-muted-foreground leading-relaxed text-left mt-2">
               Hành động này sẽ loại bỏ hoàn toàn yêu cầu phê duyệt này khỏi hàng chờ hệ thống.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="p-10 pt-6 grid grid-cols-2 gap-4">
+          <DialogFooter className="p-8 pt-6 flex items-center justify-end gap-3">
             <Button
               variant="outline"
               onClick={() => setShowDeleteDialog(false)}
-              className="rounded-xl h-12 font-black uppercase tracking-widest text-[10px] bg-slate-50 dark:bg-slate-800 border-none text-slate-400 dark:text-slate-500"
+              className="rounded-md h-10 font-semibold text-sm"
             >
-              Hủy bỏ lệnh
+              Hủy bỏ
             </Button>
             <Button
               variant="destructive"
               onClick={handleConfirmDelete}
               disabled={deleteApprovalMutation.isPending}
-              className="bg-rose-500 hover:bg-rose-600 text-white rounded-xl h-12 font-black uppercase tracking-widest text-[10px] border-none shadow-lg shadow-rose-100 dark:shadow-rose-900/20 transition-all active:scale-95"
+              className="h-10 font-semibold text-sm shadow-sm transition-all"
             >
-              {deleteApprovalMutation.isPending ? "..." : "Xác nhận xóa"}
+              {deleteApprovalMutation.isPending ? "Đang xóa..." : "Xác nhận xóa"}
             </Button>
           </DialogFooter>
         </DialogContent>

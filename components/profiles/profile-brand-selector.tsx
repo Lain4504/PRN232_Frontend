@@ -92,39 +92,39 @@ export function ProfileBrandSelector({
         onValueChange={handleBrandChange}
         disabled={disabled}
       >
-        <SelectTrigger className="h-12 w-full rounded-2xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 font-black uppercase text-[10px] tracking-widest shadow-sm">
+        <SelectTrigger className="h-10 w-full rounded-md border-border bg-card font-medium text-sm shadow-sm transition-all text-foreground">
           <SelectValue placeholder={placeholder}>
             {selectedBrand && (selectedBrand === 'all' ? (
               <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4 opacity-50" />
+                <Building2 className="h-4 w-4 text-muted-foreground" />
                 <span>Tất cả thương hiệu</span>
               </div>
             ) : profileBrands.find(brand => brand.id === selectedBrand) && (
               <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4 opacity-50" />
-                <span>{profileBrands.find(brand => brand.id === selectedBrand)?.name}</span>
+                <Building2 className="h-4 w-4 text-muted-foreground" />
+                <span className="truncate">{profileBrands.find(brand => brand.id === selectedBrand)?.name}</span>
               </div>
             ))}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {showAllOption && (
-            <SelectItem value="all" className="rounded-xl font-bold text-[10px] uppercase tracking-widest">
-              <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4" />
-                <span>Tất cả thương hiệu</span>
+            <SelectItem value="all" className="rounded-md h-10">
+              <div className="flex items-center gap-3">
+                <Building2 className="h-4 w-4 text-muted-foreground" />
+                <div className="font-bold text-sm">Tất cả thương hiệu</div>
               </div>
             </SelectItem>
           )}
           {profileBrands.map((brand) => (
-            <SelectItem key={brand.id} value={brand.id} className="rounded-xl">
-              <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4" />
+            <SelectItem key={brand.id} value={brand.id} className="rounded-md h-10">
+              <div className="flex items-center gap-3">
+                <Building2 className="h-4 w-4 text-muted-foreground" />
                 <div className="flex-1 min-w-0">
-                  <div className="font-bold text-[10px] uppercase tracking-widest truncate">{brand.name}</div>
+                  <div className="font-bold text-sm truncate">{brand.name}</div>
                 </div>
                 {brand.status && (
-                  <Badge variant={brand.status === 'Active' ? 'default' : 'secondary'} className="text-[8px] font-black uppercase px-2 py-0 border-none">
+                  <Badge variant="secondary" className="text-[10px] font-semibold px-2 py-0 border-none bg-muted text-muted-foreground">
                     {brand.status}
                   </Badge>
                 )}

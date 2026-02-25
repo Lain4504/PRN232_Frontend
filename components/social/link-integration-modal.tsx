@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
-import { Building2, AlertCircle, ChevronRight, CheckCircle2, Globe, Loader2 } from 'lucide-react'
+import { Building2, AlertCircle, ChevronRight, CheckCircle2, Globe, Loader2, Users } from 'lucide-react'
 import { useGetAvailableTargets, useGetBrands, useLinkTargets } from '@/hooks/use-social-accounts'
 import { toast } from 'sonner'
 import { useAuth } from '@/lib/contexts/auth-context'
@@ -160,7 +160,7 @@ function LinkIntegrationForm({
   return (
     <div className={cn("space-y-6", className)}>
       <div className="space-y-2">
-        <Label className="text-sm font-semibold text-slate-700">Thương hiệu tiếp nhận</Label>
+        <Label className="text-sm font-semibold text-foreground">Thương hiệu tiếp nhận</Label>
         <Select value={selectedBrandId} onValueChange={setSelectedBrandId}>
           <SelectTrigger>
             <SelectValue placeholder="Chọn thương hiệu..." />
@@ -182,21 +182,24 @@ function LinkIntegrationForm({
       </div>
 
       <div className="space-y-3">
-        <Label className="text-sm font-semibold text-slate-700">Các trang khả dụng</Label>
+        <Label className="text-sm font-semibold text-foreground">Các trang khả dụng</Label>
         {targetsLoading ? (
           <div className="space-y-2">
-            <div className="h-12 w-full bg-slate-50 animate-pulse rounded border" />
-            <div className="h-12 w-full bg-slate-50 animate-pulse rounded border" />
+            <div className="h-12 w-full bg-muted animate-pulse rounded border border-border" />
+            <div className="h-12 w-full bg-muted animate-pulse rounded border border-border" />
           </div>
         ) : targetsError ? (
-          <div className="p-6 rounded-lg bg-rose-50 border border-rose-100 text-center">
-            <AlertCircle className="size-8 text-rose-500 mx-auto mb-2" />
-            <p className="text-xs text-rose-600 font-bold uppercase">Lỗi tải dữ liệu. Vui lòng thử lại.</p>
+          <div className="p-6 rounded-lg bg-destructive/10 border border-destructive/20 text-center">
+            <AlertCircle className="size-8 text-destructive mx-auto mb-2" />
+            <p className="text-xs text-destructive font-bold">Lỗi tải dữ liệu. Vui lòng thử lại.</p>
           </div>
         ) : availableTargets.length === 0 ? (
-          <div className="p-8 rounded-lg border border-dashed text-center bg-slate-50/50">
-            <Globe className="size-8 text-slate-300 mx-auto mb-2" />
-            <p className="text-xs text-slate-500">Không tìm thấy trang nào trên tài khoản này.</p>
+          <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-border rounded-xl bg-muted/30">
+            <Users className="size-10 text-muted-foreground/30 mb-4" />
+            <h4 className="text-sm font-bold text-foreground mb-1">Chưa có kênh liên kết</h4>
+            <p className="text-xs text-muted-foreground max-w-[200px] italic">
+              Tài khoản này hiện chưa có thực thể nào được đồng bộ.
+            </p>
           </div>
         ) : (
           <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
@@ -207,32 +210,32 @@ function LinkIntegrationForm({
                 className={cn(
                   "flex items-center gap-4 p-3 rounded-lg border transition-all cursor-pointer",
                   selectedTargets.includes(target.providerTargetId)
-                    ? "border-slate-900 bg-slate-50 ring-1 ring-slate-900"
-                    : "bg-white hover:border-slate-300"
+                    ? "border-primary bg-primary/5 ring-1 ring-primary"
+                    : "bg-card border-border hover:border-primary/50"
                 )}
               >
                 <div className={cn("size-4 rounded border flex items-center justify-center",
-                  selectedTargets.includes(target.providerTargetId) ? "bg-slate-900 border-slate-900" : "border-slate-300"
+                  selectedTargets.includes(target.providerTargetId) ? "bg-primary border-primary" : "border-border"
                 )}>
-                  {selectedTargets.includes(target.providerTargetId) && <CheckCircle2 className="size-3 text-white" />}
+                  {selectedTargets.includes(target.providerTargetId) && <CheckCircle2 className="size-3 text-primary-foreground" />}
                 </div>
-                <Avatar className="size-10 rounded border bg-white">
+                <Avatar className="size-10 rounded border border-border bg-background">
                   <AvatarImage src={target.profilePictureUrl} alt={target.name} className="object-cover" />
-                  <AvatarFallback className="text-[10px] font-bold">
+                  <AvatarFallback className="bg-muted text-muted-foreground font-bold">
                     {target.name.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="font-bold text-sm truncate">{target.name}</p>
+                    <p className="font-bold text-sm text-foreground truncate">{target.name}</p>
                     {target.type && (
-                      <Badge variant="secondary" className="text-[9px] px-1 py-0 h-4">
+                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-semibold bg-muted text-muted-foreground border-none">
                         {target.type}
                       </Badge>
                     )}
                   </div>
                   {target.category && (
-                    <p className="text-[10px] text-slate-500 truncate">{target.category}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{target.category}</p>
                   )}
                 </div>
               </div>

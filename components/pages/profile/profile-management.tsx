@@ -55,6 +55,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 import { Profile } from "@/lib/types/omniadly-types";
+import { cn } from "@/lib/utils";
 
 
 export function ProfileManagement() {
@@ -180,14 +181,14 @@ export function ProfileManagement() {
 
   if (isLoading) {
     return (
-      <div className="w-full max-w-full overflow-x-hidden font-fira-sans">
+      <div className="w-full max-w-full overflow-x-hidden">
         <div className="space-y-10 p-6 lg:p-10 bg-background">
           <Skeleton className="h-4 w-48" />
           <div className="space-y-6">
             <Skeleton className="h-12 w-64" />
             <Skeleton className="h-6 w-96" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10">
-              {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 rounded-2xl" />)}
+              {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 rounded-lg" />)}
             </div>
           </div>
         </div>
@@ -200,34 +201,36 @@ export function ProfileManagement() {
   const personalProfiles = profiles.filter(p => p.profileType === ProfileTypeEnum.Free).length;
 
   return (
-    <div className="max-w-[1440px] mx-auto font-fira-sans">
+    <div className="max-w-[1440px] mx-auto">
       <div className="space-y-10 p-6 lg:p-10 bg-background">
 
         {/* Tactical Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border pb-8">
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-8 bg-primary rounded-full" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Security Protocol Alpha</span>
+            <div className="flex items-center gap-2">
+              <div className="size-6 rounded bg-muted flex items-center justify-center text-muted-foreground">
+                <User className="size-3.5" />
+              </div>
+              <span className="text-[11px] font-semibold text-muted-foreground">Cổng quản lý định danh</span>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-black tracking-tighter text-foreground uppercase leading-none">
-              Identity <span className="text-primary italic">Management</span>
+            <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-foreground leading-tight">
+              Quản lý <span className="text-primary">Hồ sơ</span>
             </h1>
-            <p className="text-lg text-muted-foreground font-medium max-w-2xl tracking-tight leading-relaxed">
-              Configure and coordinate your multi-domain identities. Synchronize metadata for enhanced AI persona generation.
+            <p className="text-sm text-muted-foreground font-medium max-w-2xl leading-relaxed">
+              Cấu hình và điều phối các hồ sơ định danh đa miền của bạn. Đồng bộ metadata để tối ưu hóa việc tạo nội dung AI.
             </p>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="px-6 py-4 bg-card/40 backdrop-blur-xl rounded-2xl border border-border/40 shadow-xl flex items-center gap-8">
-              <div className="space-y-1">
-                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">Active Nodes</div>
-                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-foreground">{totalProfiles}</div>
+            <div className="px-5 py-3 bg-card rounded-lg border border-border shadow-sm flex items-center gap-6">
+              <div className="space-y-0.5">
+                <div className="text-[10px] font-semibold text-muted-foreground">Hồ sơ đang chạy</div>
+                <div className="text-xl font-bold text-foreground">{totalProfiles}</div>
               </div>
-              <div className="h-8 w-px bg-border/20" />
-              <div className="space-y-1">
-                <div className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">Security</div>
-                <div className="text-2xl font-black font-fira-mono tracking-tighter tabular-nums text-primary uppercase leading-none italic">Verified</div>
+              <div className="h-8 w-px bg-border" />
+              <div className="space-y-0.5">
+                <div className="text-[10px] font-semibold text-primary">Bảo mật</div>
+                <div className="text-xl font-bold text-primary">Đã xác minh</div>
               </div>
             </div>
           </div>
@@ -238,43 +241,48 @@ export function ProfileManagement() {
 
           {/* Left Sidebar - Quick Actions & Stats */}
           <div className="lg:col-span-4 space-y-6">
-            <Card className="bg-card/40 backdrop-blur-xl border-border/40 rounded-2xl overflow-hidden group">
+            <Card className="rounded-lg border border-border bg-card shadow-sm overflow-hidden group">
               <CardContent className="p-8 space-y-6">
                 <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500">
-                    <Plus className="h-6 w-6 stroke-[3]" />
+                  <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    <Plus className="size-6" />
                   </div>
-                  <h3 className="text-xl font-black uppercase tracking-tight">Node Initiation</h3>
+                  <h3 className="text-xl font-bold text-foreground">Khởi tạo hồ sơ</h3>
                 </div>
-                <p className="text-sm font-medium text-muted-foreground tracking-tight leading-relaxed">
-                  Initialize a new identity node to branch into unique creative directions or separate organization assets.
+                <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+                  Bắt đầu tạo một hồ sơ định danh mới để mở rộng hướng sáng tạo hoặc quản lý tài sản tổ chức riêng biệt.
                 </p>
-                <Button onClick={handleCreateProfile} className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02]">
-                  <Plus className="mr-2 h-4 w-4 stroke-[3]" />
-                  Deploy New Identity
+                <Button onClick={handleCreateProfile} className="w-full h-12 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm shadow-sm transition-all">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Tạo hồ sơ mới
                 </Button>
               </CardContent>
             </Card>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-6 bg-muted/20 border border-border/40 rounded-3xl space-y-2">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Business</p>
-                <p className="text-3xl font-black font-fira-mono tabular-nums leading-none">{businessProfiles}</p>
+              <div className="p-6 bg-muted/30 border border-border rounded-lg space-y-1">
+                <p className="text-[10px] font-bold text-muted-foreground">Doanh nghiệp</p>
+                <p className="text-2xl font-bold text-foreground">{businessProfiles}</p>
               </div>
-              <div className="p-6 bg-muted/20 border border-border/40 rounded-3xl space-y-2">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Personal</p>
-                <p className="text-3xl font-black font-fira-mono tabular-nums leading-none">{personalProfiles}</p>
+              <div className="p-6 bg-muted/30 border border-border rounded-lg space-y-1">
+                <p className="text-[10px] font-bold text-muted-foreground">Cá nhân</p>
+                <p className="text-2xl font-bold text-foreground">{personalProfiles}</p>
               </div>
             </div>
 
-            <Card className="bg-primary/5 border-primary/20 rounded-2xl p-8 space-y-4">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="h-5 w-5 text-primary stroke-[2.5]" />
-                <h4 className="font-black uppercase tracking-tight text-primary">Identity Protocol</h4>
+            <Card className="bg-primary p-8 rounded-lg text-primary-foreground border-none shadow-sm relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-10 scale-150 rotate-12 group-hover:rotate-0 transition-transform duration-1000">
+                <Users className="size-24" />
               </div>
-              <p className="text-sm font-medium leading-relaxed tracking-tight text-primary/80">
-                Your identities serve as the neural foundation for AI content generation. Higher quality descriptors lead to superior output precision.
-              </p>
+              <div className="space-y-3 relative z-10">
+                <div className="flex items-center gap-3">
+                  <AlertCircle className="size-5" />
+                  <h4 className="font-bold text-lg">Giao thức định danh</h4>
+                </div>
+                <p className="text-sm font-medium leading-relaxed opacity-90">
+                  Hồ sơ của bạn là nền tảng neural để AI tạo nội dung. Metadata chất lượng cao sẽ giúp AI hiểu thương hiệu tốt hơn.
+                </p>
+              </div>
             </Card>
           </div>
 
@@ -284,20 +292,20 @@ export function ProfileManagement() {
             {/* Toolbar */}
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground stroke-[2.5]" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="SCAN IDENTITY DIRECTORY..."
+                  placeholder="Tìm kiếm hồ sơ định danh..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-12 h-14 bg-card/40 border-border/40 rounded-2xl font-black text-[10px] uppercase tracking-widest focus:ring-primary/20"
+                  className="pl-12 h-12 bg-card border-border rounded-md font-medium text-sm focus-visible:ring-primary/20"
                 />
               </div>
               <Button
                 variant={showDeleted ? 'default' : 'outline'}
                 onClick={() => setShowDeleted(v => !v)}
-                className="h-14 px-8 rounded-2xl border-border/40 font-black text-[10px] uppercase tracking-widest transition-all"
+                className="h-12 px-6 rounded-md border-border font-semibold text-sm transition-all"
               >
-                {showDeleted ? 'ARCHIVE DATASET' : 'ACTIVE DATASET'}
+                {showDeleted ? 'Hồ sơ đã lưu trữ' : 'Hồ sơ đang hoạt động'}
               </Button>
             </div>
 
@@ -307,14 +315,14 @@ export function ProfileManagement() {
                 {profiles.map((profile) => {
                   const profileType = profile.profileType === ProfileTypeEnum.Free ? 'personal' : 'business';
                   return (
-                    <Card key={profile.id} className="group relative bg-card/40 backdrop-blur-xl border-border/40 hover:border-primary/50 rounded-2xl transition-all duration-300 shadow-xl shadow-black/5 overflow-hidden">
-                      <CardContent className="p-8">
-                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
-                          <div className="relative h-24 w-24 rounded-2xl overflow-hidden border border-border/40 shadow-inner group-hover:scale-105 transition-transform duration-500 shrink-0">
+                    <Card key={profile.id} className="group relative bg-card border-border hover:border-primary/50 rounded-lg transition-all duration-300 shadow-sm overflow-hidden">
+                      <CardContent className="p-6">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                          <div className="relative size-20 rounded-md overflow-hidden border border-border bg-muted/30 group-hover:scale-105 transition-transform duration-500 shrink-0">
                             {profile.avatarUrl ? (
                               <AvatarImage src={profile.avatarUrl} alt="" className="object-cover h-full w-full" />
                             ) : (
-                              <div className="h-full w-full bg-muted/50 flex items-center justify-center font-black text-2xl text-muted-foreground">
+                              <div className="h-full w-full flex items-center justify-center font-bold text-xl text-muted-foreground">
                                 {profile.company_name?.[0].toUpperCase() || 'P'}
                               </div>
                             )}
@@ -322,50 +330,52 @@ export function ProfileManagement() {
 
                           <div className="flex-1 min-w-0 space-y-4 text-center sm:text-left">
                             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                              <Badge className={`h-6 px-3 rounded-lg border-none font-black text-[9px] uppercase tracking-widest justify-center sm:justify-start
-                                      ${profileType === 'business' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
-                                {profileType} NODE
+                              <Badge variant="secondary" className={cn(
+                                "h-5 px-2 rounded-sm font-semibold text-[10px] justify-center sm:justify-start",
+                                profileType === 'business' ? 'bg-primary/10 text-primary border-none' : 'bg-muted text-muted-foreground border-none'
+                              )}>
+                                {profileType === 'business' ? 'DOANH NGHIỆP' : 'CÁ NHÂN'}
                               </Badge>
-                              <h3 className="text-xl font-black uppercase tracking-tight text-foreground truncate">
-                                {profile.company_name || 'Personal Identity'}
+                              <h3 className="text-lg font-bold text-foreground truncate">
+                                {profile.company_name || 'Hồ sơ cá nhân'}
                               </h3>
                             </div>
 
                             {profile.bio && (
-                              <p className="text-sm font-medium text-muted-foreground line-clamp-2 leading-relaxed tracking-tight max-w-xl">
+                              <p className="text-sm font-medium text-muted-foreground line-clamp-2 leading-relaxed">
                                 {profile.bio}
                               </p>
                             )}
 
-                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-6 pt-2">
-                              <div className="space-y-1">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Initialized</p>
-                                <p className="text-xs font-black font-fira-mono tracking-tight uppercase tabular-nums">
+                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-6 pt-1">
+                              <div className="space-y-0.5">
+                                <p className="text-[10px] font-semibold text-muted-foreground">Ngày khởi tạo</p>
+                                <p className="text-xs font-bold text-foreground">
                                   {new Date(profile.createdAt).toLocaleDateString()}
                                 </p>
                               </div>
                               <div className="h-6 w-px bg-border/20 hidden sm:block" />
-                              <div className="space-y-1">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Status</p>
-                                <p className="text-xs font-black text-emerald-500 uppercase tracking-widest">Live Node</p>
+                              <div className="space-y-0.5">
+                                <p className="text-[10px] font-semibold text-muted-foreground">Trạng thái</p>
+                                <p className="text-xs font-bold text-emerald-500">Đang hoạt động</p>
                               </div>
                             </div>
                           </div>
 
                           <div className="flex sm:flex-col gap-2 shrink-0">
-                            <Button onClick={() => handleViewProfile(profile.id)} variant="outline" size="icon" className="h-12 w-12 rounded-xl border-border/40 hover:bg-primary/10 hover:border-primary/50 text-foreground transition-all group/btn">
-                              <Eye className="h-5 w-5 stroke-[2.5] group-hover/btn:scale-110 transition-transform" />
+                            <Button onClick={() => handleViewProfile(profile.id)} variant="outline" size="icon" className="size-10 rounded-md border-border hover:bg-muted text-muted-foreground">
+                              <Eye className="size-4" />
                             </Button>
-                            <Button onClick={() => handleEditProfile(profile)} variant="outline" size="icon" className="h-12 w-12 rounded-xl border-border/40 hover:bg-primary/10 hover:border-primary/50 text-foreground transition-all group/btn">
-                              <Edit className="h-5 w-5 stroke-[2.5] group-hover/btn:scale-110 transition-transform" />
+                            <Button onClick={() => handleEditProfile(profile)} variant="outline" size="icon" className="size-10 rounded-md border-border hover:bg-muted text-muted-foreground">
+                              <Edit className="size-4" />
                             </Button>
                             {!showDeleted ? (
-                              <Button onClick={() => handleDeleteProfile(profile.id)} variant="outline" size="icon" className="h-12 w-12 rounded-xl border-border/40 hover:bg-destructive/10 hover:border-destructive/50 text-destructive transition-all group/btn">
-                                <Trash2 className="h-5 w-5 stroke-[2.5] group-hover/btn:scale-110 transition-transform" />
+                              <Button onClick={() => handleDeleteProfile(profile.id)} variant="outline" size="icon" className="size-10 rounded-md border-border hover:bg-destructive/10 text-destructive">
+                                <Trash2 className="size-4" />
                               </Button>
                             ) : (
-                              <Button onClick={() => handleRestoreProfile(profile.id)} variant="outline" size="icon" className="h-12 w-12 rounded-xl border-border/40 hover:bg-emerald-500/10 hover:border-emerald-500/50 text-emerald-500 transition-all group/btn">
-                                <RotateCcw className="h-5 w-5 stroke-[2.5] group-hover/btn:scale-110 transition-transform" />
+                              <Button onClick={() => handleRestoreProfile(profile.id)} variant="outline" size="icon" className="size-10 rounded-md border-border hover:bg-emerald-500/10 text-emerald-500">
+                                <RotateCcw className="size-4" />
                               </Button>
                             )}
                           </div>
@@ -376,21 +386,21 @@ export function ProfileManagement() {
                 })}
               </div>
             ) : (
-              <Card className="border-4 border-dashed border-border/40 bg-card/20 backdrop-blur-sm rounded-2xl p-24 text-center space-y-8">
-                <div className="mx-auto h-24 w-24 rounded-2xl bg-muted/20 flex items-center justify-center">
-                  <Building2 className="h-12 w-12 text-muted-foreground stroke-[1.5]" />
+              <div className="flex flex-col items-center justify-center py-24 px-6 text-center border border-dashed border-border rounded-lg bg-muted/30">
+                <div className="size-16 rounded-md bg-card flex items-center justify-center mb-6 shadow-sm border border-border">
+                  <Building2 className="size-8 text-muted-foreground/30" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-3xl font-black uppercase tracking-tight">Directory Vacuum</h3>
-                  <p className="text-muted-foreground font-medium max-w-sm mx-auto tracking-tight leading-relaxed">
-                    No identities detected in the current sector dataset. Initialize the first node to begin operation.
+                  <h3 className="text-xl font-bold text-foreground">Danh sách trống</h3>
+                  <p className="text-muted-foreground font-medium max-w-sm mx-auto leading-relaxed text-sm italic">
+                    Không tìm thấy hồ sơ nào trong phân vùng này. Hãy khởi tạo hồ sơ đầu tiên để bắt đầu.
                   </p>
                 </div>
-                <Button onClick={handleCreateProfile} className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-primary/40 transition-all hover:scale-110">
-                  <Plus className="mr-3 h-5 w-5 stroke-[3]" />
-                  Initialize Node 01
+                <Button onClick={handleCreateProfile} className="mt-8 h-10 px-8 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm shadow-sm transition-all">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Khởi tạo ngay
                 </Button>
-              </Card>
+              </div>
             )}
           </div>
         </div>
@@ -399,13 +409,13 @@ export function ProfileManagement() {
         {(viewingProfileId || editingProfileId || creatingProfile) && (
           isMobile ? (
             <Drawer open={!!(viewingProfileId || editingProfileId || creatingProfile)} onOpenChange={handleCloseModal}>
-              <DrawerContent className="max-h-[85vh] font-fira-sans border-t-border/40 bg-background/95 backdrop-blur-3xl p-6">
+              <DrawerContent className="max-h-[85vh] border-t-border bg-popover p-6">
                 <DrawerHeader className="px-0 pb-8 space-y-2">
-                  <DrawerTitle className="text-2xl font-black uppercase tracking-tight">
-                    {creatingProfile ? 'Node Initiation' : editingProfileId ? 'Structural Modification' : 'Node Diagnostics'}
+                  <DrawerTitle className="text-2xl font-bold text-foreground">
+                    {creatingProfile ? 'Khởi tạo hồ sơ' : editingProfileId ? 'Chỉnh sửa hồ sơ' : 'Chi tiết hồ sơ'}
                   </DrawerTitle>
-                  <DrawerDescription className="text-sm font-bold text-primary italic uppercase tracking-widest opacity-80">
-                    {creatingProfile ? 'Initializing identity matrix Alpha' : editingProfileId ? 'Synchronizing metadata structure' : 'Analyzing biometric & branding data'}
+                  <DrawerDescription className="text-sm font-medium text-muted-foreground">
+                    {creatingProfile ? 'Thiết lập thông số cho hồ sơ định danh mới.' : editingProfileId ? 'Cập nhật thông tin cho hồ sơ.' : 'Thông tin chi tiết về hồ sơ định danh.'}
                   </DrawerDescription>
                 </DrawerHeader>
                 <div className="overflow-y-auto pb-8">
@@ -426,16 +436,16 @@ export function ProfileManagement() {
             </Drawer>
           ) : (
             <Dialog open={!!(viewingProfileId || editingProfileId || creatingProfile)} onOpenChange={handleCloseModal}>
-              <DialogContent className="max-w-2xl font-fira-sans rounded-2xl border-border/40 bg-background/95 backdrop-blur-3xl p-12 shadow-[0_0_100px_rgba(0,0,0,0.3)]">
-                <DialogHeader className="pb-10 space-y-2 text-left">
-                  <DialogTitle className="text-3xl font-black uppercase tracking-tight">
-                    {creatingProfile ? 'Node Initiation' : editingProfileId ? 'Structural Modification' : 'Node Diagnostics'}
+              <DialogContent className="max-w-xl rounded-lg border-border bg-popover p-0 shadow-lg overflow-hidden">
+                <DialogHeader className="p-8 border-b">
+                  <DialogTitle className="text-2xl font-bold text-foreground">
+                    {creatingProfile ? 'Khởi tạo hồ sơ' : editingProfileId ? 'Chỉnh sửa hồ sơ' : 'Chi tiết hồ sơ'}
                   </DialogTitle>
-                  <DialogDescription className="text-base font-bold text-primary italic uppercase tracking-widest opacity-80 border-l-4 border-primary pl-4">
-                    {creatingProfile ? 'Initializing identity matrix Alpha' : editingProfileId ? 'Synchronizing metadata structure' : 'Analyzing biometric & branding data'}
+                  <DialogDescription className="text-sm font-medium text-muted-foreground mt-2">
+                    {creatingProfile ? 'Thiết lập các thông số cơ bản cho hồ sơ định danh mới.' : editingProfileId ? 'Cập nhật metadata và thông tin nhận diện cho hồ sơ.' : 'Thông tin chi tiết về hồ sơ định danh và lịch sử hoạt động.'}
                   </DialogDescription>
                 </DialogHeader>
-                <div className="overflow-y-auto max-h-[60vh] pr-4">
+                <div className="p-8 overflow-y-auto max-h-[70vh]">
                   {(editingProfileId || creatingProfile) ? (
                     <EditProfileForm
                       profileId={editingProfileId || ''}
@@ -456,20 +466,20 @@ export function ProfileManagement() {
 
         {/* Global Termination Portal */}
         <AlertDialog open={!!deleteProfileId} onOpenChange={() => setDeleteProfileId(null)}>
-          <AlertDialogContent className="max-w-md font-fira-sans rounded-2xl border-border/40 bg-background/95 backdrop-blur-3xl p-10 shadow-2xl">
+          <AlertDialogContent className="max-w-md rounded-lg border-border bg-popover p-8 shadow-lg">
             <AlertDialogHeader className="space-y-4">
-              <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight">Authorize Termination?</AlertDialogTitle>
-              <AlertDialogDescription className="text-base font-medium text-muted-foreground leading-relaxed">
-                Confirming this action will relocate the identity node to the <span className="text-destructive font-black">Archive Sector</span>. Node reactivation is possible via Chronos Restore.
+              <AlertDialogTitle className="text-xl font-bold text-foreground">Xác nhận xóa hồ sơ?</AlertDialogTitle>
+              <AlertDialogDescription className="text-sm font-medium text-muted-foreground leading-relaxed">
+                Hồ sơ này sẽ được chuyển vào <span className="text-destructive font-bold">Lưu trữ</span>. Bạn có thể khôi phục lại sau nếu cần thiết.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter className="flex-col sm:flex-row gap-4 pt-6">
-              <AlertDialogCancel className="w-full sm:w-auto h-12 rounded-xl font-black uppercase tracking-widest text-[10px] bg-muted/20 border-none">Abort Mission</AlertDialogCancel>
+            <AlertDialogFooter className="mt-8 flex items-center justify-end gap-3">
+              <AlertDialogCancel className="rounded-md h-10 font-semibold text-sm">Hủy bỏ</AlertDialogCancel>
               <AlertDialogAction
                 onClick={confirmDeleteProfile}
-                className="w-full sm:w-auto h-12 rounded-xl font-black uppercase tracking-widest text-[10px] bg-destructive hover:bg-destructive/90 text-white shadow-2xl shadow-destructive/20"
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md h-10 font-semibold text-sm border-none shadow-sm"
               >
-                Confirm Termination
+                Xác nhận xóa
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -484,9 +494,9 @@ function ViewProfileContent({ profileId }: { profileId: string }) {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 italic font-black uppercase tracking-widest text-primary/70 animate-pulse text-xs">
+      <div className="flex flex-col items-center justify-center py-20 text-muted-foreground animate-pulse text-sm">
         <div className="h-10 w-10 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4" />
-        Deciphering Profile Matrix...
+        Đang giải mã ma trận hồ sơ...
       </div>
     )
   }
@@ -495,7 +505,7 @@ function ViewProfileContent({ profileId }: { profileId: string }) {
     return (
       <div className="text-center py-20 space-y-4">
         <Building2 className="h-12 w-12 text-muted-foreground mx-auto opacity-20" />
-        <p className="font-black uppercase tracking-widest text-muted-foreground opacity-50">NODE DATA CORRUPTED OR NOT FOUND</p>
+        <p className="font-bold text-muted-foreground">KHÔNG TÌM THẤY DỮ LIỆU HỒ SƠ</p>
       </div>
     )
   }
@@ -504,45 +514,47 @@ function ViewProfileContent({ profileId }: { profileId: string }) {
   const profileType = profileData.profileType === ProfileTypeEnum.Free ? 'personal' : 'business'
 
   return (
-    <div className="space-y-10">
-      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-10">
-        <div className="relative h-32 w-32 rounded-2xl overflow-hidden border-2 border-primary/20 shadow-2xl shrink-0">
+    <div className="space-y-8">
+      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
+        <div className="relative size-24 rounded-lg overflow-hidden border border-border bg-muted/30 shrink-0">
           {profileData.avatarUrl ? (
             <AvatarImage src={profileData.avatarUrl} alt="Avatar" className="object-cover h-full w-full" />
           ) : (
-            <div className="h-full w-full bg-primary/5 flex items-center justify-center font-black text-3xl text-primary/40 uppercase">
+            <div className="h-full w-full flex items-center justify-center font-bold text-3xl text-muted-foreground">
               {profileData.company_name?.[0] || 'P'}
             </div>
           )}
         </div>
-        <div className="flex-1 space-y-4 text-center sm:text-left">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <Badge className={`h-7 px-4 rounded-xl border-none font-black text-[10px] uppercase tracking-[0.2em] justify-center
-               ${profileType === 'business' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
-              {profileType} IDENT
+        <div className="flex-1 space-y-3 text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <Badge variant="secondary" className={cn(
+              "h-6 px-3 rounded-md font-semibold text-[10px]",
+              profileType === 'business' ? 'bg-primary/10 text-primary border-none' : 'bg-muted text-muted-foreground border-none'
+            )}>
+              {profileType === 'business' ? 'DOANH NGHIỆP' : 'CÁ NHÂN'}
             </Badge>
             {profileData.company_name && (
-              <h3 className="font-black text-2xl uppercase tracking-tighter">{profileData.company_name}</h3>
+              <h3 className="font-bold text-2xl text-foreground">{profileData.company_name}</h3>
             )}
           </div>
           {profileData.bio && (
-            <p className="text-base font-medium text-muted-foreground leading-relaxed tracking-tight max-w-xl">
+            <p className="text-sm font-medium text-muted-foreground leading-relaxed max-w-xl">
               {profileData.bio}
             </p>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-6 border-t border-border/20">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t border-border">
         <div className="space-y-1">
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Original Timestamp</p>
-          <p className="text-sm font-black font-fira-mono tracking-tight uppercase tabular-nums text-foreground">
+          <p className="text-[10px] font-semibold text-muted-foreground">Thời gian khởi tạo</p>
+          <p className="text-sm font-bold text-foreground">
             {new Date(profileData.createdAt).toLocaleString()}
           </p>
         </div>
         <div className="space-y-1">
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Latest Multi-Sync</p>
-          <p className="text-sm font-black font-fira-mono tracking-tight uppercase tabular-nums text-foreground">
+          <p className="text-[10px] font-semibold text-muted-foreground">Lần cập nhật cuối</p>
+          <p className="text-sm font-bold text-foreground">
             {new Date(profileData.updatedAt).toLocaleString()}
           </p>
         </div>
@@ -568,15 +580,15 @@ function AvatarPreview({
   }, [avatar, avatarUrl])
 
   return (
-    <div className="relative h-20 w-20 rounded-2xl overflow-hidden border border-border/40 shadow-inner shrink-0 cursor-pointer group hover:scale-105 transition-transform duration-500">
+    <div className="relative size-20 rounded-lg overflow-hidden border border-border bg-card cursor-pointer group hover:scale-105 transition-transform duration-500">
       <Avatar className="h-full w-full rounded-none">
         <AvatarImage src={avatarSrc} alt="" className="object-cover h-full w-full" />
-        <AvatarFallback className="bg-muted/50 rounded-none">
-          {profileType === 'business' ? <Building2 className="h-8 w-8 text-muted-foreground" /> : <User className="h-8 w-8 text-muted-foreground" />}
+        <AvatarFallback className="bg-muted text-muted-foreground rounded-none">
+          {profileType === 'business' ? <Building2 className="size-8" /> : <User className="size-8" />}
         </AvatarFallback>
       </Avatar>
       <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-        <Plus className="h-6 w-6 text-white stroke-[3]" />
+        <Plus className="size-6 text-white" />
       </div>
     </div>
   )
@@ -599,12 +611,12 @@ function EditProfileForm({
 }) {
   return (
     <div className="space-y-10">
-      <FormField label="Identity Sector Type" required>
+      <FormField label="Loại hình hồ sơ" required>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
           <div
-            className={`p-6 border-2 rounded-2xl cursor-pointer transition-all duration-300 group ${formData.profile_type === 'personal'
-              ? 'border-primary bg-primary/5 shadow-xl shadow-primary/5'
-              : 'border-border/40 hover:border-primary/40 hover:bg-muted/30'
+            className={`p-6 border rounded-lg cursor-pointer transition-all duration-300 group ${formData.profile_type === 'personal'
+              ? 'border-primary bg-primary/5 shadow-sm ring-1 ring-primary'
+              : 'border-border bg-card hover:border-primary/50'
               }`}
             onClick={() => setFormData({
               ...formData,
@@ -613,22 +625,22 @@ function EditProfileForm({
             })}
           >
             <div className="flex items-center gap-4">
-              <div className={`h-12 w-12 rounded-2xl flex items-center justify-center transition-all ${formData.profile_type === 'personal' ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground'}`}>
-                <User className="h-6 w-6 stroke-[2.5]" />
+              <div className={`size-12 rounded-lg flex items-center justify-center transition-all ${formData.profile_type === 'personal' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+                <User className="size-6" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-black text-sm uppercase tracking-tight">Personal Node</h3>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5 opacity-60">
-                  Individual / Freelancer
+                <h3 className="font-bold text-sm text-foreground">Cá nhân</h3>
+                <p className="text-[10px] font-semibold text-muted-foreground mt-0.5">
+                  Cá nhân / Tự do
                 </p>
               </div>
             </div>
           </div>
 
           <div
-            className={`p-6 border-2 rounded-2xl cursor-pointer transition-all duration-300 group ${formData.profile_type === 'business'
-              ? 'border-primary bg-primary/5 shadow-xl shadow-primary/5'
-              : 'border-border/40 hover:border-primary/40 hover:bg-muted/30'
+            className={`p-6 border rounded-lg cursor-pointer transition-all duration-300 group ${formData.profile_type === 'business'
+              ? 'border-primary bg-primary/5 shadow-sm ring-1 ring-primary'
+              : 'border-border bg-card hover:border-primary/50'
               }`}
             onClick={() => setFormData({
               ...formData,
@@ -636,13 +648,13 @@ function EditProfileForm({
             })}
           >
             <div className="flex items-center gap-4">
-              <div className={`h-12 w-12 rounded-2xl flex items-center justify-center transition-all ${formData.profile_type === 'business' ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground'}`}>
-                <Building2 className="h-6 w-6 stroke-[2.5]" />
+              <div className={`size-12 rounded-lg flex items-center justify-center transition-all ${formData.profile_type === 'business' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+                <Building2 className="size-6" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-black text-sm uppercase tracking-tight">Business Node</h3>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5 opacity-60">
-                  Corporate / Organization
+                <h3 className="font-bold text-sm text-foreground">Doanh nghiệp</h3>
+                <p className="text-[10px] font-semibold text-muted-foreground mt-0.5">
+                  Tổ chức / Công ty
                 </p>
               </div>
             </div>
@@ -650,8 +662,8 @@ function EditProfileForm({
         </div>
       </FormField>
 
-      <FormField label="Visual Identifier" description="Biometric signal for identity matrix recognition.">
-        <div className="flex items-center gap-8 pt-2">
+      <FormField label="Ảnh đại diện" description="Hình ảnh nhận diện chính cho hồ sơ công việc.">
+        <div className="flex items-center gap-6 pt-2">
           <AvatarPreview
             avatar={formData.avatar}
             avatarUrl={formData.avatarUrl}
@@ -666,15 +678,15 @@ function EditProfileForm({
                   const file = e.target.files?.[0] || null;
                   setFormData({ ...formData, avatar: file });
                 }}
-                className="bg-muted/20 border-border/40 hover:border-primary/40 transition-all rounded-xl h-12 pt-2 text-[10px] font-black uppercase tracking-widest cursor-pointer file:bg-primary file:text-primary-foreground file:border-none file:rounded-lg file:mr-4 file:px-4 file:py-1 file:font-black file:text-[9px] file:uppercase"
+                className="bg-muted/30 border-border hover:border-primary/50 transition-all rounded-md h-10 pt-1.5 text-xs font-medium cursor-pointer"
               />
             </div>
             <div className="relative">
               <Input
                 value={formData.avatarUrl}
                 onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
-                placeholder="URL: HTTPS://ASSETS.omniadly.IO/USER_01.JPG"
-                className="bg-muted/20 border-border/40 hover:border-primary/40 transition-all rounded-xl h-12 font-black text-[10px] uppercase tracking-[0.1em]"
+                placeholder="https://example.com/avatar.jpg"
+                className="bg-muted/30 border-border hover:border-primary/50 transition-all rounded-md h-10 font-medium text-xs tracking-tight"
               />
             </div>
           </div>
@@ -682,23 +694,23 @@ function EditProfileForm({
       </FormField>
 
       {formData.profile_type === 'business' && (
-        <FormField label="Organizational Designation" required>
+        <FormField label="Tên tổ chức/công ty" required>
           <Input
             value={formData.company_name}
             onChange={(e) => setFormData({
               ...formData,
               company_name: e.target.value
             })}
-            placeholder="LEGAL ENTITY NAME"
+            placeholder="TÊN PHÁP NHÂN CỦA BẠN"
             required
-            className="bg-muted/20 border-border/40 hover:border-primary/40 transition-all rounded-xl h-14 font-black uppercase tracking-tight text-base px-6"
+            className="bg-muted/30 border-border hover:border-primary/50 transition-all rounded-md h-12 font-bold text-sm px-6"
           />
         </FormField>
       )}
 
       <FormField
-        label="Sector Descriptor & Mission"
-        description="Metadata facilitates higher-precision synthetic content generation."
+        label="Mô tả & Sứ mệnh"
+        description="Metadata giúp AI tối ưu hóa độ chính xác khi tạo nội dung tổng hợp."
       >
         <Textarea
           value={formData.bio}
@@ -708,27 +720,27 @@ function EditProfileForm({
           })}
           placeholder={
             formData.profile_type === 'business'
-              ? "ARTICULATE MISSION PARAMETERS, BRAND VOICE, AND CORE VALUES..."
-              : "DESCRIBE CREATIVE FOCUS, INDIVIDUAL STRENGTHS, AND AMBITIONS..."
+              ? "MÔ TẢ SỨ MỆNH, GIỌNG ĐIỆU THƯƠNG HIỆU VÀ CÁC GIÁ TRỊ CỐT LÕI..."
+              : "MÔ TẢ TRỌNG TÂM SÁNG TẠO, ĐIỂM MẠNH CÁ NHÂN VÀ HOÀI BÃO CỦA BẠN..."
           }
-          className="bg-muted/20 border-border/40 hover:border-primary/40 transition-all rounded-2xl min-h-[120px] font-medium text-sm p-6 leading-relaxed tracking-tight"
+          className="bg-muted/30 border-border hover:border-primary/50 transition-all rounded-lg min-h-[120px] font-medium text-sm p-6 leading-relaxed"
         />
         <div className="flex justify-between items-center pt-2">
-          <span className="text-[9px] font-black uppercase tracking-widest text-primary/70">AI Optimizer calibrated</span>
-          <span className={`text-[10px] font-black font-fira-mono tracking-widest ${formData.bio.length > 450 ? 'text-destructive' : 'text-muted-foreground'}`}>
+          <span className="text-[10px] font-semibold text-primary/70">Bộ tối ưu AI đã được hiệu chỉnh</span>
+          <span className={cn("text-[10px] font-bold", formData.bio.length > 450 ? 'text-destructive' : 'text-muted-foreground')}>
             {formData.bio.length} / 500
           </span>
         </div>
       </FormField>
 
-      <div className="flex flex-col sm:flex-row gap-4 pt-10">
-        <Button onClick={onSave} className="flex-1 h-14 rounded-2xl bg-primary hover:bg-primary/95 text-primary-foreground font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary/40 transition-all hover:scale-[1.02]">
-          <Save className="mr-3 h-5 w-5 stroke-[2.5]" />
-          {mode === 'create' ? 'INITIATE NODE' : 'SYNC METADATA'}
+      <div className="flex flex-col sm:flex-row gap-4 pt-10 border-t border-border mt-10">
+        <Button onClick={onSave} className="flex-1 h-12 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm shadow-sm transition-all">
+          <Save className="mr-2 h-4 w-4" />
+          {mode === 'create' ? 'KHỞI TẠO HỒ SƠ' : 'ĐỒNG BỘ DỮ LIỆU'}
         </Button>
-        <Button onClick={onCancel} variant="outline" className="h-14 px-10 rounded-2xl border-border/40 font-black uppercase tracking-widest text-xs hover:bg-muted/50 transition-all">
-          <X className="mr-3 h-5 w-5 stroke-[2.5]" />
-          ABORT
+        <Button onClick={onCancel} variant="outline" className="h-12 px-8 rounded-md border-border font-semibold text-sm hover:bg-muted text-muted-foreground transition-all">
+          <X className="mr-2 h-4 w-4" />
+          HỦY BỎ
         </Button>
       </div>
     </div>

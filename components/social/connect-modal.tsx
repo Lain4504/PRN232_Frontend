@@ -140,20 +140,20 @@ function ConnectForm({ className, onConnect }: { className?: string; onConnect: 
               className={cn(
                 "flex items-center gap-4 p-4 rounded-lg border text-left transition-all",
                 isSelected
-                  ? 'border-slate-900 bg-slate-50 ring-1 ring-slate-900'
-                  : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50'
+                  ? 'border-primary bg-primary/5 ring-1 ring-primary'
+                  : 'border-border bg-card hover:border-primary/50 hover:bg-muted/50'
               )}
             >
-              <div className={cn("size-10 rounded-md flex items-center justify-center bg-white border shadow-sm", getProviderIconColor(provider.value))}>
+              <div className={cn("size-10 rounded-md flex items-center justify-center bg-background border border-border shadow-sm", getProviderIconColor(provider.value))}>
                 <Icon className="size-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-bold text-sm text-slate-900">{provider.label}</div>
-                <div className="text-[11px] text-slate-500 truncate">{provider.description}</div>
+                <div className="font-bold text-sm text-foreground">{provider.label}</div>
+                <div className="text-[11px] text-muted-foreground truncate">{provider.description}</div>
               </div>
               {isSelected && (
-                <div className="size-5 rounded-full bg-slate-900 flex items-center justify-center">
-                  <Check className="size-3 text-white" />
+                <div className="size-5 rounded-full bg-primary flex items-center justify-center">
+                  <Check className="size-3 text-primary-foreground" />
                 </div>
               )}
             </button>
