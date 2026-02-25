@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useMemo } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,7 +9,6 @@ import {
   FileText,
   Brain,
   Search,
-  MoreVertical,
   Plus,
   Trash2,
   Send,
@@ -17,22 +16,12 @@ import {
   Settings,
   Edit,
   Copy,
-  Layout,
-  ChevronRight,
   Filter,
-  Sparkles,
-  X
+  X,
+  Sparkles
 } from "lucide-react"
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator
-} from "@/components/ui/dropdown-menu"
 import { ActionsDropdown, ActionItem } from "@/components/ui/actions-dropdown"
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { CustomTable } from "@/components/ui/custom-table"
 import { ColumnDef } from "@tanstack/react-table"
 import {
@@ -44,10 +33,6 @@ import {
 } from "@/components/ui/select"
 import { useBrands } from "@/hooks/use-brands"
 import { useProducts } from "@/hooks/use-products"
-import {
-  useUpdateContent,
-  usePublishContent,
-} from "@/hooks/use-contents"
 import { useContentsByBrandFilter } from "@/hooks/use-contents-by-brand"
 import {
   ContentResponseDto,
@@ -90,19 +75,19 @@ const createColumns = (
         const status = content.status
 
         return (
-          <div className="flex items-center gap-6 py-4 transition-all duration-300">
-            <div className="size-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 shrink-0 border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden group-hover:bg-slate-900 dark:group-hover:bg-primary group-hover:text-white transition-all">
-              <FileText className="size-6" />
+          <div className="flex items-center gap-4 py-2">
+            <div className="size-10 rounded-md bg-muted flex items-center justify-center text-muted-foreground shrink-0 border">
+              <FileText className="size-5" />
             </div>
             <div className="space-y-1">
-              <span className="font-black text-slate-900 dark:text-white text-lg truncate max-w-[300px] leading-tight block uppercase">{row.getValue("title")}</span>
+              <span className="font-semibold text-foreground truncate max-w-[300px] block">{row.getValue("title")}</span>
               <div className="flex items-center gap-2">
-                <Badge variant="secondary" className={cn("text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border-none",
-                  status === ContentStatusEnum.Published ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" :
-                    status === ContentStatusEnum.Approved ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400" :
-                      status === ContentStatusEnum.PendingApproval ? "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400" :
-                        "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
-                )}>
+                <Badge variant={
+                  status === ContentStatusEnum.Published ? "default" :
+                    status === ContentStatusEnum.Approved ? "secondary" :
+                      status === ContentStatusEnum.PendingApproval ? "outline" :
+                        "secondary"
+                } className="rounded-sm px-2 py-0 text-[10px]">
                   {status === ContentStatusEnum.Published ? "Đã xuất bản" :
                     status === ContentStatusEnum.Approved ? "Đã phê duyệt" :
                       status === ContentStatusEnum.PendingApproval ? "Chờ phê duyệt" :
@@ -134,7 +119,7 @@ const createColumns = (
           return "Không xác định"
         })()
         return (
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">{label}</span>
+          <span className="text-xs text-muted-foreground font-medium">{label}</span>
         )
       },
     },
@@ -145,9 +130,7 @@ const createColumns = (
         const brandId = row.getValue("brandId") as string
         const brand = brands.find(b => b.id === brandId)
         return (
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-900 dark:text-white truncate max-w-[120px]">{brand?.name || "Global"}</span>
-          </div>
+          <span className="text-sm font-medium truncate max-w-[120px] block">{brand?.name || "Global"}</span>
         )
       },
     },
@@ -157,15 +140,15 @@ const createColumns = (
       cell: ({ row }) => {
         const createdAt = row.getValue("createdAt") as string
         return (
-          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-            {createdAt ? format(new Date(createdAt), 'dd.MM.yyyy') : "-"}
+          <span className="text-xs text-muted-foreground">
+            {createdAt ? format(new Date(createdAt), 'dd/MM/yyyy') : "-"}
           </span>
         )
       },
     },
     {
       id: "actions",
-      header: () => <div className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Thao tác</div>,
+      header: () => <div className="text-right">Thao tác</div>,
       cell: ({ row }) => {
         const content = row.original
         const canSubmit = content.status === ContentStatusEnum.Draft
@@ -360,159 +343,129 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
   }
 
   if (isLoading || brandsLoading) return (
-    <div className="space-y-12 animate-pulse">
-      <div className="h-12 w-64 bg-slate-50 dark:bg-slate-900 rounded-xl" />
-      <div className="h-[600px] w-full bg-slate-50 dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800" />
+    <div className="space-y-6 animate-pulse">
+      <div className="h-10 w-48 bg-muted rounded" />
+      <div className="h-[500px] w-full bg-muted rounded-lg" />
     </div>
   )
 
   return (
-    <div className="space-y-12 pb-20 font-sans">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-100 dark:border-slate-800 pb-12 text-slate-900 dark:text-white">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
-              <FileText className="size-4" />
-            </div>
-            <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">Thư viện tài sản</span>
-          </div>
-          <h1 className="text-4xl lg:text-5xl font-black tracking-tight leading-none uppercase">
-            QUẢN LÝ NỘI DUNG
-          </h1>
-          <p className="text-lg text-slate-500 dark:text-slate-400 font-medium max-w-xl leading-relaxed">
+    <div className="space-y-6 pb-20 font-sans">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b pb-6">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">Quản lý Nội dung</h1>
+          <p className="text-muted-foreground max-w-xl">
             Quản lý, chỉnh sửa và triển khai nội dung quảng cáo thông minh.
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => setIsCreating(true)} className="h-14 px-8 rounded-2xl border-slate-200 dark:border-slate-800 font-black uppercase tracking-widest text-[10px] bg-white dark:bg-slate-900 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 shadow-sm transition-all hover:-translate-y-1">
-            <Plus className="mr-3 h-4 w-4 opacity-50" />
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Button variant="outline" onClick={() => setIsCreating(true)}>
+            <Plus className="mr-2 h-4 w-4" />
             Phác thảo mới
           </Button>
-          <Button onClick={() => window.location.href = `/dashboard/brands/${initialBrandId || 'all'}/contents/new`} className="h-14 px-8 rounded-2xl bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-200 dark:shadow-primary/20 transition-all hover:-translate-y-1">
-            <Brain className="mr-3 h-4 w-4" />
-            Khởi tạo Neural AI
+          <Button onClick={() => window.location.href = `/dashboard/brands/${initialBrandId || 'all'}/contents/new`}>
+            <Brain className="mr-2 h-4 w-4" />
+            Khởi tạo AI
           </Button>
         </div>
       </div>
 
-      {/* Control Bar */}
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-        <div className="relative flex-1 group w-full lg:max-w-[400px]">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 dark:text-slate-600 group-focus-within:text-slate-900 dark:group-focus-within:text-white transition-colors" />
+      <div className="flex flex-col lg:flex-row gap-4 items-center">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="TÌM KIẾM TÀI SẢN NỘI DUNG..."
+            placeholder="Tìm kiếm nội dung..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-12 h-12 bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm focus-visible:ring-slate-100 dark:focus-visible:ring-slate-800 font-medium transition-all text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-700"
+            className="pl-8"
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
-          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-1 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-            <div className="size-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
-              <Filter className="size-3.5" />
-            </div>
-            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as ContentStatusEnum | 'all')}>
-              <SelectTrigger className="w-[140px] border-none focus:ring-0 font-bold text-xs uppercase tracking-widest h-8 bg-transparent text-slate-900 dark:text-white transition-colors">
-                <SelectValue placeholder="Trạng thái" />
-              </SelectTrigger>
-              <SelectContent className="rounded-2xl border-slate-100 dark:border-slate-800 shadow-2xl p-1 bg-white dark:bg-slate-900">
-                <SelectItem value="all" className="rounded-xl font-bold uppercase text-[10px]">Tất cả bài</SelectItem>
-                {Object.values(ContentStatusEnum).map(s => (
-                  <SelectItem key={s} value={s} className="rounded-xl font-bold uppercase text-[10px]">{s === ContentStatusEnum.Published ? "Đã xuất bản" :
-                    s === ContentStatusEnum.Approved ? "Đã phê duyệt" :
-                      s === ContentStatusEnum.PendingApproval ? "Chờ phê duyệt" :
-                        s === ContentStatusEnum.Draft ? "Nháp" :
-                          s === ContentStatusEnum.Rejected ? "Từ chối" : s}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="flex items-center gap-2 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as ContentStatusEnum | 'all')}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Trạng thái" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả bài</SelectItem>
+              {Object.values(ContentStatusEnum).map(s => (
+                <SelectItem key={s} value={s}>{s === ContentStatusEnum.Published ? "Đã xuất bản" :
+                  s === ContentStatusEnum.Approved ? "Đã phê duyệt" :
+                    s === ContentStatusEnum.PendingApproval ? "Chờ phê duyệt" :
+                      s === ContentStatusEnum.Draft ? "Nháp" :
+                        s === ContentStatusEnum.Rejected ? "Từ chối" : s}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-1 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-            <div className="size-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
-              <Layout className="size-3.5" />
-            </div>
-            <Select value={adTypeFilter === "all" ? "all" : adTypeFilter.toString()} onValueChange={(v) => setAdTypeFilter(v === "all" ? "all" : parseInt(v))}>
-              <SelectTrigger className="w-[160px] border-none focus:ring-0 font-bold text-xs uppercase tracking-widest h-8 bg-transparent text-slate-900 dark:text-white transition-colors">
-                <SelectValue placeholder="Định dạng" />
-              </SelectTrigger>
-              <SelectContent className="rounded-2xl border-slate-100 dark:border-slate-800 shadow-2xl p-1 bg-white dark:bg-slate-900">
-                <SelectItem value="all" className="rounded-xl font-bold uppercase text-[10px]">Mọi định dạng</SelectItem>
-                <SelectItem value={AdTypeEnum.TextOnly.toString()} className="rounded-xl font-bold uppercase text-[10px]">Chỉ văn bản</SelectItem>
-                <SelectItem value={AdTypeEnum.ImageText.toString()} className="rounded-xl font-bold uppercase text-[10px]">Ảnh & Văn bản</SelectItem>
-                <SelectItem value={AdTypeEnum.VideoText.toString()} className="rounded-xl font-bold uppercase text-[10px]">Video & Văn bản</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-            <div className="size-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-            {contents.length} Tài sản hoạt động
-          </div>
+          <Select value={adTypeFilter === "all" ? "all" : adTypeFilter.toString()} onValueChange={(v) => setAdTypeFilter(v === "all" ? "all" : parseInt(v))}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Định dạng" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Mọi định dạng</SelectItem>
+              <SelectItem value={AdTypeEnum.TextOnly.toString()}>Chỉ văn bản</SelectItem>
+              <SelectItem value={AdTypeEnum.ImageText.toString()}>Ảnh & Văn bản</SelectItem>
+              <SelectItem value={AdTypeEnum.VideoText.toString()}>Video & Văn bản</SelectItem>
+            </SelectContent>
+          </Select>
 
           {(searchTerm || statusFilter !== "all" || adTypeFilter !== "all") && (
-            <Button variant="ghost" className="h-10 px-4 rounded-xl font-bold text-xs text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10" onClick={() => {
+            <Button variant="ghost" size="icon" onClick={() => {
               setSearchTerm("")
               setStatusFilter("all")
               setAdTypeFilter("all")
             }}>
-              <X className="mr-2 size-4" /> Đặt lại
+              <X className="h-4 w-4" />
             </Button>
           )}
         </div>
       </div>
 
-      {/* Table Section */}
-      {contents.length > 0 ? (
-        <Card className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/40 dark:shadow-black/40 overflow-hidden relative group transition-all duration-300">
-          <div className="absolute top-0 right-0 p-10 opacity-5 dark:opacity-10 group-hover:opacity-10 transition-opacity pointer-events-none">
-            <Sparkles className="size-40 text-slate-900 dark:text-primary" />
-          </div>
+      <Card>
+        {contents.length > 0 ? (
           <CustomTable
             columns={createColumns(handleEditContent, handleViewContent, handleDeleteContent, handleSubmitContent, handleCloneContent, handleChangeStatus, brands, false, canUseTeamFeatures)}
             data={filteredContents}
             pageSize={10}
-            className="border-0 shadow-none bg-transparent"
-            headerClassName="bg-slate-50/50 dark:bg-slate-800/10 border-b border-slate-100 dark:border-slate-800 py-6 px-10 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500"
+            className="border-none"
           />
-        </Card>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-32 px-6 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl bg-slate-50/50 dark:bg-slate-900/50 transition-all duration-300">
-          <div className="size-20 rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center mb-8 shadow-sm border border-slate-100 dark:border-slate-800">
-            <FileText className="size-10 text-slate-200 dark:text-slate-700" />
+        ) : (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="size-16 rounded-full bg-muted flex items-center justify-center mb-6">
+              <FileText className="size-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">
+              {searchTerm ? "Không tìm thấy nội dung" : "Thư viện đang trống"}
+            </h3>
+            <p className="text-muted-foreground max-w-sm mb-6">
+              {searchTerm ? "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm của bạn." : "Hãy sáng tạo nội dung đầu tiên bằng sự hỗ trợ mạnh mẽ từ trí tuệ nhân tạo."}
+            </p>
+            {!searchTerm && (
+              <Button onClick={() => window.location.href = `/dashboard/brands/${initialBrandId || 'all'}/contents/new`}>
+                <Plus className="mr-2 h-4 w-4" />
+                Tạo nội dung ngay
+              </Button>
+            )}
           </div>
-          <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3 uppercase tracking-widest">
-            {searchTerm ? "Không tìm thấy nội dung" : "Thư viện đang trống"}
-          </h3>
-          <p className="text-slate-500 dark:text-slate-400 font-medium max-w-sm mb-10 leading-relaxed uppercase tracking-tighter text-xs">
-            {searchTerm ? "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm của bạn." : "Hãy sáng tạo nội dung đầu tiên bằng sự hỗ trợ mạnh mẽ từ trí tuệ nhân tạo."}
-          </p>
-          {!searchTerm && (
-            <Button onClick={() => window.location.href = `/dashboard/brands/${initialBrandId || 'all'}/contents/new`} className="h-14 px-10 rounded-2xl bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-slate-200 dark:shadow-primary/20 transition-all hover:-translate-y-1">
-              <Plus className="mr-3 h-5 w-5" />
-              Tạo nội dung ngay
-            </Button>
-          )}
-        </div>
-      )}
+        )}
+      </Card>
 
-      {/* Governance Banner */}
-      <Card className="p-8 rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm flex flex-col sm:flex-row items-start gap-8 group hover:-translate-y-1 transition-all duration-300 text-slate-900 dark:text-white">
-        <div className="size-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-white dark:border-slate-800 ring-4 ring-slate-50 dark:ring-slate-800/20 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
-          <Settings className="size-7" />
-        </div>
-        <div className="space-y-3">
-          <h4 className="text-xl font-black text-slate-900 dark:text-white tracking-tight uppercase leading-none">Quản trị nội dung & Tuân thủ</h4>
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl italic">
-            Tất cả tài sản nội dung đều phải thông qua quy trình phê duyệt nghiêm ngặt trước khi được phép xuất bản lên các kênh truyền thông chính thức. Đảm bảo quá trình kiểm duyệt luôn được thực hiện nghiêm túc để bảo vệ giá trị cốt lõi của thương hiệu trong mắt công chúng.
-          </p>
+      <Card className="p-6 bg-muted/30">
+        <div className="flex gap-4">
+          <div className="p-3 rounded-lg bg-background border shadow-sm h-fit">
+            <Settings className="h-5 w-5" />
+          </div>
+          <div className="space-y-1">
+            <h4 className="font-semibold">Quản trị nội dung & Tuân thủ</h4>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
+              Tất cả tài sản nội dung đều phải thông qua quy trình phê duyệt nghiêm ngặt trước khi được phép xuất bản lên các kênh truyền thông chính thức. Đảm bảo quá trình kiểm duyệt luôn được thực hiện nghiêm túc để bảo vệ giá trị cốt lõi của thương hiệu trong mắt công chúng.
+            </p>
+          </div>
         </div>
       </Card>
 
-      {/* Modals & Dialogs */}
       <ContentModal content={null} isEditing={true} open={isCreating} onOpenChange={setIsCreating} onCreate={(d: CreateContentRequest) => api.post(endpoints.contents(), d).then(() => { setIsCreating(false); queryClient.invalidateQueries({ queryKey: ["contents"] }); toast.success("Đã tạo nội dung"); })} isProcessing={false} brands={teamId ? undefined : brands} products={teamId ? undefined : products} teamId={teamId} userId={userId} defaultBrandId={scopeBrandId !== "team-all" ? scopeBrandId : (initialBrandId || undefined)} />
 
       {selectedContent && (

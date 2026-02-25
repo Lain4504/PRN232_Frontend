@@ -7,14 +7,15 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Link from "next/link";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useState, useEffect } from "react";
-import { Mail, Lock, AlertCircle, CheckCircle, Loader2, User } from "lucide-react";
+import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registrationSchema, type RegistrationFormData, type AuthError } from "@/lib/types/auth";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
 
 export function SignUpForm({
   className,
@@ -131,40 +132,38 @@ export function SignUpForm({
   }, []);
 
   return (
-    <div className={cn("space-y-8", className)} {...props}>
+    <div className={cn("grid gap-6", className)} {...props}>
       {/* Success Modal */}
       <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
-        <DialogContent className="rounded-3xl border border-border bg-card shadow-2xl p-10 max-w-md animate-in zoom-in-95 duration-300">
-          <DialogHeader className="space-y-6">
-            <div className="flex flex-col items-center gap-6">
-              <div className="h-20 w-20 rounded-full bg-success/10 flex items-center justify-center border border-success/20">
-                <CheckCircle className="h-10 w-10 text-success" />
-              </div>
-              <DialogTitle className="text-2xl font-black text-center text-foreground">Chúc mừng!</DialogTitle>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center justify-center mb-4">
+              <CheckCircle className="h-12 w-12 text-green-500" />
             </div>
-            <DialogDescription className="text-center font-medium text-muted-foreground leading-relaxed">
+            <DialogTitle className="text-center">Chúc mừng!</DialogTitle>
+            <DialogDescription className="text-center">
               Tài khoản của bạn đã được tạo thành công. Vui lòng kiểm tra email để xác thực trước khi đăng nhập.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="mt-6">
-            <Button onClick={() => setSuccessOpen(false)} className="w-full h-12 bg-success hover:bg-success/90 text-success-foreground font-bold rounded-xl transition-all shadow-xl shadow-success/10">
+          <DialogFooter>
+            <Button onClick={() => setSuccessOpen(false)} className="w-full">
               Đã hiểu
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <div className="space-y-4">
+      <div className="grid gap-4">
         <Button
           variant="outline"
-          className="w-full h-12 rounded-xl border-border bg-card hover:bg-accent transition-all font-bold text-foreground/80 shadow-sm"
           onClick={handleGoogleSignUp}
           disabled={isGoogleLoading || isLoading}
+          className="w-full"
         >
           {isGoogleLoading ? (
-            <Loader2 className="w-4 h-4 mr-3 animate-spin" />
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
-            <svg className="w-4 h-4 mr-3" viewBox="0 0 24 24">
+            <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
@@ -173,124 +172,91 @@ export function SignUpForm({
           )}
           Đăng ký với Google
         </Button>
+      </div>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border" />
-          </div>
-          <div className="relative flex justify-center text-[10px]">
-            <span className="bg-background px-4 text-muted-foreground/50 font-black uppercase tracking-widest">Hoặc đăng ký bằng Email</span>
-          </div>
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">
+            Hoặc đăng ký bằng Email
+          </span>
         </div>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSignUp)} className="space-y-6">
-          <div className="space-y-5">
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground px-1">Họ và tên</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 h-4 w-4" />
-                      <Input
-                        {...field}
-                        type="text"
-                        placeholder="Nguyễn Văn A"
-                        className="pl-12 h-12 rounded-xl bg-muted/30 border-border focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all font-medium text-foreground"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-xs font-medium" />
-                </FormItem>
-              )}
-            />
+        <form onSubmit={form.handleSubmit(handleSignUp)} className="grid gap-4">
+          <FormField
+            control={form.control}
+            name="fullName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Họ và tên</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Nguyễn Văn A" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground px-1">Email</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 h-4 w-4" />
-                      <Input
-                        {...field}
-                        type="email"
-                        placeholder="email@vidu.com"
-                        className="pl-12 h-12 rounded-xl bg-muted/30 border-border focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all font-medium text-foreground"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-xs font-medium" />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input {...field} type="email" placeholder="email@vidu.com" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground px-1">Mật khẩu</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 h-4 w-4" />
-                      <PasswordInput
-                        {...field}
-                        placeholder="••••••••••••"
-                        className="pl-12 h-12 rounded-xl bg-muted/30 border-border focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all text-foreground"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-xs font-medium" />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Mật khẩu</FormLabel>
+                <FormControl>
+                  <PasswordInput {...field} placeholder="••••••••••••" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground px-1">Xác nhận mật khẩu</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 h-4 w-4" />
-                      <PasswordInput
-                        {...field}
-                        placeholder="••••••••••••"
-                        className="pl-12 h-12 rounded-xl bg-muted/30 border-border focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all text-foreground"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-xs font-medium" />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Xác nhận mật khẩu</FormLabel>
+                <FormControl>
+                  <PasswordInput {...field} placeholder="••••••••••••" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {error && (
-            <Alert variant="destructive" className="rounded-xl border-destructive/20 bg-destructive/10 text-destructive">
-              <AlertCircle className="h-4 w-4 fill-destructive text-destructive-foreground" />
-              <AlertDescription className="text-xs font-bold">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Lỗi</AlertTitle>
+              <AlertDescription>
                 {error.message}
               </AlertDescription>
             </Alert>
           )}
 
-          <Button
-            type="submit"
-            className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-xl shadow-primary/10 transition-all active:scale-[0.98]"
-            disabled={isLoading || isGoogleLoading}
-          >
+          <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
             {isLoading ? (
               <>
-                <Loader2 className="w-4 h-4 mr-3 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Đang tạo tài khoản...
               </>
             ) : (
@@ -300,16 +266,11 @@ export function SignUpForm({
         </form>
       </Form>
 
-      <div className="text-center pt-4">
-        <p className="text-sm font-medium text-muted-foreground">
-          Đã có tài khoản?{" "}
-          <Link
-            href="/auth/login"
-            className="text-primary font-bold hover:underline"
-          >
-            Đăng nhập ngay
-          </Link>
-        </p>
+      <div className="text-center text-sm">
+        Đã có tài khoản?{" "}
+        <Link href="/auth/login" className="font-semibold text-primary underline-offset-4 hover:underline">
+          Đăng nhập ngay
+        </Link>
       </div>
     </div>
   );

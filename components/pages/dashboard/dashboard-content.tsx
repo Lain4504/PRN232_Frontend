@@ -1,14 +1,12 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import {
   Target,
-  FileText,
-  Activity,
   Calendar,
   Filter,
   Clock,
@@ -17,14 +15,12 @@ import {
   Users,
   Sparkles,
   ChevronRight,
-  Layout,
+  Activity,
   MousePointer2
 } from "lucide-react"
 import { User, DashboardStats } from "@/lib/types/omniadly-types"
 import { api, endpoints } from "@/lib/api"
 import { QuickActionsPanel } from "./quick-actions-panel"
-import { cn } from "@/lib/utils"
-
 import { useProfile } from "@/lib/contexts/profile-context"
 import { useTeamsByVendor } from "@/hooks/use-teams"
 import { getActiveTeamId, setActiveTeamId, clearActiveTeamId } from "@/lib/utils/profile-utils"
@@ -41,26 +37,20 @@ const getStatsData = (stats: DashboardStats) => [
     title: "Đội nhóm toàn cầu",
     value: stats.total_teams?.toString() || "0",
     icon: Users,
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
-    description: "Không gian làm việc đã kết nối",
+    description: "Không gian làm việc",
     href: "/overview/teams"
   },
   {
     title: "Danh tính hoạt động",
     value: stats.total_brands.toString(),
     icon: Target,
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-50",
-    description: "Hồ sơ thương hiệu được quản lý",
+    description: "Hồ sơ thương hiệu",
     href: "/dashboard/brands"
   },
   {
     title: "Kho rèn",
     value: stats.total_contents.toString(),
     icon: Sparkles,
-    color: "text-purple-600",
-    bgColor: "bg-purple-50",
     description: "Tài sản AI đã tạo",
     href: "/dashboard/contents"
   },
@@ -68,8 +58,6 @@ const getStatsData = (stats: DashboardStats) => [
     title: "Phân phối",
     value: stats.total_posts.toString(),
     icon: Send,
-    color: "text-slate-900",
-    bgColor: "bg-slate-100",
     description: "Bài đăng đã đồng bộ",
     href: "/dashboard/posts"
   },
@@ -125,9 +113,9 @@ const DashboardContent = () => {
   }, [selectedTeamId])
 
   if (loading) return (
-    <div className="space-y-8 animate-pulse">
-      <div className="h-16 w-full bg-muted rounded-lg" />
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="space-y-6 animate-pulse">
+      <div className="h-12 w-1/3 bg-muted rounded-lg" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map(i => <div key={i} className="h-32 bg-muted rounded-lg" />)}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -138,28 +126,25 @@ const DashboardContent = () => {
   )
 
   return (
-    <div className="space-y-8 md:space-y-12 pb-10 md:pb-20">
-      {/* Top Console Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b pb-8">
+    <div className="space-y-6 pb-10">
+      {/* Header */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 mb-2">
-            <Badge variant="secondary" className="px-2 py-0 h-5 text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none">
-              Hệ thống trực tuyến
-            </Badge>
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground uppercase">
-            Trung tâm <span className="text-muted-foreground">Điều khiển</span>
+          <Badge variant="secondary" className="mb-2">
+            Hệ thống trực tuyến
+          </Badge>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Trung tâm Điều khiển
           </h1>
           <p className="text-muted-foreground">
-            Chào mừng, <span className="text-foreground font-semibold">{user?.first_name || user?.email?.split('@')[0]}</span>. Hệ thống đã sẵn sàng điều phối.
+            Chào mừng, <span className="font-medium text-foreground">{user?.first_name || user?.email?.split('@')[0]}</span>.
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+        <div className="flex flex-col sm:flex-row items-center gap-2">
           {teams.length > 0 && (
-            <div className="flex items-center gap-2 bg-muted p-1 rounded-md w-full sm:w-auto">
-              <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
-                <SelectTrigger className="w-full sm:w-[200px] border-none bg-transparent h-9 text-sm font-medium">
+             <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
+                <SelectTrigger className="w-full sm:w-[200px]">
                   <SelectValue placeholder="Chọn không gian" />
                 </SelectTrigger>
                 <SelectContent>
@@ -171,124 +156,104 @@ const DashboardContent = () => {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
           )}
-          <Button variant="outline" className="w-full sm:w-auto px-6">
-            <Filter className="size-4 mr-2" />
+          <Button variant="outline" className="w-full sm:w-auto">
+            <Filter className="mr-2 h-4 w-4" />
             Báo cáo chi tiết
           </Button>
         </div>
       </div>
 
-
-      {/* Primary Metrics Grid */}
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats && getStatsData(stats).map((stat, i) => (
           <Link href={stat.href} key={i}>
-            <Card className="hover:bg-muted/50 transition-colors">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div className={cn("size-10 rounded-md flex items-center justify-center", stat.bgColor, stat.color)}>
-                    <stat.icon className="size-5" />
-                  </div>
-                  <Badge variant="outline" className="text-[10px] font-bold">LIVE</Badge>
-                </div>
-
-                <div className="space-y-1">
-                  <div className="text-3xl font-bold tracking-tight text-foreground">
-                    {stat.value}
-                  </div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{stat.title}</p>
-                </div>
-
-                <div className="mt-6 pt-4 border-t flex items-center justify-between text-muted-foreground">
-                  <span className="text-[10px] font-medium uppercase">{stat.description}</span>
-                  <ChevronRight className="size-4" />
-                </div>
+            <Card className="hover:bg-muted/50 transition-colors h-full">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {stat.title}
+                </CardTitle>
+                <stat.icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+                <p className="text-xs text-muted-foreground">
+                  {stat.description}
+                </p>
               </CardContent>
             </Card>
           </Link>
         ))}
       </div>
 
-      <div className="grid gap-8 md:gap-12 lg:grid-cols-12">
-        {/* Quick Hub */}
+      <div className="grid gap-6 lg:grid-cols-12">
+        {/* Quick Actions */}
         <div className="lg:col-span-5">
           <QuickActionsPanel />
         </div>
 
-        {/* Intelligence Node */}
+        {/* Operational Performance */}
         <div className="lg:col-span-7 space-y-6">
           <Card>
-            <CardHeader className="p-6 bg-muted/50 border-b">
-              <div className="flex items-center gap-3">
-                <div className="size-10 rounded bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
-                  <Activity className="size-5" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold tracking-tight uppercase">Hiệu suất vận hành</h3>
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Node Intelligence Core v2.0</p>
-                </div>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
+                <CardTitle>Hiệu suất vận hành</CardTitle>
               </div>
+              <CardDescription>Node Intelligence Core v2.0</CardDescription>
             </CardHeader>
-
-            <CardContent className="p-6 space-y-6">
+            <CardContent className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border hover:bg-background transition-colors cursor-pointer">
-                  <div className="flex items-center gap-4">
-                    <div className="size-10 rounded bg-background flex items-center justify-center shadow-sm border">
-                      <Clock className="size-5" />
+                <div className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-background rounded-md border">
+                      <Clock className="h-4 w-4 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Đang chờ</p>
-                      <p className="text-xs font-semibold">Hàng chờ phê duyệt</p>
+                      <p className="text-sm font-medium">Đang chờ</p>
+                      <p className="text-xs text-muted-foreground">Hàng chờ phê duyệt</p>
                     </div>
                   </div>
                   <div className="text-2xl font-bold">{stats?.pending_approvals || 0}</div>
                 </div>
 
-                <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border hover:bg-background transition-colors cursor-pointer">
-                  <div className="flex items-center gap-4">
-                    <div className="size-10 rounded bg-background flex items-center justify-center shadow-sm border">
-                      <Calendar className="size-5" />
+                <div className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-background rounded-md border">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Đã lập lịch</p>
-                      <p className="text-xs font-semibold">Tiến độ đồng bộ</p>
+                      <p className="text-sm font-medium">Đã lập lịch</p>
+                      <p className="text-xs text-muted-foreground">Tiến độ đồng bộ</p>
                     </div>
                   </div>
                   <div className="text-2xl font-bold">{stats?.scheduled_posts || 0}</div>
                 </div>
               </div>
 
-              {/* AI Insight Insight */}
-              <div className="p-6 rounded-lg bg-primary text-primary-foreground relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:rotate-12 transition-transform duration-700">
-                  <Sparkles className="size-24" />
-                </div>
-                <div className="flex items-start gap-4 md:gap-6 relative z-10">
-                  <div className="size-10 rounded bg-white/10 flex items-center justify-center text-white shrink-0 shadow-lg">
-                    <TrendingUp className="size-5" />
+              {/* AI Insight */}
+              <div className="p-6 rounded-lg bg-primary text-primary-foreground relative overflow-hidden">
+                <div className="flex items-start gap-4 relative z-10">
+                  <div className="p-2 bg-primary-foreground/10 rounded-md">
+                    <TrendingUp className="h-5 w-5" />
                   </div>
                   <div className="space-y-2">
-                    <h4 className="text-lg font-bold tracking-tight uppercase">Phân tích chiến lược AI</h4>
-                    <p className="text-sm opacity-80 leading-relaxed">
-                      Dựa trên <span className="font-bold text-amber-300">14.2%</span> tốc độ tăng trưởng hiện tại, mô hình AI dự báo việc triển khai nội dung vào lúc 18:00 tối nay sẽ mang lại tỉ lệ tương tác cao nhất.
+                    <h4 className="font-semibold">Phân tích chiến lược AI</h4>
+                    <p className="text-sm opacity-90">
+                      Dựa trên tốc độ tăng trưởng hiện tại, mô hình AI dự báo việc triển khai nội dung vào lúc 18:00 tối nay sẽ mang lại tỉ lệ tương tác cao nhất.
                     </p>
-                    <div className="pt-2">
-                      <Button variant="ghost" className="p-0 h-auto text-primary-foreground hover:text-white font-bold text-[10px] uppercase tracking-widest hover:bg-transparent flex items-center gap-2 group/btn">
-                        Xem lộ trình tối ưu hóa
-                        <MousePointer2 className="size-3 group-hover/btn:translate-x-1 transition-transform" />
-                      </Button>
-                    </div>
+                    <Button variant="ghost" size="sm" className="p-0 h-auto hover:bg-transparent hover:text-white/80 text-white font-medium flex items-center gap-1">
+                      Xem lộ trình
+                      <MousePointer2 className="h-3 w-3" />
+                    </Button>
                   </div>
                 </div>
+                <Sparkles className="absolute -top-4 -right-4 h-32 w-32 opacity-10 rotate-12" />
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
-
     </div>
   )
 }

@@ -2,13 +2,13 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { SubscriptionPlansPage } from "@/components/subscription/subscription-plans-page"
-import { Building2, ArrowLeft, User, CreditCard, Sparkles, Plus } from "lucide-react"
+import { ArrowLeft, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 import { useCreateProfile } from "@/hooks/use-profiles"
 import { useUser } from "@/hooks/use-user"
@@ -76,163 +76,112 @@ export default function CreateProfilePage() {
   }
 
   return (
-    <div className={cn(
-      "mx-auto py-6 md:py-12 px-4 md:px-8 space-y-8 md:space-y-12 font-sans transition-all duration-500",
-      step === 1 ? "max-w-4xl" : "max-w-7xl"
-    )}>
+    <div className="container max-w-3xl py-10 space-y-8">
       {/* Header */}
-      <div className="space-y-6 md:space-y-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-100 dark:border-slate-800 pb-6 md:pb-12">
-          <div className="space-y-4 md:space-y-6 text-center md:text-left">
-            <Link href="/overview" className="inline-flex items-center gap-2 text-[10px] md:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest hover:text-slate-900 dark:hover:text-white transition-colors mx-auto md:mx-0">
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Hủy bỏ hồ sơ
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 text-muted-foreground mb-2">
+            <Link href="/overview" className="flex items-center gap-1 hover:text-foreground transition-colors text-sm font-medium">
+              <ArrowLeft className="h-4 w-4" />
+              Quay lại
             </Link>
-            <div className="space-y-2">
-              <h1 className="text-2xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-                {step === 1 ? "Thiết lập hồ sơ" : "Gói dịch vụ"}
-              </h1>
-              <p className="text-sm md:text-lg text-slate-500 dark:text-slate-400 font-medium max-w-xl mx-auto md:mx-0">
-                {step === 1
-                  ? "Cung cấp các thông tin cơ bản để bắt đầu trải nghiệm omniadly."
-                  : "Chọn một gói dịch vụ phù hợp để kích hoạt các tính năng AI."}
-              </p>
-            </div>
           </div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {step === 1 ? "Thiết lập hồ sơ" : "Chọn gói dịch vụ"}
+          </h1>
+          <p className="text-muted-foreground max-w-lg">
+            {step === 1
+              ? "Cung cấp các thông tin cơ bản để bắt đầu trải nghiệm."
+              : "Chọn một gói dịch vụ phù hợp để kích hoạt các tính năng AI."}
+          </p>
+        </div>
 
-          <div className="flex items-center justify-center gap-2 md:gap-3 bg-slate-50 dark:bg-slate-900 p-1 rounded-xl md:rounded-2xl border border-slate-100 dark:border-slate-800">
-            {[1, 2].map((i) => (
-              <div
-                key={i}
-                onClick={() => i < step && handleBack()}
-                className={cn(
-                  "px-4 md:px-6 py-1.5 md:py-2 rounded-lg md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer",
-                  step === i
-                    ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm"
-                    : "text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400"
-                )}
-              >
-                Bước {i}
-              </div>
-            ))}
-          </div>
+        <div className="flex items-center gap-2">
+            <div className={cn("h-2 w-2 rounded-full", step >= 1 ? "bg-primary" : "bg-muted")} />
+            <div className={cn("h-1 w-8 rounded-full", step >= 2 ? "bg-primary" : "bg-muted")} />
+            <div className={cn("h-2 w-2 rounded-full", step >= 2 ? "bg-primary" : "bg-muted")} />
         </div>
       </div>
-
 
       {/* Step Content */}
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
         {step === 1 ? (
-          <Card className="rounded-2xl md:rounded-3xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
-            <CardContent className="p-6 md:p-12 space-y-8 md:space-y-12">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
-                <div className="space-y-2 md:space-y-3 group">
-                  <Label htmlFor="name" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 group-focus-within:text-slate-900 dark:group-focus-within:text-white transition-colors">Tên Hồ Sơ</Label>
+          <Card>
+            <CardHeader>
+              <CardTitle>Thông tin cơ bản</CardTitle>
+              <CardDescription>
+                Điền thông tin chi tiết về hồ sơ làm việc của bạn.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Tên Hồ Sơ <span className="text-destructive">*</span></Label>
                   <Input
                     id="name"
                     placeholder="VD: Thương Hiệu ABC"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="h-10 md:h-12 bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-slate-100 dark:focus:ring-slate-800 transition-all font-bold text-sm md:text-base text-slate-900 dark:text-white"
                   />
-                  <p className="text-[9px] md:text-[10px] font-medium text-slate-400 dark:text-slate-500">Tên hiển thị chính mà bạn sẽ sử dụng trong ứng dụng.</p>
+                  <p className="text-xs text-muted-foreground">Tên hiển thị chính trong ứng dụng.</p>
                 </div>
-                <div className="space-y-2 md:space-y-3 group">
-                  <Label htmlFor="company" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 group-focus-within:text-slate-900 dark:group-focus-within:text-white transition-colors">Tên Doanh Nghiệp (Tùy chọn)</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="company">Tên Doanh Nghiệp (Tùy chọn)</Label>
                   <Input
                     id="company"
                     placeholder="VD: Công ty TNHH ABC"
                     value={form.companyName}
                     onChange={(e) => setForm({ ...form, companyName: e.target.value })}
-                    className="h-10 md:h-12 bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-slate-100 dark:focus:ring-slate-800 transition-all font-bold text-sm md:text-base text-slate-900 dark:text-white"
                   />
-                  <p className="text-[9px] md:text-[10px] font-medium text-slate-400 dark:text-slate-500">Thông tin pháp nhân nếu bạn quản lý cho một tổ chức.</p>
+                  <p className="text-xs text-muted-foreground">Thông tin pháp nhân nếu có.</p>
                 </div>
               </div>
 
-              <div className="space-y-2 md:space-y-3 group">
-                <Label htmlFor="bio" className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 group-focus-within:text-slate-900 dark:group-focus-within:text-white transition-colors">Mô Tả Hồ Sơ</Label>
+              <div className="space-y-2">
+                <Label htmlFor="bio">Mô Tả Hồ Sơ</Label>
                 <Textarea
                   id="bio"
-                  placeholder="Giới thiệu đôi nét về định hướng hoặc mục tiêu của hồ sơ này..."
+                  placeholder="Giới thiệu về định hướng hoặc mục tiêu..."
                   value={form.bio}
                   onChange={(e) => setForm({ ...form, bio: e.target.value })}
                   rows={4}
-                  className="bg-slate-50 dark:bg-slate-800 border-none rounded-xl md:rounded-2xl p-4 focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-slate-100 dark:focus:ring-slate-800 transition-all font-bold resize-none text-sm md:text-base text-slate-900 dark:text-white"
+                  className="resize-none"
                 />
-              </div>
-
-              <div className="flex justify-end pt-4 md:pt-6">
-                <Button
-                  onClick={handleNext}
-                  disabled={!form.name.trim()}
-                  className="h-10 md:h-12 w-full md:w-auto md:px-10 rounded-xl font-black uppercase tracking-widest text-[10px] md:text-xs bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white shadow-2xl shadow-slate-200 dark:shadow-primary/20 transition-all hover:-translate-y-1"
-                >
-                  Kế tiếp
-                  <Plus className="h-4 w-4 ml-2" />
-                </Button>
               </div>
             </CardContent>
+            <CardFooter className="flex justify-end border-t pt-6">
+              <Button onClick={handleNext} disabled={!form.name.trim()}>
+                Tiếp tục
+              </Button>
+            </CardFooter>
           </Card>
         ) : (
-          <div className="space-y-6 md:space-y-8">
-            <Card className="rounded-2xl md:rounded-3xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
-              <CardContent className="p-4 md:p-8">
-                <SubscriptionPlansPage
-                  onPlanSelect={handlePlanSelect}
-                  showCurrentPlan={false}
-                  isLoading={isSubmitting}
-                />
-              </CardContent>
-            </Card>
-
-            <div className="text-center">
-              <button
-                onClick={handleBack}
-                className="text-[10px] md:text-xs font-bold text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white uppercase tracking-widest transition-colors flex items-center justify-center gap-2 mx-auto"
-              >
-                <ArrowLeft className="size-3" />
+          <div className="space-y-6">
+            <SubscriptionPlansPage
+              onPlanSelect={handlePlanSelect}
+              showCurrentPlan={false}
+              isLoading={isSubmitting}
+            />
+            <div className="flex justify-center">
+              <Button variant="ghost" onClick={handleBack} className="gap-2">
+                <ArrowLeft className="h-4 w-4" />
                 Quay lại chỉnh sửa
-              </button>
+              </Button>
             </div>
           </div>
         )}
       </div>
 
-
-      {/* Trust Badge */}
-      <div className="flex flex-col items-center gap-6 pt-12 pb-20">
-        <div className="flex items-center gap-2 text-[10px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.3em]">
-          <ShieldCheck className="size-4" />
-          Bảo mật chuẩn mã hóa AES-256
+      {/* Security Footer */}
+      <div className="flex items-center justify-center gap-6 pt-8 text-xs text-muted-foreground opacity-60">
+        <div className="flex items-center gap-1.5">
+          <CheckCircle2 className="h-3.5 w-3.5" />
+          Bảo mật SSL
         </div>
-        <div className="flex items-center gap-8 grayscale opacity-20 dark:opacity-40 group-hover:opacity-40 dark:group-hover:opacity-60 transition-opacity">
-          <span className="text-sm font-black dark:text-white">VISA</span>
-          <span className="text-sm font-black dark:text-white">MASTERCARD</span>
-          <span className="text-sm font-black dark:text-white">NAPAS</span>
-          <span className="text-sm font-black dark:text-white">PAYOS</span>
-        </div>
+        <span>VISA</span>
+        <span>MASTERCARD</span>
+        <span>NAPAS</span>
       </div>
     </div>
-  )
-}
-
-function ShieldCheck(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-      <path d="m9 12 2 2 4-4" />
-    </svg>
   )
 }

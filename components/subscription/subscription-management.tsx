@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,18 +20,17 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Zap
+  Zap,
+  ArrowUpCircle
 } from 'lucide-react'
 import { useSubscription, useCancelSubscription } from '@/hooks/use-subscription'
 import { PlanChangeDialog } from './plan-change-dialog'
-import { getPlanById, SUBSCRIPTION_PLANS } from '@/lib/constants/subscription-plans'
+import { SUBSCRIPTION_PLANS } from '@/lib/constants/subscription-plans'
 import { toast } from 'sonner'
 import type { SubscriptionPlan, Subscription } from '@/lib/types/subscription'
-import { SubscriptionPlanEnum } from '@/lib/types/subscription'
 import { createPayOSCheckoutLink } from '@/lib/api/subscription'
 import { useProfile } from '@/lib/contexts/profile-context'
 import { cn } from "@/lib/utils"
-
 
 interface SubscriptionManagementProps {
   className?: string
@@ -88,12 +86,10 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
   const [isProcessing, setIsProcessing] = useState(false)
   const { activeProfileId, profileType } = useProfile()
 
-  // Use prop profileId if provided, otherwise use activeProfileId from context
   const effectiveProfileId = profileId || activeProfileId || undefined
   const { data: subscription, isLoading, refresh } = useSubscription(effectiveProfileId)
   const cancelSubscriptionMutation = useCancelSubscription()
 
-  // Create fallback subscription if API returns null but we have profile type
   const effectiveSubscription = subscription || createFallbackSubscription(profileType, effectiveProfileId)
 
   const handlePlanChange = (plan: SubscriptionPlan) => {
@@ -143,45 +139,28 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
     }
   }
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <CheckCircle className="h-5 w-5 text-green-500" />
-      case 'cancelled':
-        return <XCircle className="h-5 w-5 text-red-500" />
-      case 'past_due':
-        return <AlertTriangle className="h-5 w-5 text-yellow-500" />
-      case 'trialing':
-        return <Clock className="h-5 w-5 text-blue-500" />
-      default:
-        return <Clock className="h-5 w-5 text-gray-500" />
-    }
-  }
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800'
+        return 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
       case 'cancelled':
-        return 'bg-red-100 text-red-800'
+        return 'bg-destructive/10 text-destructive border-destructive/20'
       case 'past_due':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-amber-500/10 text-amber-600 border-amber-500/20'
       case 'trialing':
-        return 'bg-blue-100 text-blue-800'
+        return 'bg-blue-500/10 text-blue-600 border-blue-500/20'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-muted text-muted-foreground border-border'
     }
   }
 
   if (isLoading) {
     return (
-      <div className={`space-y-6 ${className}`}>
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="h-64 bg-gray-200 rounded"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
-          </div>
+      <div className={cn("space-y-6 animate-pulse", className)}>
+        <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="h-64 bg-muted rounded"></div>
+          <div className="h-64 bg-muted rounded"></div>
         </div>
       </div>
     )
@@ -189,52 +168,38 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
 
   if (!effectiveSubscription) {
     return (
-      <div className={`text-center py-12 ${className}`}>
-        <h2 className="text-2xl font-semibold">Không thể tải thông tin gói dịch vụ</h2>
+      <div className={cn("text-center py-12", className)}>
+        <h2 className="text-xl font-semibold">Không thể tải thông tin gói dịch vụ</h2>
         <p className="text-muted-foreground mt-2">
-          Không thể tải thông tin gói dịch vụ
+          Vui lòng thử lại sau.
         </p>
       </div>
     )
   }
 
-
   return (
-    <div className={`space-y-12 pb-20 font-sans ${className}`}>
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b pb-8">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="size-6 rounded bg-muted flex items-center justify-center text-muted-foreground">
-              <Settings className="size-3" />
-            </div>
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Cài đặt hệ thống</span>
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight uppercase">
-            Quản lý gói dịch vụ
-          </h1>
-          <p className="text-sm text-muted-foreground font-medium max-w-xl">
-            Quản lý gói dịch vụ, thanh toán và cài đặt gói của bạn để tối ưu hiệu suất.
+    <div className={cn("space-y-8 pb-10", className)}>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b pb-6">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Quản lý gói dịch vụ</h2>
+          <p className="text-muted-foreground">
+            Quản lý gói dịch vụ, thanh toán và cài đặt gói của bạn.
           </p>
         </div>
       </div>
 
-      {/* Subscription Information */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Subscription Status */}
-        <Card className="rounded-lg border-border bg-card shadow-sm overflow-hidden">
-          <CardHeader className="p-6 pb-2">
-            <CardTitle className="flex items-center gap-3 text-lg font-bold uppercase">
-              <div className="size-8 rounded bg-muted flex items-center justify-center text-muted-foreground">
-                <Zap className="size-4" /> {/* Icon replaced to match Zap usage elsewhere */}
-              </div>
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Zap className="h-5 w-5 text-primary" />
               Trạng thái gói
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6 pt-2 space-y-4">
-            <div className="flex items-center justify-between py-3 border-b">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Trạng thái</span>
-              <Badge variant="secondary" className={cn("rounded-full px-2 py-0.5 font-bold uppercase text-[9px]", getStatusColor(effectiveSubscription.status))}>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0">
+              <span className="text-sm font-medium text-muted-foreground">Trạng thái</span>
+              <Badge variant="outline" className={cn("capitalize", getStatusColor(effectiveSubscription.status))}>
                 {effectiveSubscription.status === 'active' ? "Đang hoạt động" :
                   effectiveSubscription.status === 'cancelled' ? "Đã hủy" :
                     effectiveSubscription.status === 'past_due' ? "Quá hạn" :
@@ -243,24 +208,24 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
               </Badge>
             </div>
 
-            <div className="flex items-center justify-between py-3 border-b">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Gói hiện tại</span>
-              <span className="text-xs font-bold uppercase">{effectiveSubscription.planName}</span>
+            <div className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0">
+              <span className="text-sm font-medium text-muted-foreground">Gói hiện tại</span>
+              <span className="font-semibold">{effectiveSubscription.planName}</span>
             </div>
 
             {effectiveSubscription.currentPeriodEnd && (
-              <div className="flex items-center justify-between py-3 border-b">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Ngày kết thúc</span>
-                <span className="text-xs font-semibold uppercase">
+              <div className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0">
+                <span className="text-sm font-medium text-muted-foreground">Ngày kết thúc</span>
+                <span className="font-medium">
                   {new Date(effectiveSubscription.currentPeriodEnd).toLocaleDateString('vi-VN')}
                 </span>
               </div>
             )}
 
             {effectiveSubscription.currentPeriodStart && (
-              <div className="flex items-center justify-between py-3">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Ngày bắt đầu</span>
-                <span className="text-xs font-semibold uppercase">
+              <div className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0">
+                <span className="text-sm font-medium text-muted-foreground">Ngày bắt đầu</span>
+                <span className="font-medium">
                   {new Date(effectiveSubscription.currentPeriodStart).toLocaleDateString('vi-VN')}
                 </span>
               </div>
@@ -268,27 +233,27 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <Card className="rounded-lg border-border bg-card shadow-sm overflow-hidden">
-          <CardHeader className="p-6 pb-2">
-            <CardTitle className="text-lg font-bold uppercase">Thao tác nhanh</CardTitle>
-            <CardDescription className="text-xs">
-              Quản lý và cập nhật gói dịch vụ của bạn một cách nhanh chóng.
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Thao tác nhanh</CardTitle>
+            <CardDescription>
+              Nâng cấp hoặc thay đổi gói dịch vụ của bạn.
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-6 pt-2 space-y-3">
+          <CardContent className="space-y-3">
             {effectiveSubscription.tier !== 'free' && (
               <Button
                 onClick={handleRenew}
                 disabled={isProcessing}
-                className="w-full justify-start rounded-md h-10 font-bold uppercase tracking-wider text-[10px]"
+                className="w-full justify-start"
+                variant="default"
               >
-                <Clock className="size-3.5 mr-2" />
+                <Clock className="h-4 w-4 mr-2" />
                 {isProcessing ? "Đang xử lý..." : "Gia hạn gói hiện tại"}
               </Button>
             )}
 
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid gap-2">
               {SUBSCRIPTION_PLANS.filter(plan => {
                 const tierOrder = { 'free': 0, 'basic': 1, 'pro': 2 }
                 const currentTierOrder = tierOrder[effectiveSubscription.tier as keyof typeof tierOrder] ?? 0
@@ -298,10 +263,10 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
                 <Button
                   key={plan.id}
                   onClick={() => handlePlanChange(plan)}
-                  className="w-full justify-start rounded-md h-10 font-bold uppercase tracking-wider text-[10px]"
+                  className="w-full justify-start"
                   variant="outline"
                 >
-                  <Zap className="size-3.5 mr-2 text-primary" />
+                  <ArrowUpCircle className="h-4 w-4 mr-2 text-primary" />
                   Nâng cấp lên {plan.name}
                 </Button>
               ))}
@@ -310,11 +275,11 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
             {effectiveSubscription.tier !== 'free' && (
               <Button
                 onClick={handleCancelClick}
-                className="w-full justify-start rounded-md h-10 font-bold uppercase tracking-wider text-[10px] text-destructive hover:text-destructive hover:bg-destructive/10"
-                variant="outline"
+                className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                variant="ghost"
                 disabled={cancelSubscriptionMutation.isPending}
               >
-                <XCircle className="size-3.5 mr-2" />
+                <XCircle className="h-4 w-4 mr-2" />
                 {cancelSubscriptionMutation.isPending ? "Đang xử lý..." : "Hủy gói dịch vụ"}
               </Button>
             )}
@@ -322,7 +287,6 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
         </Card>
       </div>
 
-      {/* Plan Change Dialog */}
       {selectedPlan && effectiveSubscription && (
         <PlanChangeDialog
           open={showPlanChangeDialog}
@@ -332,44 +296,33 @@ export function SubscriptionManagement({ className = '', profileId }: Subscripti
         />
       )}
 
-      {/* Cancel Subscription Alert Dialog */}
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <AlertDialogContent className="rounded-lg max-w-md p-8">
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex flex-col items-center gap-4 text-center">
-              <div className="size-12 rounded bg-destructive/10 text-destructive flex items-center justify-center border border-destructive/20">
-                <AlertTriangle className="size-6" />
-              </div>
-              <span className="text-xl font-bold uppercase">Hủy gói dịch vụ?</span>
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="h-5 w-5" />
+              Hủy gói dịch vụ?
             </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-4 pt-2">
-              <p className="text-sm font-medium text-muted-foreground text-center italic">
+            <AlertDialogDescription className="space-y-3 pt-2">
+              <p>
                 Bạn có chắc chắn muốn hủy gói dịch vụ không? Hành động này không thể hoàn tác và sẽ ảnh hưởng trực tiếp đến khả năng truy cập của bạn.
               </p>
-              <div className="bg-muted/50 p-4 rounded-md space-y-3 border">
-                <p className="text-[10px] font-bold uppercase tracking-widest">Điều gì sẽ xảy ra:</p>
-                <ul className="space-y-2">
-                  {[
-                    "Mất quyền truy cập vào các tính năng cao cấp ngay lập tức",
-                    "Gói sẽ bị hủy vào cuối chu kỳ thanh toán hiện tại",
-                    "Tự động chuyển về gói Miễn phí với giới hạn thấp hơn",
-                    "Dữ liệu được giữ lại nhưng không thể tạo thêm nội dung cao cấp"
-                  ].map((item, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
-                      <div className="size-1 rounded-full bg-destructive mt-1.5 shrink-0" />
-                      {item}
-                    </li>
-                  ))}
+              <div className="bg-muted p-3 rounded-md text-xs space-y-1">
+                <p className="font-semibold mb-1">Điều gì sẽ xảy ra:</p>
+                <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+                  <li>Mất quyền truy cập vào các tính năng cao cấp</li>
+                  <li>Gói sẽ bị hủy vào cuối chu kỳ thanh toán hiện tại</li>
+                  <li>Tự động chuyển về gói Miễn phí</li>
                 </ul>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-8 flex gap-3">
-            <AlertDialogCancel className="rounded-md h-9 font-bold uppercase tracking-widest text-[10px]">Giữ gói</AlertDialogCancel>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Giữ gói</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancelSubscription}
               disabled={cancelSubscriptionMutation.isPending}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md h-9 font-bold uppercase tracking-widest text-[10px]"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {cancelSubscriptionMutation.isPending ? "Đang hủy..." : "Xác nhận hủy"}
             </AlertDialogAction>
