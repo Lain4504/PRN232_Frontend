@@ -12,7 +12,6 @@ import { AdCampaignResponse } from "@/lib/types/campaigns";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Loader2, ChevronRight, ChevronLeft, Facebook, Instagram, Music2, Globe, Check, Wallet, Calendar, Target, Flag, Clock } from "lucide-react";
+import { Loader2, ChevronRight, ChevronLeft, Facebook, Instagram, Music2, Globe, Check, Wallet, Target, Flag } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -45,10 +44,10 @@ interface CampaignFormProps {
 export function CampaignForm({
   mode,
   campaign,
-  open,
+  open: _open,
   onOpenChange,
   onSuccess,
-  isDrawer = false,
+  isDrawer: _isDrawer = false,
 }: CampaignFormProps) {
   const { data: brands = [] } = useBrands();
   const { data: socialAccounts = [] } = useGetSocialAccounts();
@@ -81,7 +80,7 @@ export function CampaignForm({
       else if (campaign) await updateCampaignMutation.mutateAsync({ id: campaign.id, ...data });
       toast.success("Chiến dịch đã được lưu!");
       onSuccess?.();
-    } catch (error) {
+    } catch {
       toast.error("Lỗi khi lưu chiến dịch");
     }
   };

@@ -1,10 +1,10 @@
 "use client"
 
 import React, { useState, Suspense } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { api, endpoints } from "@/lib/api"
 import { useAuth } from "@/lib/contexts/auth-context"
-import { useProfile } from "@/lib/contexts/profile-context"
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Check, ShieldCheck, Crown, Building2, ArrowRight, Sparkles, CreditCard, Lock } from "lucide-react"

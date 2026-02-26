@@ -1,15 +1,15 @@
 'use client'
 
-import { ReactNode, useState } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  Loader2, 
-  RefreshCw, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Loader2,
+  RefreshCw,
+  CheckCircle,
+  XCircle,
   Clock,
   AlertTriangle
 } from 'lucide-react'
@@ -20,10 +20,10 @@ interface LoadingStateProps {
   className?: string
 }
 
-export function SubscriptionLoadingState({ 
-  message = 'Loading subscription data...', 
+export function SubscriptionLoadingState({
+  message = 'Loading subscription data...',
   progress,
-  className = '' 
+  className = ''
 }: LoadingStateProps) {
   return (
     <Card className={className}>
@@ -54,11 +54,11 @@ interface RetryStateProps {
   className?: string
 }
 
-export function SubscriptionRetryState({ 
-  error, 
-  onRetry, 
+export function SubscriptionRetryState({
+  error,
+  onRetry,
   isRetrying = false,
-  className = '' 
+  className = ''
 }: RetryStateProps) {
   return (
     <Card className={className}>
@@ -69,8 +69,8 @@ export function SubscriptionRetryState({
             <p className="text-sm font-medium text-red-600">Failed to load subscription data</p>
             <p className="text-xs text-muted-foreground mt-1">{error}</p>
           </div>
-          <Button 
-            onClick={onRetry} 
+          <Button
+            onClick={onRetry}
             disabled={isRetrying}
             variant="outline"
             size="sm"
@@ -101,12 +101,12 @@ interface OperationStateProps {
   className?: string
 }
 
-export function SubscriptionOperationState({ 
-  state, 
-  message, 
-  error, 
+export function SubscriptionOperationState({
+  state,
+  message,
+  error,
   onRetry,
-  className = '' 
+  className = ''
 }: OperationStateProps) {
   const getStateIcon = () => {
     switch (state) {
@@ -141,9 +141,9 @@ export function SubscriptionOperationState({
         {message || state}
       </span>
       {state === 'error' && onRetry && (
-        <Button 
-          onClick={onRetry} 
-          variant="outline" 
+        <Button
+          onClick={onRetry}
+          variant="outline"
           size="sm"
           className="ml-2"
         >
@@ -163,12 +163,12 @@ interface PlanChangeProgressProps {
   className?: string
 }
 
-export function PlanChangeProgress({ 
-  step, 
-  message, 
-  error, 
+export function PlanChangeProgress({
+  step,
+  message,
+  error,
   onRetry,
-  className = '' 
+  className = ''
 }: PlanChangeProgressProps) {
   const steps = [
     { key: 'validating', label: 'Validating Plan Change' },
@@ -199,16 +199,15 @@ export function PlanChangeProgress({
       </CardHeader>
       <CardContent className="space-y-4">
         <Progress value={progress} className="w-full" />
-        
+
         <div className="space-y-2">
           {steps.map((stepItem, index) => (
-            <div 
+            <div
               key={stepItem.key}
-              className={`flex items-center space-x-2 text-sm ${
-                index < currentStepIndex ? 'text-green-600' :
-                index === currentStepIndex ? 'text-blue-600' :
-                'text-muted-foreground'
-              }`}
+              className={`flex items-center space-x-2 text-sm ${index < currentStepIndex ? 'text-green-600' :
+                  index === currentStepIndex ? 'text-blue-600' :
+                    'text-muted-foreground'
+                }`}
             >
               {index < currentStepIndex ? (
                 <CheckCircle className="h-4 w-4" />
@@ -253,7 +252,7 @@ export function withSubscriptionLoading<T extends object>(
     if (props.isLoading) {
       return <SubscriptionLoadingState message={loadingMessage} />
     }
-    
+
     return <Component {...props} />
   }
 }
@@ -261,13 +260,13 @@ export function withSubscriptionLoading<T extends object>(
 // Hook for managing loading states
 export function useSubscriptionLoading() {
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({})
-  
+
   const setLoading = (key: string, loading: boolean) => {
     setLoadingStates(prev => ({ ...prev, [key]: loading }))
   }
-  
+
   const isLoading = (key: string) => loadingStates[key] || false
-  
+
   const withLoading = async <T,>(
     key: string,
     operation: () => Promise<T>
@@ -279,7 +278,7 @@ export function useSubscriptionLoading() {
       setLoading(key, false)
     }
   }
-  
+
   return {
     setLoading,
     isLoading,

@@ -12,12 +12,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { AlertCircle, Loader2, ChevronRight, Key } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { getPermissionsForRole, getPermissionInfo } from '@/lib/constants/team-roles';
 import { toast } from 'sonner';
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Landmark, Fingerprint, Settings, CheckCircle2, X, Shield, ChevronDown } from "lucide-react";
+import { Shield, ChevronDown } from "lucide-react";
 
 interface EditMemberDialogProps {
   open: boolean;

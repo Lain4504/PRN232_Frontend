@@ -6,7 +6,7 @@ import Link from "next/link"
 import { useProfile } from '@/lib/contexts/profile-context'
 import { ProfileTypeEnum } from '@/lib/utils/profile-utils'
 import { usePendingApprovalsCount } from '@/hooks/use-approvals'
-import { Badge } from "@/components/ui/badge"
+
 
 import {
   Calendar,
@@ -28,7 +28,6 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarGroup,
@@ -48,7 +47,7 @@ interface NavItem {
 export function DashboardSidebar() {
 
   const pathname = usePathname()
-  const { hasFeatureAccess, profileType, activeProfile } = useProfile()
+  const { profileType, activeProfile } = useProfile()
   const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free
 
   const { data: approvalCount = 0 } = usePendingApprovalsCount()

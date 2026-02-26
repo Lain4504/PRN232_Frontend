@@ -86,7 +86,7 @@ function EditTeamForm({ team, onSuccess, onCancel, isSubmitting, className }: Ed
       await updateTeam.mutateAsync(updateData)
       toast.success('Đã cập nhật thông tin đội ngũ')
       onSuccess()
-    } catch (error) {
+    } catch {
       toast.error('Lỗi khi cập nhật thông tin')
     }
   }

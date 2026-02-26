@@ -15,7 +15,8 @@ interface ControlFunctions {
   isPending: () => boolean
 }
 
-type DebouncedState<T extends (...args: any) => ReturnType<T>> = ((
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DebouncedState<T extends (...args: any[]) => ReturnType<T>> = ((
   ...args: Parameters<T>
 ) => ReturnType<T> | undefined) &
   ControlFunctions

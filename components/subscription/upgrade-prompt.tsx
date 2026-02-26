@@ -1,11 +1,11 @@
 'use client'
 
-import { ReactNode } from 'react'
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Crown, Building2, Zap, ArrowRight, Star } from 'lucide-react'
+import { Crown, Zap, ArrowRight, Star } from 'lucide-react'
 import { useSubscription } from '@/hooks/use-subscription'
 import { useFeatureGate } from '@/hooks/use-feature-gate'
 import Link from 'next/link'

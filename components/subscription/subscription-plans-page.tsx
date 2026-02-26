@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Check, Zap, Crown, Building2 } from 'lucide-react'
-import { getPlanPricing, getPlanFeatures } from '@/lib/api/subscription'
+import { getPlanFeatures } from '@/lib/api/subscription'
 import { SubscriptionPlanEnum } from '@/lib/types/subscription'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -20,12 +20,12 @@ interface SubscriptionPlansPageProps {
 
 export function SubscriptionPlansPage({
   onPlanSelect,
-  showCurrentPlan = true,
+  showCurrentPlan: _showCurrentPlan = true,
   profileId,
   isLoading = false
 }: SubscriptionPlansPageProps) {
   const router = useRouter()
-  const [selectedPlan, setSelectedPlan] = useState<number | null>(null)
+  const [selectedPlan, _setSelectedPlan] = useState<number | null>(null)
 
   // Define plans based on backend enum
   const plans = [

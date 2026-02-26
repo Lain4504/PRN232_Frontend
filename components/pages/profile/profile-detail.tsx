@@ -52,17 +52,17 @@ export function ProfileDetail() {
   if (error || !profile) {
     return (
       <div className="flex-1 space-y-8 p-6 md:p-10 bg-background">
-        <div className="flex items-center justify-between border-b border-border pb-8">
+        <div className="flex items-center justify-between border-b border-border/50 pb-8">
           <Link href="/dashboard">
-            <Button variant="outline" className="h-10 px-6 rounded-md border-border font-semibold text-sm hover:bg-muted text-muted-foreground">
+            <Button variant="outline" className="h-10 px-6 rounded-md border-border font-bold text-xs uppercase tracking-wider hover:bg-muted text-muted-foreground shadow-sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
               QUAY LẠI
             </Button>
           </Link>
         </div>
-        <Card className="rounded-lg border border-dashed border-border bg-muted/30">
-          <CardContent className="py-20 text-center font-bold text-muted-foreground text-sm">
-            {error ? 'CÓ LỖI XẢY RA KHI TẢI HỒ SƠ' : 'KHÔNG TÌM THẤY HỒ SƠ'}
+        <Card className="rounded-lg border border-dashed border-border bg-muted/20">
+          <CardContent className="py-24 text-center font-bold text-muted-foreground/40 text-xs italic uppercase tracking-widest">
+            {error ? 'Hệ thống rơ-le gặp sự cố kết nối' : 'Thực thể hồ sơ không tồn tại'}
           </CardContent>
         </Card>
       </div>
@@ -71,67 +71,67 @@ export function ProfileDetail() {
 
   return (
     <div className="flex-1 space-y-8 p-6 md:p-10 bg-background transition-all duration-300">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-8 text-foreground">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border/50 pb-10 transition-all duration-300">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <Link href="/dashboard">
-              <Button variant="outline" className="size-8 p-0 rounded-md bg-muted flex items-center justify-center text-muted-foreground border-none hover:bg-accent transition-all">
+              <Button variant="outline" className="size-8 p-0 rounded-md bg-muted/50 flex items-center justify-center text-muted-foreground border-border/50 hover:bg-accent transition-all shadow-sm">
                 <ArrowLeft className="size-4" />
               </Button>
             </Link>
-            <span className="text-[11px] font-semibold text-muted-foreground">Hồ sơ tài khoản / Chi tiết</span>
+            <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest italic">Hồ sơ tài khoản • Node Identity</span>
           </div>
-          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-foreground leading-tight">
-            CHI TIẾT <span className="text-primary">HỒ SƠ</span>
+          <h1 className="text-4xl font-bold tracking-tight italic uppercase">
+            Chi chi tiết <span className="text-primary">Hồ sơ</span>
           </h1>
-          <p className="text-sm text-muted-foreground font-medium max-w-xl leading-relaxed">
-            Xem và quản lý thông tin định danh của bạn trong hệ thống.
+          <p className="text-sm text-muted-foreground font-medium max-w-xl italic leading-relaxed">
+            Xem và quản lý thông tin định danh của bạn trong mạng lưới OmniAdly.
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Link href={`/dashboard/profile/edit/${profile.id}`}>
-            <Button variant="outline" className="h-12 px-8 rounded-md border-border font-bold text-sm hover:bg-muted text-muted-foreground shadow-sm transition-all">
+            <Button variant="outline" className="h-11 px-8 rounded-md border-border font-bold text-xs uppercase tracking-wider hover:bg-muted shadow-sm transition-all hover:-translate-y-0.5">
               <Edit className="mr-2 h-4 w-4" />
-              Chỉnh sửa
+              Hiệu chỉnh
             </Button>
           </Link>
-          <Button variant="outline" onClick={handleRestore} className="h-12 px-8 rounded-md border-border hover:bg-muted text-muted-foreground font-bold text-sm shadow-sm transition-all">
+          <Button variant="outline" onClick={handleRestore} className="h-11 px-8 rounded-md border-border hover:bg-muted font-bold text-xs uppercase tracking-wider shadow-sm transition-all hover:-translate-y-0.5">
             <RotateCcw className="mr-2 h-4 w-4" />
             Khôi phục
           </Button>
-          <Button variant="destructive" onClick={handleDelete} className="h-12 px-8 rounded-md bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold text-sm shadow-sm transition-all border-none">
+          <Button variant="destructive" onClick={handleDelete} className="h-11 px-8 rounded-md bg-destructive text-white border-none font-bold text-xs uppercase tracking-wider shadow-lg transition-all hover:-translate-y-0.5">
             <Trash2 className="mr-2 h-4 w-4" />
-            Xóa hồ sơ
+            Xóa thực thể
           </Button>
         </div>
       </div>
 
       <Card className="rounded-lg border border-border bg-card shadow-sm overflow-hidden group transition-all duration-300">
-        <CardHeader className="p-8 pb-4 border-b border-border">
-          <CardTitle className="flex items-center gap-4 text-xl font-bold text-foreground">
-            <div className="size-10 rounded-md bg-primary/10 flex items-center justify-center text-primary">
+        <CardHeader className="p-10 pb-6 border-b border-border/50 bg-muted/20">
+          <CardTitle className="flex items-center gap-4 text-xl font-bold italic uppercase tracking-tight">
+            <div className="size-10 rounded-md bg-primary/10 flex items-center justify-center text-primary shadow-inner border border-primary/20">
               <Building2 className="size-5" />
             </div>
-            THÔNG TIN ĐỊNH DANH
+            Thông tin định danh Node
           </CardTitle>
-          <CardDescription className="text-sm font-medium text-muted-foreground mt-2">Dữ liệu hồ sơ doanh nghiệp hoặc cá nhân trên OmniAdly.</CardDescription>
+          <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40 italic mt-2">Dữ liệu hồ sơ doanh nghiệp hoặc cá nhân trên mạng lưới OmniAdly.</CardDescription>
         </CardHeader>
-        <CardContent className="p-8 space-y-10">
-          <div className="flex flex-col md:flex-row items-center gap-10">
-            <div className="relative size-32 rounded-lg overflow-hidden border border-border bg-muted/30 group-hover:scale-105 transition-transform duration-500 shrink-0">
+        <CardContent className="p-10 space-y-12">
+          <div className="flex flex-col md:flex-row items-center gap-12">
+            <div className="relative size-40 rounded-lg overflow-hidden border border-border bg-muted/10 group-hover:scale-105 transition-transform duration-500 shrink-0 shadow-inner">
               {profile.avatarUrl ? (
                 <AvatarImage src={profile.avatarUrl} alt="Avatar" className="object-cover h-full w-full" />
               ) : (
-                <div className="h-full w-full flex items-center justify-center font-bold text-4xl text-muted-foreground">
+                <div className="h-full w-full flex items-center justify-center font-bold text-5xl text-muted-foreground/20 italic">
                   {profile.company_name?.[0] || 'P'}
                 </div>
               )}
-              <div className="absolute bottom-2 right-2">
-                <Badge variant="secondary" className={cn(
-                  "rounded-sm px-2 py-0.5 font-semibold text-[9px] border-none shadow-sm",
-                  profile.profileType === ProfileTypeEnum.Pro ? "bg-amber-500 text-white" :
-                    profile.profileType === ProfileTypeEnum.Basic ? "bg-primary text-white" : "bg-muted text-muted-foreground"
+              <div className="absolute bottom-3 right-3">
+                <Badge variant="outline" className={cn(
+                  "rounded-md px-2 py-0.5 font-bold text-[8px] uppercase tracking-widest shadow-lg border-border",
+                  profile.profileType === ProfileTypeEnum.Pro ? "bg-amber-500 text-white border-amber-600" :
+                    profile.profileType === ProfileTypeEnum.Basic ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground"
                 )}>
                   {profile.profileType === ProfileTypeEnum.Pro ? "PRO" :
                     profile.profileType === ProfileTypeEnum.Basic ? "BASIC" : "FREE"}
@@ -139,27 +139,27 @@ export function ProfileDetail() {
               </div>
             </div>
 
-            <div className="flex-1 space-y-3 text-center md:text-left">
+            <div className="flex-1 space-y-4 text-center md:text-left">
               <div>
-                <h3 className="text-2xl font-bold text-foreground">{profile.company_name || "Hồ sơ cá nhân"}</h3>
-                <p className="text-[10px] font-semibold text-muted-foreground mt-1">ID HỒ SƠ: {profile.id}</p>
+                <h3 className="text-3xl font-bold italic truncate">{profile.company_name || "Thực thể cá nhân"}</h3>
+                <p className="text-[10px] font-bold text-muted-foreground/40 mt-1 uppercase tracking-widest font-mono">NODE ID: {profile.id}</p>
               </div>
               {profile.bio && (
-                <p className="text-sm font-medium text-muted-foreground leading-relaxed max-w-xl">
+                <p className="text-sm font-medium text-muted-foreground italic leading-relaxed max-w-2xl border-l-4 border-primary/5 pl-6">
                   {profile.bio}
                 </p>
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-6 border-t border-border">
-            <div className="space-y-1">
-              <span className="text-[10px] font-semibold text-muted-foreground">Ngày khởi tạo</span>
-              <p className="text-sm font-bold text-foreground">{new Date(profile.createdAt).toLocaleString('vi-VN')}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 pt-10 border-t border-border/50">
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest italic">Thời điểm khởi tạo</span>
+              <p className="text-sm font-bold italic font-mono text-foreground/80">{new Date(profile.createdAt).toLocaleString('vi-VN').replace(/\//g, ' • ')}</p>
             </div>
-            <div className="space-y-1">
-              <span className="text-[10px] font-semibold text-muted-foreground">Cập nhật cuối</span>
-              <p className="text-sm font-bold text-foreground">{new Date(profile.updatedAt).toLocaleString('vi-VN')}</p>
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest italic">Cập nhật cuối cùng</span>
+              <p className="text-sm font-bold italic font-mono text-foreground/80">{new Date(profile.updatedAt).toLocaleString('vi-VN').replace(/\//g, ' • ')}</p>
             </div>
           </div>
         </CardContent>

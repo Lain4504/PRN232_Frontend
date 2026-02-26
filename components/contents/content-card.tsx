@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -18,9 +18,8 @@ import {
 import {
   Edit,
   Trash2,
-  Send,
   Clock,
-  Image,
+  Image as ImageIcon,
   Video,
   FileText
 } from "lucide-react";
@@ -77,7 +76,7 @@ export function ContentCard({
   const getAdTypeIcon = (adType: AdTypeEnum) => {
     switch (adType) {
       case AdTypeEnum.TextOnly: return <FileText className="h-3 w-3" />;
-      case AdTypeEnum.ImageText: return <Image className="h-3 w-3" />;
+      case AdTypeEnum.ImageText: return <ImageIcon className="h-3 w-3" />;
       case AdTypeEnum.VideoText: return <Video className="h-3 w-3" />;
       default: return <FileText className="h-3 w-3" />;
     }

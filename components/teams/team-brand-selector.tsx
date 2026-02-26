@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useTeam } from '@/lib/contexts/team-context'
 import { useTeamBrands } from '@/hooks/use-team-brands'
-import { Button } from '@/components/ui/button'
+
 import {
   Select,
   SelectContent,
@@ -12,16 +12,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Building2, ChevronDown, AlertCircle } from 'lucide-react'
+import { Building2, AlertCircle } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
-interface TeamBrand {
-  id: string
-  name: string
-  description?: string
-  logoUrl?: string
-  status: string
-}
+
 
 interface TeamBrandSelectorProps {
   selectedBrandId?: string
@@ -31,9 +25,9 @@ interface TeamBrandSelectorProps {
   showAllOption?: boolean
 }
 
-export function TeamBrandSelector({ 
-  selectedBrandId, 
-  onBrandChange, 
+export function TeamBrandSelector({
+  selectedBrandId,
+  onBrandChange,
   placeholder = "Select a brand",
   disabled = false,
   showAllOption = false
@@ -89,8 +83,8 @@ export function TeamBrandSelector({
 
   return (
     <div className="space-y-2">
-      <Select 
-        value={selectedBrand} 
+      <Select
+        value={selectedBrand}
         onValueChange={handleBrandChange}
         disabled={disabled}
       >
@@ -133,7 +127,7 @@ export function TeamBrandSelector({
           ))}
         </SelectContent>
       </Select>
-      
+
       {teamBrands.length > 0 && (
         <div className="text-xs text-muted-foreground">
           {teamBrands.length} brand{teamBrands.length !== 1 ? 's' : ''} available

@@ -13,7 +13,6 @@ import {
   CheckCircle,
   Sparkles,
   ArrowRight,
-  TrendingUp,
 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from "@/lib/utils"

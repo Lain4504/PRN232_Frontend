@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+
 import { CustomTabs, CustomTabItem } from '@/components/ui/custom-tabs'
-import { ArrowLeft, Users, UserPlus, Activity, Shield, Mail, MoreVertical, Building2, Plus, Target, ChevronRight, MoreHorizontal } from 'lucide-react'
+import { ArrowLeft, Users, UserPlus, Activity, Shield, Mail, Building2, Target, ChevronRight, MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 import { TeamMembersTable } from '@/components/pages/teams/TeamMembersTable'
 import { AddMemberDialog } from '@/components/pages/teams/AddMemberDialog'
@@ -28,7 +28,7 @@ export function TeamManagement({ teamId, canManage = true }: TeamManagementProps
   const [editingMember, setEditingMember] = useState<TeamMemberResponseDto | null>(null)
 
   const { data: team, isLoading: teamLoading } = useTeam(teamId)
-  const { data: members, isLoading: membersLoading } = useTeamMembers(teamId)
+  const { data: members, isLoading: _membersLoading } = useTeamMembers(teamId)
 
   const handleEditMember = (member: TeamMemberResponseDto) => {
     setEditingMember(member)

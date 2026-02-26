@@ -26,7 +26,7 @@ export function FeatureGateWrapper({
   upgradePromptDescription,
   className = ''
 }: FeatureGateWrapperProps) {
-  const { canAccess, featureGate, isLoading } = useFeatureGate(featureId)
+  const { canAccess, isLoading } = useFeatureGate(featureId)
 
   if (isLoading) {
     return (
@@ -109,11 +109,11 @@ export function useFeatureGateRender(featureId: string) {
       if (isLoading) {
         return <div className="animate-pulse">Loading...</div>
       }
-      
+
       if (canAccess) {
         return children
       }
-      
+
       return fallback || null
     }
   }

@@ -248,22 +248,23 @@ export const analyzePlanChangeImpact = (
   const warnings: string[] = []
 
   if (comparison.isUpgrade) {
-    immediateChanges.push('Access to new features will be available immediately')
-    immediateChanges.push('Higher usage limits will be applied immediately')
+    immediateChanges.push('Bạn sẽ có quyền truy cập các tính năng mới ngay lập tức')
+    immediateChanges.push('Hạn mức sử dụng mới sẽ được áp dụng ngay sau khi thanh toán')
   }
 
   if (comparison.isDowngrade) {
-    endOfPeriodChanges.push('Access to premium features will end at the end of your billing period')
-    endOfPeriodChanges.push('Usage limits will be reduced at the end of your billing period')
+    endOfPeriodChanges.push('Quyền truy cập các tính năng nâng cao sẽ kết thúc vào cuối chu kỳ thanh toán này')
+    endOfPeriodChanges.push('Hạn mức sử dụng sẽ bị cắt giảm sau khi gói hiện tại hết hạn')
 
     if (willLoseData) {
-      warnings.push('You may need to delete some campaigns to stay within the new plan limits')
+      warnings.push('Bạn có thể cần xóa bớt dữ liệu (thương hiệu, tài khoản) để phù hợp với hạn mức gói thấp hơn')
     }
   }
 
   if (comparison.priceDifference !== 0) {
-    const changeType = comparison.priceDifference > 0 ? 'increase' : 'decrease'
-    immediateChanges.push(`Your monthly billing will ${changeType} by $${Math.abs(comparison.priceDifference)}`)
+    const changeType = comparison.priceDifference > 0 ? 'tăng thêm' : 'giảm đi'
+    const formattedDiff = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Math.abs(comparison.priceDifference))
+    immediateChanges.push(`Chi phí thanh toán của bạn sẽ ${changeType} là ${formattedDiff}`)
   }
 
   return {
@@ -296,16 +297,16 @@ export const getSubscriptionStatusColor = (status: string): string => {
 export const getSubscriptionStatusText = (status: string): string => {
   switch (status) {
     case 'active':
-      return 'Active'
+      return 'Đang hoạt động'
     case 'trialing':
-      return 'Trial'
+      return 'Dùng thử'
     case 'past_due':
-      return 'Past Due'
+      return 'Quá hạn'
     case 'cancelled':
-      return 'Cancelled'
+      return 'Đã hủy'
     case 'incomplete':
-      return 'Incomplete'
+      return 'Chưa hoàn tất'
     default:
-      return 'Unknown'
+      return 'Không xác định'
   }
 }

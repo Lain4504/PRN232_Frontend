@@ -126,39 +126,39 @@ const DashboardContent = () => {
   )
 
   return (
-    <div className="space-y-6 pb-10">
+    <div className="space-y-8 pb-10">
       {/* Header */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="space-y-1">
-          <Badge variant="secondary" className="mb-2">
-            Hệ thống trực tuyến
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="space-y-1.5">
+          <Badge variant="outline" className="mb-2 px-2 py-0.5 text-[10px] uppercase font-bold tracking-widest bg-primary/5 text-primary border-primary/20">
+            Hệ thống trực tuyến • Core v2.0
           </Badge>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight italic uppercase">
             Trung tâm Điều khiển
           </h1>
-          <p className="text-muted-foreground">
-            Chào mừng, <span className="font-medium text-foreground">{user?.first_name || user?.email?.split('@')[0]}</span>.
+          <p className="text-sm text-muted-foreground italic font-medium">
+            Chào mừng trở lại, <span className="text-foreground decoration-primary/30 underline underline-offset-4">{user?.first_name || user?.email?.split('@')[0]}</span>.
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-center gap-3">
           {teams.length > 0 && (
-             <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
-                <SelectTrigger className="w-full sm:w-[200px]">
-                  <SelectValue placeholder="Chọn không gian" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tổng quan chung</SelectItem>
-                  {teams.map(team => (
-                    <SelectItem key={team.id} value={team.id}>
-                      {team.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
+              <SelectTrigger className="w-full sm:w-[220px] h-11 rounded-md border-border bg-card font-bold text-xs uppercase tracking-wider">
+                <SelectValue placeholder="Chọn không gian" />
+              </SelectTrigger>
+              <SelectContent className="rounded-md border-border">
+                <SelectItem value="all" className="font-medium">Tổng quan chung</SelectItem>
+                {teams.map(team => (
+                  <SelectItem key={team.id} value={team.id} className="font-medium">
+                    {team.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           )}
-          <Button variant="outline" className="w-full sm:w-auto">
-            <Filter className="mr-2 h-4 w-4" />
+          <Button variant="outline" className="w-full sm:w-auto h-11 rounded-md font-bold text-xs uppercase tracking-wider border-border shadow-sm">
+            <Filter className="mr-2 h-3.5 w-3.5" />
             Báo cáo chi tiết
           </Button>
         </div>
@@ -168,16 +168,16 @@ const DashboardContent = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats && getStatsData(stats).map((stat, i) => (
           <Link href={stat.href} key={i}>
-            <Card className="hover:bg-muted/50 transition-colors h-full">
+            <Card className="rounded-lg border border-border bg-card shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer border-l-4 border-l-primary/10">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
+                <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                   {stat.title}
                 </CardTitle>
-                <stat.icon className="h-4 w-4 text-muted-foreground" />
+                <stat.icon className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:scale-110 group-hover:text-primary" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-2xl font-bold tracking-tight">{stat.value}</div>
+                <p className="text-[10px] text-muted-foreground mt-1 font-bold italic uppercase tracking-wider opacity-60">
                   {stat.description}
                 </p>
               </CardContent>
@@ -194,61 +194,68 @@ const DashboardContent = () => {
 
         {/* Operational Performance */}
         <div className="lg:col-span-7 space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-primary" />
-                <CardTitle>Hiệu suất vận hành</CardTitle>
+          <Card className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+            <CardHeader className="bg-muted/30 border-b border-border/50 py-4 px-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-primary/10 rounded-md">
+                    <Activity className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-sm font-bold uppercase tracking-wider italic">Hiệu suất vận hành</CardTitle>
+                    <CardDescription className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">Node Intelligence Core v2.0</CardDescription>
+                  </div>
+                </div>
+                <Badge variant="outline" className="text-[9px] font-bold uppercase border-primary/20 text-primary">Live Sync</Badge>
               </div>
-              <CardDescription>Node Intelligence Core v2.0</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="p-6 space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                <div className="flex items-center justify-between p-4 rounded-md border border-border bg-muted/10 hover:bg-muted/20 transition-all group">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-background rounded-md border">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
+                    <div className="p-2 bg-card rounded-md border border-border shadow-sm group-hover:border-primary/20">
+                      <Clock className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Đang chờ</p>
-                      <p className="text-xs text-muted-foreground">Hàng chờ phê duyệt</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Đang chờ</p>
+                      <p className="text-xs font-bold italic">Hàng chờ phê duyệt</p>
                     </div>
                   </div>
-                  <div className="text-2xl font-bold">{stats?.pending_approvals || 0}</div>
+                  <div className="text-2xl font-bold tracking-tighter">{stats?.pending_approvals || 0}</div>
                 </div>
 
-                <div className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                <div className="flex items-center justify-between p-4 rounded-md border border-border bg-muted/10 hover:bg-muted/20 transition-all group">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-background rounded-md border">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <div className="p-2 bg-card rounded-md border border-border shadow-sm group-hover:border-primary/20">
+                      <Calendar className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Đã lập lịch</p>
-                      <p className="text-xs text-muted-foreground">Tiến độ đồng bộ</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Đã lập lịch</p>
+                      <p className="text-xs font-bold italic">Tiến độ đồng bộ</p>
                     </div>
                   </div>
-                  <div className="text-2xl font-bold">{stats?.scheduled_posts || 0}</div>
+                  <div className="text-2xl font-bold tracking-tighter">{stats?.scheduled_posts || 0}</div>
                 </div>
               </div>
 
               {/* AI Insight */}
-              <div className="p-6 rounded-lg bg-primary text-primary-foreground relative overflow-hidden">
+              <div className="p-6 rounded-md bg-slate-900 dark:bg-primary text-white relative overflow-hidden group/insight shadow-xl">
                 <div className="flex items-start gap-4 relative z-10">
-                  <div className="p-2 bg-primary-foreground/10 rounded-md">
-                    <TrendingUp className="h-5 w-5" />
+                  <div className="p-2.5 bg-white/10 rounded-md backdrop-blur-md border border-white/20 group-hover/insight:scale-110 transition-transform">
+                    <TrendingUp className="h-5 w-5 text-white" />
                   </div>
                   <div className="space-y-2">
-                    <h4 className="font-semibold">Phân tích chiến lược AI</h4>
-                    <p className="text-sm opacity-90">
-                      Dựa trên tốc độ tăng trưởng hiện tại, mô hình AI dự báo việc triển khai nội dung vào lúc 18:00 tối nay sẽ mang lại tỉ lệ tương tác cao nhất.
+                    <h4 className="font-bold text-sm uppercase tracking-widest italic">Phân tích chiến lược AI</h4>
+                    <p className="text-xs leading-relaxed opacity-80 font-medium italic">
+                      Dựa trên tốc độ tăng trưởng hiện tại, mô hình AI dự báo việc triển khai nội dung vào lúc <span className="text-white font-bold underline decoration-white/30 decoration-2 underline-offset-4">18:00 tối nay</span> sẽ mang lại tỉ lệ tương tác cao nhất.
                     </p>
-                    <Button variant="ghost" size="sm" className="p-0 h-auto hover:bg-transparent hover:text-white/80 text-white font-medium flex items-center gap-1">
+                    <Button variant="ghost" size="sm" className="p-0 h-auto hover:bg-transparent hover:text-white text-white/70 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 transition-all">
                       Xem lộ trình
                       <MousePointer2 className="h-3 w-3" />
                     </Button>
                   </div>
                 </div>
-                <Sparkles className="absolute -top-4 -right-4 h-32 w-32 opacity-10 rotate-12" />
+                <Sparkles className="absolute -top-8 -right-8 h-40 w-40 text-white/5 rotate-12 group-hover/insight:rotate-45 transition-transform duration-1000" />
               </div>
             </CardContent>
           </Card>

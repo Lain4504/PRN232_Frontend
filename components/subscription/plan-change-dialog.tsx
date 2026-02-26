@@ -4,19 +4,10 @@ import { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import {
-  Users,
   Building2,
-  Calendar,
-  FileText,
-  CheckCircle,
-  Sparkles,
-  TrendingUp,
-  ArrowRight,
   Loader2,
   Check, Info, Crown, Zap, AlertTriangle
 } from 'lucide-react'
@@ -27,7 +18,6 @@ import { toast } from 'sonner'
 import type { SubscriptionPlan, BillingCycle, Subscription } from '@/lib/types/subscription'
 import { SubscriptionPlanEnum } from '@/lib/types/subscription'
 import { createPayOSCheckoutLink } from '@/lib/api/subscription'
-import { cn } from '@/lib/utils'
 
 interface PlanChangeDialogProps {
   open: boolean
@@ -43,10 +33,8 @@ export function PlanChangeDialog({
   currentSubscription
 }: PlanChangeDialogProps) {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly')
-  const [immediate, setImmediate] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
   const changePlanMutation = useChangePlan()
-  const comparison = usePlanComparison(targetPlan.id)
 
   useEffect(() => {
     const checkMobile = () => {
@@ -68,8 +56,7 @@ export function PlanChangeDialog({
           immediate: true,
         })
         onOpenChange(false)
-        toast.success('Đã chuyển sang gói Miễn phí thành công')
-      } catch (error) {
+      } catch {
         toast.error('Lỗi khi thay đổi gói dịch vụ')
       }
       return

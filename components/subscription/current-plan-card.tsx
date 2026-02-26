@@ -4,12 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Zap, Crown, Building2, Calendar, CreditCard, Users, HardDrive, Activity } from 'lucide-react'
+import { Zap, Crown, Building2, Calendar, CreditCard, Activity } from 'lucide-react'
 import { useSubscription } from '@/hooks/use-subscription'
 import { useProfile } from '@/lib/contexts/profile-context'
-import { formatPrice } from '@/lib/constants/subscription-plans'
+
 import { getSubscriptionStatusColor, getSubscriptionStatusText, getDaysUntilBilling } from '@/lib/utils/subscription'
-import { SubscriptionPlanEnum, SubscriptionTier, Subscription } from '@/lib/types/subscription'
+import { Subscription } from '@/lib/types/subscription'
 import Link from 'next/link'
 
 
@@ -99,7 +99,7 @@ export function CurrentPlanCard({
     if (typeof limit === 'string') {
       return `${used} / ${limit}`
     }
-    if (limit === -1) return `${used} / Unlimited`
+    if (limit === -1) return `${used} / Không giới hạn`
     return `${used} / ${limit}`
   }
 
@@ -133,7 +133,7 @@ export function CurrentPlanCard({
     return (
       <Card className={className}>
         <CardContent className="text-center py-8">
-          <p className="text-muted-foreground">Không thể tải thông tin gói.</p>
+          <p className="text-muted-foreground">Không thể tải thông tin gói dịch vụ.</p>
         </CardContent>
       </Card>
     )
@@ -175,10 +175,10 @@ export function CurrentPlanCard({
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span>Ngày thanh toán tiếp theo</span>
+              <span>Gia hạn tiếp theo</span>
             </div>
             <span className="font-medium">
-              {new Date(effectiveSubscription.currentPeriodEnd).toLocaleDateString()}
+              {new Date(effectiveSubscription.currentPeriodEnd).toLocaleDateString('vi-VN')}
             </span>
           </div>
 
@@ -198,7 +198,7 @@ export function CurrentPlanCard({
         {/* Usage Statistics */}
         {showUsage && (
           <div className="space-y-4">
-            <h4 className="font-medium text-sm">Sử dụng tháng này</h4>
+            <h4 className="font-medium text-sm">Hạn mức tháng này</h4>
 
             <div className="space-y-3">
               {/* Posts */}
@@ -206,9 +206,9 @@ export function CurrentPlanCard({
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center space-x-2">
                     <Activity className="h-4 w-4 text-muted-foreground" />
-                    <span>Bài đăng / tháng</span>
+                    <span>Bài đăng tối đa</span>
                   </div>
-                  <span className="font-mono text-sm">
+                  <span className="font-mono text-sm px-2 py-0.5 bg-muted rounded">
                     {formatUsage(effectiveSubscription.usage.postsThisMonth, effectiveSubscription.limits.postsPerMonth)}
                   </span>
                 </div>

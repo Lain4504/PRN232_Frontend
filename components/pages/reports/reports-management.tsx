@@ -29,6 +29,7 @@ import {
 import { User, PerformanceReport } from "@/lib/types/omniadly-types";
 import { toast } from "sonner";
 import { api, endpoints } from "@/lib/api";
+import { cn } from "@/lib/utils";
 
 export function ReportsManagement() {
   const [user, setUser] = useState<User | null>(null);
@@ -118,49 +119,58 @@ export function ReportsManagement() {
     <div className="max-w-[1440px] mx-auto font-fira-sans">
       <div className="space-y-8 p-6 lg:p-10 bg-background min-h-screen">
 
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              Performance Analytics
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border/50 pb-10 transition-all duration-300">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-md bg-primary/5 text-primary border border-primary/10">
+                <BarChart3 className="size-4" />
+              </div>
+              <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest italic">Phân tích & Thống kê • Analytics Engine</span>
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight italic uppercase">
+              Báo cáo Hiệu suất
             </h1>
-            <p className="text-muted-foreground max-w-2xl">
-              Track your engagement and performance metrics across all connected accounts.
+            <p className="text-sm text-muted-foreground font-medium max-w-xl italic leading-relaxed">
+              Theo dõi các chỉ số tương tác và hiệu suất chiến dịch đồng bộ trên toàn mạng lưới Node.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="rounded-lg h-10 px-4 font-semibold">
+            <Button variant="outline" className="h-11 px-6 rounded-md border-border font-bold text-xs uppercase tracking-wider hover:bg-muted shadow-sm transition-all hover:-translate-y-0.5">
               <Download className="mr-2 h-4 w-4" />
-              Export
+              Xuất dữ liệu
             </Button>
-            <Button className="rounded-lg h-10 px-6 font-semibold">
+            <Button className="h-11 px-8 rounded-md font-bold text-xs uppercase tracking-wider shadow-lg transition-all hover:-translate-y-0.5">
               <Filter className="mr-2 h-4 w-4" />
-              Filters
+              Bộ lọc Node
             </Button>
           </div>
         </div>
 
-        {/* Toolbar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl border bg-card shadow-sm">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-muted-foreground mr-2">Period:</span>
-            {['7', '30', '90'].map(period => (
-              <Button
-                key={period}
-                variant={selectedPeriod === period ? "default" : "ghost"}
-                size="sm"
-                className={`rounded-md px-4 font-semibold ${selectedPeriod === period ? '' : 'text-muted-foreground'}`}
-                onClick={() => setSelectedPeriod(period)}
-              >
-                {period}D
-              </Button>
-            ))}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-4 rounded-lg border border-border bg-card shadow-sm transition-all hover:bg-muted/50">
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 italic">Chu kỳ Node:</span>
+            <div className="flex items-center gap-2 p-1 bg-muted/30 rounded-md border border-border/50">
+              {['7', '30', '90'].map(period => (
+                <Button
+                  key={period}
+                  variant={selectedPeriod === period ? "secondary" : "ghost"}
+                  size="sm"
+                  className={cn(
+                    "h-8 rounded-md px-4 font-bold text-[10px] uppercase tracking-wider transition-all",
+                    selectedPeriod === period ? 'bg-background shadow-sm' : 'text-muted-foreground/60'
+                  )}
+                  onClick={() => setSelectedPeriod(period)}
+                >
+                  {period}D
+                </Button>
+              ))}
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg text-sm font-medium border">
-            <Calendar className="h-4 w-4 text-muted-foreground mr-1" />
-            <span>Last {selectedPeriod} days</span>
+          <div className="flex items-center gap-3 px-4 h-10 bg-primary/5 rounded-md border border-primary/10 text-[10px] font-bold text-primary uppercase tracking-widest italic shadow-inner">
+            <Calendar className="h-4 w-4 text-primary/40" />
+            <span>{selectedPeriod} Ngày gần nhất</span>
           </div>
         </div>
 
@@ -169,79 +179,81 @@ export function ReportsManagement() {
             {/* Metrics Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { title: "Impressions", value: report.total_impressions, icon: Eye, trend: 12.5, color: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-900/10" },
-                { title: "Engagement", value: report.total_engagement, icon: Heart, trend: 8.2, color: "text-rose-600", bg: "bg-rose-50 dark:bg-rose-900/10" },
-                { title: "Clicks", value: report.total_clicks, icon: Target, trend: 15.3, color: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-900/10" },
-                { title: "Avg. CTR", value: `${report.average_ctr}%`, icon: BarChart3, trend: 2.1, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/10" },
+                { title: "Số lượt hiển thị", value: report.total_impressions, icon: Eye, trend: 12.5, color: "text-blue-600", bg: "bg-blue-500/5" },
+                { title: "Độ tương tác", value: report.total_engagement, icon: Heart, trend: 8.2, color: "text-rose-600", bg: "bg-rose-500/5" },
+                { title: "Số lượt click", value: report.total_clicks, icon: Target, trend: 15.3, color: "text-amber-600", bg: "bg-amber-500/5" },
+                { title: "Tỷ lệ CTR Trung bình", value: `${report.average_ctr}%`, icon: BarChart3, trend: 2.1, color: "text-emerald-600", bg: "bg-emerald-500/5" },
               ].map((metric) => (
-                <Card key={metric.title} className="rounded-xl border shadow-sm group">
+                <Card key={metric.title} className="rounded-lg border border-border bg-card shadow-sm group hover:shadow-lg transition-all duration-300">
                   <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className={`h-10 w-10 rounded-lg ${metric.bg} flex items-center justify-center ${metric.color}`}>
-                        <metric.icon className="h-5 w-5" />
+                    <div className="flex items-center justify-between mb-6">
+                      <div className={`size-10 rounded-md ${metric.bg} flex items-center justify-center ${metric.color} shadow-inner border border-current/10`}>
+                        <metric.icon className="size-5" />
                       </div>
-                      <div className="flex items-center gap-1.5 font-bold text-xs" style={{ color: metric.trend > 0 ? '#10b981' : '#ef4444' }}>
+                      <div className="flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wider" style={{ color: metric.trend > 0 ? '#10b981' : '#ef4444' }}>
                         {getTrendIcon(metric.trend)}
-                        <span>{metric.trend}%</span>
+                        <span>{metric.trend > 0 ? '+' : ''}{metric.trend}%</span>
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-2xl font-bold tracking-tight">
+                      <p className="text-3xl font-bold tracking-tight italic">
                         {typeof metric.value === 'number' ? formatNumber(metric.value) : metric.value}
                       </p>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{metric.title}</p>
+                      <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest italic">{metric.title}</p>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
 
-            {/* Main Chart Card */}
-            <Card className="rounded-xl border shadow-sm overflow-hidden">
-              <CardHeader className="border-b bg-muted/10 p-6">
-                <CardTitle className="text-lg font-bold">Performance Trends</CardTitle>
-                <CardDescription>Visualizing engagement over the last {selectedPeriod} days</CardDescription>
+            <Card className="rounded-lg border border-border bg-card shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+              <CardHeader className="border-b border-border/50 bg-muted/20 p-8">
+                <CardTitle className="text-lg font-bold italic uppercase tracking-tight">Biểu đồ Xu hướng Hiệu suất</CardTitle>
+                <CardDescription className="text-sm font-medium italic text-muted-foreground/60">Trực quan hóa sự biến động của lượt tương tác trong {selectedPeriod} ngày gần nhất</CardDescription>
               </CardHeader>
-              <CardContent className="p-6">
-                <div className="h-80 w-full bg-muted/5 rounded-lg border border-dashed flex items-center justify-center relative overflow-hidden">
-                  <div className="text-center space-y-4">
-                    <div className="relative h-12 w-12 mx-auto">
-                      <div className="absolute inset-0 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
-                      <BarChart3 className="h-5 w-5 text-primary absolute inset-0 m-auto" />
+              <CardContent className="p-8">
+                <div className="h-96 w-full bg-muted/5 rounded-lg border border-dashed border-border/50 flex items-center justify-center relative overflow-hidden group">
+                  <div className="text-center space-y-6">
+                    <div className="relative h-16 w-16 mx-auto">
+                      <div className="absolute inset-0 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+                      <BarChart3 className="size-6 text-primary absolute inset-0 m-auto opacity-30 group-hover:opacity-100 transition-opacity" />
                     </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold">Generating Chart Data...</p>
-                      <p className="text-xs text-muted-foreground">Preparing metrics visualization</p>
+                    <div className="space-y-2">
+                      <p className="text-sm font-bold italic uppercase tracking-widest text-muted-foreground/40">Đang khởi tạo Visual Data...</p>
+                      <p className="text-[10px] font-bold text-muted-foreground/20 italic uppercase tracking-tighter">Đồng bộ hóa các điểm dữ liệu Node Analytics</p>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
               {/* Top Content */}
-              <div className="space-y-4">
-                <h2 className="text-lg font-bold px-1">Top Performing Content</h2>
-                <div className="space-y-3">
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 px-1">
+                  <div className="size-2 rounded-full bg-primary" />
+                  <h2 className="text-lg font-bold italic uppercase tracking-tight text-foreground/80">Nội dung Hiệu suất cao nhất</h2>
+                </div>
+                <div className="space-y-4">
                   {[
-                    { title: "AI Analytics Platform Launch", impressions: 12500, ctr: 3.6, color: "bg-blue-500" },
-                    { title: "Smart Automation Suite Demo", impressions: 8900, ctr: 3.6, color: "bg-emerald-500" },
-                    { title: "Bamboo Phone Case Feature", impressions: 6700, ctr: 4.2, color: "bg-rose-500" },
+                    { title: "Phát hành Nền tảng AI Analytics 2.0", impressions: 12500, ctr: 3.6, color: "bg-blue-500", label: "PHÁT HÀNH MỚI" },
+                    { title: "Bộ giải pháp Tự động hóa Thông minh", impressions: 8900, ctr: 3.6, color: "bg-emerald-500", label: "HƯỚNG DẪN" },
+                    { title: "Ra mắt Phụ kiện Ốp lưng Tre Bamboo", impressions: 6700, ctr: 4.2, color: "bg-rose-500", label: "TÍNH NĂNG" },
                   ].map((content, index) => (
-                    <Card key={index} className="rounded-xl border shadow-sm hover:shadow-md transition-shadow">
-                      <CardContent className="p-4 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className={`h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold text-xs ${content.color}`}>
+                    <Card key={index} className="rounded-lg border border-border bg-card shadow-sm hover:shadow-lg transition-all duration-300 group overflow-hidden">
+                      <CardContent className="p-5 flex items-center justify-between">
+                        <div className="flex items-center gap-5">
+                          <div className={`size-10 rounded-md flex items-center justify-center text-white font-bold text-xs shadow-md border border-white/10 ${content.color} transition-transform group-hover:scale-110`}>
                             {index + 1}
                           </div>
-                          <div>
-                            <p className="text-sm font-bold line-clamp-1">{content.title}</p>
-                            <p className="text-[10px] text-muted-foreground uppercase font-semibold">Top Performance</p>
+                          <div className="space-y-1">
+                            <p className="text-sm font-bold italic line-clamp-1 text-foreground/80">{content.title}</p>
+                            <p className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-widest">{content.label}</p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-bold text-primary">{content.ctr}% CTR</p>
-                          <p className="text-[10px] text-muted-foreground uppercase font-semibold">{formatNumber(content.impressions)} Views</p>
+                          <p className="text-sm font-bold text-primary italic">{content.ctr}% CTR</p>
+                          <p className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-tighter italic">{formatNumber(content.impressions)} Lượt xem</p>
                         </div>
                       </CardContent>
                     </Card>
@@ -250,23 +262,26 @@ export function ReportsManagement() {
               </div>
 
               {/* AI Insights */}
-              <div className="space-y-4">
-                <h2 className="text-lg font-bold px-1">AI Actionable Insights</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 px-1">
+                  <div className="size-2 rounded-full bg-primary" />
+                  <h2 className="text-lg font-bold italic uppercase tracking-tight text-foreground/80">Gợi ý Hành động từ AI</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   {[
-                    { title: "Platform Strategy", icon: Zap, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/10", text: "Instagram posts are performing 40% above average." },
-                    { title: "Visual Advice", icon: Eye, color: "text-primary", bg: "bg-primary/5", text: "High-contrast visuals get 2.3x better engagement." },
-                    { title: "Scheduling", icon: Calendar, color: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-900/10", text: "Peak activity detected between 2 PM - 4 PM." },
-                    { title: "Audience Growth", icon: Users, color: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-900/10", text: "Growth rate is 15% above industry average." },
+                    { title: "Chiến lược Nền tảng", icon: Zap, color: "text-emerald-600", bg: "bg-emerald-500/5", text: "Các bài đăng Instagram đang có hiệu suất cao hơn 40% so với trung bình." },
+                    { title: "Lời khuyên Hình ảnh", icon: Eye, color: "text-primary", bg: "bg-primary/5", text: "Hình ảnh có độ tương phản cao mang lại tương tác gấp 2.3 lần." },
+                    { title: "Tối ưu Lịch đăng", icon: Calendar, color: "text-blue-600", bg: "bg-blue-500/5", text: "Thời điểm peak activity được phát hiện từ 2 PM - 4 PM." },
+                    { title: "Tăng trưởng Audience", icon: Users, color: "text-amber-600", bg: "bg-amber-500/5", text: "Tỷ lệ tăng trưởng đang vượt 15% so với mặt bằng chung ngành." },
                   ].map((insight, idx) => (
-                    <Card key={idx} className="rounded-xl border shadow-sm">
-                      <CardContent className="p-5 space-y-3">
-                        <div className={`h-8 w-8 rounded-lg ${insight.bg} ${insight.color} flex items-center justify-center`}>
-                          <insight.icon className="h-4 w-4" />
+                    <Card key={idx} className="rounded-lg border border-border bg-card shadow-sm hover:shadow-md transition-all duration-300 group">
+                      <CardContent className="p-6 space-y-4">
+                        <div className={`size-9 rounded-md ${insight.bg} ${insight.color} flex items-center justify-center shadow-inner border border-current/10 transition-transform group-hover:rotate-12`}>
+                          <insight.icon className="size-4" />
                         </div>
-                        <div className="space-y-1">
-                          <h4 className="text-xs font-bold uppercase text-foreground">{insight.title}</h4>
-                          <p className="text-xs text-muted-foreground leading-relaxed font-medium">{insight.text}</p>
+                        <div className="space-y-2">
+                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/60 italic">{insight.title}</h4>
+                          <p className="text-xs text-muted-foreground leading-relaxed italic font-medium">{insight.text}</p>
                         </div>
                       </CardContent>
                     </Card>

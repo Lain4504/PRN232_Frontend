@@ -24,37 +24,30 @@ export function CalendarManagement() {
   };
 
   return (
-    <div className="max-w-[1400px] mx-auto">
-      <div className="space-y-6 p-4 lg:p-8 min-h-screen bg-background text-foreground">
-
-        {/* Breadcrumb */}
-        <Breadcrumb className="mb-4">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard" className="text-xs font-medium text-slate-500 hover:text-slate-900">Tổng quan</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage className="text-xs font-semibold">Lịch nội dung</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
+    <div className="mx-auto">
+      <div className="space-y-8 p-4 lg:p-8 min-h-screen bg-background text-foreground">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Lịch nội dung</h1>
-            <p className="text-sm text-slate-500">
-              Quản lý và lập lịch đăng bài cho các kênh mạng xã hội của bạn.
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border/50 pb-8 transition-all duration-300">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-md bg-primary/5 text-primary border border-primary/10">
+                <Plus className="size-4" />
+              </div>
+              <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest italic">Lập lịch & Điều phối • Content Timeline</span>
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight italic uppercase">
+              Lịch Nội dung
+            </h1>
+            <p className="text-sm text-muted-foreground font-medium max-w-xl italic leading-relaxed">
+              Quản lý và lập lịch đăng bài đa kênh thông minh trong một giao diện thời gian thực duy nhất.
             </p>
           </div>
 
           <Button
             onClick={() => setShowScheduleModal(true)}
-            size="sm"
-            className="w-full sm:w-auto"
+            className="h-12 px-8 rounded-md font-bold uppercase tracking-wider text-xs shadow-lg transition-all hover:-translate-y-0.5"
           >
-            <Plus className="mr-2 size-4" />
+            <Plus className="mr-2 h-4 w-4" />
             Lên lịch đăng bài
           </Button>
         </div>

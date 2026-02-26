@@ -53,24 +53,24 @@ export default function TeamsPage() {
 
   const getRoleStyle = (role: string) => {
     switch (role) {
-      case 'Owner': return 'bg-slate-900 text-white border-transparent'
-      case 'Admin': return 'bg-blue-50 text-blue-600 border-blue-100'
-      case 'Member': return 'bg-slate-100 text-slate-600 border-slate-200'
-      default: return 'bg-slate-50 text-slate-400 border-slate-100'
+      case 'Owner': return 'bg-primary/10 text-primary border-primary/20'
+      case 'Admin': return 'bg-blue-500/10 text-blue-600 border-blue-500/20'
+      case 'Member': return 'bg-muted text-muted-foreground border-border'
+      default: return 'bg-muted/50 text-muted-foreground border-border'
     }
   }
 
   if (userLoading || teamsLoading) {
     return (
-      <div className="max-w-6xl mx-auto py-12 px-8 space-y-12">
+      <div className="max-w-5xl mx-auto py-10 px-6 space-y-10">
         <div className="space-y-4">
-          <div className="h-4 w-32 bg-slate-100 dark:bg-slate-800 animate-pulse rounded" />
-          <div className="h-10 w-64 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-lg" />
-          <div className="h-6 w-96 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-lg" />
+          <div className="h-4 w-32 bg-muted animate-pulse rounded" />
+          <div className="h-10 w-64 bg-muted animate-pulse rounded-md" />
+          <div className="h-6 w-96 bg-muted animate-pulse rounded-md" />
         </div>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 pt-8">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-48 w-full bg-slate-50 dark:bg-slate-900 animate-pulse rounded-3xl border border-slate-100 dark:border-slate-800" />
+            <div key={i} className="h-48 w-full bg-card animate-pulse rounded-lg border border-border" />
           ))}
         </div>
       </div>
@@ -87,61 +87,61 @@ export default function TeamsPage() {
   })
 
   return (
-    <div className="max-w-6xl mx-auto py-6 md:py-12 px-4 md:px-8 space-y-8 md:space-y-12 font-sans">
+    <div className="max-w-5xl mx-auto py-10 px-6 space-y-10">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-10 border-b border-slate-100 dark:border-slate-800 pb-6 md:pb-12">
-        <div className="space-y-4 md:space-y-6 text-center md:text-left">
-          <Link href="/overview" className="inline-flex items-center gap-2 text-[10px] md:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest hover:text-slate-900 dark:hover:text-white transition-colors mx-auto md:mx-0">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-10">
+        <div className="space-y-4 text-center md:text-left">
+          <Link href="/overview" className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors mx-auto md:mx-0">
             <ArrowLeft className="h-3.5 w-3.5" />
             Quay lại tổng quan
           </Link>
           <div className="space-y-2">
-            <h1 className="text-2xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground leading-tight">
               Nhóm của tôi
             </h1>
-            <p className="text-sm md:text-lg text-slate-500 dark:text-slate-400 font-medium max-w-xl mx-auto md:mx-0">
-              Quản lý và truy cập các đội nhóm mà bạn đang tham gia.
+            <p className="text-sm text-muted-foreground font-medium max-w-xl mx-auto md:mx-0 italic">
+              Quản lý và tiếp cận các tổ chức cộng tác mà bạn đã tham gia.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center justify-center md:justify-end gap-8 md:gap-12">
+        <div className="flex items-center justify-center md:justify-end gap-10">
           <div className="text-center md:text-right">
-            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-1">Tổng số nhóm</p>
-            <p className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white leading-none">{teams.length}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Cấu trúc nhóm</p>
+            <p className="text-3xl font-bold text-foreground leading-none">{teams.length}</p>
           </div>
           <div className="text-center md:text-right hidden sm:block">
-            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-1">Trạng thái</p>
-            <p className="text-2xl md:text-3xl font-black text-emerald-500 dark:text-emerald-400 leading-none">Hoạt động</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Tình thái</p>
+            <p className="text-3xl font-bold text-emerald-500 leading-none">Hoạt động</p>
           </div>
         </div>
       </div>
 
 
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
         <div className="relative w-full max-w-md group">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 group-focus-within:text-slate-900 dark:group-focus-within:text-white transition-colors" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             placeholder="Tìm kiếm đội nhóm..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 h-11 bg-slate-50 dark:bg-slate-900 border-none rounded-xl font-medium focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-slate-100 dark:focus:ring-slate-800 transition-all text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600"
+            className="pl-10 h-10 bg-muted/20 border-border rounded-md font-medium focus-visible:ring-primary shadow-sm"
           />
         </div>
         <div className="w-full sm:w-auto">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px] h-11 rounded-xl bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 shadow-sm font-bold text-slate-600 dark:text-slate-400">
+            <SelectTrigger className="w-full sm:w-[200px] h-10 rounded-md bg-card border-border shadow-sm font-semibold">
               <div className="flex items-center">
                 <Filter className="h-4 w-4 mr-2 opacity-50" />
-                <SelectValue placeholder="Trạng thái" />
+                <SelectValue placeholder="Toàn bộ trạng thái" />
               </div>
             </SelectTrigger>
-            <SelectContent className="rounded-xl border-slate-100 dark:border-slate-800 p-1 bg-white dark:bg-slate-900">
-              <SelectItem value="all" className="rounded-lg font-bold">Tất cả</SelectItem>
-              <SelectItem value="Active" className="rounded-lg font-bold">Hoạt động</SelectItem>
-              <SelectItem value="Inactive" className="rounded-lg font-bold">Ngưng hoạt động</SelectItem>
-              <SelectItem value="Archived" className="rounded-lg font-bold">Lưu trữ</SelectItem>
+            <SelectContent className="rounded-md border-border p-1 bg-popover">
+              <SelectItem value="all" className="rounded-sm font-bold">Toàn bộ</SelectItem>
+              <SelectItem value="Active" className="rounded-sm font-bold">Hoạt động</SelectItem>
+              <SelectItem value="Inactive" className="rounded-sm font-bold">Vô hiệu</SelectItem>
+              <SelectItem value="Archived" className="rounded-sm font-bold">Lưu trữ</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -150,104 +150,104 @@ export default function TeamsPage() {
       {/* Content Area */}
       <div className="pt-4">
         {teamsError ? (
-          <div className="flex flex-col items-center justify-center py-24 px-8 text-center rounded-3xl bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/20">
-            <div className="size-16 rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center mb-6 shadow-sm border border-rose-100 dark:border-rose-800">
-              <AlertCircle className="h-8 w-8 text-rose-500" />
+          <div className="flex flex-col items-center justify-center py-20 px-8 text-center rounded-lg bg-destructive/5 border border-destructive/10">
+            <div className="size-16 rounded-full bg-card flex items-center justify-center mb-6 shadow-sm border border-destructive/20">
+              <AlertCircle className="h-8 w-8 text-destructive" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-xl font-bold text-rose-900 dark:text-rose-400">Lỗi kết nối</h3>
-              <p className="text-rose-600 dark:text-rose-500 font-medium max-w-md">
-                Không thể tải dữ liệu đội nhóm. Vui lòng thử lại sau.
+              <h3 className="text-lg font-bold text-destructive">Lỗi truy xuất dữ liệu</h3>
+              <p className="text-muted-foreground font-medium max-w-md italic">
+                Cấu hình kết nối gặp sự cố. Vui lòng thử lại sau giây lát.
               </p>
-              <Button onClick={() => window.location.reload()} variant="outline" className="mt-8 rounded-xl font-bold border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-white dark:hover:bg-slate-800 transition-all">
-                Thử lại ngay
+              <Button onClick={() => window.location.reload()} variant="outline" className="mt-8 rounded-md font-bold transition-all shadow-sm">
+                Xác thực lại
               </Button>
             </div>
           </div>
         ) : filteredTeams.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 px-8 text-center rounded-3xl bg-slate-50 dark:bg-slate-900/20 border border-slate-100 dark:border-slate-800 border-dashed">
-            <div className="size-16 rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center mb-6 shadow-sm border border-slate-100 dark:border-slate-800">
-              <Shield className="h-8 w-8 text-slate-200 dark:text-slate-700" />
+          <div className="flex flex-col items-center justify-center py-24 px-8 text-center rounded-lg bg-muted/10 border border-border border-dashed">
+            <div className="size-16 rounded-full bg-card flex items-center justify-center mb-6 shadow-sm border border-border">
+              <Shield className="h-8 w-8 text-muted-foreground/30" />
             </div>
             <div className="space-y-4 text-center">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white">Không tìm thấy nhóm nào</h3>
-              <p className="text-slate-400 dark:text-slate-500 font-medium max-w-md">
-                {searchQuery || statusFilter !== 'all' ? 'Dường như không có nhóm nào khớp với bộ lọc của bạn.' : 'Bạn chưa tham gia vào bất kỳ đội nhóm nào từ hồ sơ khác.'}
+              <h3 className="text-lg font-bold text-foreground">Không tìm nhận diện thực thể</h3>
+              <p className="text-muted-foreground font-medium max-w-md italic">
+                {searchQuery || statusFilter !== 'all' ? 'Dữ liệu không tồn tại trong tập bộ lọc hiện thời.' : 'Tài khoản chưa thực hiện liên kết với bất kỳ tổ chức định danh nào.'}
               </p>
               {!searchQuery && statusFilter === 'all' && (
                 <div className="pt-4">
                   <Link href="/overview">
-                    <Button variant="outline" className="rounded-xl font-bold border-slate-200 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800">
+                    <Button variant="outline" className="rounded-md font-bold shadow-sm">
                       <User className="h-4 w-4 mr-2" />
-                      Xem hồ sơ cá nhân của tôi
+                      Trở về quản trị hồ sơ
                     </Button>
                   </Link>
                 </div>
               )}
             </div>
             {(searchQuery || statusFilter !== 'all') && (
-              <Button onClick={() => { setSearchQuery(''); setStatusFilter('all'); }} variant="ghost" className="mt-8 font-bold text-slate-900 dark:text-white hover:bg-white dark:hover:bg-slate-800 transition-all">
-                Xóa bộ lọc
+              <Button onClick={() => { setSearchQuery(''); setStatusFilter('all'); }} variant="ghost" className="mt-8 font-bold text-muted-foreground hover:text-foreground">
+                Hoàn tác bộ lọc
               </Button>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 pb-10 md:pb-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
             {filteredTeams.map((team) => (
               <Card
                 key={team.id}
                 onClick={() => handleTeamSelect(team)}
-                className="group relative rounded-2xl md:rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-all duration-300 cursor-pointer overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-slate-200/50 dark:hover:shadow-black/50 hover:-translate-y-1"
+                className="group relative rounded-lg border border-border bg-card hover:border-primary/50 transition-all duration-300 cursor-pointer overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1"
               >
-                <CardContent className="p-6 md:p-10">
-                  <div className="flex justify-between items-start mb-6 md:mb-8">
-                    <div className="size-12 md:size-14 rounded-xl md:rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center transition-colors overflow-hidden group-hover:bg-white dark:group-hover:bg-slate-700 shadow-sm ring-4 ring-white dark:ring-slate-900">
+                <CardContent className="p-8">
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="size-12 rounded-md bg-muted flex items-center justify-center transition-colors overflow-hidden group-hover:bg-primary/5 shadow-sm border border-border">
                       {team.avatarUrl ? (
                         <Image
                           src={team.avatarUrl}
                           alt={team.name}
-                          width={56}
-                          height={56}
-                          className="size-full object-cover rounded-xl md:rounded-2xl"
+                          width={48}
+                          height={48}
+                          className="size-full object-cover rounded-sm"
                         />
                       ) : (
-                        <Building2 className="h-6 w-6 md:h-7 md:w-7 text-slate-400 dark:text-slate-500" />
+                        <Building2 className="h-6 w-6 text-muted-foreground/50" />
                       )}
                     </div>
                     <Badge
-                      variant="secondary"
+                      variant="outline"
                       className={cn(
-                        "rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest px-2 md:px-3 py-0.5 md:py-1",
+                        "rounded-md text-[10px] font-bold px-2.5 py-0.5",
                         (team.status === 'Active' || !team.status)
-                          ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500'
+                          ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                          : 'bg-muted text-muted-foreground border-border'
                       )}
                     >
-                      {team.status === 'Active' ? 'Hoạt động' : team.status === 'Inactive' ? 'Ngưng hoạt động' : team.status === 'Archived' ? 'Lưu trữ' : 'Hoạt động'}
+                      {team.status === 'Active' ? 'Hoạt động' : team.status === 'Inactive' ? 'Vô hiệu' : team.status === 'Archived' ? 'Lưu trữ' : 'Hoạt động'}
                     </Badge>
                   </div>
 
-                  <div className="space-y-2 md:space-y-3 mb-6 md:mb-10">
-                    <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white group-hover:text-slate-900 dark:group-hover:text-primary transition-colors line-clamp-1 leading-tight">
+                  <div className="space-y-3 mb-8">
+                    <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1 leading-tight">
                       {team.name}
                     </h3>
                     <div className="flex items-center gap-3">
-                      <Badge variant="outline" className={cn("rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 border dark:border-slate-800", getRoleStyle(team.userRole))}>
-                        {team.userRole === 'Owner' ? 'Chủ sở hữu' : team.userRole === 'Admin' ? 'Quản trị viên' : team.userRole === 'Member' ? 'Thành viên' : team.userRole}
+                      <Badge variant="outline" className={cn("rounded-md text-[10px] font-bold px-2 py-0.5 border shadow-sm", getRoleStyle(team.userRole))}>
+                        {team.userRole === 'Owner' ? 'Sở hữu' : team.userRole === 'Admin' ? 'Quản trị' : team.userRole === 'Member' ? 'Thành viên' : team.userRole}
                       </Badge>
-                      <span className="text-[10px] md:text-xs font-bold text-slate-400 dark:text-slate-500">
+                      <span className="text-[10px] font-semibold text-muted-foreground italic">
                         Từ {new Date(team.createdAt).getFullYear()}
                       </span>
                     </div>
                   </div>
 
-                  <div className="pt-6 md:pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                    <div className="flex items-center gap-2.5 text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                  <div className="pt-6 border-t border-border flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-muted-foreground group-hover:text-primary transition-colors">
                       <Users className="size-4" />
-                      <span className="text-[10px] md:text-xs font-extrabold uppercase tracking-widest">{team.membersCount} Thành viên</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider">{team.membersCount} Nhân sự</span>
                     </div>
-                    <div className="size-8 rounded-full flex items-center justify-center group-hover:bg-slate-900 dark:group-hover:bg-primary transition-all duration-500">
-                      <ExternalLink className="size-3.5 md:size-4 text-slate-200 dark:text-slate-700 group-hover:text-white transition-colors" />
+                    <div className="size-8 rounded-full flex items-center justify-center bg-muted/50 group-hover:bg-primary transition-all duration-300">
+                      <ExternalLink className="size-3.5 text-muted-foreground group-hover:text-white transition-colors" />
                     </div>
                   </div>
                 </CardContent>

@@ -17,7 +17,7 @@ import {
   AdTypeEnum
 } from "@/lib/types/omniadly-types";
 import { useSocialIntegrations } from "@/hooks/use-social-integrations";
-import { Send, FileText, Image as ImageIcon, Video, Calendar, Share, Loader2, Facebook, MoreHorizontal, ThumbsUp, MessageCircle, Share2, Globe, CheckCircle2 } from "lucide-react";
+import { ImageIcon, Calendar, Share2, Facebook, MoreHorizontal, ThumbsUp, MessageCircle, Globe, CheckCircle2, Loader2 } from "lucide-react";
 import { useProfile } from "@/lib/contexts/profile-context";
 import { ProfileTypeEnum } from "@/lib/utils/profile-utils";
 import { cn } from "@/lib/utils";
@@ -38,7 +38,6 @@ export function ContentPreviewView({
   onPublish,
   isProcessing = false,
   showActions = true,
-  brands = [],
 }: ContentPreviewViewProps) {
   const { profileType } = useProfile();
   const canUseTeamFeatures = profileType !== ProfileTypeEnum.Free;
@@ -122,7 +121,7 @@ export function ContentPreviewView({
           )}>
             {imageUrls.slice(0, 4).map((url, i) => (
               <div key={i} className="aspect-square relative">
-                <img src={url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                <img src={url} alt="Nội dung hình ảnh" className="absolute inset-0 w-full h-full object-cover" />
               </div>
             ))}
           </div>

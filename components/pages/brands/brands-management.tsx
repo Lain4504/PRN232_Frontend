@@ -107,41 +107,44 @@ export function BrandsManagement() {
 
   return (
     <div className="space-y-6 pb-10">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Quản lý Thương hiệu</h2>
-          <p className="text-muted-foreground">
-            Thiết lập và quản lý hệ sinh thái thương hiệu của bạn.
+      <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between border-b border-border/50 pb-6">
+        <div className="space-y-1.5">
+          <Badge variant="outline" className="px-2 py-0.5 text-[10px] uppercase font-bold tracking-widest bg-primary/5 text-primary border-primary/20">
+            Hệ sinh thái • Core Assets
+          </Badge>
+          <h2 className="text-3xl font-bold tracking-tight italic uppercase">Quản lý Thương hiệu</h2>
+          <p className="text-sm text-muted-foreground italic font-medium">
+            Quản lý các thương hiệu và tài nguyên nội dung của bạn.
           </p>
         </div>
         <BrandModal mode="create" onSuccess={refetchBrands}>
-          <Button>
+          <Button className="h-11 rounded-md px-6 font-bold text-xs uppercase tracking-wider shadow-md">
             <Plus className="mr-2 h-4 w-4" />
             Thêm thương hiệu
           </Button>
         </BrandModal>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 items-center">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+      <div className="flex flex-col sm:flex-row gap-3 items-center">
+        <div className="relative flex-1 w-full group">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             placeholder="Tìm kiếm thương hiệu..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8"
+            className="pl-10 h-11 rounded-md border-border bg-card shadow-sm font-medium italic"
           />
         </div>
 
         {teams.length > 0 && (
-           <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
-            <SelectTrigger className="w-full sm:w-[200px]">
+          <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
+            <SelectTrigger className="w-full sm:w-[220px] h-11 rounded-md border-border bg-card font-bold text-xs uppercase tracking-wider">
               <SelectValue placeholder="Tất cả đội nhóm" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tất cả đội nhóm</SelectItem>
+            <SelectContent className="rounded-md border-border">
+              <SelectItem value="all" className="font-medium">Tất cả đội nhóm</SelectItem>
               {teams.map(team => (
-                <SelectItem key={team.id} value={team.id}>
+                <SelectItem key={team.id} value={team.id} className="font-medium">
                   {team.name}
                 </SelectItem>
               ))}
@@ -153,71 +156,76 @@ export function BrandsManagement() {
       {filteredBrands.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredBrands.map((brand) => (
-            <Card key={brand.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                <Avatar className="h-12 w-12 rounded-lg">
-                  <AvatarImage src={brand.logo_url || brand.logoUrl} alt={brand.name} />
-                  <AvatarFallback className="rounded-lg">{brand.name.substring(0, 1).toUpperCase()}</AvatarFallback>
+            <Card key={brand.id} className="rounded-lg border border-border bg-card shadow-sm hover:shadow-lg transition-all duration-300 group overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-6 bg-muted/20 border-b border-border/50">
+                <Avatar className="h-12 w-12 rounded-lg border-2 border-background shadow-sm">
+                  <AvatarImage src={brand.logo_url || brand.logoUrl} alt={brand.name} className="object-cover" />
+                  <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-bold">{brand.name.substring(0, 1).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <MoreVertical className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-background">
+                      <MoreVertical className="h-4 w-4 text-muted-foreground" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => window.location.href = `/dashboard/brands/${brand.id}/products`}>
+                  <DropdownMenuContent align="end" className="rounded-md border-border">
+                    <DropdownMenuItem onClick={() => window.location.href = `/dashboard/brands/${brand.id}/products`} className="text-xs font-medium">
                       <Package className="mr-2 h-4 w-4" />
-                      Sản phẩm
+                      Danh mục sản phẩm
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => window.location.href = `/dashboard/brands/${brand.id}/contents`}>
+                    <DropdownMenuItem onClick={() => window.location.href = `/dashboard/brands/${brand.id}/contents`} className="text-xs font-medium">
                       <FileText className="mr-2 h-4 w-4" />
-                      Nội dung
+                      Kho nội dung
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => handleEditBrand(brand)}>
+                    <DropdownMenuItem onClick={() => handleEditBrand(brand)} className="text-xs font-medium">
                       <Settings className="mr-2 h-4 w-4" />
-                      Cấu hình
+                      Chỉnh sửa thương hiệu
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setDeleteBrandId(brand.id)} className="text-destructive">
+                    <DropdownMenuItem onClick={() => setDeleteBrandId(brand.id)} className="text-xs font-medium text-destructive">
                       <Trash2 className="mr-2 h-4 w-4" />
-                      Xóa bỏ
+                      Xóa thương hiệu
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <CardTitle className="truncate" title={brand.name}>
-                  {brand.name}
-                </CardTitle>
-                <CardDescription className="line-clamp-2 min-h-[2.5em]">
-                  {brand.description || "Chưa có mô tả cho thương hiệu này."}
-                </CardDescription>
-                <div className="flex gap-2 pt-2">
-                  <Badge variant="secondary">{brand.productsCount || 0} SP</Badge>
-                  <Badge variant="secondary">{brand.contentsCount || 0} Nội dung</Badge>
+              <CardContent className="p-6 space-y-4">
+                <div className="space-y-1">
+                  <CardTitle className="text-lg font-bold tracking-tight italic truncate" title={brand.name}>
+                    {brand.name}
+                  </CardTitle>
+                  <CardDescription className="text-xs italic line-clamp-2 min-h-[3em] font-medium leading-relaxed">
+                    {brand.description || "Chưa có mô tả cho thương hiệu này."}
+                  </CardDescription>
+                </div>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <Badge variant="outline" className="rounded-md px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-emerald-500/5 text-emerald-600 border-emerald-500/20">{brand.productsCount || 0} Sản phẩm</Badge>
+                  <Badge variant="outline" className="rounded-md px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-blue-500/5 text-blue-600 border-blue-500/20">{brand.contentsCount || 0} Nội dung</Badge>
                 </div>
               </CardContent>
-              <CardFooter className="text-xs text-muted-foreground border-t pt-4 mt-2">
-                ID: {brand.id.substring(0, 8)}
+              <CardFooter className="px-6 py-4 bg-muted/10 border-t border-border/50 flex justify-between items-center">
+                <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest font-mono">ID: {brand.id.substring(0, 8)}</span>
+                <Button variant="ghost" size="sm" onClick={() => window.location.href = `/dashboard/brands/${brand.id}/products`} className="h-7 px-2 text-[9px] font-bold uppercase tracking-widest text-primary hover:bg-primary/5 transition-colors">
+                  Chi tiết
+                </Button>
               </CardFooter>
             </Card>
           ))}
         </div>
       ) : (
-        <Card className="flex flex-col items-center justify-center py-12 text-center border-dashed">
-          <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center mb-4">
-            <Building2 className="h-6 w-6 text-muted-foreground" />
+        <Card className="flex flex-col items-center justify-center py-24 text-center border-dashed rounded-lg bg-muted/10 border-muted-foreground/20">
+          <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-6 shadow-inner">
+            <Building2 className="h-8 w-8 text-muted-foreground/40" />
           </div>
-          <h3 className="text-lg font-semibold">Chưa có thương hiệu</h3>
-          <p className="text-muted-foreground max-w-sm mb-6">
-            {searchTerm ? "Không tìm thấy kết quả phù hợp." : "Bắt đầu bằng hành động khởi tạo thương hiệu đầu tiên."}
+          <h3 className="text-lg font-bold italic uppercase tracking-tight">Chưa có thương hiệu</h3>
+          <p className="text-sm text-muted-foreground max-w-sm mb-8 italic font-medium">
+            {searchTerm ? "Không tìm thấy kết quả phù hợp với tìm kiếm của bạn." : "Bắt đầu bằng cách thêm thương hiệu đầu tiên của bạn để quản lý chiến dịch AI."}
           </p>
           {!searchTerm && (
             <BrandModal mode="create" onSuccess={refetchBrands}>
-              <Button>
+              <Button className="rounded-md font-bold px-8 shadow-lg">
                 <Plus className="mr-2 h-4 w-4" />
-                Triển khai thương hiệu
+                Thêm thương hiệu mới
               </Button>
             </BrandModal>
           )}
@@ -227,18 +235,18 @@ export function BrandsManagement() {
       <BrandModal mode="edit" brand={editingBrand || undefined} open={isEditModalOpen} onOpenChange={setIsEditModalOpen} onSuccess={refetchBrands} />
 
       <AlertDialog open={!!deleteBrandId} onOpenChange={() => setDeleteBrandId(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="rounded-lg border-border bg-popover p-8 max-w-md shadow-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Xóa thương hiệu?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa thương hiệu này? Hành động này không thể hoàn tác và tất cả dữ liệu liên quan sẽ bị mất.
+            <AlertDialogTitle className="text-xl font-bold tracking-tight italic uppercase">Xác nhận xóa thương hiệu?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm italic font-medium leading-relaxed">
+              Bạn có chắc chắn muốn xóa thương hiệu này? Hành động này sẽ <span className="text-destructive font-bold underline">xóa sạch</span> dữ liệu và tất cả nội dung liên quan.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
+          <AlertDialogFooter className="mt-6">
+            <AlertDialogCancel className="rounded-md font-bold">Hủy bỏ</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteBrand}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md font-bold"
               disabled={deleteBrandMutation.isPending}
             >
               {deleteBrandMutation.isPending ? "Đang xử lý..." : "Xác nhận xóa"}

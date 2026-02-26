@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -47,8 +47,8 @@ export function PlanComparison({
         billingCycle: 'monthly',
         immediate: true,
       })
-    } catch (error) {
-      console.error('Plan change error:', error)
+    } catch {
+      // console.error('Plan change error:', error)
     }
   }
 
@@ -67,7 +67,7 @@ export function PlanComparison({
 
   const formatLimit = (limit: number | string) => {
     if (typeof limit === 'number') {
-      return limit === -1 ? 'Unlimited' : limit.toString()
+      return limit === -1 ? 'Không giới hạn' : limit.toString()
     }
     return limit
   }

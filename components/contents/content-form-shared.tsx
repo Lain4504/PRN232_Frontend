@@ -7,14 +7,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  Save,
   Send,
   FileText,
   Upload,
   Image as ImageIcon,
   Video,
   Check,
-  ChevronRight,
   Loader2,
   Plus
 } from "lucide-react";
@@ -245,7 +243,7 @@ export function ContentFormShared({
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3">
                 {displayImageUrls.map((src: string, i: number) => (
                   <div key={i} className="aspect-square relative rounded-lg overflow-hidden border border-border bg-card shadow-sm group/media cursor-pointer hover:border-primary/50 transition-all">
-                    <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform group-hover/media:scale-110" />
+                    <img src={src} alt="Nội dung tải lên" className="absolute inset-0 w-full h-full object-cover transition-transform group-hover/media:scale-110" />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/media:opacity-100 transition-opacity flex items-center justify-center">
                       <Check className="size-6 text-white" />
                     </div>

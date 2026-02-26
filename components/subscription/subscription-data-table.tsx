@@ -1,22 +1,21 @@
 'use client'
 
-import { ReactNode } from 'react'
+
 import { CustomTable } from '@/components/ui/custom-table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Progress } from '@/components/ui/progress'
-import { 
-  AlertTriangle, 
-  Lock, 
-  Crown, 
-  Building2, 
+import {
+  AlertTriangle,
+  Lock,
+  Crown,
+  Building2,
   Zap,
   Plus
 } from 'lucide-react'
 import { useSubscription } from '@/hooks/use-subscription'
 import { useFeatureGate } from '@/hooks/use-feature-gate'
-import { getUsagePercentage, isUsageNearLimit } from '@/lib/utils/subscription'
 import { UpgradePrompt } from './upgrade-prompt'
 import type { ColumnDef } from '@tanstack/react-table'
 
@@ -37,8 +36,8 @@ export function SubscriptionDataTable<T>({
   data,
   columns,
   featureId,
-  limitKey,
-  usageKey,
+  limitKey: _limitKey,
+  usageKey: _usageKey,
   onAddNew,
   addNewLabel = 'Add New',
   showUsageWarning = true,
@@ -61,8 +60,8 @@ export function SubscriptionDataTable<T>({
     }
   }
 
-  const isAtLimit = !canAccess && subscription && 
-    (subscription.usage[featureId as keyof typeof subscription.usage] as number) >= 
+  const isAtLimit = !canAccess && subscription &&
+    (subscription.usage[featureId as keyof typeof subscription.usage] as number) >=
     (subscription.limits[featureId as keyof typeof subscription.limits] as number)
 
   const canAddNew = canAccess && !isAtLimit
@@ -74,20 +73,20 @@ export function SubscriptionDataTable<T>({
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="font-medium">
-              {featureId.charAt(0).toUpperCase() + featureId.slice(1)} Usage
+              Hạn mức sử dụng
             </span>
             <span className="text-muted-foreground">
               {subscription.usage[featureId as keyof typeof subscription.usage]} / {
-                subscription.limits[featureId as keyof typeof subscription.limits] === -1 
-                  ? 'Unlimited' 
+                subscription.limits[featureId as keyof typeof subscription.limits] === -1
+                  ? 'Không giới hạn'
                   : subscription.limits[featureId as keyof typeof subscription.limits]
               }
             </span>
           </div>
-          
+
           {subscription.limits[featureId as keyof typeof subscription.limits] !== -1 && (
-            <Progress 
-              value={usagePercentage} 
+            <Progress
+              value={usagePercentage}
               className="h-2"
             />
           )}
@@ -96,7 +95,7 @@ export function SubscriptionDataTable<T>({
             <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                You&apos;re approaching your {featureId} limit. Consider upgrading your plan.
+                Bạn đang sắp đạt giới hạn của tính năng này. Hãy cân nhắc nâng cấp gói dịch vụ.
               </AlertDescription>
             </Alert>
           )}
@@ -105,7 +104,7 @@ export function SubscriptionDataTable<T>({
             <Alert variant="destructive">
               <Lock className="h-4 w-4" />
               <AlertDescription>
-                You&apos;ve reached your {featureId} limit. Upgrade your plan to add more.
+                Bạn đã đạt giới hạn tối đa. Vui lòng nâng cấp gói để tiếp tục sử dụng.
               </AlertDescription>
             </Alert>
           )}
@@ -118,7 +117,7 @@ export function SubscriptionDataTable<T>({
           <div className="flex items-center space-x-2">
             {getPlanIcon(subscription?.tier || 'free')}
             <span className="text-sm font-medium">
-              {subscription?.planName || 'Free'} Plan
+              Gói {subscription?.planName || 'Miễn phí'}
             </span>
             {subscription?.tier !== 'free' && (
               <Badge variant="outline" className="text-xs">
@@ -126,16 +125,16 @@ export function SubscriptionDataTable<T>({
               </Badge>
             )}
           </div>
-          
+
           {canAddNew ? (
             <Button onClick={onAddNew} size="sm">
               <Plus className="h-4 w-4 mr-2" />
               {addNewLabel}
             </Button>
           ) : (
-            <Button 
-              onClick={onAddNew} 
-              size="sm" 
+            <Button
+              onClick={onAddNew}
+              size="sm"
               variant="outline"
               disabled
               className="opacity-50"
@@ -153,16 +152,16 @@ export function SubscriptionDataTable<T>({
       ) : showUpgradePrompt ? (
         <UpgradePrompt
           featureId={featureId}
-          title={`${featureId.charAt(0).toUpperCase() + featureId.slice(1)} Management`}
-          description={`Manage your ${featureId} with advanced features and higher limits.`}
+          title={`Nâng cấp tính năng`}
+          description={`Quản lý và sử dụng các tính năng nâng cao với giới hạn cao hơn.`}
           variant="card"
         />
       ) : (
         <div className="text-center py-8">
           <Lock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Feature Not Available</h3>
+          <h3 className="text-lg font-semibold mb-2">Tính năng chưa khả dụng</h3>
           <p className="text-muted-foreground">
-            This feature requires a {featureGate?.requiredTier || 'higher'} plan.
+            Tính năng này yêu cầu gói đăng ký cao hơn để sử dụng.
           </p>
         </div>
       )}

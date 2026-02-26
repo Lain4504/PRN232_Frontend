@@ -13,7 +13,7 @@ import { Profile } from "@/lib/types/omniadly-types"
 export default function OnboardingPage() {
     const router = useRouter()
     const { session } = useAuth()
-    const { refreshProfile, setActiveProfile } = useProfile()
+    const { setActiveProfile } = useProfile()
     const [isLoading, setIsLoading] = useState(false)
 
     const handleTypeSelect = async (type: 'individual' | 'agency') => {

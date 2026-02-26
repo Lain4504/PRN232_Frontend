@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,7 +16,7 @@ import {
   Settings,
   Edit,
   Copy,
-  Filter,
+
   X,
   Sparkles
 } from "lucide-react"
@@ -75,23 +75,24 @@ const createColumns = (
         const status = content.status
 
         return (
-          <div className="flex items-center gap-4 py-2">
-            <div className="size-10 rounded-md bg-muted flex items-center justify-center text-muted-foreground shrink-0 border">
+          <div className="flex items-center gap-4 py-3">
+            <div className="size-10 rounded-md bg-primary/5 flex items-center justify-center text-primary shrink-0 border border-primary/10 shadow-sm transition-transform hover:scale-105">
               <FileText className="size-5" />
             </div>
             <div className="space-y-1">
-              <span className="font-semibold text-foreground truncate max-w-[300px] block">{row.getValue("title")}</span>
+              <span className="font-bold text-[13px] text-foreground truncate max-w-[300px] block italic uppercase tracking-tight">{row.getValue("title")}</span>
               <div className="flex items-center gap-2">
-                <Badge variant={
-                  status === ContentStatusEnum.Published ? "default" :
-                    status === ContentStatusEnum.Approved ? "secondary" :
-                      status === ContentStatusEnum.PendingApproval ? "outline" :
-                        "secondary"
-                } className="rounded-sm px-2 py-0 text-[10px]">
+                <Badge variant="outline" className={cn(
+                  "rounded-md px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider",
+                  status === ContentStatusEnum.Published ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/20" :
+                    status === ContentStatusEnum.Approved ? "bg-blue-500/5 text-blue-600 border-blue-500/20" :
+                      status === ContentStatusEnum.PendingApproval ? "bg-amber-500/5 text-amber-600 border-amber-500/20" :
+                        "bg-muted/50 text-muted-foreground border-border"
+                )}>
                   {status === ContentStatusEnum.Published ? "Đã xuất bản" :
                     status === ContentStatusEnum.Approved ? "Đã phê duyệt" :
                       status === ContentStatusEnum.PendingApproval ? "Chờ phê duyệt" :
-                        status === ContentStatusEnum.Draft ? "Nháp" :
+                        status === ContentStatusEnum.Draft ? "Bản nháp" :
                           status === ContentStatusEnum.Rejected ? "Từ chối" : status}
                 </Badge>
               </div>
@@ -108,18 +109,18 @@ const createColumns = (
         const label = (() => {
           if (typeof value === 'string') {
             const v = String(value).toLowerCase()
-            if (v === 'textonly' || v === 'text_only') return "Chỉ văn bản"
-            if (v === 'imagetext' || v === 'image_text') return "Ảnh & Văn bản"
-            if (v === 'videotext' || v === 'video_text') return "Video & Văn bản"
+            if (v === 'textonly' || v === 'text_only') return "Văn bản"
+            if (v === 'imagetext' || v === 'image_text') return "Ảnh & Text"
+            if (v === 'videotext' || v === 'video_text') return "Video & Text"
             return value
           }
-          if (value === AdTypeEnum.TextOnly) return "Chỉ văn bản"
-          if (value === AdTypeEnum.ImageText) return "Ảnh & Văn bản"
-          if (value === AdTypeEnum.VideoText) return "Video & Văn bản"
-          return "Không xác định"
+          if (value === AdTypeEnum.TextOnly) return "Văn bản"
+          if (value === AdTypeEnum.ImageText) return "Ảnh & Text"
+          if (value === AdTypeEnum.VideoText) return "Video & Text"
+          return "N/A"
         })()
         return (
-          <span className="text-xs text-muted-foreground font-medium">{label}</span>
+          <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest italic">{label}</span>
         )
       },
     },
@@ -130,7 +131,7 @@ const createColumns = (
         const brandId = row.getValue("brandId") as string
         const brand = brands.find(b => b.id === brandId)
         return (
-          <span className="text-sm font-medium truncate max-w-[120px] block">{brand?.name || "Global"}</span>
+          <span className="text-xs font-bold truncate max-w-[120px] block italic">{brand?.name || "Hệ thống"}</span>
         )
       },
     },
@@ -140,15 +141,15 @@ const createColumns = (
       cell: ({ row }) => {
         const createdAt = row.getValue("createdAt") as string
         return (
-          <span className="text-xs text-muted-foreground">
-            {createdAt ? format(new Date(createdAt), 'dd/MM/yyyy') : "-"}
+          <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">
+            {createdAt ? format(new Date(createdAt), 'dd • MM • yyyy') : "-"}
           </span>
         )
       },
     },
     {
       id: "actions",
-      header: () => <div className="text-right">Thao tác</div>,
+      header: () => <div className="text-right text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Thao tác</div>,
       cell: ({ row }) => {
         const content = row.original
         const canSubmit = content.status === ContentStatusEnum.Draft
@@ -351,20 +352,23 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
 
   return (
     <div className="space-y-6 pb-20 font-sans">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b pb-6">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">Quản lý Nội dung</h1>
-          <p className="text-muted-foreground max-w-xl">
-            Quản lý, chỉnh sửa và triển khai nội dung quảng cáo thông minh.
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border/50 pb-6">
+        <div className="space-y-1.5">
+          <Badge variant="outline" className="px-2 py-0.5 text-[10px] uppercase font-bold tracking-widest bg-primary/5 text-primary border-primary/20">
+            Thư viện tài sản • Content Hub
+          </Badge>
+          <h1 className="text-3xl font-bold tracking-tight italic uppercase">Quản lý Nội dung</h1>
+          <p className="text-sm text-muted-foreground max-w-xl italic font-medium">
+            Quản lý, chỉnh sửa và triển khai nội dung quảng cáo thông minh được đồng bộ hóa.
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          <Button variant="outline" onClick={() => setIsCreating(true)}>
+          <Button variant="outline" onClick={() => setIsCreating(true)} className="h-11 rounded-md px-6 font-bold text-xs uppercase tracking-wider border-border shadow-sm">
             <Plus className="mr-2 h-4 w-4" />
             Phác thảo mới
           </Button>
-          <Button onClick={() => window.location.href = `/dashboard/brands/${initialBrandId || 'all'}/contents/new`}>
+          <Button onClick={() => window.location.href = `/dashboard/brands/${initialBrandId || 'all'}/contents/new`} className="h-11 rounded-md px-6 font-bold text-xs uppercase tracking-wider shadow-md">
             <Brain className="mr-2 h-4 w-4" />
             Khởi tạo AI
           </Button>
@@ -372,42 +376,42 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
       </div>
 
       <div className="flex flex-col lg:flex-row gap-4 items-center">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <div className="relative flex-1 w-full group">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
-            placeholder="Tìm kiếm nội dung..."
+            placeholder="Truy vấn nội dung trong thư viện..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8"
+            className="pl-10 h-11 rounded-md border-border bg-card shadow-sm font-medium italic"
           />
         </div>
 
         <div className="flex items-center gap-2 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
           <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as ContentStatusEnum | 'all')}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-[180px] h-11 rounded-md border-border bg-card font-bold text-[10px] uppercase tracking-wider">
               <SelectValue placeholder="Trạng thái" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tất cả bài</SelectItem>
+            <SelectContent className="rounded-md border-border">
+              <SelectItem value="all" className="font-medium text-xs italic">Tất cả bài viết</SelectItem>
               {Object.values(ContentStatusEnum).map(s => (
-                <SelectItem key={s} value={s}>{s === ContentStatusEnum.Published ? "Đã xuất bản" :
+                <SelectItem key={s} value={s} className="font-medium text-xs italic">{s === ContentStatusEnum.Published ? "Đã xuất bản" :
                   s === ContentStatusEnum.Approved ? "Đã phê duyệt" :
                     s === ContentStatusEnum.PendingApproval ? "Chờ phê duyệt" :
-                      s === ContentStatusEnum.Draft ? "Nháp" :
+                      s === ContentStatusEnum.Draft ? "Bản nháp" :
                         s === ContentStatusEnum.Rejected ? "Từ chối" : s}</SelectItem>
               ))}
             </SelectContent>
           </Select>
 
           <Select value={adTypeFilter === "all" ? "all" : adTypeFilter.toString()} onValueChange={(v) => setAdTypeFilter(v === "all" ? "all" : parseInt(v))}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-[180px] h-11 rounded-md border-border bg-card font-bold text-[10px] uppercase tracking-wider">
               <SelectValue placeholder="Định dạng" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Mọi định dạng</SelectItem>
-              <SelectItem value={AdTypeEnum.TextOnly.toString()}>Chỉ văn bản</SelectItem>
-              <SelectItem value={AdTypeEnum.ImageText.toString()}>Ảnh & Văn bản</SelectItem>
-              <SelectItem value={AdTypeEnum.VideoText.toString()}>Video & Văn bản</SelectItem>
+            <SelectContent className="rounded-md border-border">
+              <SelectItem value="all" className="font-medium text-xs italic">Mọi định dạng</SelectItem>
+              <SelectItem value={AdTypeEnum.TextOnly.toString()} className="font-medium text-xs italic">Văn bản thuần túy</SelectItem>
+              <SelectItem value={AdTypeEnum.ImageText.toString()} className="font-medium text-xs italic">Ảnh & Văn bản</SelectItem>
+              <SelectItem value={AdTypeEnum.VideoText.toString()} className="font-medium text-xs italic">Video & Văn bản</SelectItem>
             </SelectContent>
           </Select>
 
@@ -423,47 +427,49 @@ export function ContentsManagement({ initialBrandId, teamId }: ContentsManagemen
         </div>
       </div>
 
-      <Card>
+      <Card className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
         {contents.length > 0 ? (
           <CustomTable
             columns={createColumns(handleEditContent, handleViewContent, handleDeleteContent, handleSubmitContent, handleCloneContent, handleChangeStatus, brands, false, canUseTeamFeatures)}
             data={filteredContents}
             pageSize={10}
             className="border-none"
+            headerClassName="bg-muted/50 border-b border-border/50 py-5 px-8 text-[11px] font-bold uppercase tracking-wider text-muted-foreground italic"
           />
         ) : (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="size-16 rounded-full bg-muted flex items-center justify-center mb-6">
-              <FileText className="size-8 text-muted-foreground" />
+          <div className="flex flex-col items-center justify-center py-32 text-center bg-muted/5">
+            <div className="size-20 rounded-full bg-muted flex items-center justify-center mb-8 shadow-inner">
+              <FileText className="size-10 text-muted-foreground/30" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">
-              {searchTerm ? "Không tìm thấy nội dung" : "Thư viện đang trống"}
+            <h3 className="text-xl font-bold mb-2 italic uppercase tracking-tight">
+              {searchTerm ? "Truy vấn không kết quả" : "Thư viện đang trống"}
             </h3>
-            <p className="text-muted-foreground max-w-sm mb-6">
-              {searchTerm ? "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm của bạn." : "Hãy sáng tạo nội dung đầu tiên bằng sự hỗ trợ mạnh mẽ từ trí tuệ nhân tạo."}
+            <p className="text-sm text-muted-foreground max-w-sm mb-10 italic font-medium leading-relaxed">
+              {searchTerm ? "Chúng tôi không tìm thấy nội dung nào khớp với tiêu chuẩn của bạn." : "Hãy sáng tạo nội dung đầu tiên bằng sự hỗ trợ mạnh mẽ từ trí tuệ nhân tạo."}
             </p>
             {!searchTerm && (
-              <Button onClick={() => window.location.href = `/dashboard/brands/${initialBrandId || 'all'}/contents/new`}>
+              <Button onClick={() => window.location.href = `/dashboard/brands/${initialBrandId || 'all'}/contents/new`} className="rounded-md font-bold px-10 h-12 shadow-lg">
                 <Plus className="mr-2 h-4 w-4" />
-                Tạo nội dung ngay
+                Khởi tạo nội dung AI
               </Button>
             )}
           </div>
         )}
       </Card>
 
-      <Card className="p-6 bg-muted/30">
-        <div className="flex gap-4">
-          <div className="p-3 rounded-lg bg-background border shadow-sm h-fit">
-            <Settings className="h-5 w-5" />
+      <Card className="p-8 bg-card border-border shadow-sm rounded-lg overflow-hidden relative group/compliance">
+        <div className="flex flex-col sm:flex-row gap-6 items-start relative z-10">
+          <div className="p-4 rounded-md bg-primary/5 border border-primary/10 shadow-sm transition-transform group-hover/compliance:rotate-6">
+            <Settings className="h-6 w-6 text-primary" />
           </div>
-          <div className="space-y-1">
-            <h4 className="font-semibold">Quản trị nội dung & Tuân thủ</h4>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-              Tất cả tài sản nội dung đều phải thông qua quy trình phê duyệt nghiêm ngặt trước khi được phép xuất bản lên các kênh truyền thông chính thức. Đảm bảo quá trình kiểm duyệt luôn được thực hiện nghiêm túc để bảo vệ giá trị cốt lõi của thương hiệu trong mắt công chúng.
+          <div className="space-y-2">
+            <h4 className="font-bold text-lg uppercase italic tracking-tight">Quản trị nội dung & Tuân thủ</h4>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-4xl italic font-medium">
+              Tất cả tài sản nội dung đều phải thông qua quy trình phê duyệt nghiêm ngặt trước khi được phép xuất bản lên các kênh truyền thông chính thức. Đảm bảo quá trình kiểm duyệt luôn được thực hiện nghiêm túc để bảo vệ giá trị cốt lõi của thương hiệu trong mắt công chúng. Quá trình này được thiết kế để đảm bảo sự đồng bộ tuyệt đối về ngôn ngữ và hình ảnh trên toàn bộ hệ sinh thái của bạn.
             </p>
           </div>
         </div>
+        <Sparkles className="absolute -bottom-10 -right-10 h-40 w-40 text-primary/5 rotate-12" />
       </Card>
 
       <ContentModal content={null} isEditing={true} open={isCreating} onOpenChange={setIsCreating} onCreate={(d: CreateContentRequest) => api.post(endpoints.contents(), d).then(() => { setIsCreating(false); queryClient.invalidateQueries({ queryKey: ["contents"] }); toast.success("Đã tạo nội dung"); })} isProcessing={false} brands={teamId ? undefined : brands} products={teamId ? undefined : products} teamId={teamId} userId={userId} defaultBrandId={scopeBrandId !== "team-all" ? scopeBrandId : (initialBrandId || undefined)} />
