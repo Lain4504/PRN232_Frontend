@@ -40,7 +40,7 @@ export function SubscriptionPlansPage({
       id: SubscriptionPlanEnum.Basic,
       name: 'Plus',
       description: 'Nâng cấp với AI hỗ trợ',
-      price: 359000,
+      price: 159000,
       period: 'tháng',
       isPopular: true
     },
@@ -48,7 +48,7 @@ export function SubscriptionPlansPage({
       id: SubscriptionPlanEnum.Pro,
       name: 'Premium',
       description: 'Giải pháp tối ưu cho doanh nghiệp',
-      price: 559000,
+      price: 299000,
       period: 'tháng'
     }
   ]

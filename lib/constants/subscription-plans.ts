@@ -77,8 +77,8 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     name: 'Plus',
     tier: 'basic',
     price: {
-      monthly: 359000,
-      yearly: 3590000,
+      monthly: 159000,
+      yearly: 1908000,
     },
     features: [
       'AI tạo nội dung (2 bài/ngày)',
@@ -108,8 +108,8 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     name: 'Premium',
     tier: 'pro',
     price: {
-      monthly: 559000,
-      yearly: 5590000,
+      monthly: 299000,
+      yearly: 3588000,
     },
     features: [
       'AI tạo nội dung cao cấp (4 bài/ngày)',

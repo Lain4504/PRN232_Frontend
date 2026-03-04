@@ -107,8 +107,8 @@ export const getActiveSubscription = async (profileId: string): Promise<Subscrip
 export const getPlanPricing = (plan: number) => {
   const pricing = {
     0: { price: 0, period: 'vĩnh viễn', name: 'Free' },
-    1: { price: 359000, period: 'tháng', name: 'Plus' },
-    2: { price: 559000, period: 'tháng', name: 'Premium' }
+    1: { price: 159000, period: 'tháng', name: 'Plus' },
+    2: { price: 299000, period: 'tháng', name: 'Premium' }
   }
   return pricing[plan as keyof typeof pricing] || pricing[0]
 }

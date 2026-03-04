@@ -31,7 +31,7 @@ function PaymentForm() {
         {
             id: SubscriptionPlanEnum.Basic,
             name: 'Plus',
-            price: '359.000',
+            price: '159.000',
             period: '/tháng',
             description: 'Công cụ thiết yếu cho các agency đang phát triển.',
             features: [
@@ -48,7 +48,7 @@ function PaymentForm() {
         {
             id: SubscriptionPlanEnum.Pro,
             name: 'Premium',
-            price: '559.000',
+            price: '299.000',
             period: '/tháng',
             description: 'Tính năng nâng cao cho quy mô lớn.',
             features: [

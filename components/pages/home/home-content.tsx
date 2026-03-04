@@ -267,14 +267,14 @@ export function HomeContent() {
               },
               {
                 name: "Plus",
-                price: "359.000",
+                price: "159.000",
                 features: ["5 Brand Profiles", "500 AI Content Credits / tháng", "Quản lý đa nền tảng", "AI Performance Insights", "Support 24/7"],
                 cta: "Dùng thử miễn phí",
                 popular: true
               },
               {
                 name: "Premium",
-                price: "559.000",
+                price: "299.000",
                 features: ["Không giới hạn Brand Profiles", "Không giới hạn AI Credits", "Quản lý Team & Phê duyệt", "White-label Reports", "Priority Support"],
                 cta: "Liên hệ tư vấn",
                 popular: false
