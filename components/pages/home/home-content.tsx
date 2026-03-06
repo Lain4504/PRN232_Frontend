@@ -259,23 +259,42 @@ export function HomeContent() {
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {[
               {
-                name: "Free",
+                name: "Miễn phí",
                 price: "0",
-                features: ["1 Brand Profile", "10 AI Content Credits / tháng", "Kết nối 1 nền tảng", "Báo cáo cơ bản"],
+                features: [
+                  "Lên lịch đăng tự động tối đa 5 bài/tháng",
+                  "Phân tích cơ bản theo độ tuổi và giới tính",
+                  "Kết nối tối đa 1 nền tảng",
+                  "Tối đa 1 tài khoản đăng nhập và sử dụng"
+                ],
                 cta: "Bắt đầu miễn phí",
                 popular: false
               },
               {
                 name: "Plus",
                 price: "159.000",
-                features: ["5 Brand Profiles", "500 AI Content Credits / tháng", "Quản lý đa nền tảng", "AI Performance Insights", "Support 24/7"],
+                features: [
+                  "AI nâng cấp: tạo tối đa 2 nội dung/ngày và 6 hình ảnh/ngày",
+                  "Lên lịch đăng tự động tối đa 30 bài",
+                  "Phân tích hiệu suất quảng cáo và lượng khách hàng tiếp cận",
+                  "Kết nối tối đa 2 nền tảng",
+                  "Tối đa 3 tài khoản đăng nhập và sử dụng"
+                ],
                 cta: "Dùng thử miễn phí",
                 popular: true
               },
               {
                 name: "Premium",
                 price: "299.000",
-                features: ["Không giới hạn Brand Profiles", "Không giới hạn AI Credits", "Quản lý Team & Phê duyệt", "White-label Reports", "Priority Support"],
+                features: [
+                  "AI nâng cấp hơn: tạo tối đa 4 nội dung/ngày và 9 hình ảnh/ngày",
+                  "Lên lịch đăng tự động không giới hạn bài đăng",
+                  "Phân tích hiệu suất quảng cáo và lượng khách hàng tiếp cận",
+                  "Đề xuất ngân sách quảng cáo hợp lý theo tháng",
+                  "Đề xuất nội dung và ngân sách quảng cáo cho tháng sau",
+                  "Kết nối tối đa 3 nền tảng",
+                  "Tối đa 5 tài khoản đăng nhập và sử dụng"
+                ],
                 cta: "Liên hệ tư vấn",
                 popular: false
               }
