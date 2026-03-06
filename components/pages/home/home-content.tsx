@@ -359,9 +359,9 @@ export function HomeContent() {
             </div>
 
             <div className="pt-10 flex flex-wrap items-center justify-center gap-8 opacity-30 grayscale invert">
-              <span className="text-sm font-bold tracking-widest">SAFE & SECURE</span>
-              <span className="text-sm font-bold tracking-widest">GDPR COMPLIANT</span>
-              <span className="text-sm font-bold tracking-widest">ENCRYPTED DATA</span>
+              <span className="text-sm font-bold tracking-widest">An toàn & Bảo mật</span>
+              <span className="text-sm font-bold tracking-widest">Tuân thủ GDPR</span>
+              <span className="text-sm font-bold tracking-widest">Dữ liệu mã hóa</span>
             </div>
           </div>
         </div>
